@@ -572,20 +572,20 @@ const ENEMIES = [
   { id: 'sci', name: 'Учёный Скибиди', emoji: '🧪', hp: 45, speed: 0.95, reward: 18, color: '#58c868', regen: 3 },
   { id: 'camo', name: 'Скибиди-Ниндзя', emoji: '🥷', hp: 32, speed: 1.6, reward: 16, color: '#585868', onDeathStun: 2.5 },
   { id: 'mut', name: 'Скибиди-Мутант', emoji: '🧟', hp: 95, speed: 0.85, reward: 30, color: '#98c8b8', onDeathSpawn: 3 },
-  { id: 'gToilet', name: 'G-Туалет', emoji: '🎯', hp: 120, speed: 0.6, reward: 60, color: '#d8b848', boss: true, bossStunEvery: 7 },
-  { id: 'gMan', name: 'G-Человек', emoji: '🕴️', hp: 220, speed: 0.55, reward: 90, color: '#c858c8', boss: true, bossStunEvery: 6 },
-  { id: 'gSci', name: 'Учёный-G-Туалет', emoji: '🧠', hp: 400, speed: 0.5, reward: 160, color: '#cc44ff', slowAura: true, boss: true, bossStunEvery: 5 },
+  { id: 'gToilet', name: 'G-Туалет', emoji: '🎯', hp: 120, speed: 0.6, reward: 60, color: '#d8b848', boss: true, bossStunEvery: 9 },
+  { id: 'gMan', name: 'G-Человек', emoji: '🕴️', hp: 220, speed: 0.55, reward: 90, color: '#c858c8', boss: true, bossStunEvery: 8 },
+  { id: 'gSci', name: 'Учёный-G-Туалет', emoji: '🧠', hp: 400, speed: 0.5, reward: 160, color: '#cc44ff', slowAura: true, boss: true, bossStunEvery: 7 },
   { id: 'armo', name: 'Бронескибиди', emoji: '🛞', hp: 130, speed: 0.55, reward: 40, color: '#8a9aa8', armorPct: 0.45 },
   { id: 'summoner', name: 'Призыватель', emoji: '🌀', hp: 80, speed: 0.8, reward: 36, color: '#a86ad8', summonsEvery: 7 },
   { id: 'shield', name: 'Щит-Скибиди', emoji: '🛡️', hp: 60, speed: 0.9, reward: 30, color: '#58a8c8', shield: 70, shieldRegen: 5 }
 ];
 
 const DIFFICULTIES = [
-  { id: 'easy', name: 'Легко', waves: 10, startMoney: 350, enemyHpMul: 0.8, enemySpeedMul: 0.9, rewardMul: 1.2, coinMul: 0.8 },
-  { id: 'normal', name: 'Обычный', waves: 15, startMoney: 300, enemyHpMul: 1.0, enemySpeedMul: 1.0, rewardMul: 1.0, coinMul: 1.0 },
-  { id: 'hard', name: 'Сложный', waves: 20, startMoney: 250, enemyHpMul: 1.3, enemySpeedMul: 1.1, rewardMul: 0.85, coinMul: 1.5 },
-  { id: 'insane', name: 'Безумный', waves: 25, startMoney: 200, enemyHpMul: 1.6, enemySpeedMul: 1.2, rewardMul: 0.7, coinMul: 2.0 },
-  { id: 'endless', name: 'Бесконечный', waves: 999, startMoney: 300, enemyHpMul: 1.0, enemySpeedMul: 1.0, rewardMul: 1.0, coinMul: 1.0, endless: true }
+  { id: 'easy', name: 'Легко', waves: 10, startMoney: 350, enemyHpMul: 0.8, enemySpeedMul: 0.9, rewardMul: 1.2, coinMul: 0.8, winCoins: 200 },
+  { id: 'normal', name: 'Обычный', waves: 15, startMoney: 300, enemyHpMul: 1.0, enemySpeedMul: 1.0, rewardMul: 1.0, coinMul: 1.0, winCoins: 350 },
+  { id: 'hard', name: 'Сложный', waves: 20, startMoney: 250, enemyHpMul: 1.3, enemySpeedMul: 1.1, rewardMul: 0.85, coinMul: 1.5, winCoins: 600 },
+  { id: 'insane', name: 'Безумный', waves: 25, startMoney: 200, enemyHpMul: 1.6, enemySpeedMul: 1.2, rewardMul: 0.7, coinMul: 2.0, winCoins: 900 },
+  { id: 'endless', name: 'Бесконечный', waves: 999, startMoney: 300, enemyHpMul: 1.0, enemySpeedMul: 1.0, rewardMul: 1.0, coinMul: 1.0, winCoins: 400, endless: true }
 ];
 
 const MAPS = [
@@ -1366,7 +1366,7 @@ class Enemy {
         let stunned = 0;
         for (const h of this.game.heroes) {
           if (h.heroDead) continue;
-          if (dist(this.x, this.y, h.x, h.y) <= 110) { h.stunTimer = Math.max(h.stunTimer || 0, 2); stunned++; }
+          if (dist(this.x, this.y, h.x, h.y) <= 110) { h.stunTimer = Math.max(h.stunTimer || 0, 1.2); stunned++; }
         }
         if (stunned) {
           this.game.explosions.push({ x: this.x, y: this.y, r: 0, maxR: 110, life: 0.5, maxLife: 0.5, rgb: '255,136,255', ring: true });
@@ -2154,7 +2154,7 @@ class Game {
     this.countdownActive = false;
     const completed = win ? this.maxWaves : Math.max(0, this.wave - 1);
     let coins = 0;
-    if (win) coins = Math.round((completed * 12 + this.kills + 150) * (this.difficulty.coinMul || 1));
+    if (win) coins = this.difficulty.winCoins || 350;
     SaveManager.addCoins(coins);
     if (win) Sound.victory(); else Sound.defeat();
     if (this.difficulty.endless && this.wave > (SaveManager.data.endlessRecord || 0)) {
@@ -2991,7 +2991,7 @@ const App = {
         <div class="d-row">🌊 Волн: <b>${d.endless ? '∞' : d.waves}</b></div>
         <div class="d-row">💰 Старт: <b>${d.startMoney}</b> · 🏠 База: <b>1000 HP</b></div>
         <div class="d-row">🛡 HP ×<b>${d.enemyHpMul}</b> · ⚡ Скор. ×<b>${d.enemySpeedMul}</b></div>
-        <div class="d-row">🪙 Монеты ×<b>${d.coinMul}</b></div>`;
+        <div class="d-row">🪙 Победа: +<b>${d.winCoins || 350}</b> монет</div>`;
       card.addEventListener('click', () => {
         SaveManager.selectedDifficulty = d.id;
         SaveManager.save();
