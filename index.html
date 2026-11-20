@@ -353,6 +353,7 @@
     <button id="startWaveBtn" class="btn accent small">▶ СЛЕДУЮЩАЯ ВОЛНА</button>
     <button id="pauseBtn" class="btn small">⏸ ПАУЗА</button>
     <button id="speedBtn" class="btn small">⏩ ×1</button>
+    <button id="autoSkipBtn" class="btn small">🤖 АВТО-СКИП: ВЫКЛ</button>
     <button id="quitToLobbyBtn" class="btn small danger">🏠 ЛОББИ</button>
   </div>
   <div class="game-canvas-wrap"><canvas id="gameCanvas" width="960" height="640"></canvas></div>
@@ -423,7 +424,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
    ============================================================ */
 const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
-const LOADOUT_SIZE = 8;
+const LOADOUT_SIZE = 5;
 const MAX_HEROES = 15;
 
 const RARITY_ORDER = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Mythic'];
@@ -576,9 +577,9 @@ const ENEMIES = [
   { id: 'sci', name: 'Учёный Скибиди', emoji: '🧪', hp: 45, speed: 0.95, reward: 18, color: '#58c868', regen: 3 },
   { id: 'camo', name: 'Скибиди-Ниндзя', emoji: '🥷', hp: 32, speed: 1.6, reward: 16, color: '#585868', onDeathStun: 2.5 },
   { id: 'mut', name: 'Скибиди-Мутант', emoji: '🧟', hp: 95, speed: 0.85, reward: 30, color: '#98c8b8', onDeathSpawn: 3 },
-  { id: 'gToilet', name: 'G-Туалет', emoji: '🎯', hp: 120, speed: 0.6, reward: 60, color: '#d8b848', boss: true, bossStunEvery: 5 },
-  { id: 'gMan', name: 'G-Человек', emoji: '🕴️', hp: 220, speed: 0.55, reward: 90, color: '#c858c8', boss: true, bossStunEvery: 4 },
-  { id: 'gSci', name: 'Учёный-G-Туалет', emoji: '🧠', hp: 400, speed: 0.5, reward: 160, color: '#cc44ff', slowAura: true, boss: true, bossStunEvery: 3 },
+  { id: 'gToilet', name: 'G-Туалет', emoji: '🎯', hp: 120, speed: 0.6, reward: 60, color: '#d8b848', boss: true, bossStunEvery: 6 },
+  { id: 'gMan', name: 'G-Человек', emoji: '🕴️', hp: 220, speed: 0.55, reward: 90, color: '#c858c8', boss: true, bossStunEvery: 5 },
+  { id: 'gSci', name: 'Учёный-G-Туалет', emoji: '🧠', hp: 400, speed: 0.5, reward: 160, color: '#cc44ff', slowAura: true, boss: true, bossStunEvery: 4 },
   { id: 'armo', name: 'Бронескибиди', emoji: '🛞', hp: 130, speed: 0.55, reward: 40, color: '#8a9aa8', armorPct: 0.45 },
   { id: 'summoner', name: 'Призыватель', emoji: '🌀', hp: 80, speed: 0.8, reward: 36, color: '#a86ad8', summonsEvery: 7 },
   { id: 'shield', name: 'Щит-Скибиди', emoji: '🛡️', hp: 60, speed: 0.9, reward: 30, color: '#58a8c8', shield: 70, shieldRegen: 5 }
@@ -654,6 +655,7 @@ const SaveManager = {
       soundOn: true,
       endlessRecord: 0,
       codes: [],
+      autoSkip: false,
       autoSell: {
         'Common': true, 'Uncommon': true, 'Rare': false,
         'Epic': false, 'Legendary': false, 'Mythic': false
@@ -1339,6 +1341,7 @@ class Enemy {
     this.time = Math.random() * 6.28;
   }
   takeDamage(d) {
+    this.flashUntil = Date.now() + 140;
     let dmg = d * (1 - this.armorPct);
     if (this.shield > 0) {
       const absorbed = Math.min(this.shield, dmg);
@@ -1371,7 +1374,7 @@ class Enemy {
         let stunned = 0;
         for (const h of this.game.heroes) {
           if (h.heroDead) continue;
-          if (dist(this.x, this.y, h.x, h.y) <= 110) { h.stunTimer = Math.max(h.stunTimer || 0, 2.5); stunned++; }
+          if (dist(this.x, this.y, h.x, h.y) <= 110) { h.stunTimer = Math.max(h.stunTimer || 0, 1.8); stunned++; }
         }
         if (stunned) {
           this.game.explosions.push({ x: this.x, y: this.y, r: 0, maxR: 110, life: 0.5, maxLife: 0.5, rgb: '255,136,255', ring: true });
@@ -1495,6 +1498,12 @@ class Enemy {
     }
     ctx.font = `${this.size * 1.1}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(this.def.emoji, x, yy - 1);
+    if (this.flashUntil > Date.now()) {
+      ctx.globalAlpha = Math.min(0.6, (this.flashUntil - Date.now()) / 140 * 0.6);
+      ctx.beginPath(); ctx.arc(x, yy, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff'; ctx.fill();
+      ctx.globalAlpha = 1;
+    }
     const w = this.size * 2.3, h = 5;
     const bx = x - w / 2, by = yy - this.size - 13;
     if (this.shieldMax > 0) {
@@ -1731,6 +1740,7 @@ class Game {
     this.selectedBuild = null;
     this.selectedHero = null;
     this.speedMultiplier = 1;
+    this.autoSkip = false;
     this.mouse = { x: -1, y: -1, col: -1, row: -1, onCanvas: false };
     this.hoveredHero = null;
     this.floaters = [];
@@ -1750,6 +1760,8 @@ class Game {
     document.getElementById('startWaveBtn').addEventListener('click', () => this.waveButtonAction());
     document.getElementById('pauseBtn').addEventListener('click', () => this.togglePause());
     document.getElementById('speedBtn').addEventListener('click', () => this.toggleSpeed());
+    document.getElementById('autoSkipBtn').addEventListener('click', () => this.toggleAutoSkip());
+    window.addEventListener('keydown', (e) => this.handleKey(e));
     document.getElementById('quitToLobbyBtn').addEventListener('click', () => { this.stop(); App.showLobby(); });
   }
   start() {
@@ -1786,6 +1798,10 @@ class Game {
     document.getElementById('speedBtn').textContent = '⏩ ×1';
     document.getElementById('waveTimer').style.display = 'none';
     document.getElementById('resultsOverlay').classList.remove('visible');
+    this.autoSkip = !!SaveManager.data.autoSkip;
+    const askBtn = document.getElementById('autoSkipBtn');
+    askBtn.textContent = '🤖 АВТО-СКИП: ' + (this.autoSkip ? 'ВКЛ' : 'ВЫКЛ');
+    askBtn.className = 'btn small' + (this.autoSkip ? ' accent' : '');
     this.buildHeroPanel();
     this.updateUI();
     this.render();
@@ -2071,6 +2087,35 @@ class Game {
     this.speedMultiplier = this.speedMultiplier === 1 ? 2 : (this.speedMultiplier === 2 ? 3 : 1);
     document.getElementById('speedBtn').textContent = this.speedMultiplier === 1 ? '⏩ ×1' : '⏩ ×' + this.speedMultiplier;
   }
+  toggleAutoSkip() {
+    if (this.gameOver || this.victory) return;
+    this.autoSkip = !this.autoSkip;
+    SaveManager.data.autoSkip = this.autoSkip;
+    SaveManager.save();
+    const askBtn = document.getElementById('autoSkipBtn');
+    askBtn.textContent = '🤖 АВТО-СКИП: ' + (this.autoSkip ? 'ВКЛ' : 'ВЫКЛ');
+    askBtn.className = 'btn small' + (this.autoSkip ? ' accent' : '');
+    this.toast('Авто-скип: ' + (this.autoSkip ? 'включен — волны начинаются сами, скип нажимается автоматом' : 'выключен'));
+    Sound.gachaClick();
+  }
+  handleKey(e) {
+    if (!this.running || this.gameOver || this.victory) return;
+    if (e.key >= '1' && e.key <= '5') {
+      const id = SaveManager.loadout[+e.key - 1];
+      const u = id && UNITS.find(x => x.id === id);
+      if (!u) return;
+      if (this.heroes.length >= MAX_HEROES) { Sound.error(); this.toast('Достигнут лимит юнитов (' + MAX_HEROES + ')'); return; }
+      Sound.init();
+      this.selectedBuild = (this.selectedBuild === 'hero:' + id) ? null : 'hero:' + id;
+      this.selectedHero = null;
+      this.refreshBuildSelection();
+      Sound.gachaClick();
+      this.toast('Выбран клавишей ' + e.key + ': ' + u.name);
+    } else if (e.key === 'Escape') {
+      this.selectedBuild = null;
+      this.refreshBuildSelection();
+    }
+  }
   gameLoop(ts) {
     if (!this.running) return;
     if (!this.lastTime) this.lastTime = ts;
@@ -2087,6 +2132,13 @@ class Game {
     requestAnimationFrame(this._raf);
   }
   update(dt) {
+    if (this.autoSkip && !this.paused && !this.gameOver && !this.victory) {
+      if (this.waveManager.waveActive) {
+        if (this.skipAvailable()) this.waveButtonAction();
+      } else if (this.countdownActive) {
+        this.skipCountdown();
+      }
+    }
     if (this.waveBanner) { this.waveBanner.life -= dt; if (this.waveBanner.life <= 0) this.waveBanner = null; }
     if (this.waveManager.waveActive) this.waveTime += dt;
     if (this.countdownActive && !this.waveManager.waveActive) {
@@ -2189,7 +2241,14 @@ class Game {
       const t = this.selectedHero;
       ctx.beginPath(); ctx.arc(t.x, t.y, t.range, 0, Math.PI * 2);
       ctx.fillStyle = COLORS.heroRange; ctx.fill();
+      ctx.setLineDash([12, 9]); ctx.lineDashOffset = -(Date.now() / 1000) * 24;
       ctx.strokeStyle = COLORS.heroRangeBorder; ctx.lineWidth = 2; ctx.stroke();
+      ctx.setLineDash([]);
+      const prc = RARITY_COLOR[t.unit.rarity] || '#ffd966';
+      const pulse = 0.5 + 0.5 * Math.sin(Date.now() / 240);
+      ctx.beginPath(); ctx.arc(t.x, t.y, CELL * 0.52 + pulse * 3, 0, Math.PI * 2);
+      ctx.strokeStyle = prc; ctx.lineWidth = 2.5;
+      ctx.globalAlpha = 0.5 + 0.4 * pulse; ctx.stroke(); ctx.globalAlpha = 1;
       const mode = TARGET_MODES.find(m => m.id === t.targetMode) || TARGET_MODES[0];
       const btnY = t.y - 58, btnH = 26, btnW = 46;
       const upX = t.x - 73, tX = t.x - 23, sellX = t.x + 27;
@@ -2287,9 +2346,10 @@ class Game {
     let valid = !isRoad && !occupied && !this.placementInvalid();
     const id = this.selectedBuild.split(':')[1];
     const unit = UNITS.find(u => u.id === id);
+    const pl = 0.5 + 0.5 * Math.sin(Date.now() / 220);
     ctx.beginPath(); ctx.arc(cx, cy, unit.stats.range, 0, Math.PI * 2);
-    ctx.fillStyle = valid ? 'rgba(255,217,102,0.10)' : 'rgba(255,80,80,0.10)'; ctx.fill();
-    ctx.strokeStyle = valid ? '#ffd96688' : 'rgba(255,80,80,0.65)';
+    ctx.fillStyle = valid ? `rgba(255,217,102,${0.08 + 0.05 * pl})` : 'rgba(255,80,80,0.10)'; ctx.fill();
+    ctx.strokeStyle = valid ? `rgba(255,217,102,${0.45 + 0.3 * pl})` : 'rgba(255,80,80,0.65)';
     ctx.lineWidth = 2; ctx.stroke();
     ctx.fillStyle = valid ? 'rgba(255,217,102,0.20)' : 'rgba(255,80,80,0.25)';
     ctx.beginPath(); ctx.roundRect(col * CELL + 2, row * CELL + 2, CELL - 4, CELL - 4, 6); ctx.fill();
@@ -2329,6 +2389,7 @@ class Game {
     ctx.save();
     ctx.translate(CANVAS_W / 2, 90);
     ctx.scale(scale, scale);
+    ctx.translate(-(1 - appear) * 70, 0);
     ctx.globalAlpha = Math.min(1, b.life / (b.maxLife * 0.3));
     ctx.font = 'bold 44px "Segoe UI",sans-serif';
     const grad = ctx.createLinearGradient(-160, -30, 160, 30);
@@ -2341,6 +2402,9 @@ class Game {
     ctx.font = 'bold 20px "Segoe UI",sans-serif';
     ctx.fillStyle = b.boss ? '#ff8888' : '#ffd966';
     ctx.fillText('Приготовься!', 0, 34);
+    ctx.globalAlpha *= 0.55;
+    ctx.fillStyle = b.boss ? '#ff8888' : '#ffd966';
+    ctx.fillRect(-120, 48, 240 * Math.min(1, (b.maxLife - b.life) * 2), 3);
     ctx.restore();
     ctx.globalAlpha = 1; ctx.shadowBlur = 0;
   }
