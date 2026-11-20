@@ -19,9 +19,13 @@
     line-height:1.05;margin:0;background:linear-gradient(120deg,#7ee7ff,#4fc3ff 40%,#b06bff);
     -webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 40px #4fc3ff44}
   .game-subtitle{opacity:.6;font-size:.95rem;letter-spacing:4px;margin-top:-10px}
-  .coin-badge{display:inline-flex;align-items:center;gap:8px;background:#1b2230;padding:8px 22px;
-    border-radius:40px;font-weight:700;font-size:1.1rem;color:#ffd966;
-    box-shadow:0 0 0 1px #3a4a62 inset,0 0 20px #ffb34722}
+  .coin-badge{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#241b06,#332710);
+    padding:8px 24px 8px 12px;border-radius:40px;font-weight:800;font-size:1.1rem;color:#ffe08a;
+    box-shadow:0 0 0 1px #7a6020 inset,0 6px 18px #00000077,0 0 26px #ffb34733}
+  .coin-ico{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:26px;height:26px;
+    border-radius:50%;background:radial-gradient(circle at 32% 30%,#fff3b0 0%,#ffd23e 45%,#b8860b 100%);
+    box-shadow:0 0 0 2px #8a6508 inset,0 2px 5px #00000088,0 0 12px #ffd23e77;color:#6b4a00;
+    font-weight:900;font-size:.85rem;line-height:1}
   .record-badge{display:inline-flex;align-items:center;gap:8px;background:#1b2230;padding:8px 22px;
     border-radius:40px;font-weight:700;font-size:.95rem;color:#b9ffcf;
     box-shadow:0 0 0 1px #2e5a3e inset}
@@ -61,7 +65,8 @@
   .stat{display:flex;align-items:center;gap:8px;background:#1b2230;padding:6px 16px;border-radius:40px;
     box-shadow:0 0 0 1px #2e3b4e inset,0 4px 8px #00000033}
   .stat span:first-child{opacity:.7;font-weight:400;font-size:.9rem}
-  .stat .value{color:#7ee7ff;text-shadow:0 0 8px #00b4ff88;min-width:40px;text-align:right}
+  .stat .value{color:#7ee7ff;text-shadow:0 0 8px #00b4ff88;min-width:40px;text-align:right;transition:color .2s}
+  .stat.money .value{color:#ffd93e;text-shadow:0 0 10px #ffb34788}
   .wave-info .value{color:#ffd966;text-shadow:0 0 8px #ffb34788}
   .hero-badge{display:flex;align-items:center;gap:6px;background:#1d2a1e;padding:6px 14px;border-radius:40px;
     color:#a6ffb0;box-shadow:0 0 0 1px #2e5a3e inset;font-size:.9rem;cursor:default}
@@ -199,7 +204,7 @@
   <div class="lobby-content">
     <h1 class="game-title">КАМЕРАМЕН TD</h1>
     <div class="game-subtitle">ОБОРОНА СТУДИИ</div>
-    <div class="coin-badge">🪙 <span id="metaCoinsLobby">0</span> монет</div>
+    <div class="coin-badge"><span class="coin-ico">¢</span> <span id="metaCoinsLobby">0</span> монет</div>
     <div class="record-badge" id="recordBadge" style="display:none">⚡ Рекорд бесконечного: <span id="endlessRecordVal">0</span> волн</div>
     <div class="menu-buttons">
       <button class="btn accent" id="btnPlay">▶ ИГРАТЬ</button>
@@ -217,7 +222,7 @@
     <button class="btn small back-btn" id="gachaBack">← ЛОББИ</button>
     <div class="panel-head">
       <h2 class="panel-title">🎰 ПРИЗЫВ</h2>
-      <div class="coin-badge">🪙 <span id="metaCoinsGacha">0</span></div>
+      <div class="coin-badge"><span class="coin-ico">¢</span> <span id="metaCoinsGacha">0</span></div>
     </div>
     <div class="gacha-stage">
       <div class="gacha-reels" id="gachaReels"></div>
@@ -250,7 +255,7 @@
     <button class="btn small back-btn" id="inventoryBack">← ЛОББИ</button>
     <div class="panel-head">
       <h2 class="panel-title" id="inventoryTitle">🎒 ИНВЕНТАРЬ</h2>
-      <div class="coin-badge">🪙 <span id="metaCoinsInventory">0</span></div>
+      <div class="coin-badge"><span class="coin-ico">¢</span> <span id="metaCoinsInventory">0</span></div>
     </div>
     <div class="search-filter-row">
       <input type="text" class="search-input" id="inventorySearch" placeholder="🔍 Поиск юнита...">
@@ -272,7 +277,7 @@
     </div>
     <div class="panel-head">
       <h2 class="panel-title">1. ОТРЯД</h2>
-      <div class="coin-badge">🪙 <span id="metaCoinsUnitSelect">0</span></div>
+      <div class="coin-badge"><span class="coin-ico">¢</span> <span id="metaCoinsUnitSelect">0</span></div>
     </div>
     <div style="text-align:center;opacity:.7;margin:8px 0 16px;font-size:.9rem">
       Твой боевой отряд (можно менять в инвентаре)
@@ -335,11 +340,11 @@
 <!-- БОЙ -->
 <div class="screen" id="gameScreen">
   <div class="top-panel">
-    <div class="stat"><span>💰</span><span class="value" id="moneyDisplay">0</span></div>
-    <div class="stat"><span>❤️</span><span class="value" id="livesDisplay">10</span></div>
+    <div class="stat money"><span class="coin-ico">¢</span><span class="value" id="moneyDisplay">0</span></div>
+    <div class="stat"><span>🏠</span><span class="value" id="baseHpDisplay">1000</span></div>
     <div class="stat wave-info"><span>🌊</span><span class="value" id="waveDisplay">0 / 15</span></div>
     <div class="hero-badge" id="heroBadge">🎥 <span>0 юнитов</span></div>
-    <div class="wave-timer" id="waveTimer" style="display:none">⏱ <span id="waveTimerVal">5</span>с</div>
+    <div class="wave-timer" id="waveTimer" style="display:none">⏱ <span id="waveTimerVal">5</span>с · <span id="waveComp"></span></div>
     <button id="startWaveBtn" class="btn accent small">▶ СЛЕДУЮЩАЯ ВОЛНА</button>
     <button id="pauseBtn" class="btn small">⏸ ПАУЗА</button>
     <button id="speedBtn" class="btn small">⏩ ×1</button>
@@ -347,7 +352,7 @@
   </div>
   <div class="game-canvas-wrap"><canvas id="gameCanvas" width="960" height="640"></canvas></div>
   <div class="bottom-panel" id="towerPanel"></div>
-  <div class="hint">ЮНИТ — УЛУЧШИТЬ/ПРОДАТЬ · ЯЧЕЙКА — ПОСТАВИТЬ · НАВЕДИ, ЧТОБЫ УВИДЕТЬ СТАТЫ</div>
+    <div class="hint">ЮНИТ — УЛУЧШИТЬ/ПРОДАТЬ/СМЕНИТЬ ЦЕЛЬ 🎯 · ЯЧЕЙКА — ПОСТАВИТЬ · НАВЕДИ — СТАТЫ</div>
 </div>
 
 <!-- РЕЗУЛЬТАТЫ -->
@@ -356,6 +361,7 @@
   <div class="results-box">
     <div class="results-row"><span>Волн пройдено</span><span class="v" id="resWaves">0</span></div>
     <div class="results-row"><span>Скибиди уничтожено</span><span class="v" id="resKills">0</span></div>
+    <div class="results-row"><span>Прочность базы</span><span class="v" id="resBase">—</span></div>
     <div class="results-row"><span>Монет заработано</span><span class="v gold" id="resCoins">0</span></div>
   </div>
   <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
@@ -421,6 +427,14 @@ const RARITY_COLOR = {
 };
 const HERO_UPGRADE_COST = [0, 120, 280, 600, 1100];
 const SELL_RATIO = 0.6;
+const BASE_MAX_HP = 1000;
+const BASE_WAVE_REGEN = 60;
+const TARGET_MODES = [
+  { id: 'first', name: 'Первый (головной)', glyph: '▶' },
+  { id: 'last', name: 'Последний', glyph: '◀' },
+  { id: 'strong', name: 'Самый сильный', glyph: '💪' },
+  { id: 'close', name: 'Ближайший', glyph: '✦' }
+];
 
 const ABILITY_RU = {
   'none': 'Без особых способностей',
@@ -429,7 +443,8 @@ const ABILITY_RU = {
   'speedBoost': '⚡ Разгоняет атаки союзников рядом',
   'heal': '💖 Лечит союзников вокруг',
   'cash': '💸 Приносит деньги в начале каждой волны',
-  'stun': '🌟 Периодически оглушает врагов вокруг'
+  'stun': '🌟 Периодически оглушает врагов вокруг',
+  'splash': '💥 Снаряды взрываются по площади'
 };
 
 const UNITS = [
@@ -498,7 +513,23 @@ const UNITS = [
   { id: 'titanTV', name: 'Титан ТВ', emoji: '👑', rarity: 'Mythic', dropChance: 0.002,
     desc: 'Абсолютный чемпион студии. Аура на всю карту.',
     stats: { dmg: 75, range: 185, fireRate: 0.85, hp: 600 },
-    passive: { dmgBonus: 0.15, moneyBonus: 0.10 }, ability: 'aoeBurst', aoeRadius: 80, aura: 0.15 }
+    passive: { dmgBonus: 0.15, moneyBonus: 0.10 }, ability: 'aoeBurst', aoeRadius: 80, aura: 0.15 },
+  { id: 'pyrotech', name: 'Пиротехник', emoji: '🎆', rarity: 'Uncommon', dropChance: 0.09,
+    desc: 'Снаряды взрываются по площади при каждом попадании.',
+    stats: { dmg: 15, range: 120, fireRate: 1.1, hp: 200 },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'splash', splashRadius: 55, aura: 0 },
+  { id: 'snipercam', name: 'Снайпер', emoji: '🎯', rarity: 'Rare', dropChance: 0.035,
+    desc: 'Очень дальний и точный огонь. Одна цель — один выстрел.',
+    stats: { dmg: 65, range: 260, fireRate: 2.3, hp: 160 },
+    passive: { dmgBonus: 0.05, moneyBonus: 0 }, ability: 'none', aura: 0 },
+  { id: 'bodyguard', name: 'Телохранитель', emoji: '🛡️', rarity: 'Uncommon', dropChance: 0.07,
+    desc: 'Крепкий боец передовой линии. Огромная прочность.',
+    stats: { dmg: 13, range: 95, fireRate: 1.3, hp: 520 },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', aura: 0 },
+  { id: 'hacker', name: 'Хакер', emoji: '💻', rarity: 'Legendary', dropChance: 0.004,
+    desc: 'Взламывает систему: аура урона и разряд с замедлением.',
+    stats: { dmg: 28, range: 140, fireRate: 0.9, hp: 260 },
+    passive: { dmgBonus: 0, moneyBonus: 0.08 }, ability: 'slow', aura: 0.10 }
 ];
 
 const ENEMIES = [
@@ -511,31 +542,34 @@ const ENEMIES = [
   { id: 'mut', name: 'Скибиди-Мутант', emoji: '🧟', hp: 95, speed: 0.85, reward: 30, color: '#98c8b8', onDeathSpawn: 3 },
   { id: 'gToilet', name: 'G-Туалет', emoji: '🎯', hp: 120, speed: 0.6, reward: 60, color: '#d8b848', boss: true },
   { id: 'gMan', name: 'G-Человек', emoji: '🕴️', hp: 220, speed: 0.55, reward: 90, color: '#c858c8', boss: true },
-  { id: 'gSci', name: 'Учёный-G-Туалет', emoji: '🧠', hp: 400, speed: 0.5, reward: 160, color: '#cc44ff', slowAura: true, boss: true }
+  { id: 'gSci', name: 'Учёный-G-Туалет', emoji: '🧠', hp: 400, speed: 0.5, reward: 160, color: '#cc44ff', slowAura: true, boss: true },
+  { id: 'armo', name: 'Бронескибиди', emoji: '🛞', hp: 130, speed: 0.55, reward: 40, color: '#8a9aa8', armorPct: 0.45 },
+  { id: 'summoner', name: 'Призыватель', emoji: '🌀', hp: 80, speed: 0.8, reward: 36, color: '#a86ad8', summonsEvery: 7 },
+  { id: 'shield', name: 'Щит-Скибиди', emoji: '🛡️', hp: 60, speed: 0.9, reward: 30, color: '#58a8c8', shield: 70, shieldRegen: 5 }
 ];
 
 const DIFFICULTIES = [
-  { id: 'easy', name: 'Легко', waves: 10, startMoney: 350, lives: 15, enemyHpMul: 0.8, enemySpeedMul: 0.9, rewardMul: 1.2, coinMul: 0.8 },
-  { id: 'normal', name: 'Обычный', waves: 15, startMoney: 300, lives: 10, enemyHpMul: 1.0, enemySpeedMul: 1.0, rewardMul: 1.0, coinMul: 1.0 },
-  { id: 'hard', name: 'Сложный', waves: 20, startMoney: 250, lives: 7, enemyHpMul: 1.3, enemySpeedMul: 1.1, rewardMul: 0.85, coinMul: 1.5 },
-  { id: 'insane', name: 'Безумный', waves: 25, startMoney: 200, lives: 5, enemyHpMul: 1.6, enemySpeedMul: 1.2, rewardMul: 0.7, coinMul: 2.0 },
-  { id: 'endless', name: 'Бесконечный', waves: 999, startMoney: 300, lives: 10, enemyHpMul: 1.0, enemySpeedMul: 1.0, rewardMul: 1.0, coinMul: 1.0, endless: true }
+  { id: 'easy', name: 'Легко', waves: 10, startMoney: 350, enemyHpMul: 0.8, enemySpeedMul: 0.9, rewardMul: 1.2, coinMul: 0.8 },
+  { id: 'normal', name: 'Обычный', waves: 15, startMoney: 300, enemyHpMul: 1.0, enemySpeedMul: 1.0, rewardMul: 1.0, coinMul: 1.0 },
+  { id: 'hard', name: 'Сложный', waves: 20, startMoney: 250, enemyHpMul: 1.3, enemySpeedMul: 1.1, rewardMul: 0.85, coinMul: 1.5 },
+  { id: 'insane', name: 'Безумный', waves: 25, startMoney: 200, enemyHpMul: 1.6, enemySpeedMul: 1.2, rewardMul: 0.7, coinMul: 2.0 },
+  { id: 'endless', name: 'Бесконечный', waves: 999, startMoney: 300, enemyHpMul: 1.0, enemySpeedMul: 1.0, rewardMul: 1.0, coinMul: 1.0, endless: true }
 ];
 
 const MAPS = [
-  { id: 'studio', name: 'Студия', theme: { bg: '#10131c', grid: '#1a2030' },
+  { id: 'studio', name: 'Студия', theme: { bg: '#10131c', grid: '#1a2030' }, decor: ['🎬','🎥','🎤','💡','📼'],
     waypoints: [[0,3],[7,3],[7,9],[15,9],[15,16],[23,16],[23,5],[29,5]] },
-  { id: 'zigzag', name: 'Зигзаг', theme: { bg: '#14101c', grid: '#221a30' },
+  { id: 'zigzag', name: 'Зигзаг', theme: { bg: '#14101c', grid: '#221a30' }, decor: ['📼','🎞️','🎮','🎧'],
     waypoints: [[0,2],[5,2],[5,8],[10,8],[10,2],[15,2],[15,8],[20,8],[20,2],[25,2],[25,8],[29,8]] },
-  { id: 'spiral', name: 'Спираль', theme: { bg: '#0c161c', grid: '#16242c' },
+  { id: 'spiral', name: 'Спираль', theme: { bg: '#0c161c', grid: '#16242c' }, decor: ['⚙️','🔧','🧪','📡'],
     waypoints: [[0,2],[27,2],[27,17],[3,17],[3,6],[23,6],[23,13],[8,13],[8,10],[18,10]] },
-  { id: 'fork', name: 'Развилка', theme: { bg: '#141414', grid: '#26262a' },
+  { id: 'fork', name: 'Развилка', theme: { bg: '#141414', grid: '#26262a' }, decor: ['📦','🚧','🔧','🛢️'],
     waypoints: [[0,5],[9,5],[9,12],[17,12],[17,5],[24,5],[24,15],[29,15]] },
-  { id: 'desert', name: 'Пустыня', theme: { bg: '#181410', grid: '#26201a' },
+  { id: 'desert', name: 'Пустыня', theme: { bg: '#181410', grid: '#26201a' }, decor: ['🌵','🏜️','🦴','🏺'],
     waypoints: [[0,10],[6,10],[6,4],[14,4],[14,15],[22,15],[22,8],[29,8]] },
-  { id: 'sewer', name: 'Канализация', theme: { bg: '#0d1a10', grid: '#1a2c1e' },
+  { id: 'sewer', name: 'Канализация', theme: { bg: '#0d1a10', grid: '#1a2c1e' }, decor: ['🚽','🛠️','💧','🪣'],
     waypoints: [[0,17],[8,17],[8,10],[3,10],[3,3],[13,3],[13,11],[20,11],[20,3],[29,3]] },
-  { id: 'city', name: 'Город', theme: { bg: '#101018', grid: '#1e1e2c' },
+  { id: 'city', name: 'Город', theme: { bg: '#101018', grid: '#1e1e2c' }, decor: ['🏢','🚕','🗼','🚦'],
     waypoints: [[0,0],[12,0],[12,7],[5,7],[5,13],[18,13],[18,6],[26,6],[26,17],[29,17]] }
 ];
 
@@ -553,6 +587,10 @@ const PROMO_CODES = {
 };
 
 function dist(ax, ay, bx, by) { return Math.hypot(ax - bx, ay - by); }
+function shadeColor(hex, f) {
+  const n = parseInt(hex.slice(1), 16);
+  return 'rgb(' + Math.round(((n >> 16) & 255) * f) + ',' + Math.round(((n >> 8) & 255) * f) + ',' + Math.round((n & 255) * f) + ')';
+}
 function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 function fmt(n) { return Math.max(0, Math.floor(n)); }
 
@@ -718,6 +756,30 @@ class MapRenderer {
     this.waypoints = mapDef.waypoints.map(p => ({ x: p[0] * CELL + CELL / 2, y: p[1] * CELL + CELL / 2 }));
     this.roadCells = new Set();
     this.buildRoadCells();
+    this.buildDecor();
+  }
+  buildDecor() {
+    this.decorCells = new Set();
+    this.decorList = [];
+    const decor = this.map.decor || [];
+    if (!decor.length) return;
+    let seed = 7;
+    for (let i = 0; i < this.map.id.length; i++) seed = (seed * 131 + this.map.id.charCodeAt(i)) & 0x7fffffff;
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const key = c + ',' + r;
+        if (this.roadCells.has(key)) continue;
+        seed = (seed * 1103515245 + c * 99991 + r * 6271 + 12347) & 0x7fffffff;
+        if ((seed >>> 8) % 100 < 6) {
+          this.decorList.push({
+            x: c * CELL + CELL / 2 + ((seed >>> 14) % 9) - 4,
+            y: r * CELL + CELL / 2 + ((seed >>> 20) % 9) - 4,
+            emoji: decor[seed % decor.length]
+          });
+          this.decorCells.add(key);
+        }
+      }
+    }
   }
   buildRoadCells() {
     for (let r = 0; r < ROWS; r++) {
@@ -738,12 +800,31 @@ class MapRenderer {
   }
   isRoad(col, row) { return this.roadCells.has(col + ',' + row); }
   draw(ctx) {
-    ctx.fillStyle = this.theme.bg;
+    const bgGrad = ctx.createLinearGradient(0, 0, CANVAS_W, CANVAS_H);
+    bgGrad.addColorStop(0, this.theme.bg);
+    bgGrad.addColorStop(1, shadeColor(this.theme.bg, 0.6));
+    ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+    ctx.fillStyle = this.theme.grid;
+    ctx.globalAlpha = 0.13;
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const key = c + ',' + r;
+        if (this.roadCells.has(key) || this.decorCells.has(key)) continue;
+        if ((r + c) % 2 === 0) ctx.fillRect(c * CELL, r * CELL, CELL, CELL);
+      }
+    }
+    ctx.globalAlpha = 1;
     ctx.strokeStyle = this.theme.grid;
     ctx.lineWidth = 1;
     for (let i = 0; i <= COLS; i++) { ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, CANVAS_H); ctx.stroke(); }
     for (let j = 0; j <= ROWS; j++) { ctx.beginPath(); ctx.moveTo(0, j * CELL); ctx.lineTo(CANVAS_W, j * CELL); ctx.stroke(); }
+    ctx.font = '20px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    for (const d of this.decorList) {
+      ctx.globalAlpha = 0.5;
+      ctx.fillText(d.emoji, d.x, d.y);
+    }
+    ctx.globalAlpha = 1;
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     const pts = this.waypoints;
     const drawPath = (color, width, dash) => {
@@ -753,12 +834,18 @@ class MapRenderer {
       if (dash) ctx.setLineDash(dash); else ctx.setLineDash([]);
       ctx.stroke(); ctx.setLineDash([]);
     };
+    drawPath('rgba(0,0,0,0.35)', PATH_WIDTH + 16);
     drawPath(COLORS.roadEdge, PATH_WIDTH + 6);
     drawPath(COLORS.road, PATH_WIDTH);
     drawPath('#aa9966', 2, [10, 14]);
-    ctx.font = '24px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.font = '24px sans-serif';
     ctx.fillStyle = '#66ff88'; ctx.fillText('🏁', pts[0].x, pts[0].y - 30);
-    ctx.fillStyle = '#ff6666'; ctx.fillText('🎬', pts[pts.length - 1].x, pts[pts.length - 1].y - 30);
+    ctx.fillStyle = '#ff8888'; ctx.fillText('🏠', pts[pts.length - 1].x, pts[pts.length - 1].y - 34);
+    const vg = ctx.createRadialGradient(CANVAS_W / 2, CANVAS_H / 2, CANVAS_H * 0.4, CANVAS_W / 2, CANVAS_H / 2, CANVAS_H * 0.85);
+    vg.addColorStop(0, 'rgba(0,0,0,0)');
+    vg.addColorStop(1, 'rgba(0,0,0,0.4)');
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
   }
 }
 
@@ -779,6 +866,9 @@ class Hero {
     this.abilityCd = 0;
     this.pulseCd = 0;
     this.angle = -Math.PI / 2;
+    this.targetMode = 'first';
+    this.shootAnim = 0;
+    this.bobPhase = Math.random() * 6.28;
 
     const s = unit.stats;
     this.baseDamage = s.dmg * (1 + (unit.passive.dmgBonus || 0));
@@ -791,7 +881,7 @@ class Hero {
     this.ability = unit.ability;
     this.abilityMaxCd = unit.ability === 'speedBoost' ? 12 : (unit.ability === 'aoeBurst' ? 15 :
       (unit.ability === 'stun' ? 10 : 999));
-    this.aoe = (unit.ability === 'aoeBurst') ? (unit.aoeRadius || 45) : 0;
+    this.aoe = (unit.ability === 'aoeBurst') ? (unit.aoeRadius || 45) : ((unit.ability === 'splash') ? (unit.splashRadius || 50) : 0);
     this.stunPower = unit.abilityPower || 1.4;
     this.moneyBonus = unit.passive.moneyBonus || 0;
     this.auraBonus = unit.aura || 0;
@@ -818,6 +908,15 @@ class Hero {
     this.hp = Math.min(newMax, Math.max(1, newMax * ratio));
     this.upgradeCost = HERO_UPGRADE_COST[this.level] || 0;
     this.sellValue = Math.floor(this.spent * SELL_RATIO);
+  }
+  statValues(level) {
+    const aura = 1 + (this.game ? this.game.totalAura(this) : 0);
+    return {
+      dmg: Math.round(this.baseDamage * Math.pow(1.25, level - 1) * aura),
+      range: Math.round(this.baseRange * Math.pow(1.08, level - 1)),
+      rate: +(this.baseFireRate * Math.pow(0.9, level - 1)).toFixed(2),
+      hp: Math.round(this._maxHpAt(level))
+    };
   }
   upgrade() {
     if (this.level >= this.maxLevel) return false;
@@ -853,6 +952,8 @@ class Hero {
       }
       return;
     }
+    this.bobPhase += dt * 4;
+    if (this.shootAnim > 0) this.shootAnim -= dt;
     for (let i = this._boostTargets.length - 1; i >= 0; i--) {
       const item = this._boostTargets[i];
       item.timer -= dt;
@@ -879,16 +980,22 @@ class Hero {
     }
     this.cooldown -= dt;
     if (this.cooldown > 0) return;
-    let target = null, bestProgress = -Infinity;
+    let target = null, bestScore = 0;
     for (const e of this.game.enemies) {
       if (e.hp <= 0 || e.reachedEnd) continue;
       const d = dist(this.x, this.y, e.x, e.y);
       if (d > this.range) continue;
       const progress = e.waypointIndex * 1000 - d;
-      if (progress > bestProgress) { bestProgress = progress; target = e; }
+      let score;
+      if (this.targetMode === 'last') score = -progress;
+      else if (this.targetMode === 'strong') score = e.hp;
+      else if (this.targetMode === 'close') score = 1e9 - d;
+      else score = progress;
+      if (!target || score > bestScore) { bestScore = score; target = e; }
     }
     if (!target) return;
     this.angle = Math.atan2(target.y - this.y, target.x - this.x);
+    this.shootAnim = 0.14;
     this.game.projectiles.push(new Projectile(this.game, this.x, this.y, target, this.damage, this.aoe, this));
     this.cooldown = this.fireRate;
     Sound.shoot();
@@ -905,7 +1012,7 @@ class Hero {
     } else if (this.ability === 'aoeBurst') {
       for (const e of this.game.enemies) {
         if (e.hp <= 0 || e.reachedEnd) continue;
-        if (dist(this.x, this.y, e.x, e.y) <= this.range) e.hp -= this.damage * 1.5;
+        if (dist(this.x, this.y, e.x, e.y) <= this.range) e.takeDamage(this.damage * 1.5);
       }
       this.game.explosions.push({ x: this.x, y: this.y, r: 0, maxR: this.range, life: 0.35, maxLife: 0.35 });
       Sound.explosion();
@@ -939,19 +1046,37 @@ class Hero {
       }
       return;
     }
-    ctx.fillStyle = '#2a2416';
-    ctx.beginPath(); ctx.roundRect(x - size / 2, y - size / 2, size, size, 8); ctx.fill();
-    ctx.strokeStyle = RARITY_COLOR[this.unit.rarity] || '#ffd966';
-    ctx.lineWidth = 2.5; ctx.stroke();
-    ctx.save(); ctx.translate(x, y); ctx.rotate(this.angle);
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(size * 0.55, 0);
-    ctx.strokeStyle = '#ffd96666'; ctx.lineWidth = 3; ctx.stroke();
+    const rc = RARITY_COLOR[this.unit.rarity] || '#ffd966';
+    const glow = ctx.createRadialGradient(x, y, 4, x, y, size * 1.4);
+    glow.addColorStop(0, rc + '44');
+    glow.addColorStop(1, rc + '00');
+    ctx.fillStyle = glow;
+    ctx.beginPath(); ctx.arc(x, y, size * 1.4, 0, Math.PI * 2); ctx.fill();
+    if (this.auraBonus > 0) {
+      const pl = 0.5 + 0.5 * Math.sin(this.bobPhase * 1.5);
+      ctx.beginPath(); ctx.arc(x, y, size * (0.85 + 0.08 * pl), 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(255,217,102,${0.25 + 0.3 * pl})`; ctx.lineWidth = 2; ctx.stroke();
+    }
+    const bob = Math.sin(this.bobPhase) * 1.5;
+    ctx.fillStyle = '#251f10';
+    ctx.strokeStyle = rc;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.roundRect(x - size / 2, y - size / 2 + bob, size, size, 9); ctx.fill(); ctx.stroke();
+    ctx.save(); ctx.translate(x, y + bob); ctx.rotate(this.angle);
+    const rec = this.shootAnim > 0 ? -7 * (this.shootAnim / 0.14) : 0;
+    ctx.beginPath(); ctx.moveTo(rec, 0); ctx.lineTo(size * 0.55 + rec, 0);
+    ctx.strokeStyle = '#ffd966aa'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.stroke();
+    if (this.shootAnim > 0) {
+      const fa = this.shootAnim / 0.14;
+      ctx.beginPath(); ctx.arc(size * 0.6 + rec, 0, 3 + 5 * fa, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,224,102,${0.8 * fa})`; ctx.fill();
+    }
     ctx.restore();
     ctx.font = `${CELL * 0.52}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(this.emoji, x, y + 2);
+    ctx.fillText(this.emoji, x, y + 2 + bob);
     if (this.level > 1) {
       ctx.fillStyle = '#ffd966'; ctx.font = 'bold 10px sans-serif';
-      ctx.fillText('★' + this.level, x + 11, y - 10);
+      ctx.fillText('★' + this.level, x + 11, y - 10 + bob);
     }
     const w = CELL * 0.9, h = 4;
     const bx = x - w / 2, by = y - CELL * 0.55;
@@ -983,6 +1108,22 @@ class Enemy {
     this.angle = 0;
     this.size = def.boss ? 16 : (def.id === 'mini' ? 9 : 12);
     this.regen = def.regen || 0;
+    this.shieldMax = def.shield || 0;
+    this.shield = this.shieldMax;
+    this.shieldRegen = def.shieldRegen || 0;
+    this.armorPct = def.armorPct || 0;
+    this.summonsEvery = def.summonsEvery || 0;
+    this.summonTimer = this.summonsEvery;
+    this.time = Math.random() * 6.28;
+  }
+  takeDamage(d) {
+    let dmg = d * (1 - this.armorPct);
+    if (this.shield > 0) {
+      const absorbed = Math.min(this.shield, dmg);
+      this.shield -= absorbed;
+      dmg -= absorbed;
+    }
+    this.hp = Math.max(0, this.hp - dmg);
   }
   applySlow(duration, factor) {
     this.slowTimer = Math.max(this.slowTimer, duration);
@@ -999,6 +1140,20 @@ class Enemy {
       if (this.slowTimer <= 0) { this.slowFactor = 1; this.speed = this.baseSpeed; }
     }
     if (this.regen > 0 && this.hp < this.maxHp) this.hp = Math.min(this.maxHp, this.hp + this.regen * dt);
+    this.time += dt;
+    if (this.shieldRegen > 0 && this.shield < this.shieldMax) this.shield = Math.min(this.shieldMax, this.shield + this.shieldRegen * dt);
+    if (this.summonsEvery > 0) {
+      this.summonTimer -= dt;
+      if (this.summonTimer <= 0) {
+        this.summonTimer = this.summonsEvery;
+        const mini = ENEMIES.find(e => e.id === 'mini');
+        const child = new Enemy(this.game, mini, Math.max(4, this.maxHp * 0.25), this.baseSpeed * 1.2, 4);
+        child.x = this.x + (Math.random() - 0.5) * 24;
+        child.y = this.y + (Math.random() - 0.5) * 24;
+        child.waypointIndex = this.waypointIndex;
+        this.game.enemies.push(child);
+      }
+    }
     const pts = this.game.map.waypoints;
     const target = pts[this.waypointIndex + 1];
     if (!target) { this.reachedEnd = true; return; }
@@ -1033,23 +1188,78 @@ class Enemy {
   }
   draw(ctx) {
     const x = this.x, y = this.y;
-    ctx.beginPath(); ctx.arc(x, y + 4, this.size * 0.8, 0, Math.PI * 2);
+    const bob = Math.sin(this.time * 9) * 2;
+    const yy = y + bob;
+    ctx.beginPath(); ctx.ellipse(x, y + this.size * 0.75, this.size * 0.85, this.size * 0.35, 0, 0, Math.PI * 2);
     ctx.fillStyle = '#00000055'; ctx.fill();
-    ctx.beginPath(); ctx.arc(x, y, this.size, 0, Math.PI * 2);
-    ctx.fillStyle = this.def.color; ctx.fill();
+    if (this.def.id === 'fast' && this.speed > 0) {
+      ctx.strokeStyle = this.def.color + '66'; ctx.lineWidth = 2;
+      for (let i = 1; i <= 2; i++) {
+        ctx.beginPath();
+        ctx.arc(x - Math.cos(this.angle) * 10 * i, yy - Math.sin(this.angle) * 10 * i, this.size * (1 - i * 0.25), 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+    if (this.def.id === 'camo') ctx.globalAlpha = 0.55 + 0.24 * (0.5 + 0.5 * Math.sin(this.time * 6));
+    const bodyGrad = ctx.createRadialGradient(x - this.size * 0.25, yy - this.size * 0.3, this.size * 0.25, x, yy, this.size * 1.05);
+    bodyGrad.addColorStop(0, this.def.color + 'ff');
+    bodyGrad.addColorStop(1, shadeColor(this.def.color, 0.6));
+    ctx.beginPath(); ctx.arc(x, yy, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = bodyGrad; ctx.fill();
+    if (this.def.id === 'mut') {
+      ctx.save(); ctx.translate(x, yy); ctx.rotate(this.time * 2);
+      ctx.strokeStyle = '#d0ffd0aa'; ctx.lineWidth = 2.5;
+      for (let i = 0; i < 6; i++) {
+        const a = i * Math.PI / 3;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(a) * this.size, Math.sin(a) * this.size);
+        ctx.lineTo(Math.cos(a) * (this.size + 6), Math.sin(a) * (this.size + 6));
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+    if (this.def.id === 'armo') {
+      ctx.strokeStyle = '#d8d8e8'; ctx.lineWidth = 3.5;
+      ctx.beginPath(); ctx.arc(x, yy, this.size - 1, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = '#c8c8d8';
+      for (let i = 0; i < 4; i++) {
+        const a = i * Math.PI / 2 + Math.PI / 4;
+        ctx.beginPath(); ctx.arc(x + Math.cos(a) * (this.size - 5), yy + Math.sin(a) * (this.size - 5), 1.6, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    if (this.def.id === 'summoner') {
+      ctx.save(); ctx.translate(x, yy); ctx.rotate(this.time * 3);
+      ctx.strokeStyle = '#d8a0ff88'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(0, 0, this.size + 5, 0, Math.PI * 1.2); ctx.stroke();
+      ctx.restore();
+    }
     ctx.strokeStyle = this.def.boss ? '#ffd966aa' : '#ffffff88';
     ctx.lineWidth = this.def.boss ? 2.5 : 1.5; ctx.stroke();
+    ctx.globalAlpha = 1;
+    if (this.def.boss) {
+      ctx.font = '12px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('👑', x, yy - this.size - 9);
+    }
     ctx.font = `${this.size * 1.1}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(this.def.emoji, x, y - 1);
+    ctx.fillText(this.def.emoji, x, yy - 1);
     const w = this.size * 2.3, h = 5;
-    const bx = x - w / 2, by = y - this.size - 13;
+    const bx = x - w / 2, by = yy - this.size - 13;
+    if (this.shieldMax > 0) {
+      ctx.fillStyle = '#123040';
+      ctx.beginPath(); ctx.roundRect(bx, by - 6, w, 3.5, 2); ctx.fill();
+      const sp = clamp(this.shield / this.shieldMax, 0, 1);
+      ctx.fillStyle = '#66ccff';
+      ctx.beginPath(); ctx.roundRect(bx, by - 6, w * sp, 3.5, 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x, yy, this.size + 3, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(102,204,255,0.5)'; ctx.lineWidth = 1.5; ctx.stroke();
+    }
     ctx.fillStyle = COLORS.enemyHpBack;
     ctx.beginPath(); ctx.roundRect(bx, by, w, h, 3); ctx.fill();
     const p = clamp(this.hp / this.maxHp, 0, 1);
     ctx.fillStyle = p > 0.5 ? '#4dff4d' : (p > 0.25 ? '#ffcc00' : '#ff4d4d');
     ctx.beginPath(); ctx.roundRect(bx, by, w * p, h, 3); ctx.fill();
     ctx.fillStyle = '#ffffff'; ctx.font = 'bold 9px monospace'; ctx.textAlign = 'center';
-    ctx.fillText(Math.ceil(this.hp) + '/' + Math.ceil(this.maxHp), x, by - 4);
+    ctx.fillText(Math.ceil(this.hp) + '/' + Math.ceil(this.maxHp), x, by - 4 - (this.shieldMax > 0 ? 6 : 0));
     if (this.slowTimer > 0) {
       ctx.beginPath(); ctx.arc(x, y, this.size + 4, 0, Math.PI * 2);
       ctx.strokeStyle = '#66ccff99'; ctx.lineWidth = 2; ctx.stroke();
@@ -1092,14 +1302,14 @@ class Projectile {
       for (const e of this.game.enemies) {
         if (e.hp <= 0 || e.reachedEnd) continue;
         if (dist(tx, ty, e.x, e.y) <= this.aoe) {
-          e.hp -= this.damage;
+          e.takeDamage(this.damage);
           if (this.owner && this.owner.ability === 'slow') e.applySlow(1.2, 0.55);
         }
       }
       this.game.explosions.push({ x: tx, y: ty, r: 0, maxR: this.aoe, life: 0.25, maxLife: 0.25 });
       Sound.explosion();
     } else {
-      this.target.hp -= this.damage;
+      this.target.takeDamage(this.damage);
       if (this.owner && this.owner.ability === 'slow') this.target.applySlow(1.2, 0.55);
       Sound.hit();
     }
@@ -1117,47 +1327,74 @@ class Projectile {
    ============================================================ */
 class WaveManager {
   constructor(game) { this.game = game; this.spawnQueue = []; this.spawnTimer = 0; this.waveActive = false; }
-  startWave(waveNum) {
-    const g = this.game, diff = g.difficulty;
-    this.spawnQueue = [];
-    this.spawnTimer = 0;
+  buildQueue(waveNum) {
+    const diff = this.game.difficulty;
     const baseHp = (18 + waveNum * 14) * diff.enemyHpMul;
-    const baseSpd = (1.05 + Math.min(waveNum * 0.035, 0.8)) * diff.enemySpeedMul;
+    const baseSpd = (1.05 + Math.min(waveNum * 0.03, 0.7)) * diff.enemySpeedMul;
     const baseRew = 9 + waveNum * 2;
     const byId = id => ENEMIES.find(e => e.id === id);
-    const defSkibidi = byId('skibidi'), defFast = byId('fast'), defBig = byId('big'),
-      defSci = byId('sci'), defCamo = byId('camo'), defMut = byId('mut');
+    const rules = [
+      { w: 3, mod: 5, def: 'fast', hp: 0.7, spd: 1.7, rew: 0.8 },
+      { w: 5, mod: 7, def: 'big', hp: 3.0, spd: 0.7, rew: 2.4 },
+      { w: 7, mod: 9, def: 'sci', hp: 1.6, spd: 0.9, rew: 1.8 },
+      { w: 8, mod: 10, def: 'armo', hp: 2.4, spd: 0.7, rew: 2.6 },
+      { w: 9, mod: 11, def: 'camo', hp: 1.3, spd: 1.4, rew: 1.5 },
+      { w: 11, mod: 9, def: 'shield', hp: 1.1, spd: 0.9, rew: 1.9 },
+      { w: 12, mod: 14, def: 'summoner', hp: 2.0, spd: 0.85, rew: 2.2 },
+      { w: 14, mod: 13, def: 'mut', hp: 3.5, spd: 0.85, rew: 2.8 }
+    ].map(r => ({ w: r.w, mod: r.mod, hp: r.hp, spd: r.spd, rew: r.rew, d: byId(r.def) }));
     const isBossWave = waveNum % 5 === 0;
     const count = Math.min(Math.round((6 + waveNum * 2) * (isBossWave ? 0.75 : 1)), 52);
+    const queue = [];
     for (let i = 0; i < count; i++) {
-      let def = defSkibidi, hp = baseHp, spd = baseSpd, rew = baseRew;
-      if (waveNum >= 3 && i % 5 === 0) { def = defFast; hp *= 0.7; spd *= 1.7; rew = Math.round(baseRew * 0.8); }
-      if (waveNum >= 5 && i % 7 === 0) { def = defBig; hp *= 3.0; spd *= 0.7; rew = Math.round(baseRew * 2.4); }
-      if (waveNum >= 7 && i % 9 === 0) { def = defSci; hp *= 1.6; spd *= 0.9; rew = Math.round(baseRew * 1.8); }
-      if (waveNum >= 9 && i % 11 === 0) { def = defCamo; hp *= 1.3; spd *= 1.4; rew = Math.round(baseRew * 1.5); }
-      if (waveNum >= 10 && i % 13 === 0) { def = defMut; hp *= 3.5; spd *= 0.85; rew = Math.round(baseRew * 2.8); }
-      this.spawnQueue.push({ def, hp, spd, rew });
+      let def = byId('skibidi'), hp = baseHp, spd = baseSpd, rew = baseRew;
+      for (const r of rules) {
+        if (waveNum >= r.w && i % r.mod === 0) {
+          def = r.d; hp = baseHp * r.hp; spd = baseSpd * r.spd; rew = Math.round(baseRew * r.rew);
+        }
+      }
+      queue.push({ def, hp, spd, rew });
     }
     if (isBossWave) {
       const bossPool = ['gToilet', 'gMan', 'gSci'];
       const bossDef = byId(bossPool[(Math.floor(waveNum / 5) - 1) % bossPool.length]);
-      this.spawnQueue.push({ def: bossDef, hp: baseHp * (5 + waveNum * 0.18), spd: baseSpd * 0.5, rew: 60 + waveNum * 10 });
+      queue.push({ def: bossDef, hp: baseHp * (5 + waveNum * 0.18), spd: baseSpd * 0.5, rew: 60 + waveNum * 10 });
     }
+    return queue;
+  }
+  preview(waveNum) {
+    const counts = new Map();
+    for (const q of this.buildQueue(waveNum)) counts.set(q.def, (counts.get(q.def) || 0) + 1);
+    return counts;
+  }
+  startWave(waveNum) {
+    const g = this.game;
+    this.spawnQueue = this.buildQueue(waveNum);
+    this.spawnTimer = 0;
     this.waveActive = true;
     for (const h of g.heroes) h.onWaveStart();
   }
-  update(dt) {
-    if (!this.waveActive) return;
-    if (this.spawnQueue.length > 0) {
-      this.spawnTimer -= dt;
-      if (this.spawnTimer <= 0) {
-        const d = this.spawnQueue.shift();
-        this.game.enemies.push(new Enemy(this.game, d.def, d.hp, d.spd, d.rew));
-        this.spawnTimer = 0.55;
-      }
+  flushSpawns() {
+    while (this.spawnQueue.length > 0) {
+      const d = this.spawnQueue.shift();
+      const e = new Enemy(this.game, d.def, d.hp, d.spd, d.rew);
+      e.x = this.game.map.waypoints[0].x + (Math.random() - 0.5) * 22;
+      e.y = this.game.map.waypoints[0].y + (Math.random() - 0.5) * 22;
+      this.game.enemies.push(e);
     }
   }
   get finishedSpawning() { return this.spawnQueue.length === 0; }
+  update(dt) {
+    if (!this.waveActive || this.spawnQueue.length === 0) return;
+    this.spawnTimer += dt;
+    if (this.spawnTimer < 0.55) return;
+    this.spawnTimer = 0;
+    const d = this.spawnQueue.shift();
+    const e = new Enemy(this.game, d.def, d.hp, d.spd, d.rew);
+    e.x = this.game.map.waypoints[0].x + (Math.random() - 0.5) * 22;
+    e.y = this.game.map.waypoints[0].y + (Math.random() - 0.5) * 22;
+    this.game.enemies.push(e);
+  }
 }
 
 /* ============================================================
@@ -1185,7 +1422,7 @@ class Game {
       this.hoveredHero = null;
       UI.hideTooltip();
     });
-    document.getElementById('startWaveBtn').addEventListener('click', () => this.skipCountdown());
+    document.getElementById('startWaveBtn').addEventListener('click', () => this.waveButtonAction());
     document.getElementById('pauseBtn').addEventListener('click', () => this.togglePause());
     document.getElementById('speedBtn').addEventListener('click', () => this.toggleSpeed());
     document.getElementById('quitToLobbyBtn').addEventListener('click', () => { this.stop(); App.showLobby(); });
@@ -1196,7 +1433,11 @@ class Game {
     this.difficulty = diff;
     this.map = new MapRenderer(mapDef);
     this.money = diff.startMoney;
-    this.lives = diff.lives;
+    this.baseHp = BASE_MAX_HP;
+    this.baseMaxHp = BASE_MAX_HP;
+    this.waveBanner = null;
+    this._previewCache = null;
+    this._previewFor = -1;
     this.wave = 0;
     this.maxWaves = diff.waves;
     this.enemies = [];
@@ -1296,7 +1537,10 @@ class Game {
   }
   updateUI() {
     document.getElementById('moneyDisplay').textContent = fmt(this.money);
-    document.getElementById('livesDisplay').textContent = Math.max(0, this.lives);
+    const hpEl = document.getElementById('baseHpDisplay');
+    hpEl.textContent = Math.max(0, Math.round(this.baseHp));
+    const hpP = this.baseHp / this.baseMaxHp;
+    hpEl.style.color = hpP > 0.5 ? '' : (hpP > 0.25 ? '#ffcc00' : '#ff6666');
     document.getElementById('waveDisplay').textContent = `${this.wave} / ${this.difficulty.endless ? '∞' : this.maxWaves}`;
     const startBtn = document.getElementById('startWaveBtn');
     const waveTimer = document.getElementById('waveTimer');
@@ -1304,15 +1548,28 @@ class Game {
       startBtn.disabled = true; startBtn.textContent = '—';
       waveTimer.style.display = 'none';
     } else if (this.waveManager.waveActive) {
-      startBtn.disabled = true; startBtn.textContent = '⏳ ВОЛНА ИДЁТ';
+      startBtn.disabled = false;
+      startBtn.textContent = !this.waveManager.finishedSpawning
+        ? '⏩ ВЫПУСТИТЬ ВСЕХ'
+        : '⏭ ВЫЗВАТЬ ВОЛНУ +' + (this.wave * 8) + '¢';
       waveTimer.style.display = 'none';
     } else if (!this.difficulty.endless && this.wave >= this.maxWaves) {
       startBtn.disabled = true; startBtn.textContent = '✅ ВСЕ ВОЛНЫ';
       waveTimer.style.display = 'none';
     } else if (this.countdownActive) {
-      startBtn.disabled = false; startBtn.textContent = '⏩ ПРОПУСТИТЬ';
+      startBtn.disabled = false; startBtn.textContent = '⏩ СКИП — НАЧАТЬ ВОЛНУ';
       waveTimer.style.display = '';
       document.getElementById('waveTimerVal').textContent = Math.ceil(this.nextWaveTimer);
+      const compEl = document.getElementById('waveComp');
+      if (compEl) {
+        if (!this._previewCache || this._previewFor !== this.wave) {
+          this._previewCache = this.waveManager.preview(this.wave + 1);
+          this._previewFor = this.wave;
+        }
+        const pieces = [];
+        for (const [def, n] of this._previewCache) pieces.push(def.emoji + '×' + n);
+        compEl.textContent = (this.wave + 1) % 5 === 0 ? '⚠ БОСС! ' + pieces.join(' ') : pieces.join(' ');
+      }
     } else {
       startBtn.disabled = false; startBtn.textContent = '▶ СЛЕДУЮЩАЯ ВОЛНА';
       waveTimer.style.display = 'none';
@@ -1363,10 +1620,9 @@ class Game {
     const mx = (e.clientX - rect.left) * sx, my = (e.clientY - rect.top) * sy;
     if (this.selectedHero) {
       const t = this.selectedHero;
-      const btnY = t.y - 52;
-      const upX = t.x - 46, upW = 42, upH = 24;
-      const sellX = t.x + 4;
-      if (mx >= upX && mx <= upX + upW && my >= btnY && my <= btnY + upH) {
+      const btnY = t.y - 52, btnW = 40, btnH = 24;
+      const upX = t.x - 68, tX = t.x - 20, sellX = t.x + 28;
+      if (mx >= upX && mx <= upX + btnW && my >= btnY && my <= btnY + btnH) {
         if (t.level >= t.maxLevel) { this.toast('Максимальный уровень'); return; }
         if (this.money >= t.upgradeCost) {
           this.money -= t.upgradeCost;
@@ -1377,7 +1633,14 @@ class Game {
         } else { Sound.error(); this.toast('Не хватает денег на улучшение'); }
         return;
       }
-      if (mx >= sellX && mx <= sellX + 42 && my >= btnY && my <= btnY + upH) {
+      if (mx >= tX && mx <= tX + btnW && my >= btnY && my <= btnY + btnH) {
+        const idx = TARGET_MODES.findIndex(m => m.id === t.targetMode);
+        t.targetMode = TARGET_MODES[(idx + 1) % TARGET_MODES.length].id;
+        this.toast('Цель: ' + (TARGET_MODES.find(m => m.id === t.targetMode) || TARGET_MODES[0]).name);
+        Sound.gachaClick();
+        return;
+      }
+      if (mx >= sellX && mx <= sellX + btnW && my >= btnY && my <= btnY + btnH) {
         this.money += t.sellValue;
         this.grid[t.row][t.col] = null;
         this.heroes = this.heroes.filter(h => h !== t);
@@ -1421,6 +1684,23 @@ class Game {
     this.nextWaveTimer = Math.max(5, this.wave === 0 ? 8 : 5);
     this.updateUI();
   }
+  waveButtonAction() {
+    if (this.gameOver || this.victory) return;
+    if (this.waveManager.waveActive) {
+      if (!this.waveManager.finishedSpawning) {
+        this.waveManager.flushSpawns();
+        this.updateUI();
+      } else {
+        if (!this.difficulty.endless && this.wave >= this.maxWaves) return;
+        const bonus = this.wave * 8;
+        this.money += bonus;
+        this.floaters.push({ x: CANVAS_W / 2, y: 70, text: 'Ранний вызов! +' + bonus + '💰', life: 1.2, maxLife: 1.2, color: '#ffd966' });
+        this.startWave(true);
+      }
+    } else {
+      this.skipCountdown();
+    }
+  }
   skipCountdown() {
     if (this.countdownActive) {
       this.countdownActive = false;
@@ -1428,13 +1708,16 @@ class Game {
       this.startWave();
     }
   }
-  startWave() {
-    if (!this.running || this.waveManager.waveActive || this.gameOver || this.victory) return;
+  startWave(force) {
+    if (!this.running || this.gameOver || this.victory) return;
+    if (!force && this.countdownActive) return;
     if (!this.difficulty.endless && this.wave >= this.maxWaves) return;
     Sound.init();
     this.wave++;
     this.waveManager.startWave(this.wave);
     this.countdownActive = false;
+    const isBoss = this.wave % 5 === 0;
+    this.waveBanner = { life: 2.2, maxLife: 2.2, boss: isBoss, text: isBoss ? 'ВОЛНА ' + this.wave + ' · БОСС!' : 'ВОЛНА ' + this.wave };
     this.updateUI();
     Sound.waveStart();
   }
@@ -1473,10 +1756,13 @@ class Game {
       const e = this.enemies[i];
       e.update(dt);
       if (e.reachedEnd) {
-        this.lives--;
+        const dmg = Math.ceil(e.hp);
+        this.baseHp -= dmg;
+        const bp = this.map.waypoints[this.map.waypoints.length - 1];
+        this.floaters.push({ x: bp.x, y: bp.y - 34, text: '-' + dmg + ' HP', life: 1.3, maxLife: 1.3, color: '#ff6666' });
         this.enemies.splice(i, 1);
         Sound.loseLife();
-        if (this.lives <= 0) { this.lives = 0; this.gameOver = true; this.finish(false); return; }
+        if (this.baseHp <= 0) { this.baseHp = 0; this.gameOver = true; this.finish(false); return; }
         this.updateUI();
         continue;
       }
@@ -1491,6 +1777,7 @@ class Game {
     }
     if (this.waveManager.waveActive && this.waveManager.finishedSpawning && this.enemies.length === 0) {
       this.waveManager.waveActive = false;
+      this.baseHp = Math.min(this.baseMaxHp, this.baseHp + BASE_WAVE_REGEN);
       const bonus = Math.round(50 + this.wave * 15);
       this.money += bonus;
       this.floaters.push({ x: CANVAS_W / 2, y: 40, text: 'Волна ' + this.wave + ' пройдена! +' + bonus + '💰',
@@ -1536,6 +1823,7 @@ class Game {
       document.getElementById('resultsTitle').className = 'title ' + (win ? 'win' : 'lose');
       document.getElementById('resWaves').textContent = `${completed} / ${this.difficulty.endless ? '∞' : this.maxWaves}`;
       document.getElementById('resKills').textContent = this.kills;
+      document.getElementById('resBase').textContent = Math.max(0, Math.round(this.baseHp)) + ' / ' + BASE_MAX_HP;
       document.getElementById('resCoins').textContent = '+' + coins;
       document.getElementById('resultsOverlay').classList.add('visible');
       App.refreshMeta();
@@ -1546,6 +1834,7 @@ class Game {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
     this.map.draw(ctx);
+    this.drawBase(ctx);
     if (this.selectedBuild && this.mouse.onCanvas) this.drawPreview(ctx);
     for (const h of this.heroes) h.draw(ctx);
     if (this.selectedHero) {
@@ -1553,16 +1842,38 @@ class Game {
       ctx.beginPath(); ctx.arc(t.x, t.y, t.range, 0, Math.PI * 2);
       ctx.fillStyle = COLORS.heroRange; ctx.fill();
       ctx.strokeStyle = COLORS.heroRangeBorder; ctx.lineWidth = 2; ctx.stroke();
+      const mode = TARGET_MODES.find(m => m.id === t.targetMode) || TARGET_MODES[0];
       const btnY = t.y - 52;
-      this.drawCanvasButton(ctx, t.x - 46, btnY, 42, 24, '⬆', '#1a3a2a', '#6fff8f', this.money >= t.upgradeCost && t.level < t.maxLevel);
-      this.drawCanvasButton(ctx, t.x + 4, btnY, 42, 24, '✖', '#3a1a1a', '#ff8888', true);
+      this.drawCanvasButton(ctx, t.x - 68, btnY, 40, 24, t.level < t.maxLevel ? '⬆' : '★', '#1a3a2a', '#6fff8f', this.money >= t.upgradeCost && t.level < t.maxLevel);
+      this.drawCanvasButton(ctx, t.x - 20, btnY, 40, 24, mode.glyph, '#2a2a1a', '#7ee7ff', true);
+      this.drawCanvasButton(ctx, t.x + 28, btnY, 40, 24, '✖', '#3a1a1a', '#ff8888', true);
+      ctx.font = 'bold 10px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       if (t.level < t.maxLevel) {
-        ctx.fillStyle = '#ffd966'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center';
-        ctx.fillText('💰' + t.upgradeCost, t.x - 25, btnY - 4);
-        const nextDmg = Math.round(t.baseDamage * Math.pow(1.25, t.level) * (1 + this.totalAura(t)));
-        ctx.fillStyle = '#7ee7ff'; ctx.font = 'bold 9px monospace'; ctx.textAlign = 'center';
-        ctx.fillText(`УРОН ${Math.round(t.damage)} ➜ ${nextDmg}`, t.x, btnY + 40);
+        ctx.fillStyle = '#ffd966';
+        ctx.fillText('💰' + t.upgradeCost, t.x, btnY - 9);
       }
+      const cur = t.statValues(t.level);
+      const nxt = t.level < t.maxLevel ? t.statValues(t.level + 1) : null;
+      const px = t.x - 100, py = btnY + 30, pw = 200, ph = 68;
+      ctx.fillStyle = '#141a26e8';
+      ctx.strokeStyle = '#2a3a4e'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.roundRect(px, py, pw, ph, 10); ctx.fill(); ctx.stroke();
+      const row = (label, c, nix, idx) => {
+        const y = py + 13 + idx * 14;
+        ctx.fillStyle = '#8ea8c8'; ctx.textAlign = 'left';
+        ctx.fillText(label, px + 10, y);
+        ctx.textAlign = 'center'; ctx.fillStyle = '#7ee7ff';
+        ctx.fillText(c, px + 100, y);
+        if (nix != null) {
+          ctx.fillStyle = '#7fffa0';
+          ctx.fillText('➜', px + 140, y);
+          ctx.fillText(nix, px + 176, y);
+        }
+      };
+      row('УРОН', cur.dmg, nxt && nxt.dmg, 0);
+      row('РАДИУС', cur.range, nxt && nxt.range, 1);
+      row('ЗАРЯД', cur.rate + 'с', nxt && nxt.rate + 'с', 2);
+      row('ПРОЧН', cur.hp, nxt && nxt.hp, 3);
     }
     for (const e of this.enemies) e.draw(ctx);
     for (const p of this.projectiles) p.draw(ctx);
@@ -1590,6 +1901,7 @@ class Game {
         ctx.fillText(rule, CANVAS_W / 2, CANVAS_H - 12);
       }
     }
+    this.drawBanner(ctx);
     ctx.font = 'bold 14px "Segoe UI",sans-serif';
     ctx.fillStyle = '#ffffff55';
     ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic';
@@ -1636,6 +1948,43 @@ class Game {
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(text, x + w / 2, y + h / 2 + 1);
     ctx.globalAlpha = 1;
+  }
+  drawBase(ctx) {
+    const pts = this.map.waypoints;
+    const b = pts[pts.length - 1];
+    const p = clamp(this.baseHp / this.baseMaxHp, 0, 1);
+    ctx.font = '26px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('🏠', b.x, b.y + 2);
+    const w = 44, h = 6, bx = b.x - w / 2, by = b.y - 28;
+    ctx.fillStyle = '#2a1a1a';
+    ctx.beginPath(); ctx.roundRect(bx, by, w, h, 3); ctx.fill();
+    ctx.fillStyle = p > 0.5 ? '#4dff4d' : (p > 0.25 ? '#ffcc00' : '#ff4d4d');
+    ctx.beginPath(); ctx.roundRect(bx, by, w * p, h, 3); ctx.fill();
+    ctx.fillStyle = '#ffffffcc'; ctx.font = 'bold 10px monospace';
+    ctx.fillText(Math.max(0, Math.round(this.baseHp)) + ' HP', b.x, by - 8);
+  }
+  drawBanner(ctx) {
+    if (!this.waveBanner) return;
+    const b = this.waveBanner;
+    const appear = Math.min(1, (b.maxLife - b.life) * 4);
+    const scale = 1.35 - 0.35 * appear;
+    ctx.save();
+    ctx.translate(CANVAS_W / 2, 90);
+    ctx.scale(scale, scale);
+    ctx.globalAlpha = Math.min(1, b.life / (b.maxLife * 0.3));
+    ctx.font = 'bold 44px "Segoe UI",sans-serif';
+    const grad = ctx.createLinearGradient(-160, -30, 160, 30);
+    if (b.boss) { grad.addColorStop(0, '#ff6666'); grad.addColorStop(1, '#ffd966'); }
+    else { grad.addColorStop(0, '#7ee7ff'); grad.addColorStop(1, '#b06bff'); }
+    ctx.fillStyle = grad;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 12;
+    ctx.fillText(b.text, 0, 0);
+    ctx.font = 'bold 20px "Segoe UI",sans-serif';
+    ctx.fillStyle = b.boss ? '#ff8888' : '#ffd966';
+    ctx.fillText('Приготовься!', 0, 34);
+    ctx.restore();
+    ctx.globalAlpha = 1; ctx.shadowBlur = 0;
   }
   toast(msg) { UI.toast(msg); }
 }
@@ -1803,6 +2152,7 @@ const App = {
     this.bindMenu();
     this.renderGachaReels();
     this.renderAutoSellPanel();
+    this.updateRates();
     this.refreshMeta();
     this.showLobby();
   },
@@ -1829,12 +2179,22 @@ const App = {
     this.renderGachaReels();
     this.renderGachaCollection();
     this.renderAutoSellPanel();
+    this.updateRates();
     this.updatePityBar();
     UI.showScreen('gachaScreen');
     this.refreshMeta();
     const resultEl = document.getElementById('gachaResult');
     resultEl.textContent = '';
     resultEl.className = 'gacha-result';
+  },
+  updateRates() {
+    const total = UNITS.reduce((sum, u) => sum + u.dropChance, 0);
+    const byR = {};
+    for (const u of UNITS) byR[u.rarity] = (byR[u.rarity] || 0) + u.dropChance;
+    for (const r of RARITY_ORDER) {
+      const el = document.getElementById('rate' + r);
+      if (el) el.textContent = (RARITY_RU[r] || r) + ' ' + ((byR[r] || 0) / total * 100).toFixed(1) + '%';
+    }
   },
   updatePityBar() {
     const left = Math.max(0, PITY_LIMIT - (SaveManager.data.pity || 0));
@@ -1950,11 +2310,11 @@ const App = {
       for (const u of high) { r -= u.dropChance; if (r <= 0) return u; }
       return high[0];
     }
-    const r = Math.random();
-    let acc = 0;
+    const total = UNITS.reduce((sum, u) => sum + u.dropChance, 0);
+    let r = Math.random() * total;
     for (const u of UNITS) {
-      acc += u.dropChance;
-      if (r <= acc) return u;
+      r -= u.dropChance;
+      if (r <= 0) return u;
     }
     return UNITS[0];
   },
@@ -2221,7 +2581,7 @@ const App = {
       card.innerHTML = `
         <div class="d-name">${d.name}</div>
         <div class="d-row">🌊 Волн: <b>${d.endless ? '∞' : d.waves}</b></div>
-        <div class="d-row">💰 Старт: <b>${d.startMoney}</b> · ❤️ Жизни: <b>${d.lives}</b></div>
+        <div class="d-row">💰 Старт: <b>${d.startMoney}</b> · 🏠 База: <b>1000 HP</b></div>
         <div class="d-row">🛡 HP ×<b>${d.enemyHpMul}</b> · ⚡ Скор. ×<b>${d.enemySpeedMul}</b></div>
         <div class="d-row">🪙 Монеты ×<b>${d.coinMul}</b></div>`;
       card.addEventListener('click', () => {
