@@ -572,9 +572,9 @@ const ENEMIES = [
   { id: 'sci', name: 'Учёный Скибиди', emoji: '🧪', hp: 45, speed: 0.95, reward: 18, color: '#58c868', regen: 3 },
   { id: 'camo', name: 'Скибиди-Ниндзя', emoji: '🥷', hp: 32, speed: 1.6, reward: 16, color: '#585868', onDeathStun: 2.5 },
   { id: 'mut', name: 'Скибиди-Мутант', emoji: '🧟', hp: 95, speed: 0.85, reward: 30, color: '#98c8b8', onDeathSpawn: 3 },
-  { id: 'gToilet', name: 'G-Туалет', emoji: '🎯', hp: 120, speed: 0.6, reward: 60, color: '#d8b848', boss: true, bossStunEvery: 9 },
-  { id: 'gMan', name: 'G-Человек', emoji: '🕴️', hp: 220, speed: 0.55, reward: 90, color: '#c858c8', boss: true, bossStunEvery: 8 },
-  { id: 'gSci', name: 'Учёный-G-Туалет', emoji: '🧠', hp: 400, speed: 0.5, reward: 160, color: '#cc44ff', slowAura: true, boss: true, bossStunEvery: 7 },
+  { id: 'gToilet', name: 'G-Туалет', emoji: '🎯', hp: 120, speed: 0.6, reward: 60, color: '#d8b848', boss: true, bossStunEvery: 5 },
+  { id: 'gMan', name: 'G-Человек', emoji: '🕴️', hp: 220, speed: 0.55, reward: 90, color: '#c858c8', boss: true, bossStunEvery: 4 },
+  { id: 'gSci', name: 'Учёный-G-Туалет', emoji: '🧠', hp: 400, speed: 0.5, reward: 160, color: '#cc44ff', slowAura: true, boss: true, bossStunEvery: 3 },
   { id: 'armo', name: 'Бронескибиди', emoji: '🛞', hp: 130, speed: 0.55, reward: 40, color: '#8a9aa8', armorPct: 0.45 },
   { id: 'summoner', name: 'Призыватель', emoji: '🌀', hp: 80, speed: 0.8, reward: 36, color: '#a86ad8', summonsEvery: 7 },
   { id: 'shield', name: 'Щит-Скибиди', emoji: '🛡️', hp: 60, speed: 0.9, reward: 30, color: '#58a8c8', shield: 70, shieldRegen: 5 }
@@ -1156,7 +1156,7 @@ class Hero {
     for (let i = this._boostTargets.length - 1; i >= 0; i--) {
       const item = this._boostTargets[i];
       item.timer -= dt;
-      if (item.timer <= 0) { item.tower.fireRate /= 0.6; this._boostTargets.splice(i, 1); }
+      if (item.timer <= 0) { item.tower.fireRate /= 0.75; this._boostTargets.splice(i, 1); }
     }
     if (this.ability && this.ability !== 'none') {
       this.abilityCd -= dt;
@@ -1204,7 +1204,7 @@ class Hero {
       for (const t of this.game.heroes) {
         if (t === this || t.heroDead) continue;
         if (dist(this.x, this.y, t.x, t.y) <= this.range + 40 && !t._boostTargets.some(b => b.tower === t)) {
-          t.fireRate *= 0.6;
+          t.fireRate *= 0.75;
           this._boostTargets.push({ tower: t, timer: 5 });
         }
       }
@@ -1344,6 +1344,7 @@ class Enemy {
     this.hp = Math.max(0, this.hp - dmg);
   }
   applySlow(duration, factor) {
+    if (this.def.boss) { duration *= 0.5; factor = 1 - (1 - factor) * 0.35; }
     this.slowTimer = Math.max(this.slowTimer, duration);
     this.slowFactor = Math.min(this.slowFactor, clamp(factor, 0.2, 1));
     this.speed = this.baseSpeed * this.slowFactor;
@@ -1366,7 +1367,7 @@ class Enemy {
         let stunned = 0;
         for (const h of this.game.heroes) {
           if (h.heroDead) continue;
-          if (dist(this.x, this.y, h.x, h.y) <= 110) { h.stunTimer = Math.max(h.stunTimer || 0, 1.2); stunned++; }
+          if (dist(this.x, this.y, h.x, h.y) <= 110) { h.stunTimer = Math.max(h.stunTimer || 0, 2.5); stunned++; }
         }
         if (stunned) {
           this.game.explosions.push({ x: this.x, y: this.y, r: 0, maxR: 110, life: 0.5, maxLife: 0.5, rgb: '255,136,255', ring: true });
@@ -1570,14 +1571,14 @@ class Projectile {
         if (e.hp <= 0 || e.reachedEnd) continue;
         if (dist(tx, ty, e.x, e.y) <= this.aoe) {
           e.takeDamage(this.damage);
-          if (this.owner && this.owner.ability === 'slow') e.applySlow(1.2, 0.55);
+          if (this.owner && this.owner.ability === 'slow') e.applySlow(1.0, 0.72);
         }
       }
       this.game.explosions.push({ x: tx, y: ty, r: 0, maxR: this.aoe, life: 0.25, maxLife: 0.25, rgb: '255,150,60' });
       Sound.explosion();
     } else {
       this.target.takeDamage(this.damage);
-      if (this.owner && this.owner.ability === 'slow') this.target.applySlow(1.2, 0.55);
+      if (this.owner && this.owner.ability === 'slow') this.target.applySlow(1.0, 0.72);
       if (this.kind === 'coin') Sound.coinSnd();
       else if (this.kind === 'laser') { Sound.laser(); this.game.beams.push({ x1: this.ox, y1: this.oy, x2: this.target.x, y2: this.target.y, life: 0.16, color: this.color }); }
       else Sound.hit();
