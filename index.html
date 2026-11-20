@@ -128,12 +128,17 @@
     position:relative;overflow:hidden;transition:box-shadow .2s}
   .gacha-reel.spinning{box-shadow:0 0 0 2px #4fc3ff inset,0 0 20px #4fc3ff66}
   .gacha-reel.winner{box-shadow:0 0 0 3px #ffd966 inset,0 0 30px #ffd96688}
-  .gacha-reel .r-label{position:absolute;bottom:4px;font-size:.6rem;font-weight:700;color:#7ee7ff}
+  .gacha-reel .r-label{position:absolute;bottom:4px;font-size:.6rem;font-weight:700;color:#7ee7ff;text-shadow:0 1px 3px #000}
+  .gacha-strip{display:flex;flex-direction:column;will-change:transform;transition:transform 1s cubic-bezier(.15,.7,.2,1.05)}
+  .gacha-strip .cell{width:80px;height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;position:relative}
+  .gacha-strip .cell .cell-label{font-size:.62rem;font-weight:700;color:#7ee7ff;text-shadow:0 1px 3px #000}
+  @keyframes popIn{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.18)}100%{transform:scale(1);opacity:1}}
+  .gacha-result.pop{animation:popIn .4s ease}
+  @keyframes confFall{0%{transform:translateY(-12vh) rotate(0);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:.2}}
+  .confetti{position:fixed;top:0;font-size:1.5rem;pointer-events:none;z-index:400;animation:confFall 1.5s ease-in forwards}
   .gacha-result{min-height:60px;text-align:center;font-weight:800;font-size:1.2rem}
   .gacha-result.new{color:#7fffa0;text-shadow:0 0 20px #00ff88}
   .gacha-result.dup{color:#ffd966;text-shadow:0 0 20px #ffb347}
-  .pity-bar{width:min(560px,100%);background:#0e1420;border-radius:40px;padding:10px 20px;text-align:center;
-    font-weight:700;font-size:.9rem;color:#ffd966;box-shadow:0 0 0 1px #7a6020 inset}
   .auto-sell-panel{background:#12151f;border-radius:16px;padding:16px;margin-top:16px;
     box-shadow:0 0 0 2px #1e2a3a inset}
   .auto-sell-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;
@@ -227,10 +232,10 @@
     <div class="gacha-stage">
       <div class="gacha-reels" id="gachaReels"></div>
       <div class="gacha-result" id="gachaResult"></div>
-      <div class="pity-bar" id="pityBar">Гарант легендарки через 20 призывов</div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
         <button class="btn gold" id="btnSpinX1" style="min-width:200px;font-size:1.05rem">ПРИЗЫВ ×1 (100 🪙)</button>
         <button class="btn gold" id="btnSpinX10" style="min-width:220px;font-size:1.05rem">ПРИЗЫВ ×10 (900 🪙)</button>
+        <button class="btn" id="btnIndex" style="min-width:150px;font-size:1.05rem">📑 ИНДЕКС</button>
       </div>
     </div>
     <div style="margin-top:16px;text-align:center">
@@ -371,6 +376,18 @@
 </div>
 
 <!-- ДЕТАЛИ ЮНИТА -->
+<div class="unit-detail-overlay" id="indexOverlay">
+  <div class="subpanel" style="max-width:940px;width:100%;max-height:86vh;overflow:auto">
+    <div class="panel-head">
+      <h2 class="panel-title" id="indexTitle">📑 ИНДЕКС ЮНИТОВ</h2>
+      <div class="coin-badge"><span class="coin-ico">¢</span> <span id="metaCoinsIndex">0</span></div>
+    </div>
+    <div style="text-align:center;opacity:.65;font-size:.85rem;margin:4px 0 10px">Все юниты игры и их характеристики. Нажми на карточку для подробностей.</div>
+    <div class="cards-grid" id="indexGrid"></div>
+    <button class="btn small" id="indexClose" style="margin-top:12px">ЗАКРЫТЬ</button>
+  </div>
+</div>
+
 <div class="unit-detail-overlay" id="unitDetailOverlay">
   <div class="unit-detail" id="unitDetailContent"></div>
 </div>
@@ -408,7 +425,6 @@ const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
 const LOADOUT_SIZE = 8;
 const MAX_HEROES = 15;
-const PITY_LIMIT = 20;
 
 const RARITY_ORDER = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Mythic'];
 const RARITY_RU = {
@@ -435,6 +451,22 @@ const TARGET_MODES = [
   { id: 'strong', name: 'Самый сильный', glyph: '💪' },
   { id: 'close', name: 'Ближайший', glyph: '✦' }
 ];
+
+function seededRand(seed) {
+  let st = (seed >>> 0) || 1;
+  return () => { st = (st * 1664525 + 1013904223) >>> 0; return st / 4294967296; };
+}
+function mapSeed(str) {
+  let h = 7;
+  for (let i = 0; i < str.length; i++) h = (h * 131 + str.charCodeAt(i)) & 0x7fffffff;
+  return h;
+}
+const UNIT_ATK = {
+  intern: 'bullet', operator: 'bullet', steadicam: 'ring', makeup: 'bullet', dronepilot: 'rocket',
+  scientist: 'coin', gaffer: 'ring', boomop: 'wave', engineer: 'coin', director: 'shell',
+  speaker: 'wave', streamer: 'coin', soundmixer: 'wave', titanCam: 'laser', titanSpeaker: 'wave',
+  titanTV: 'laser', pyrotech: 'shell', snipercam: 'laser', bodyguard: 'bullet', hacker: 'voxel'
+};
 
 const ABILITY_RU = {
   'none': 'Без особых способностей',
@@ -540,9 +572,9 @@ const ENEMIES = [
   { id: 'sci', name: 'Учёный Скибиди', emoji: '🧪', hp: 45, speed: 0.95, reward: 18, color: '#58c868', regen: 3 },
   { id: 'camo', name: 'Скибиди-Ниндзя', emoji: '🥷', hp: 32, speed: 1.6, reward: 16, color: '#585868', onDeathStun: 2.5 },
   { id: 'mut', name: 'Скибиди-Мутант', emoji: '🧟', hp: 95, speed: 0.85, reward: 30, color: '#98c8b8', onDeathSpawn: 3 },
-  { id: 'gToilet', name: 'G-Туалет', emoji: '🎯', hp: 120, speed: 0.6, reward: 60, color: '#d8b848', boss: true },
-  { id: 'gMan', name: 'G-Человек', emoji: '🕴️', hp: 220, speed: 0.55, reward: 90, color: '#c858c8', boss: true },
-  { id: 'gSci', name: 'Учёный-G-Туалет', emoji: '🧠', hp: 400, speed: 0.5, reward: 160, color: '#cc44ff', slowAura: true, boss: true },
+  { id: 'gToilet', name: 'G-Туалет', emoji: '🎯', hp: 120, speed: 0.6, reward: 60, color: '#d8b848', boss: true, bossStunEvery: 7 },
+  { id: 'gMan', name: 'G-Человек', emoji: '🕴️', hp: 220, speed: 0.55, reward: 90, color: '#c858c8', boss: true, bossStunEvery: 6 },
+  { id: 'gSci', name: 'Учёный-G-Туалет', emoji: '🧠', hp: 400, speed: 0.5, reward: 160, color: '#cc44ff', slowAura: true, boss: true, bossStunEvery: 5 },
   { id: 'armo', name: 'Бронескибиди', emoji: '🛞', hp: 130, speed: 0.55, reward: 40, color: '#8a9aa8', armorPct: 0.45 },
   { id: 'summoner', name: 'Призыватель', emoji: '🌀', hp: 80, speed: 0.8, reward: 36, color: '#a86ad8', summonsEvery: 7 },
   { id: 'shield', name: 'Щит-Скибиди', emoji: '🛡️', hp: 60, speed: 0.9, reward: 30, color: '#58a8c8', shield: 70, shieldRegen: 5 }
@@ -558,18 +590,25 @@ const DIFFICULTIES = [
 
 const MAPS = [
   { id: 'studio', name: 'Студия', theme: { bg: '#10131c', grid: '#1a2030' }, decor: ['🎬','🎥','🎤','💡','📼'],
+    scenery: 'studio',
     waypoints: [[0,3],[7,3],[7,9],[15,9],[15,16],[23,16],[23,5],[29,5]] },
   { id: 'zigzag', name: 'Зигзаг', theme: { bg: '#14101c', grid: '#221a30' }, decor: ['📼','🎞️','🎮','🎧'],
+    scenery: 'night',
     waypoints: [[0,2],[5,2],[5,8],[10,8],[10,2],[15,2],[15,8],[20,8],[20,2],[25,2],[25,8],[29,8]] },
   { id: 'spiral', name: 'Спираль', theme: { bg: '#0c161c', grid: '#16242c' }, decor: ['⚙️','🔧','🧪','📡'],
+    scenery: 'night',
     waypoints: [[0,2],[27,2],[27,17],[3,17],[3,6],[23,6],[23,13],[8,13],[8,10],[18,10]] },
   { id: 'fork', name: 'Развилка', theme: { bg: '#141414', grid: '#26262a' }, decor: ['📦','🚧','🔧','🛢️'],
+    scenery: 'studio',
     waypoints: [[0,5],[9,5],[9,12],[17,12],[17,5],[24,5],[24,15],[29,15]] },
   { id: 'desert', name: 'Пустыня', theme: { bg: '#181410', grid: '#26201a' }, decor: ['🌵','🏜️','🦴','🏺'],
+    scenery: 'desert',
     waypoints: [[0,10],[6,10],[6,4],[14,4],[14,15],[22,15],[22,8],[29,8]] },
   { id: 'sewer', name: 'Канализация', theme: { bg: '#0d1a10', grid: '#1a2c1e' }, decor: ['🚽','🛠️','💧','🪣'],
+    scenery: 'sewer',
     waypoints: [[0,17],[8,17],[8,10],[3,10],[3,3],[13,3],[13,11],[20,11],[20,3],[29,3]] },
   { id: 'city', name: 'Город', theme: { bg: '#101018', grid: '#1e1e2c' }, decor: ['🏢','🚕','🗼','🚦'],
+    scenery: 'city',
     waypoints: [[0,0],[12,0],[12,7],[5,7],[5,13],[18,13],[18,6],[26,6],[26,17],[29,17]] }
 ];
 
@@ -598,7 +637,7 @@ function fmt(n) { return Math.max(0, Math.floor(n)); }
    2) СОХРАНЕНИЯ
    ============================================================ */
 const SaveManager = {
-  KEY: 'cmtd_save_v6',
+  KEY: 'cmtd_save_v7',
   data: null,
   soundOn: true,
   defaults() {
@@ -610,7 +649,6 @@ const SaveManager = {
       selectedMap: 'studio',
       soundOn: true,
       endlessRecord: 0,
-      pity: 0,
       codes: [],
       autoSell: {
         'Common': true, 'Uncommon': true, 'Rare': false,
@@ -630,7 +668,6 @@ const SaveManager = {
       while (this.data.loadout.length > LOADOUT_SIZE) this.data.loadout.pop();
       if (!Array.isArray(this.data.codes)) this.data.codes = [];
       if (!this.data.autoSell) this.data.autoSell = this.defaults().autoSell;
-      if (!Number.isFinite(this.data.pity) || this.data.pity < 0) this.data.pity = 0;
     } catch (e) { this.data = this.defaults(); }
     this.soundOn = !!this.data.soundOn;
     return this.data;
@@ -725,9 +762,56 @@ class SoundManager {
       osc.start(t0); osc.stop(t0 + dur + 0.02);
     } catch (e) {}
   }
-  shoot() { this._beep(700 + Math.random() * 100, 0.03, 'square', 0.018); }
+  _sweep(f1, f2, dur, type, vol) {
+    if (!this.ctx || !this.enabled) return;
+    const t0 = this.ctx.currentTime;
+    try {
+      const osc = this.ctx.createOscillator(), g = this.ctx.createGain();
+      osc.type = type || 'sawtooth';
+      osc.frequency.setValueAtTime(f1, t0);
+      osc.frequency.exponentialRampToValueAtTime(Math.max(1, f2), t0 + dur);
+      g.gain.setValueAtTime(vol || 0.04, t0);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(g); g.connect(this.ctx.destination);
+      osc.start(t0); osc.stop(t0 + dur + 0.02);
+    } catch (e) {}
+  }
+  _noise(dur, vol, lp) {
+    if (!this.ctx || !this.enabled) return;
+    try {
+      const len = Math.floor(this.ctx.sampleRate * dur);
+      const buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+      const src = this.ctx.createBufferSource();
+      src.buffer = buf;
+      const f = this.ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = lp || 900;
+      const g = this.ctx.createGain();
+      g.gain.setValueAtTime(vol || 0.05, this.ctx.currentTime);
+      src.connect(f); f.connect(g); g.connect(this.ctx.destination);
+      src.start();
+    } catch (e) {}
+  }
+  shoot(kind) {
+    if (kind === 'laser') this._sweep(1500, 300, 0.08, 'sawtooth', 0.02);
+    else if (kind === 'ring') this._beep(420, 0.06, 'sine', 0.03);
+    else if (kind === 'shell') this._beep(150, 0.08, 'square', 0.035);
+    else if (kind === 'coin') { this._beep(1050, 0.05, 'sine', 0.03); this._beep(1500, 0.06, 'sine', 0.025, 0.05); }
+    else if (kind === 'rocket') this._sweep(220, 60, 0.15, 'sawtooth', 0.03);
+    else if (kind === 'wave') this._sweep(600, 900, 0.09, 'triangle', 0.025);
+    else if (kind === 'voxel') this._beep(1300, 0.04, 'square', 0.02);
+    else this._beep(700 + Math.random() * 100, 0.03, 'square', 0.018);
+  }
   hit() { this._beep(300, 0.05, 'sawtooth', 0.02); }
-  explosion() { this._beep(160, 0.15, 'sawtooth', 0.05); }
+  laser() { this._sweep(1200, 200, 0.12, 'sawtooth', 0.03); }
+  coinSnd() { this._beep(1050, 0.05, 'sine', 0.04); this._beep(1500, 0.07, 'sine', 0.04, 0.05); }
+  zap() { this._beep(880, 0.05, 'square', 0.04); this._beep(660, 0.06, 'square', 0.04, 0.05); }
+  bossStun() { this._sweep(150, 900, 0.3, 'square', 0.05); this._noise(0.2, 0.05, 500); }
+  bossHorn() { this._sweep(90, 190, 0.6, 'sawtooth', 0.07); this._sweep(95, 180, 0.6, 'square', 0.05); }
+  waveClear() { [523, 659, 784].forEach((f, i) => this._beep(f, 0.12, 'triangle', 0.05, i * 0.09)); }
+  victory() { [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => this._beep(f, 0.16, 'triangle', 0.06, i * 0.12)); }
+  defeat() { [392, 330, 262, 196].forEach((f, i) => this._beep(f, 0.25, 'sawtooth', 0.05, i * 0.25)); }
+  explosion() { this._noise(0.35, 0.09, 700); this._sweep(180, 40, 0.25, 'sawtooth', 0.05); }
   place() { this._beep(760, 0.1, 'sine', 0.06); }
   waveStart() {
     this._beep(660, 0.1, 'sine', 0.05, 0);
@@ -749,37 +833,65 @@ const Sound = new SoundManager();
 /* ============================================================
    4) КАРТА
    ============================================================ */
+function drawPropSprite(c, type, x, y, s) {
+  c.save(); c.translate(x, y); c.scale(s || 1, s || 1);
+  c.fillStyle = 'rgba(0,0,0,0.25)';
+  c.beginPath(); c.ellipse(0, 1, 12, 4.5, 0, 0, Math.PI * 2); c.fill();
+  switch (type) {
+    case 'crate':
+      c.fillStyle = '#6a5232'; c.beginPath(); c.roundRect(-12, -20, 24, 20, 3); c.fill();
+      c.strokeStyle = '#4a3820'; c.lineWidth = 2; c.strokeRect(-12, -20, 24, 20);
+      c.beginPath(); c.moveTo(-12, -20); c.lineTo(12, 0); c.stroke(); break;
+    case 'cone':
+      c.fillStyle = '#e06a2a'; c.beginPath(); c.moveTo(0, -18); c.lineTo(9, 2); c.lineTo(-9, 2); c.closePath(); c.fill();
+      c.fillStyle = '#fff'; c.fillRect(-6, -10, 12, 3); c.fillStyle = '#c94a1a'; c.fillRect(-11, 2, 22, 3); break;
+    case 'tripod':
+      c.strokeStyle = '#454b5c'; c.lineWidth = 2;
+      c.beginPath(); c.moveTo(0, -14); c.lineTo(-8, 4); c.moveTo(0, -14); c.lineTo(8, 4); c.moveTo(0, -14); c.lineTo(0, 4); c.stroke();
+      c.fillStyle = '#23262e'; c.beginPath(); c.roundRect(-7, -24, 14, 10, 2); c.fill();
+      c.fillStyle = '#8fd0ff'; c.beginPath(); c.arc(4, -19, 2.6, 0, Math.PI * 2); c.fill(); break;
+    case 'barrel':
+      c.fillStyle = '#3a7a4a'; c.beginPath(); c.roundRect(-8, -18, 16, 18, 3); c.fill();
+      c.strokeStyle = 'rgba(0,0,0,.35)'; c.lineWidth = 2;
+      c.beginPath(); c.moveTo(-8, -12); c.lineTo(8, -12); c.moveTo(-8, -6); c.lineTo(8, -6); c.stroke(); break;
+    case 'rock':
+      c.fillStyle = '#5a6378'; c.beginPath(); c.ellipse(0, -5, 11, 7, 0, 0, Math.PI * 2); c.fill();
+      c.fillStyle = '#6a7388'; c.beginPath(); c.ellipse(-3, -8, 6, 4, 0, 0, Math.PI * 2); c.fill(); break;
+    case 'bush':
+      c.fillStyle = '#2f6a3a'; c.beginPath(); c.arc(-5, -4, 6, 0, Math.PI * 2); c.arc(4, -5, 7, 0, Math.PI * 2); c.arc(0, -9, 5, 0, Math.PI * 2); c.fill(); break;
+    case 'lamp':
+      c.strokeStyle = '#3a4568'; c.lineWidth = 3; c.beginPath(); c.moveTo(0, 2); c.lineTo(0, -24); c.stroke();
+      c.fillStyle = '#ffd94a'; c.beginPath(); c.arc(0, -26, 3.4, 0, Math.PI * 2); c.fill(); break;
+    case 'cactus':
+      c.fillStyle = '#3f8a4a'; c.beginPath(); c.roundRect(-4, -22, 8, 22, 4); c.fill();
+      c.beginPath(); c.roundRect(-11, -16, 7, 5, 2.5); c.fill();
+      c.beginPath(); c.roundRect(4, -12, 7, 5, 2.5); c.fill(); break;
+    case 'pipe':
+      c.fillStyle = '#4a5a4e'; c.beginPath(); c.roundRect(-16, -9, 32, 9, 3); c.fill();
+      c.fillStyle = '#38463c'; c.fillRect(-16, -9, 6, 9); c.fillRect(10, -9, 6, 9); break;
+    case 'puddle':
+      c.fillStyle = 'rgba(120,220,160,.25)'; c.beginPath(); c.ellipse(0, 0, 16, 6, 0, 0, Math.PI * 2); c.fill(); break;
+    case 'dumpster':
+      c.fillStyle = '#2a5c7a'; c.beginPath(); c.roundRect(-16, -22, 32, 22, 3); c.fill();
+      c.fillStyle = '#1d4358'; c.fillRect(-16, -22, 32, 6);
+      c.fillRect(-14, -2, 5, 4); c.fillRect(9, -2, 5, 4); break;
+  }
+  c.restore();
+}
+
 class MapRenderer {
   constructor(mapDef) {
     this.map = mapDef;
+    this.scenery = mapDef.scenery || 'studio';
     this.theme = mapDef.theme || { bg: COLORS.bg || '#10131c', grid: '#1a2030' };
     this.waypoints = mapDef.waypoints.map(p => ({ x: p[0] * CELL + CELL / 2, y: p[1] * CELL + CELL / 2 }));
     this.roadCells = new Set();
     this.buildRoadCells();
-    this.buildDecor();
-  }
-  buildDecor() {
-    this.decorCells = new Set();
-    this.decorList = [];
-    const decor = this.map.decor || [];
-    if (!decor.length) return;
-    let seed = 7;
-    for (let i = 0; i < this.map.id.length; i++) seed = (seed * 131 + this.map.id.charCodeAt(i)) & 0x7fffffff;
-    for (let r = 0; r < ROWS; r++) {
-      for (let c = 0; c < COLS; c++) {
-        const key = c + ',' + r;
-        if (this.roadCells.has(key)) continue;
-        seed = (seed * 1103515245 + c * 99991 + r * 6271 + 12347) & 0x7fffffff;
-        if ((seed >>> 8) % 100 < 6) {
-          this.decorList.push({
-            x: c * CELL + CELL / 2 + ((seed >>> 14) % 9) - 4,
-            y: r * CELL + CELL / 2 + ((seed >>> 20) % 9) - 4,
-            emoji: decor[seed % decor.length]
-          });
-          this.decorCells.add(key);
-        }
-      }
-    }
+    this.props = [];
+    this.propCells = new Set();
+    this.buildProps();
+    this._bg = null;
+    this.paintBg();
   }
   buildRoadCells() {
     for (let r = 0; r < ROWS; r++) {
@@ -799,51 +911,136 @@ class MapRenderer {
     }
   }
   isRoad(col, row) { return this.roadCells.has(col + ',' + row); }
-  draw(ctx) {
-    const bgGrad = ctx.createLinearGradient(0, 0, CANVAS_W, CANVAS_H);
-    bgGrad.addColorStop(0, this.theme.bg);
-    bgGrad.addColorStop(1, shadeColor(this.theme.bg, 0.6));
-    ctx.fillStyle = bgGrad;
-    ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
-    ctx.fillStyle = this.theme.grid;
-    ctx.globalAlpha = 0.13;
-    for (let r = 0; r < ROWS; r++) {
-      for (let c = 0; c < COLS; c++) {
-        const key = c + ',' + r;
-        if (this.roadCells.has(key) || this.decorCells.has(key)) continue;
-        if ((r + c) % 2 === 0) ctx.fillRect(c * CELL, r * CELL, CELL, CELL);
+  distToRoad(x, y) {
+    let m = 1e9;
+    const pts = this.waypoints;
+    for (let i = 1; i < pts.length; i++) {
+      const dx = pts[i].x - pts[i - 1].x, dy = pts[i].y - pts[i - 1].y;
+      const L2 = dx * dx + dy * dy || 1;
+      let t = ((x - pts[i - 1].x) * dx + (y - pts[i - 1].y) * dy) / L2;
+      t = clamp(t, 0, 1);
+      m = Math.min(m, dist(x, y, pts[i - 1].x + dx * t, pts[i - 1].y + dy * t));
+    }
+    return m;
+  }
+  buildProps() {
+    const sc = this.scenery;
+    const types = {
+      studio: ['crate', 'cone', 'tripod', 'barrel', 'lamp'],
+      night: ['rock', 'bush', 'lamp'],
+      desert: ['cactus', 'rock', 'bush'],
+      sewer: ['pipe', 'puddle', 'barrel'],
+      city: ['dumpster', 'lamp', 'crate']
+    }[sc] || ['crate'];
+    let sd = mapSeed(sc + 'props:' + this.map.id);
+    const rnd = () => { sd = (sd * 1103515245 + 12345) & 0x7fffffff; return (sd >>> 8) / 16777216; };
+    let tries = 0;
+    while (this.props.length < 22 && tries < 600) {
+      tries++;
+      const x = rnd() * CANVAS_W, y = CANVAS_H * 0.1 + rnd() * CANVAS_H * 0.85;
+      if (y < CANVAS_H * 0.05 || y > CANVAS_H * 0.96) continue;
+      if (this.distToRoad(x, y) < 52) continue;
+      if (sc === 'city' && y < CANVAS_H * 0.4) continue;
+      const col = Math.floor(x / CELL), row = Math.floor(y / CELL);
+      if (this.roadCells.has(col + ',' + row)) continue;
+      this.props.push({ type: types[Math.floor(rnd() * types.length)], x, y, s: 0.85 + rnd() * 0.5 });
+      this.propCells.add(col + ',' + row);
+    }
+  }
+  paintBg() {
+    const cv = document.createElement('canvas');
+    cv.width = CANVAS_W; cv.height = CANVAS_H;
+    const c = cv.getContext('2d');
+    const CW = CANVAS_W, CH = CANVAS_H;
+    const sc = this.scenery;
+    const g = c.createLinearGradient(0, 0, 0, CH);
+    if (sc === 'desert') { g.addColorStop(0, '#e8c07a'); g.addColorStop(1, '#c98f4a'); }
+    else if (sc === 'night') { g.addColorStop(0, '#0b1030'); g.addColorStop(1, '#141b3f'); }
+    else if (sc === 'sewer') { g.addColorStop(0, '#0f2418'); g.addColorStop(1, '#18301f'); }
+    else if (sc === 'city') { g.addColorStop(0, '#131a33'); g.addColorStop(1, '#232c50'); }
+    else { g.addColorStop(0, '#17203f'); g.addColorStop(1, '#1d2a4d'); }
+    c.fillStyle = g; c.fillRect(0, 0, CW, CH);
+    let sd = mapSeed('bg:' + this.map.id);
+    const rnd = () => { sd = (sd * 1103515245 + 12345) & 0x7fffffff; return (sd >>> 8) / 16777216; };
+    if (sc === 'desert') {
+      c.fillStyle = '#f4dfae';
+      for (let i = 0; i < 7; i++) {
+        const x = rnd() * CW, y = rnd() * CH * 0.8, w = 60 + rnd() * 120;
+        c.beginPath(); c.ellipse(x, y, w, w * 0.25, 0, 0, Math.PI * 2); c.fill();
+      }
+    } else if (sc === 'night') {
+      c.fillStyle = '#fff';
+      for (let i = 0; i < 90; i++) { c.globalAlpha = 0.3 + rnd() * 0.7; c.fillRect(rnd() * CW, rnd() * CH * 0.7, 1.5, 1.5); }
+      c.globalAlpha = 1;
+      c.fillStyle = '#e8ecf5'; c.beginPath(); c.arc(CW * 0.87, CH * 0.1, 26, 0, Math.PI * 2); c.fill();
+      c.fillStyle = '#0b1030'; c.beginPath(); c.arc(CW * 0.87 - 10, CH * 0.1 - 6, 24, 0, Math.PI * 2); c.fill();
+    } else if (sc === 'sewer') {
+      c.fillStyle = 'rgba(90,200,120,.07)';
+      for (let i = 0; i < 8; i++) { c.beginPath(); c.ellipse(rnd() * CW, rnd() * CH, 40 + rnd() * 70, 10 + rnd() * 12, 0, 0, Math.PI * 2); c.fill(); }
+      c.fillStyle = '#2c3a2e'; c.fillRect(0, 0, CW, 20); c.fillRect(0, CH - 20, CW, 20);
+      c.globalAlpha = 0.5; c.strokeStyle = '#4a6e5c'; c.lineWidth = 6;
+      for (let x = 30; x < CW; x += 130) { c.beginPath(); c.moveTo(x, 4); c.lineTo(x, 36); c.stroke(); }
+      c.globalAlpha = 1;
+      for (let i = 0; i < 10; i++) { c.globalAlpha = 0.25 + rnd() * 0.3; c.fillStyle = '#9fe6c0'; c.fillRect(rnd() * CW, rnd() * CH, 2, 2); }
+      c.globalAlpha = 1;
+    } else if (sc === 'city') {
+      c.fillStyle = '#1a2138';
+      for (let i = 0; i < 9; i++) { const w = 50 + rnd() * 90, h = 60 + rnd() * 140, x = i * CW / 9 + rnd() * 20; c.fillRect(x, 0, w, h * 0.4); }
+      c.fillStyle = '#10152a';
+      for (let i = 0; i < 7; i++) { const w = 60 + rnd() * 100, h = 50 + rnd() * 110, x = i * CW / 7 + rnd() * 18; c.fillRect(x, CH - h * 0.35, w, h * 0.35); }
+      for (let i = 0; i < 24; i++) { c.globalAlpha = 0.5 + rnd() * 0.5; c.fillStyle = '#ffd94a'; c.fillRect(rnd() * CW, rnd() * CH * 0.3 + rnd() * CH * 0.5, 3, 3); }
+      c.globalAlpha = 1;
+    } else {
+      c.strokeStyle = 'rgba(255,255,255,.045)'; c.lineWidth = 1;
+      for (let y = 20; y < CH; y += 34) { c.beginPath(); c.moveTo(0, y); c.lineTo(CW, y); c.stroke(); }
+      for (let x = 0; x < CW; x += 70) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, CH); c.stroke(); }
+      for (let i = 0; i < 6; i++) {
+        const x = (i + 0.5) * CW / 6;
+        c.strokeStyle = '#3a4568'; c.lineWidth = 2; c.beginPath(); c.moveTo(x, 0); c.lineTo(x, 26); c.stroke();
+        c.fillStyle = '#2a3554'; c.beginPath(); c.moveTo(x - 13, 26); c.lineTo(x + 13, 26); c.lineTo(x + 7, 40); c.lineTo(x - 7, 40); c.closePath(); c.fill();
+        const gg = c.createRadialGradient(x, 42, 2, x, 42, 26);
+        gg.addColorStop(0, '#ffe9a8cc'); gg.addColorStop(1, '#ffe9a800');
+        c.fillStyle = gg; c.beginPath(); c.arc(x, 42, 26, 0, Math.PI * 2); c.fill();
       }
     }
-    ctx.globalAlpha = 1;
-    ctx.strokeStyle = this.theme.grid;
-    ctx.lineWidth = 1;
-    for (let i = 0; i <= COLS; i++) { ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, CANVAS_H); ctx.stroke(); }
-    for (let j = 0; j <= ROWS; j++) { ctx.beginPath(); ctx.moveTo(0, j * CELL); ctx.lineTo(CANVAS_W, j * CELL); ctx.stroke(); }
-    ctx.font = '20px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    for (const d of this.decorList) {
-      ctx.globalAlpha = 0.5;
-      ctx.fillText(d.emoji, d.x, d.y);
-    }
-    ctx.globalAlpha = 1;
-    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    c.strokeStyle = 'rgba(255,255,255,0.03)'; c.lineWidth = 1;
+    for (let i = 0; i <= COLS; i++) { c.beginPath(); c.moveTo(i * CELL, 0); c.lineTo(i * CELL, CH); c.stroke(); }
+    for (let j = 0; j <= ROWS; j++) { c.beginPath(); c.moveTo(0, j * CELL); c.lineTo(CW, j * CELL); c.stroke(); }
     const pts = this.waypoints;
-    const drawPath = (color, width, dash) => {
-      ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
-      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
-      ctx.strokeStyle = color; ctx.lineWidth = width;
-      if (dash) ctx.setLineDash(dash); else ctx.setLineDash([]);
-      ctx.stroke(); ctx.setLineDash([]);
+    const draw = (w, style) => {
+      c.beginPath(); c.moveTo(pts[0].x, pts[0].y);
+      for (let i = 1; i < pts.length; i++) c.lineTo(pts[i].x, pts[i].y);
+      c.lineWidth = w; c.strokeStyle = style; c.stroke();
     };
-    drawPath('rgba(0,0,0,0.35)', PATH_WIDTH + 16);
-    drawPath(COLORS.roadEdge, PATH_WIDTH + 6);
-    drawPath(COLORS.road, PATH_WIDTH);
-    drawPath('#aa9966', 2, [10, 14]);
-    ctx.font = '24px sans-serif';
-    ctx.fillStyle = '#66ff88'; ctx.fillText('🏁', pts[0].x, pts[0].y - 30);
-    ctx.fillStyle = '#ff8888'; ctx.fillText('🏠', pts[pts.length - 1].x, pts[pts.length - 1].y - 34);
+    c.lineCap = 'round'; c.lineJoin = 'round';
+    draw(PATH_WIDTH + 18, 'rgba(0,0,0,.35)');
+    draw(PATH_WIDTH + 8, sc === 'desert' ? '#8a6a3a' : (sc === 'sewer' ? '#2f4a3c' : '#2a3554'));
+    draw(PATH_WIDTH, sc === 'desert' ? '#c8a468' : (sc === 'sewer' ? '#4a6e5c' : '#3d4c78'));
+    c.font = '900 22px Arial'; c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.fillText('\ud83d\udeaa', pts[0].x, pts[0].y - 26);
+    this._bg = cv;
+  }
+  draw(ctx) {
+    if (this._bg) {
+      ctx.drawImage(this._bg, 0, 0);
+    } else {
+      ctx.fillStyle = this.theme.bg;
+      ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+    }
+    for (const p of this.props) drawPropSprite(ctx, p.type, p.x, p.y, p.s);
+    const pts = this.waypoints;
+    ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+    ctx.setLineDash([14, 12]);
+    ctx.lineDashOffset = -(performance.now() / 40) % 26;
+    ctx.strokeStyle = 'rgba(255,255,255,.28)';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.lineDashOffset = 0;
     const vg = ctx.createRadialGradient(CANVAS_W / 2, CANVAS_H / 2, CANVAS_H * 0.4, CANVAS_W / 2, CANVAS_H / 2, CANVAS_H * 0.85);
     vg.addColorStop(0, 'rgba(0,0,0,0)');
-    vg.addColorStop(1, 'rgba(0,0,0,0.4)');
+    vg.addColorStop(1, 'rgba(0,0,0,0.35)');
     ctx.fillStyle = vg;
     ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
   }
@@ -868,6 +1065,8 @@ class Hero {
     this.angle = -Math.PI / 2;
     this.targetMode = 'first';
     this.shootAnim = 0;
+    this.stunTimer = 0;
+    this.atkKind = UNIT_ATK[this.unitId] || 'bullet';
     this.bobPhase = Math.random() * 6.28;
 
     const s = unit.stats;
@@ -914,8 +1113,7 @@ class Hero {
     return {
       dmg: Math.round(this.baseDamage * Math.pow(1.25, level - 1) * aura),
       range: Math.round(this.baseRange * Math.pow(1.08, level - 1)),
-      rate: +(this.baseFireRate * Math.pow(0.9, level - 1)).toFixed(2),
-      hp: Math.round(this._maxHpAt(level))
+      rate: +(this.baseFireRate * Math.pow(0.9, level - 1)).toFixed(2)
     };
   }
   upgrade() {
@@ -952,6 +1150,7 @@ class Hero {
       }
       return;
     }
+    if (this.stunTimer > 0) { this.stunTimer -= dt; return; }
     this.bobPhase += dt * 4;
     if (this.shootAnim > 0) this.shootAnim -= dt;
     for (let i = this._boostTargets.length - 1; i >= 0; i--) {
@@ -998,7 +1197,7 @@ class Hero {
     this.shootAnim = 0.14;
     this.game.projectiles.push(new Projectile(this.game, this.x, this.y, target, this.damage, this.aoe, this));
     this.cooldown = this.fireRate;
-    Sound.shoot();
+    Sound.shoot(this.atkKind);
   }
   fireAbility() {
     if (this.ability === 'speedBoost') {
@@ -1046,22 +1245,48 @@ class Hero {
       }
       return;
     }
+    if (this.stunTimer > 0) {
+      ctx.beginPath(); ctx.arc(x, y, size * 0.95, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,224,102,0.85)'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.font = '13px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const wa = this.bobPhase * 3;
+      for (let i = 0; i < 3; i++) {
+        const a = wa + i * Math.PI * 2 / 3;
+        ctx.fillText('💫', x + Math.cos(a) * size * 0.8, y - size * 0.8 + Math.sin(a) * 4);
+      }
+    }
     const rc = RARITY_COLOR[this.unit.rarity] || '#ffd966';
-    const glow = ctx.createRadialGradient(x, y, 4, x, y, size * 1.4);
-    glow.addColorStop(0, rc + '44');
+    const bob = Math.sin(this.bobPhase) * 1.5;
+    ctx.beginPath(); ctx.ellipse(x, y + size * 0.55, size * 0.78, size * 0.3, 0, 0, Math.PI * 2);
+    ctx.fillStyle = '#00000070'; ctx.fill();
+    const glow = ctx.createRadialGradient(x, y + 6, 4, x, y + 6, size * 1.5);
+    glow.addColorStop(0, rc + '33');
     glow.addColorStop(1, rc + '00');
     ctx.fillStyle = glow;
-    ctx.beginPath(); ctx.arc(x, y, size * 1.4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x, y + 6, size * 1.5, 0, Math.PI * 2); ctx.fill();
     if (this.auraBonus > 0) {
       const pl = 0.5 + 0.5 * Math.sin(this.bobPhase * 1.5);
-      ctx.beginPath(); ctx.arc(x, y, size * (0.85 + 0.08 * pl), 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(255,217,102,${0.25 + 0.3 * pl})`; ctx.lineWidth = 2; ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(x, y + size * 0.5, size * (0.95 + 0.1 * pl), size * 0.25, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(255,217,102,${0.3 + 0.3 * pl})`; ctx.lineWidth = 2; ctx.stroke();
     }
-    const bob = Math.sin(this.bobPhase) * 1.5;
-    ctx.fillStyle = '#251f10';
-    ctx.strokeStyle = rc;
-    ctx.lineWidth = 2.5;
-    ctx.beginPath(); ctx.roundRect(x - size / 2, y - size / 2 + bob, size, size, 9); ctx.fill(); ctx.stroke();
+    const bgGrad = ctx.createLinearGradient(x, y - size * 0.6, x, y + size * 0.6);
+    bgGrad.addColorStop(0, '#3d4660');
+    bgGrad.addColorStop(0.55, '#252c3c');
+    bgGrad.addColorStop(1, '#151a26');
+    ctx.beginPath(); ctx.roundRect(x - size / 2, y - size / 2 + bob, size, size, 9);
+    ctx.fillStyle = bgGrad; ctx.fill();
+    ctx.strokeStyle = rc; ctx.lineWidth = 2.5; ctx.stroke();
+    ctx.save();
+    ctx.beginPath(); ctx.roundRect(x - size / 2, y - size / 2 + bob, size, size * 0.3, 9);
+    ctx.clip();
+    ctx.fillStyle = 'rgba(255,255,255,0.18)';
+    ctx.fillRect(x - size / 2, y - size / 2 + bob, size, size * 0.25);
+    ctx.restore();
+    ctx.font = `${CELL * 0.52}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.fillText(this.emoji, x + 1.5, y + 3.5 + bob);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(this.emoji, x, y + 2 + bob);
     ctx.save(); ctx.translate(x, y + bob); ctx.rotate(this.angle);
     const rec = this.shootAnim > 0 ? -7 * (this.shootAnim / 0.14) : 0;
     ctx.beginPath(); ctx.moveTo(rec, 0); ctx.lineTo(size * 0.55 + rec, 0);
@@ -1072,20 +1297,12 @@ class Hero {
       ctx.fillStyle = `rgba(255,224,102,${0.8 * fa})`; ctx.fill();
     }
     ctx.restore();
-    ctx.font = `${CELL * 0.52}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(this.emoji, x, y + 2 + bob);
     if (this.level > 1) {
       ctx.fillStyle = '#ffd966'; ctx.font = 'bold 10px sans-serif';
-      ctx.fillText('★' + this.level, x + 11, y - 10 + bob);
+      ctx.fillText('★' + this.level, x + 11, y - 12 + bob);
     }
-    const w = CELL * 0.9, h = 4;
-    const bx = x - w / 2, by = y - CELL * 0.55;
-    ctx.fillStyle = '#2a1a1a';
-    ctx.beginPath(); ctx.roundRect(bx, by, w, h, 2); ctx.fill();
-    const p = clamp((this.hp || 0) / this.maxHp, 0, 1);
-    ctx.fillStyle = p > 0.5 ? '#4dff4d' : (p > 0.25 ? '#ffcc00' : '#ff4d4d');
-    ctx.beginPath(); ctx.roundRect(bx, by, w * p, h, 2); ctx.fill();
   }
+
 }
 
 /* ============================================================
@@ -1114,6 +1331,7 @@ class Enemy {
     this.armorPct = def.armorPct || 0;
     this.summonsEvery = def.summonsEvery || 0;
     this.summonTimer = this.summonsEvery;
+    this.stunCd = this.def.bossStunEvery || 0;
     this.time = Math.random() * 6.28;
   }
   takeDamage(d) {
@@ -1141,6 +1359,21 @@ class Enemy {
     }
     if (this.regen > 0 && this.hp < this.maxHp) this.hp = Math.min(this.maxHp, this.hp + this.regen * dt);
     this.time += dt;
+    if (this.def.bossStunEvery) {
+      this.stunCd -= dt;
+      if (this.stunCd <= 0) {
+        this.stunCd = this.def.bossStunEvery;
+        let stunned = 0;
+        for (const h of this.game.heroes) {
+          if (h.heroDead) continue;
+          if (dist(this.x, this.y, h.x, h.y) <= 110) { h.stunTimer = Math.max(h.stunTimer || 0, 2); stunned++; }
+        }
+        if (stunned) {
+          this.game.explosions.push({ x: this.x, y: this.y, r: 0, maxR: 110, life: 0.5, maxLife: 0.5, rgb: '255,136,255', ring: true });
+          Sound.bossStun();
+        }
+      }
+    }
     if (this.shieldRegen > 0 && this.shield < this.shieldMax) this.shield = Math.min(this.shieldMax, this.shield + this.shieldRegen * dt);
     if (this.summonsEvery > 0) {
       this.summonTimer -= dt;
@@ -1203,6 +1436,7 @@ class Enemy {
     if (this.def.id === 'camo') ctx.globalAlpha = 0.55 + 0.24 * (0.5 + 0.5 * Math.sin(this.time * 6));
     const bodyGrad = ctx.createRadialGradient(x - this.size * 0.25, yy - this.size * 0.3, this.size * 0.25, x, yy, this.size * 1.05);
     bodyGrad.addColorStop(0, this.def.color + 'ff');
+    bodyGrad.addColorStop(0.7, this.def.color + 'dd');
     bodyGrad.addColorStop(1, shadeColor(this.def.color, 0.6));
     ctx.beginPath(); ctx.arc(x, yy, this.size, 0, Math.PI * 2);
     ctx.fillStyle = bodyGrad; ctx.fill();
@@ -1236,9 +1470,23 @@ class Enemy {
     ctx.strokeStyle = this.def.boss ? '#ffd966aa' : '#ffffff88';
     ctx.lineWidth = this.def.boss ? 2.5 : 1.5; ctx.stroke();
     ctx.globalAlpha = 1;
+    ctx.beginPath(); ctx.ellipse(x - this.size * 0.28, yy - this.size * 0.38, this.size * 0.5, this.size * 0.25, -0.5, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.18)'; ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x, yy + this.size * 0.55, this.size * 0.8, this.size * 0.3, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0,0,0,0.22)'; ctx.fill();
     if (this.def.boss) {
       ctx.font = '12px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText('👑', x, yy - this.size - 9);
+      const pl = 0.5 + 0.5 * Math.sin(this.time * 4);
+      ctx.beginPath(); ctx.arc(x, yy, this.size + 4 + pl * 2, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(255,217,102,${0.35 + 0.3 * pl})`; ctx.lineWidth = 2; ctx.stroke();
+    }
+    if (this.stunCd > 0 && this.def.bossStunEvery) {
+      const warn = 1 - this.stunCd / this.def.bossStunEvery;
+      if (warn > 0.8) {
+        ctx.beginPath(); ctx.arc(x, yy, this.size + 6, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * ((warn - 0.8) / 0.2));
+        ctx.strokeStyle = 'rgba(255,136,255,0.8)'; ctx.lineWidth = 2.5; ctx.stroke();
+      }
     }
     ctx.font = `${this.size * 1.1}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(this.def.emoji, x, yy - 1);
@@ -1269,6 +1517,7 @@ class Enemy {
       ctx.strokeStyle = '#ffe066cc'; ctx.lineWidth = 2; ctx.stroke();
     }
   }
+
 }
 
 /* ============================================================
@@ -1278,19 +1527,37 @@ class Projectile {
   constructor(game, x, y, target, damage, aoe, owner) {
     this.game = game;
     this.x = x; this.y = y;
+    this.ox = x; this.oy = y;
     this.target = target;
     this.damage = damage;
     this.aoe = aoe || 0;
     this.owner = owner || null;
-    this.color = COLORS.projectile;
-    this.speed = 340;
+    this.kind = owner ? owner.atkKind : 'bullet';
     this.alive = true;
+    this.trail = [];
+    this.angle = 0;
+    const cfg = {
+      bullet: { speed: 360, r: 4, color: '#ffe066' },
+      laser: { speed: 900, r: 3, color: '#7dff9e' },
+      ring: { speed: 260, r: 6, color: '#7ee7ff' },
+      shell: { speed: 300, r: 6.5, color: '#ff9a4d' },
+      coin: { speed: 320, r: 5, color: '#ffd93e' },
+      rocket: { speed: 280, r: 5.5, color: '#ff8844' },
+      wave: { speed: 420, r: 7, color: '#b06bff' },
+      voxel: { speed: 340, r: 5, color: '#57ff9a' }
+    };
+    const c = cfg[this.kind] || cfg.bullet;
+    this.speed = c.speed; this.radius = c.r; this.color = c.color;
   }
   update(dt) {
     if (!this.target || this.target.hp <= 0 || this.target.reachedEnd) { this.alive = false; return false; }
     const dx = this.target.x - this.x, dy = this.target.y - this.y;
     const d = Math.hypot(dx, dy);
     const step = this.speed * dt;
+    this.angle = Math.atan2(dy, dx);
+    if (this.trail.length === 0 || dist(this.trail[this.trail.length - 1].x, this.trail[this.trail.length - 1].y, this.x, this.y) > 6)
+      this.trail.push({ x: this.x, y: this.y });
+    if (this.trail.length > 6) this.trail.shift();
     if (d <= step || d < 8) { this.hit(); this.alive = false; return false; }
     this.x += (dx / d) * step; this.y += (dy / d) * step;
     return true;
@@ -1306,19 +1573,65 @@ class Projectile {
           if (this.owner && this.owner.ability === 'slow') e.applySlow(1.2, 0.55);
         }
       }
-      this.game.explosions.push({ x: tx, y: ty, r: 0, maxR: this.aoe, life: 0.25, maxLife: 0.25 });
+      this.game.explosions.push({ x: tx, y: ty, r: 0, maxR: this.aoe, life: 0.25, maxLife: 0.25, rgb: '255,150,60' });
       Sound.explosion();
     } else {
       this.target.takeDamage(this.damage);
       if (this.owner && this.owner.ability === 'slow') this.target.applySlow(1.2, 0.55);
-      Sound.hit();
+      if (this.kind === 'coin') Sound.coinSnd();
+      else if (this.kind === 'laser') { Sound.laser(); this.game.beams.push({ x1: this.ox, y1: this.oy, x2: this.target.x, y2: this.target.y, life: 0.16, color: this.color }); }
+      else Sound.hit();
     }
   }
   draw(ctx) {
-    ctx.beginPath(); ctx.arc(this.x, this.y, 4.5, 0, Math.PI * 2);
-    ctx.fillStyle = this.color; ctx.shadowColor = this.color; ctx.shadowBlur = 12;
-    ctx.fill(); ctx.shadowBlur = 0;
-    ctx.strokeStyle = '#ffffffcc'; ctx.lineWidth = 1.2; ctx.stroke();
+    ctx.save();
+    if (this.kind === 'laser') {
+      ctx.beginPath(); ctx.moveTo(this.ox, this.oy);
+      for (const t of this.trail) ctx.lineTo(t.x, t.y);
+      ctx.lineTo(this.x, this.y);
+      ctx.strokeStyle = this.color + 'cc'; ctx.lineWidth = 2; ctx.stroke();
+    }
+    if (this.trail.length > 1 && (this.kind === 'rocket' || this.kind === 'shell')) {
+      ctx.beginPath(); ctx.moveTo(this.trail[0].x, this.trail[0].y); ctx.lineTo(this.x, this.y);
+      ctx.strokeStyle = this.color + '44'; ctx.lineWidth = this.radius * 1.2; ctx.stroke();
+    }
+    if (this.kind === 'ring') {
+      ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.strokeStyle = this.color; ctx.lineWidth = 2.5; ctx.stroke();
+      ctx.beginPath(); ctx.arc(this.x, this.y, this.radius * 0.5, 0, Math.PI * 2);
+      ctx.strokeStyle = this.color + '99'; ctx.lineWidth = 1.5; ctx.stroke();
+    } else if (this.kind === 'wave') {
+      const t = (Date.now() % 300) / 300;
+      for (let i = 0; i < 3; i++) {
+        const rr = this.radius * (0.6 + 0.4 * ((t + i / 3) % 1));
+        ctx.beginPath(); ctx.arc(this.x, this.y, rr, 0, Math.PI * 2);
+        ctx.strokeStyle = this.color; ctx.globalAlpha = 1 - ((t + i / 3) % 1) * 0.25;
+        ctx.lineWidth = 2; ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    } else if (this.kind === 'coin') {
+      ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = this.color; ctx.fill();
+      ctx.fillStyle = '#8a6508'; ctx.font = 'bold 8px monospace';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('¢', this.x, this.y + 0.5);
+    } else if (this.kind === 'voxel') {
+      ctx.translate(this.x, this.y); ctx.rotate(this.angle + 0.7);
+      ctx.fillStyle = this.color; ctx.fillRect(-this.radius, -this.radius, this.radius * 2, this.radius * 2);
+      ctx.strokeStyle = '#ffffffbb'; ctx.lineWidth = 1; ctx.strokeRect(-this.radius, -this.radius, this.radius * 2, this.radius * 2);
+    } else if (this.kind === 'rocket') {
+      ctx.translate(this.x, this.y); ctx.rotate(this.angle);
+      ctx.fillStyle = this.color;
+      ctx.beginPath(); ctx.roundRect(-6, -2.5, 12, 5, 2.5); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(6, -2.5); ctx.lineTo(10, 0); ctx.lineTo(6, 2.5); ctx.closePath();
+      ctx.fillStyle = '#ffdd88'; ctx.fill();
+    } else {
+      ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = this.color; ctx.shadowColor = this.color; ctx.shadowBlur = 12;
+      ctx.fill(); ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#ffffffcc'; ctx.lineWidth = 1.2; ctx.stroke();
+    }
+    ctx.restore();
   }
 }
 
@@ -1370,30 +1683,34 @@ class WaveManager {
   startWave(waveNum) {
     const g = this.game;
     this.spawnQueue = this.buildQueue(waveNum);
+    this.waveTotal = this.spawnQueue.length;
+    this.spawnedCount = 0;
     this.spawnTimer = 0;
     this.waveActive = true;
     for (const h of g.heroes) h.onWaveStart();
   }
+  _spawnOne(def, hp, spd, rew) {
+    const e = new Enemy(this.game, def, hp, spd, rew);
+    e.x = this.game.map.waypoints[0].x + (Math.random() - 0.5) * 22;
+    e.y = this.game.map.waypoints[0].y + (Math.random() - 0.5) * 22;
+    this.game.enemies.push(e);
+    this.spawnedCount++;
+  }
   flushSpawns() {
     while (this.spawnQueue.length > 0) {
       const d = this.spawnQueue.shift();
-      const e = new Enemy(this.game, d.def, d.hp, d.spd, d.rew);
-      e.x = this.game.map.waypoints[0].x + (Math.random() - 0.5) * 22;
-      e.y = this.game.map.waypoints[0].y + (Math.random() - 0.5) * 22;
-      this.game.enemies.push(e);
+      this._spawnOne(d.def, d.hp, d.spd, d.rew);
     }
   }
   get finishedSpawning() { return this.spawnQueue.length === 0; }
+  get spawnedRatio() { return this.waveTotal > 0 ? this.spawnedCount / this.waveTotal : 1; }
   update(dt) {
     if (!this.waveActive || this.spawnQueue.length === 0) return;
     this.spawnTimer += dt;
     if (this.spawnTimer < 0.55) return;
     this.spawnTimer = 0;
     const d = this.spawnQueue.shift();
-    const e = new Enemy(this.game, d.def, d.hp, d.spd, d.rew);
-    e.x = this.game.map.waypoints[0].x + (Math.random() - 0.5) * 22;
-    e.y = this.game.map.waypoints[0].y + (Math.random() - 0.5) * 22;
-    this.game.enemies.push(e);
+    this._spawnOne(d.def, d.hp, d.spd, d.rew);
   }
 }
 
@@ -1412,6 +1729,9 @@ class Game {
     this.mouse = { x: -1, y: -1, col: -1, row: -1, onCanvas: false };
     this.hoveredHero = null;
     this.floaters = [];
+    this.beams = [];
+    this.waveTime = 0;
+    this._uiThrottle = 0;
     this.bindUI();
   }
   bindUI() {
@@ -1446,6 +1766,8 @@ class Game {
     this.explosions = [];
     this.floaters = [];
     this.grid = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+    this.beams = [];
+    this.waveTime = 0;
     this.waveManager = new WaveManager(this);
     this.paused = false;
     this.gameOver = false;
@@ -1472,6 +1794,9 @@ class Game {
   }
   stop() {
     this.running = false;
+    this.selectedHero = null;
+    this.selectedBuild = null;
+    this.waveBanner = null;
     if (this._raf) { cancelAnimationFrame(this._raf); this._raf = null; }
     UI.hideTooltip();
   }
@@ -1548,10 +1873,11 @@ class Game {
       startBtn.disabled = true; startBtn.textContent = '—';
       waveTimer.style.display = 'none';
     } else if (this.waveManager.waveActive) {
-      startBtn.disabled = false;
-      startBtn.textContent = !this.waveManager.finishedSpawning
-        ? '⏩ ВЫПУСТИТЬ ВСЕХ'
-        : '⏭ ВЫЗВАТЬ ВОЛНУ +' + (this.wave * 8) + '¢';
+      const canSkip = this.skipAvailable();
+      startBtn.disabled = !canSkip;
+      startBtn.textContent = canSkip
+        ? '⏩ СКИП ВЫЗОВ +' + (5 + this.wave * 3) + '¢'
+        : '⏳ скип через ' + Math.max(0, Math.ceil(20 - this.waveTime)) + 'с';
       waveTimer.style.display = 'none';
     } else if (!this.difficulty.endless && this.wave >= this.maxWaves) {
       startBtn.disabled = true; startBtn.textContent = '✅ ВСЕ ВОЛНЫ';
@@ -1620,8 +1946,8 @@ class Game {
     const mx = (e.clientX - rect.left) * sx, my = (e.clientY - rect.top) * sy;
     if (this.selectedHero) {
       const t = this.selectedHero;
-      const btnY = t.y - 52, btnW = 40, btnH = 24;
-      const upX = t.x - 68, tX = t.x - 20, sellX = t.x + 28;
+      const btnY = t.y - 58, btnW = 46, btnH = 26;
+      const upX = t.x - 73, tX = t.x - 23, sellX = t.x + 27;
       if (mx >= upX && mx <= upX + btnW && my >= btnY && my <= btnY + btnH) {
         if (t.level >= t.maxLevel) { this.toast('Максимальный уровень'); return; }
         if (this.money >= t.upgradeCost) {
@@ -1684,24 +2010,31 @@ class Game {
     this.nextWaveTimer = Math.max(5, this.wave === 0 ? 8 : 5);
     this.updateUI();
   }
+  skipAvailable() {
+    if (!this.waveManager.waveActive) return true;
+    if (this.waveTime >= 20) return true;
+    return this.waveManager.waveTotal > 0 && this.waveManager.spawnedRatio >= 0.75;
+  }
   waveButtonAction() {
     if (this.gameOver || this.victory) return;
     if (this.waveManager.waveActive) {
+      if (!this.skipAvailable()) { Sound.error(); this.toast('Скип будет доступен через ' + Math.max(0, Math.ceil(20 - this.waveTime)) + 'с'); return; }
       if (!this.waveManager.finishedSpawning) {
         this.waveManager.flushSpawns();
         this.updateUI();
       } else {
         if (!this.difficulty.endless && this.wave >= this.maxWaves) return;
-        const bonus = this.wave * 8;
+        const bonus = 5 + this.wave * 3;
         this.money += bonus;
-        this.floaters.push({ x: CANVAS_W / 2, y: 70, text: 'Ранний вызов! +' + bonus + '💰', life: 1.2, maxLife: 1.2, color: '#ffd966' });
+        this.floaters.push({ x: CANVAS_W / 2, y: 70, text: 'Скип волны! +' + bonus + '¢', life: 1.2, maxLife: 1.2, color: '#ffd966' });
+        Sound.zap();
         this.startWave(true);
       }
     } else {
       this.skipCountdown();
     }
   }
-  skipCountdown() {
+    skipCountdown() {
     if (this.countdownActive) {
       this.countdownActive = false;
       this.nextWaveTimer = 0;
@@ -1714,12 +2047,14 @@ class Game {
     if (!this.difficulty.endless && this.wave >= this.maxWaves) return;
     Sound.init();
     this.wave++;
+    this.waveTime = 0;
     this.waveManager.startWave(this.wave);
     this.countdownActive = false;
     const isBoss = this.wave % 5 === 0;
     this.waveBanner = { life: 2.2, maxLife: 2.2, boss: isBoss, text: isBoss ? 'ВОЛНА ' + this.wave + ' · БОСС!' : 'ВОЛНА ' + this.wave };
     this.updateUI();
     Sound.waveStart();
+    if (isBoss) Sound.bossHorn();
   }
   togglePause() {
     if (this.gameOver || this.victory) return;
@@ -1737,12 +2072,18 @@ class Game {
     const rawDt = Math.min((ts - this.lastTime) / 1000, 0.05);
     this.lastTime = ts;
     const dt = rawDt * this.speedMultiplier;
-    if (!this.paused && !this.gameOver && !this.victory) this.update(dt);
+    if (!this.paused && !this.gameOver && !this.victory) {
+      this.update(dt);
+      this._uiThrottle -= rawDt;
+      if (this._uiThrottle <= 0) { this._uiThrottle = 0.4; this.updateUI(); }
+    }
     this.render();
     this._raf = (t) => this.gameLoop(t);
     requestAnimationFrame(this._raf);
   }
   update(dt) {
+    if (this.waveBanner) { this.waveBanner.life -= dt; if (this.waveBanner.life <= 0) this.waveBanner = null; }
+    if (this.waveManager.waveActive) this.waveTime += dt;
     if (this.countdownActive && !this.waveManager.waveActive) {
       this.nextWaveTimer -= dt;
       document.getElementById('waveTimerVal').textContent = Math.ceil(Math.max(0, this.nextWaveTimer));
@@ -1782,6 +2123,7 @@ class Game {
       this.money += bonus;
       this.floaters.push({ x: CANVAS_W / 2, y: 40, text: 'Волна ' + this.wave + ' пройдена! +' + bonus + '💰',
         life: 1.6, maxLife: 1.6, color: '#7fffa0' });
+      Sound.waveClear();
       this.updateUI();
       if (!this.difficulty.endless && this.wave >= this.maxWaves && !this.gameOver) {
         this.victory = true;
@@ -1811,9 +2153,10 @@ class Game {
     this.running = false;
     this.countdownActive = false;
     const completed = win ? this.maxWaves : Math.max(0, this.wave - 1);
-    const baseCoins = completed * 8 + this.kills * 1 + (win ? 120 : 0);
-    const coins = Math.round(baseCoins * (this.difficulty.coinMul || 1));
+    let coins = 0;
+    if (win) coins = Math.round((completed * 12 + this.kills + 150) * (this.difficulty.coinMul || 1));
     SaveManager.addCoins(coins);
+    if (win) Sound.victory(); else Sound.defeat();
     if (this.difficulty.endless && this.wave > (SaveManager.data.endlessRecord || 0)) {
       SaveManager.data.endlessRecord = this.wave;
       SaveManager.save();
@@ -1824,7 +2167,7 @@ class Game {
       document.getElementById('resWaves').textContent = `${completed} / ${this.difficulty.endless ? '∞' : this.maxWaves}`;
       document.getElementById('resKills').textContent = this.kills;
       document.getElementById('resBase').textContent = Math.max(0, Math.round(this.baseHp)) + ' / ' + BASE_MAX_HP;
-      document.getElementById('resCoins').textContent = '+' + coins;
+      document.getElementById('resCoins').textContent = win ? '+' + coins : '0 (монеты только за победу)';
       document.getElementById('resultsOverlay').classList.add('visible');
       App.refreshMeta();
     }, 350);
@@ -1843,45 +2186,55 @@ class Game {
       ctx.fillStyle = COLORS.heroRange; ctx.fill();
       ctx.strokeStyle = COLORS.heroRangeBorder; ctx.lineWidth = 2; ctx.stroke();
       const mode = TARGET_MODES.find(m => m.id === t.targetMode) || TARGET_MODES[0];
-      const btnY = t.y - 52;
-      this.drawCanvasButton(ctx, t.x - 68, btnY, 40, 24, t.level < t.maxLevel ? '⬆' : '★', '#1a3a2a', '#6fff8f', this.money >= t.upgradeCost && t.level < t.maxLevel);
-      this.drawCanvasButton(ctx, t.x - 20, btnY, 40, 24, mode.glyph, '#2a2a1a', '#7ee7ff', true);
-      this.drawCanvasButton(ctx, t.x + 28, btnY, 40, 24, '✖', '#3a1a1a', '#ff8888', true);
-      ctx.font = 'bold 10px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      if (t.level < t.maxLevel) {
-        ctx.fillStyle = '#ffd966';
-        ctx.fillText('💰' + t.upgradeCost, t.x, btnY - 9);
-      }
+      const btnY = t.y - 58, btnH = 26, btnW = 46;
+      const upX = t.x - 73, tX = t.x - 23, sellX = t.x + 27;
+      const canUp = t.level < t.maxLevel && this.money >= t.upgradeCost;
+      this.drawCanvasButton(ctx, upX, btnY, btnW, btnH, t.level < t.maxLevel ? '💰' + t.upgradeCost : '★', '#1a3a2a', '#6fff8f', canUp);
+      this.drawCanvasButton(ctx, tX, btnY, btnW, btnH, mode.glyph, '#2a2a1a', '#7ee7ff', true);
+      this.drawCanvasButton(ctx, sellX, btnY, btnW, btnH, '✖', '#3a1a1a', '#ff8888', true);
+      const smode = TARGET_MODES.find(m => m.id === t.targetMode) || TARGET_MODES[0];
       const cur = t.statValues(t.level);
       const nxt = t.level < t.maxLevel ? t.statValues(t.level + 1) : null;
-      const px = t.x - 100, py = btnY + 30, pw = 200, ph = 68;
-      ctx.fillStyle = '#141a26e8';
+      const px = t.x - 100, py = btnY + btnH + 12, pw = 200, ph = 68;
+      ctx.fillStyle = '#141a26e0';
       ctx.strokeStyle = '#2a3a4e'; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.roundRect(px, py, pw, ph, 10); ctx.fill(); ctx.stroke();
+      ctx.font = 'bold 11px monospace';
       const row = (label, c, nix, idx) => {
-        const y = py + 13 + idx * 14;
-        ctx.fillStyle = '#8ea8c8'; ctx.textAlign = 'left';
-        ctx.fillText(label, px + 10, y);
+        const yy = py + 13 + idx * 14;
+        ctx.textAlign = 'left'; ctx.fillStyle = '#8ea8c8';
+        ctx.fillText(label, px + 10, yy);
         ctx.textAlign = 'center'; ctx.fillStyle = '#7ee7ff';
-        ctx.fillText(c, px + 100, y);
+        ctx.fillText(c, px + 100, yy);
         if (nix != null) {
           ctx.fillStyle = '#7fffa0';
-          ctx.fillText('➜', px + 140, y);
-          ctx.fillText(nix, px + 176, y);
+          ctx.fillText('➜', px + 140, yy);
+          ctx.fillText(nix, px + 176, yy);
         }
       };
       row('УРОН', cur.dmg, nxt && nxt.dmg, 0);
       row('РАДИУС', cur.range, nxt && nxt.range, 1);
       row('ЗАРЯД', cur.rate + 'с', nxt && nxt.rate + 'с', 2);
-      row('ПРОЧН', cur.hp, nxt && nxt.hp, 3);
     }
     for (const e of this.enemies) e.draw(ctx);
     for (const p of this.projectiles) p.draw(ctx);
+    for (let i = this.beams.length - 1; i >= 0; i--) {
+      const bm = this.beams[i];
+      bm.life -= 0.045;
+      if (bm.life <= 0) { this.beams.splice(i, 1); continue; }
+      ctx.beginPath(); ctx.moveTo(bm.x1, bm.y1); ctx.lineTo(bm.x2, bm.y2);
+      ctx.strokeStyle = bm.color; ctx.globalAlpha = Math.min(1, bm.life / 0.16);
+      ctx.lineWidth = 3.5; ctx.stroke();
+      ctx.strokeStyle = '#ffffff'; ctx.globalAlpha *= 0.7;
+      ctx.lineWidth = 1.2; ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
     for (const ex of this.explosions) {
       const alpha = Math.max(0, ex.life / ex.maxLife);
+      const ec = ex.rgb || '255,170,51';
       ctx.beginPath(); ctx.arc(ex.x, ex.y, ex.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255,170,51,${alpha * 0.5})`; ctx.fill();
-      ctx.strokeStyle = `rgba(255,220,100,${alpha})`; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = `rgba(${ec},${alpha * (ex.ring ? 0.12 : 0.5)})`; ctx.fill();
+      ctx.strokeStyle = `rgba(${ec},${alpha})`; ctx.lineWidth = ex.ring ? 3 : 2; ctx.stroke();
     }
     for (const f of this.floaters) {
       const alpha = Math.max(0, f.life / f.maxLife);
@@ -2101,8 +2454,7 @@ const UI = {
         `<div style="color:#ffd966;font-size:.75rem;margin-top:2px">${ABILITY_RU[unit.ability] || ''}</div>` : ''}
       <div class="tt-row"><span class="k">Урон</span><span class="v">${st.dmg}</span></div>
       <div class="tt-row"><span class="k">Радиус</span><span class="v">${st.range}</span></div>
-      <div class="tt-row"><span class="k">Перезарядка</span><span class="v">${st.fireRate}с</span></div>
-      <div class="tt-row"><span class="k">Прочность</span><span class="v">${st.hp}</span></div>`;
+      <div class="tt-row"><span class="k">Перезарядка</span><span class="v">${st.fireRate}с</span></div>`;
     tt.classList.add('visible');
     this.moveTooltip(x, y);
   },
@@ -2115,8 +2467,7 @@ const UI = {
       ${hero.ability && hero.ability !== 'none' ? `<div style="color:#ffd966;font-size:.75rem;margin-top:2px">${ABILITY_RU[hero.ability] || ''}</div>` : ''}
       <div class="tt-row"><span class="k">Урон</span><span class="v">${Math.round(hero.damage)}</span></div>
       <div class="tt-row"><span class="k">Радиус</span><span class="v">${Math.round(hero.range)}</span></div>
-      <div class="tt-row"><span class="k">Перезарядка</span><span class="v">${hero.fireRate.toFixed(2)}с</span></div>
-      <div class="tt-row"><span class="k">Прочность</span><span class="v">${Math.round(hero.hp)} / ${Math.round(hero.maxHp)}</span></div>`;
+      <div class="tt-row"><span class="k">Перезарядка</span><span class="v">${hero.fireRate.toFixed(2)}с</span></div>`;
     tt.classList.add('visible');
     this.moveTooltip(x, y);
   },
@@ -2164,7 +2515,7 @@ const App = {
   },
   refreshMeta() {
     const c = SaveManager.coins;
-    ['metaCoinsLobby', 'metaCoinsInventory', 'metaCoinsUnitSelect', 'metaCoinsGacha'].forEach(id => {
+    ['metaCoinsLobby', 'metaCoinsInventory', 'metaCoinsUnitSelect', 'metaCoinsGacha', 'metaCoinsIndex'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.textContent = c;
     });
@@ -2180,7 +2531,6 @@ const App = {
     this.renderGachaCollection();
     this.renderAutoSellPanel();
     this.updateRates();
-    this.updatePityBar();
     UI.showScreen('gachaScreen');
     this.refreshMeta();
     const resultEl = document.getElementById('gachaResult');
@@ -2196,13 +2546,6 @@ const App = {
       if (el) el.textContent = (RARITY_RU[r] || r) + ' ' + ((byR[r] || 0) / total * 100).toFixed(1) + '%';
     }
   },
-  updatePityBar() {
-    const left = Math.max(0, PITY_LIMIT - (SaveManager.data.pity || 0));
-    const el = document.getElementById('pityBar');
-    if (el) el.textContent = left === 0
-      ? '🎉 Гарант легендарки УЖЕ на следующем призыве!'
-      : `Гарант легендарки через ${left} призывов`;
-  },
   renderGachaReels() {
     const reels = document.getElementById('gachaReels');
     reels.innerHTML = '';
@@ -2210,8 +2553,7 @@ const App = {
       const d = document.createElement('div');
       d.className = 'gacha-reel';
       d.id = 'reel' + i;
-      const u = UNITS[i % UNITS.length];
-      d.innerHTML = u.emoji + '<div class="r-label"></div>';
+      d.innerHTML = '<div class="gacha-strip"><div class="cell"><div style="font-size:2rem;line-height:1">❓</div></div></div>';
       reels.appendChild(d);
     }
   },
@@ -2249,7 +2591,7 @@ const App = {
         <div class="u-status" style="color:${unlocked ? '#7fffa0' : '#ffb3b3'}">
           ${unlocked ? '✅ ОТКРЫТ' : '🔒 ' + (u.dropChance * 100).toFixed(1) + '%'}
         </div>
-        <div class="u-bonus">${st.dmg} урон · ${st.range} радиус · ${st.hp} прочн.</div>`;
+        <div class="u-bonus">${st.dmg} урон · ${st.range} радиус · ${st.fireRate}с заряд</div>`;
       grid.appendChild(card);
     }
   },
@@ -2269,56 +2611,6 @@ const App = {
     const resultEl = document.getElementById('gachaResult');
     resultEl.textContent = '';
     resultEl.className = 'gacha-result';
-    const reels = [];
-    for (let i = 0; i < 5; i++) {
-      reels.push(document.getElementById('reel' + i));
-      reels[i].classList.add('spinning');
-      reels[i].classList.remove('winner');
-    }
-    let ticks = 0;
-    const spinInterval = setInterval(() => {
-      for (const r of reels) {
-        const u = UNITS[Math.floor(Math.random() * UNITS.length)];
-        r.innerHTML = u.emoji + '<div class="r-label"></div>';
-      }
-      if (ticks % 3 === 0) Sound.gachaClick();
-      ticks++;
-      if (ticks >= 24) {
-        clearInterval(spinInterval);
-        this.finishSpin(count);
-        btn1.disabled = false; btn10.disabled = false;
-        btn1.textContent = 'ПРИЗЫВ ×1 (100 🪙)';
-        btn10.textContent = 'ПРИЗЫВ ×10 (900 🪙)';
-      }
-    }, 80);
-  },
-  rollUnit() {
-    const save = SaveManager.data;
-    const pityLeft = PITY_LIMIT - 1 - (save.pity || 0);
-    let forceHigh = false;
-    if (pityLeft <= 0) {
-      forceHigh = true;
-      save.pity = 0;
-    } else {
-      save.pity = (save.pity || 0) + 1;
-      if (save.pity >= PITY_LIMIT) forceHigh = true;
-    }
-    if (forceHigh) {
-      const high = UNITS.filter(u => u.rarity === 'Legendary' || u.rarity === 'Mythic');
-      const total = high.reduce((s, u) => s + u.dropChance, 0);
-      let r = Math.random() * total;
-      for (const u of high) { r -= u.dropChance; if (r <= 0) return u; }
-      return high[0];
-    }
-    const total = UNITS.reduce((sum, u) => sum + u.dropChance, 0);
-    let r = Math.random() * total;
-    for (const u of UNITS) {
-      r -= u.dropChance;
-      if (r <= 0) return u;
-    }
-    return UNITS[0];
-  },
-  finishSpin(count) {
     const results = [];
     for (let i = 0; i < count; i++) results.push(this.rollUnit());
     if (count === 10) {
@@ -2333,34 +2625,64 @@ const App = {
         }
       }
     }
+    const rndUnit = () => UNITS[Math.floor(Math.random() * UNITS.length)];
+    const strips = [];
+    for (let i = 0; i < 5; i++) {
+      const el = document.getElementById('reel' + i);
+      el.classList.remove('winner');
+      el.classList.add('spinning');
+      el.style.justifyContent = 'flex-start';
+      el.style.alignItems = 'flex-start';
+      const strip = el.querySelector('.gacha-strip') || document.createElement('div');
+      strip.className = 'gacha-strip';
+      strip.style.transition = 'none';
+      strip.style.transform = 'translateY(0px)';
+      strip.innerHTML = '';
+      const du = results[i] || results[0];
+      const totalCells = 14 + i * 2;
+      for (let cid = 0; cid < totalCells; cid++) {
+        const last = cid === totalCells - 1;
+        const u = last ? du : rndUnit();
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.innerHTML = `<div style="font-size:2rem;line-height:1">${u.emoji}</div>` +
+          `<div class="cell-label" style="color:${RARITY_COLOR[u.rarity]}">${last ? RARITY_RU[u.rarity] : ''}</div>`;
+        strip.appendChild(cell);
+      }
+      el.appendChild(strip);
+      strips.push({ el, strip, totalCells });
+    }
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      for (let i = 0; i < strips.length; i++) {
+        const s = strips[i];
+        s.strip.style.transition = 'transform ' + (0.95 + i * 0.18).toFixed(2) + 's cubic-bezier(.15,.7,.2,1.05)';
+        s.strip.style.transform = 'translateY(-' + ((s.totalCells - 1) * 100) + 'px)';
+      }
+    }));
+    const t0 = performance.now();
+    const ticker = setInterval(() => {
+      if (performance.now() - t0 > 1550) { clearInterval(ticker); return; }
+      Sound.gachaClick();
+    }, 88);
+    setTimeout(() => this.applyResults(results, strips), 2150);
+  },
+  applyResults(results, strips) {
+    for (let i = 0; i < strips.length; i++) {
+      strips[i].el.classList.remove('spinning');
+      strips[i].el.classList.add('winner');
+    }
     let newCount = 0, dupCoins = 0, hasHigh = false;
-    const displayUnits = [];
     for (const u of results) {
       if (['Legendary', 'Mythic'].includes(u.rarity)) hasHigh = true;
       const wasUnlocked = SaveManager.isUnlocked(u.id);
       if (!wasUnlocked) {
         SaveManager.unlock(u.id);
         newCount++;
-        displayUnits.push({ unit: u, type: 'new' });
       } else {
         const autoSell = SaveManager.getAutoSell(u.rarity);
         const comp = RARITY_DUP[u.rarity] || 25;
-        if (autoSell) {
-          SaveManager.addCoins(comp);
-          dupCoins += comp;
-          displayUnits.push({ unit: u, type: 'dup-sold', coins: comp });
-        } else {
-          displayUnits.push({ unit: u, type: 'dup-kept' });
-        }
+        if (autoSell) { SaveManager.addCoins(comp); dupCoins += comp; }
       }
-    }
-    const reels = [];
-    for (let i = 0; i < 5; i++) reels.push(document.getElementById('reel' + i));
-    for (let i = 0; i < reels.length; i++) {
-      const du = displayUnits[i] || displayUnits[0];
-      reels[i].classList.remove('spinning');
-      reels[i].innerHTML = du.unit.emoji + '<div class="r-label">' + RARITY_RU[du.unit.rarity] + '</div>';
-      reels[i].classList.add('winner');
     }
     const resultEl = document.getElementById('gachaResult');
     let msg = '';
@@ -2369,12 +2691,99 @@ const App = {
     if (newCount === 0 && dupCoins === 0) msg = '♻️ Дубли оставлены (авто-продажа выключена)';
     resultEl.textContent = msg;
     resultEl.className = 'gacha-result ' + (newCount > 0 ? 'new' : 'dup');
+    requestAnimationFrame(() => resultEl.classList.add('pop'));
+    if (newCount > 0) this.confetti();
     if (hasHigh) Sound.gachaWin(); else Sound.gachaCommon();
     SaveManager.save();
     this.refreshMeta();
     this.renderGachaCollection();
-    this.updatePityBar();
     this.spinning = false;
+    const btn1 = document.getElementById('btnSpinX1');
+    const btn10 = document.getElementById('btnSpinX10');
+    btn1.disabled = false; btn10.disabled = false;
+    btn1.textContent = 'ПРИЗЫВ ×1 (100 🪙)';
+    btn10.textContent = 'ПРИЗЫВ ×10 (900 🪙)';
+  },
+  confetti() {
+    const glyphs = ['🎉', '⭐', '✨', '🎊', '🪙'];
+    for (let i = 0; i < 26; i++) {
+      const s = document.createElement('span');
+      s.className = 'confetti';
+      s.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+      s.style.left = Math.random() * 100 + 'vw';
+      s.style.animationDelay = (Math.random() * 0.5).toFixed(2) + 's';
+      s.style.fontSize = (1.1 + Math.random()).toFixed(2) + 'rem';
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 2200);
+    }
+  },
+  rollUnit() {
+    const total = UNITS.reduce((sum, u) => sum + u.dropChance, 0);
+    let r = Math.random() * total;
+    for (const u of UNITS) { r -= u.dropChance; if (r <= 0) return u; }
+    return UNITS[0];
+  },
+  showIndex() {
+    this.renderIndex();
+    document.getElementById('indexOverlay').classList.add('visible');
+  },
+  renderIndex() {
+    const grid = document.getElementById('indexGrid');
+    grid.innerHTML = '';
+    const owned = UNITS.filter(u => SaveManager.isUnlocked(u.id)).length;
+    document.getElementById('indexTitle').textContent = `📑 ИНДЕКС ЮНИТОВ (${owned}/${UNITS.length})`;
+    for (const u of UNITS) {
+      const unlocked = SaveManager.isUnlocked(u.id);
+      const st = u.stats;
+      const card = document.createElement('div');
+      card.className = 'unit-card';
+      card.style.opacity = unlocked ? '' : '0.62';
+      card.innerHTML = `
+        <div class="u-emoji">${unlocked ? u.emoji : '🔒'}</div>
+        <div class="u-name">${u.name} <small style="opacity:.5;color:${RARITY_COLOR[u.rarity]}">${RARITY_RU[u.rarity]}</small></div>
+        <div class="u-desc">${unlocked ? u.desc : 'Юнит ещё не открыт'}</div>
+        <div class="u-bonus">Урон: ${st.dmg} · Радиус: ${st.range} · Заряд: ${st.fireRate}с</div>
+        <div class="u-bonus">Шанс выпадения: ${(u.dropChance * 100).toFixed(1)}%</div>`;
+      if (u.ability && u.ability !== 'none') {
+        const ab = document.createElement('div');
+        ab.className = 'u-bonus';
+        ab.style.color = '#ffd966';
+        ab.textContent = ABILITY_RU[u.ability] || '';
+        card.appendChild(ab);
+      }
+      if (u.aura) {
+        const au = document.createElement('div');
+        au.className = 'u-bonus';
+        au.style.color = '#c9a4ff';
+        au.textContent = '🌟 Аура: +' + Math.round(u.aura * 100) + '% урона союзникам';
+        card.appendChild(au);
+      }
+      card.addEventListener('click', () => {
+        if (unlocked) this.showUnitDetail(u);
+        else this.showLockedDetail(u);
+      });
+      grid.appendChild(card);
+    }
+  },
+  showLockedDetail(u) {
+    const overlay = document.getElementById('unitDetailOverlay');
+    const content = document.getElementById('unitDetailContent');
+    const st = u.stats;
+    content.innerHTML = `
+      <div class="ud-emoji">🔒</div>
+      <div class="ud-name">${u.name}</div>
+      <div class="ud-rarity" style="color:${RARITY_COLOR[u.rarity]}">${RARITY_RU[u.rarity]}</div>
+      <div class="ud-ability">🔒 Ещё не открыт · Шанс: ${(u.dropChance * 100).toFixed(1)}%</div>
+      <div class="ud-stats">
+        <div class="ud-stat"><div class="label">Урон</div><div class="val">${st.dmg}</div></div>
+        <div class="ud-stat"><div class="label">Радиус</div><div class="val">${st.range}</div></div>
+        <div class="ud-stat"><div class="label">Перезарядка</div><div class="val">${st.fireRate}с</div></div>
+      </div>
+      ${u.ability && u.ability !== 'none' ? `<div class="ud-ability">${ABILITY_RU[u.ability] || ''}</div>` : ''}
+      ${u.aura ? `<div class="ud-ability">🌟 Аура: +${Math.round(u.aura * 100)}% урона союзникам</div>` : ''}
+      <button class="btn small" id="udCloseBtn" style="margin-top:6px">ЗАКРЫТЬ</button>`;
+    content.querySelector('#udCloseBtn').addEventListener('click', () => overlay.classList.remove('visible'));
+    overlay.classList.add('visible');
   },
   showInventory() {
     this.lobby.stop();
@@ -2427,7 +2836,7 @@ const App = {
         <div class="u-emoji">${u.emoji}</div>
         <div class="u-name">${u.name} <small style="opacity:.5;color:${RARITY_COLOR[u.rarity]}">${RARITY_RU[u.rarity]}</small></div>
         <div class="u-desc">${u.desc}</div>
-        <div class="u-bonus">Урон: ${st.dmg} · Радиус: ${st.range} · Прочн.: ${st.hp}</div>
+        <div class="u-bonus">Урон: ${st.dmg} · Радиус: ${st.range} · Заряд: ${st.fireRate}с</div>
         <div style="font-weight:700;color:#7fffa0;font-size:.95rem">💰 Продать: ${RARITY_DUP[u.rarity] || 25}</div>
         <div class="u-actions"></div>`;
       const actions = card.querySelector('.u-actions');
@@ -2521,7 +2930,6 @@ const App = {
         <div class="ud-stat"><div class="label">Урон</div><div class="val">${st.dmg}</div></div>
         <div class="ud-stat"><div class="label">Радиус</div><div class="val">${st.range}</div></div>
         <div class="ud-stat"><div class="label">Перезарядка</div><div class="val">${st.fireRate}с</div></div>
-        <div class="ud-stat"><div class="label">Прочность</div><div class="val">${st.hp}</div></div>
       </div>
       <div class="ud-sell">ПРОДАТЬ ЗА 💰 ${sellPrice}</div>
       <button class="btn ${equipped ? 'unequip' : 'equip'}" id="udEquipBtn" style="margin-top:6px">${equipped ? '✓ УБРАТЬ ИЗ ОТРЯДА' : '⚡ ВЗЯТЬ В ОТРЯД'}</button>
@@ -2661,6 +3069,9 @@ const App = {
     document.getElementById('gachaBack').addEventListener('click', () => this.showLobby());
     document.getElementById('btnSpinX1').addEventListener('click', () => this.doSpin(1));
     document.getElementById('btnSpinX10').addEventListener('click', () => this.doSpin(10));
+    document.getElementById('btnIndex').addEventListener('click', () => this.showIndex());
+    document.getElementById('indexClose').addEventListener('click', () =>
+      document.getElementById('indexOverlay').classList.remove('visible'));
     document.getElementById('inventoryBack').addEventListener('click', () => this.showLobby());
     document.getElementById('unitSelectBack').addEventListener('click', () => this.showLobby());
     document.getElementById('unitSelectNext').addEventListener('click', () => this.showDifficultySelect());
@@ -2700,6 +3111,10 @@ const App = {
     document.getElementById('unitDetailOverlay').addEventListener('click', (e) => {
       if (e.target === document.getElementById('unitDetailOverlay'))
         document.getElementById('unitDetailOverlay').classList.remove('visible');
+    });
+    document.getElementById('indexOverlay').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('indexOverlay'))
+        document.getElementById('indexOverlay').classList.remove('visible');
     });
   }
 };
