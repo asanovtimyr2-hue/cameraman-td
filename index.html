@@ -442,6 +442,10 @@ const RARITY_COLOR = {
   'Epic': '#b06bff', 'Legendary': '#ffd966', 'Mythic': '#ff66cc'
 };
 const HERO_UPGRADE_COST = [0, 120, 280, 600, 1100];
+const RARITY_UPGRADE_MULT = {
+  'Common': 1.0, 'Uncommon': 1.3, 'Rare': 1.6,
+  'Epic': 2.0, 'Legendary': 2.5, 'Mythic': 3.0
+};
 const SELL_RATIO = 0.6;
 const BASE_MAX_HP = 1000;
 const BASE_WAVE_REGEN = 60;
@@ -490,77 +494,77 @@ const UNITS = [
     passive: { dmgBonus: 0.05, moneyBonus: 0 }, ability: 'none', aura: 0 },
   { id: 'steadicam', name: 'Стедикамен', emoji: '📸', rarity: 'Uncommon', dropChance: 0.10,
     desc: 'Очень быстрая стрельба, разгоняет союзников.',
-    stats: { dmg: 14, range: 110, fireRate: 0.45, hp: 190 },
+    stats: { dmg: 26, range: 110, fireRate: 0.45, hp: 190 },
     passive: { dmgBonus: 0, moneyBonus: 0.05 }, ability: 'speedBoost', aura: 0 },
   { id: 'makeup', name: 'Гримёр', emoji: '💄', rarity: 'Uncommon', dropChance: 0.08,
     desc: 'Латает союзников прямо в бою.',
-    stats: { dmg: 12, range: 120, fireRate: 1.2, hp: 220 },
+    stats: { dmg: 16, range: 120, fireRate: 1.2, hp: 220 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'heal', aura: 0 },
   { id: 'dronepilot', name: 'Пилот дрона', emoji: '🚁', rarity: 'Uncommon', dropChance: 0.07,
     desc: 'Ведёт огонь с воздуха. Большой радиус.',
-    stats: { dmg: 19, range: 175, fireRate: 0.7, hp: 170 },
+    stats: { dmg: 24, range: 175, fireRate: 0.7, hp: 170 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', aura: 0 },
   { id: 'scientist', name: 'Учёный', emoji: '🔬', rarity: 'Rare', dropChance: 0.06,
     desc: 'Приносит деньги в начале каждой волны.',
-    stats: { dmg: 14, range: 125, fireRate: 1.0, hp: 180 },
+    stats: { dmg: 17, range: 125, fireRate: 1.0, hp: 180 },
     passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash', aura: 0,
     cashPerWave: 90 },
   { id: 'gaffer', name: 'Осветитель', emoji: '💡', rarity: 'Rare', dropChance: 0.05,
     desc: 'Солёные лучи замедляют скибиди.',
-    stats: { dmg: 20, range: 130, fireRate: 1.0, hp: 210 },
+    stats: { dmg: 22, range: 130, fireRate: 1.0, hp: 210 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'slow', aura: 0 },
   { id: 'boomop', name: 'Бум-оператор', emoji: '🎙️', rarity: 'Rare', dropChance: 0.04,
     desc: 'Звуковые атаки и бафф скорости союзникам.',
-    stats: { dmg: 18, range: 120, fireRate: 0.85, hp: 200 },
+    stats: { dmg: 22, range: 120, fireRate: 0.85, hp: 200 },
     passive: { dmgBonus: 0, moneyBonus: 0.07 }, ability: 'speedBoost', aura: 0 },
   { id: 'engineer', name: 'Инженер', emoji: '🛠️', rarity: 'Epic', dropChance: 0.025,
     desc: 'Мастер студии. Много денег каждую волну.',
-    stats: { dmg: 16, range: 130, fireRate: 0.95, hp: 230 },
+    stats: { dmg: 21, range: 130, fireRate: 0.95, hp: 230 },
     passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash', aura: 0,
     cashPerWave: 170 },
   { id: 'director', name: 'Режиссёр', emoji: '🎬', rarity: 'Epic', dropChance: 0.025,
     desc: 'Командует огнём. Взрывы по площади.',
-    stats: { dmg: 26, range: 150, fireRate: 1.05, hp: 240 },
+    stats: { dmg: 33, range: 150, fireRate: 1.05, hp: 240 },
     passive: { dmgBonus: 0.10, moneyBonus: 0 }, ability: 'aoeBurst', aura: 0 },
   { id: 'speaker', name: 'Спикермен', emoji: '🔊', rarity: 'Epic', dropChance: 0.018,
     desc: 'Звуковые волны оглушают врагов.',
-    stats: { dmg: 24, range: 135, fireRate: 1.0, hp: 250 },
+    stats: { dmg: 30, range: 135, fireRate: 1.0, hp: 250 },
     passive: { dmgBonus: 0, moneyBonus: 0.05 }, ability: 'stun', aura: 0 },
   { id: 'streamer', name: 'Стример', emoji: '💎', rarity: 'Epic', dropChance: 0.012,
     desc: 'Аура поддержки БЕЗ ограничений карты. +деньги.',
-    stats: { dmg: 20, range: 140, fireRate: 0.95, hp: 220 },
+    stats: { dmg: 28, range: 140, fireRate: 0.95, hp: 220 },
     passive: { dmgBonus: 0, moneyBonus: 0.10 }, ability: 'none', aura: 0.12 },
   { id: 'soundmixer', name: 'Саунд-миксер', emoji: '🎚️', rarity: 'Legendary', dropChance: 0.009,
     desc: 'Мощные волны: урон + длинное оглушение.',
-    stats: { dmg: 30, range: 145, fireRate: 0.95, hp: 300 },
+    stats: { dmg: 38, range: 145, fireRate: 0.95, hp: 300 },
     passive: { dmgBonus: 0.05, moneyBonus: 0.05 }, ability: 'stun', abilityPower: 2.0, aura: 0 },
   { id: 'titanCam', name: 'Титан Камерамен', emoji: '🗿', rarity: 'Legendary', dropChance: 0.006,
     desc: 'Колосс огневой мощи. Один в поле воин.',
-    stats: { dmg: 55, range: 160, fireRate: 0.9, hp: 420 },
+    stats: { dmg: 70, range: 160, fireRate: 0.9, hp: 420 },
     passive: { dmgBonus: 0.10, moneyBonus: 0 }, ability: 'none', aura: 0 },
   { id: 'titanSpeaker', name: 'Титан Спикер', emoji: '📢', rarity: 'Mythic', dropChance: 0.003,
     desc: 'Сокрушающие волны звука по всей арене.',
-    stats: { dmg: 60, range: 170, fireRate: 1.0, hp: 520 },
+    stats: { dmg: 72, range: 170, fireRate: 1.0, hp: 520 },
     passive: { dmgBonus: 0.05, moneyBonus: 0.05 }, ability: 'aoeBurst', aoeRadius: 90, aura: 0.05 },
   { id: 'titanTV', name: 'Титан ТВ', emoji: '👑', rarity: 'Mythic', dropChance: 0.002,
     desc: 'Абсолютный чемпион студии. Аура на всю карту.',
-    stats: { dmg: 75, range: 185, fireRate: 0.85, hp: 600 },
+    stats: { dmg: 88, range: 185, fireRate: 0.85, hp: 600 },
     passive: { dmgBonus: 0.15, moneyBonus: 0.10 }, ability: 'aoeBurst', aoeRadius: 80, aura: 0.15 },
   { id: 'pyrotech', name: 'Пиротехник', emoji: '🎆', rarity: 'Uncommon', dropChance: 0.09,
     desc: 'Снаряды взрываются по площади при каждом попадании.',
-    stats: { dmg: 15, range: 120, fireRate: 1.1, hp: 200 },
+    stats: { dmg: 17, range: 120, fireRate: 1.1, hp: 200 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'splash', splashRadius: 55, aura: 0 },
   { id: 'snipercam', name: 'Снайпер', emoji: '🎯', rarity: 'Rare', dropChance: 0.035,
     desc: 'Очень дальний и точный огонь. Одна цель — один выстрел.',
-    stats: { dmg: 65, range: 260, fireRate: 2.3, hp: 160 },
+    stats: { dmg: 58, range: 260, fireRate: 0.8, hp: 160 },
     passive: { dmgBonus: 0.05, moneyBonus: 0 }, ability: 'none', aura: 0 },
   { id: 'bodyguard', name: 'Телохранитель', emoji: '🛡️', rarity: 'Uncommon', dropChance: 0.07,
     desc: 'Крепкий боец передовой линии. Огромная прочность.',
-    stats: { dmg: 13, range: 95, fireRate: 1.3, hp: 520 },
+    stats: { dmg: 15, range: 95, fireRate: 1.3, hp: 520 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', aura: 0 },
   { id: 'hacker', name: 'Хакер', emoji: '💻', rarity: 'Legendary', dropChance: 0.004,
     desc: 'Взламывает систему: аура урона и разряд с замедлением.',
-    stats: { dmg: 28, range: 140, fireRate: 0.9, hp: 260 },
+    stats: { dmg: 36, range: 140, fireRate: 0.9, hp: 260 },
     passive: { dmgBonus: 0, moneyBonus: 0.08 }, ability: 'slow', aura: 0.10 }
 ];
 
@@ -572,20 +576,20 @@ const ENEMIES = [
   { id: 'sci', name: 'Учёный Скибиди', emoji: '🧪', hp: 45, speed: 0.95, reward: 18, color: '#58c868', regen: 3 },
   { id: 'camo', name: 'Скибиди-Ниндзя', emoji: '🥷', hp: 32, speed: 1.6, reward: 16, color: '#585868', onDeathStun: 2.5 },
   { id: 'mut', name: 'Скибиди-Мутант', emoji: '🧟', hp: 95, speed: 0.85, reward: 30, color: '#98c8b8', onDeathSpawn: 3 },
-  { id: 'gToilet', name: 'G-Туалет', emoji: '🎯', hp: 120, speed: 0.6, reward: 60, color: '#d8b848', boss: true, bossStunEvery: 7 },
-  { id: 'gMan', name: 'G-Человек', emoji: '🕴️', hp: 220, speed: 0.55, reward: 90, color: '#c858c8', boss: true, bossStunEvery: 6 },
-  { id: 'gSci', name: 'Учёный-G-Туалет', emoji: '🧠', hp: 400, speed: 0.5, reward: 160, color: '#cc44ff', slowAura: true, boss: true, bossStunEvery: 5 },
+  { id: 'gToilet', name: 'G-Туалет', emoji: '🎯', hp: 120, speed: 0.6, reward: 60, color: '#d8b848', boss: true, bossStunEvery: 5 },
+  { id: 'gMan', name: 'G-Человек', emoji: '🕴️', hp: 220, speed: 0.55, reward: 90, color: '#c858c8', boss: true, bossStunEvery: 4 },
+  { id: 'gSci', name: 'Учёный-G-Туалет', emoji: '🧠', hp: 400, speed: 0.5, reward: 160, color: '#cc44ff', slowAura: true, boss: true, bossStunEvery: 3 },
   { id: 'armo', name: 'Бронескибиди', emoji: '🛞', hp: 130, speed: 0.55, reward: 40, color: '#8a9aa8', armorPct: 0.45 },
   { id: 'summoner', name: 'Призыватель', emoji: '🌀', hp: 80, speed: 0.8, reward: 36, color: '#a86ad8', summonsEvery: 7 },
   { id: 'shield', name: 'Щит-Скибиди', emoji: '🛡️', hp: 60, speed: 0.9, reward: 30, color: '#58a8c8', shield: 70, shieldRegen: 5 }
 ];
 
 const DIFFICULTIES = [
-  { id: 'easy', name: 'Легко', waves: 10, startMoney: 350, enemyHpMul: 0.8, enemySpeedMul: 0.9, rewardMul: 1.2, coinMul: 0.8 },
-  { id: 'normal', name: 'Обычный', waves: 15, startMoney: 300, enemyHpMul: 1.0, enemySpeedMul: 1.0, rewardMul: 1.0, coinMul: 1.0 },
-  { id: 'hard', name: 'Сложный', waves: 20, startMoney: 250, enemyHpMul: 1.3, enemySpeedMul: 1.1, rewardMul: 0.85, coinMul: 1.5 },
-  { id: 'insane', name: 'Безумный', waves: 25, startMoney: 200, enemyHpMul: 1.6, enemySpeedMul: 1.2, rewardMul: 0.7, coinMul: 2.0 },
-  { id: 'endless', name: 'Бесконечный', waves: 999, startMoney: 300, enemyHpMul: 1.0, enemySpeedMul: 1.0, rewardMul: 1.0, coinMul: 1.0, endless: true }
+  { id: 'easy', name: 'Легко', waves: 10, startMoney: 350, enemyHpMul: 0.8, enemySpeedMul: 0.9, rewardMul: 1.2, coinMul: 0.8, winCoins: 200 },
+  { id: 'normal', name: 'Обычный', waves: 15, startMoney: 300, enemyHpMul: 1.0, enemySpeedMul: 1.0, rewardMul: 1.0, coinMul: 1.0, winCoins: 350 },
+  { id: 'hard', name: 'Сложный', waves: 20, startMoney: 250, enemyHpMul: 1.3, enemySpeedMul: 1.1, rewardMul: 0.95, coinMul: 1.5, winCoins: 600 },
+  { id: 'insane', name: 'Безумный', waves: 25, startMoney: 250, enemyHpMul: 1.45, enemySpeedMul: 1.15, rewardMul: 0.85, coinMul: 2.0, winCoins: 900 },
+  { id: 'endless', name: 'Бесконечный', waves: 999, startMoney: 300, enemyHpMul: 1.0, enemySpeedMul: 1.0, rewardMul: 1.0, coinMul: 1.0, winCoins: 400, endless: true }
 ];
 
 const MAPS = [
@@ -1105,7 +1109,7 @@ class Hero {
     const ratio = this.maxHp > 0 ? this.hp / this.maxHp : 1;
     this.maxHp = newMax;
     this.hp = Math.min(newMax, Math.max(1, newMax * ratio));
-    this.upgradeCost = HERO_UPGRADE_COST[this.level] || 0;
+    this.upgradeCost = Math.round((HERO_UPGRADE_COST[this.level] || 0) * (RARITY_UPGRADE_MULT[this.unit.rarity] || 1) / 10) * 10;
     this.sellValue = Math.floor(this.spent * SELL_RATIO);
   }
   statValues(level) {
@@ -1156,7 +1160,7 @@ class Hero {
     for (let i = this._boostTargets.length - 1; i >= 0; i--) {
       const item = this._boostTargets[i];
       item.timer -= dt;
-      if (item.timer <= 0) { item.tower.fireRate /= 0.6; this._boostTargets.splice(i, 1); }
+      if (item.timer <= 0) { item.tower.fireRate /= 0.75; this._boostTargets.splice(i, 1); }
     }
     if (this.ability && this.ability !== 'none') {
       this.abilityCd -= dt;
@@ -1204,7 +1208,7 @@ class Hero {
       for (const t of this.game.heroes) {
         if (t === this || t.heroDead) continue;
         if (dist(this.x, this.y, t.x, t.y) <= this.range + 40 && !t._boostTargets.some(b => b.tower === t)) {
-          t.fireRate *= 0.6;
+          t.fireRate *= 0.75;
           this._boostTargets.push({ tower: t, timer: 5 });
         }
       }
@@ -1344,6 +1348,7 @@ class Enemy {
     this.hp = Math.max(0, this.hp - dmg);
   }
   applySlow(duration, factor) {
+    if (this.def.boss) { duration *= 0.5; factor = 1 - (1 - factor) * 0.35; }
     this.slowTimer = Math.max(this.slowTimer, duration);
     this.slowFactor = Math.min(this.slowFactor, clamp(factor, 0.2, 1));
     this.speed = this.baseSpeed * this.slowFactor;
@@ -1366,7 +1371,7 @@ class Enemy {
         let stunned = 0;
         for (const h of this.game.heroes) {
           if (h.heroDead) continue;
-          if (dist(this.x, this.y, h.x, h.y) <= 110) { h.stunTimer = Math.max(h.stunTimer || 0, 2); stunned++; }
+          if (dist(this.x, this.y, h.x, h.y) <= 110) { h.stunTimer = Math.max(h.stunTimer || 0, 2.5); stunned++; }
         }
         if (stunned) {
           this.game.explosions.push({ x: this.x, y: this.y, r: 0, maxR: 110, life: 0.5, maxLife: 0.5, rgb: '255,136,255', ring: true });
@@ -1570,14 +1575,14 @@ class Projectile {
         if (e.hp <= 0 || e.reachedEnd) continue;
         if (dist(tx, ty, e.x, e.y) <= this.aoe) {
           e.takeDamage(this.damage);
-          if (this.owner && this.owner.ability === 'slow') e.applySlow(1.2, 0.55);
+          if (this.owner && this.owner.ability === 'slow') e.applySlow(1.0, 0.72);
         }
       }
       this.game.explosions.push({ x: tx, y: ty, r: 0, maxR: this.aoe, life: 0.25, maxLife: 0.25, rgb: '255,150,60' });
       Sound.explosion();
     } else {
       this.target.takeDamage(this.damage);
-      if (this.owner && this.owner.ability === 'slow') this.target.applySlow(1.2, 0.55);
+      if (this.owner && this.owner.ability === 'slow') this.target.applySlow(1.0, 0.72);
       if (this.kind === 'coin') Sound.coinSnd();
       else if (this.kind === 'laser') { Sound.laser(); this.game.beams.push({ x1: this.ox, y1: this.oy, x2: this.target.x, y2: this.target.y, life: 0.16, color: this.color }); }
       else Sound.hit();
@@ -2154,7 +2159,7 @@ class Game {
     this.countdownActive = false;
     const completed = win ? this.maxWaves : Math.max(0, this.wave - 1);
     let coins = 0;
-    if (win) coins = Math.round((completed * 12 + this.kills + 150) * (this.difficulty.coinMul || 1));
+    if (win) coins = this.difficulty.winCoins || 350;
     SaveManager.addCoins(coins);
     if (win) Sound.victory(); else Sound.defeat();
     if (this.difficulty.endless && this.wave > (SaveManager.data.endlessRecord || 0)) {
@@ -2991,7 +2996,7 @@ const App = {
         <div class="d-row">🌊 Волн: <b>${d.endless ? '∞' : d.waves}</b></div>
         <div class="d-row">💰 Старт: <b>${d.startMoney}</b> · 🏠 База: <b>1000 HP</b></div>
         <div class="d-row">🛡 HP ×<b>${d.enemyHpMul}</b> · ⚡ Скор. ×<b>${d.enemySpeedMul}</b></div>
-        <div class="d-row">🪙 Монеты ×<b>${d.coinMul}</b></div>`;
+        <div class="d-row">🪙 Победа: +<b>${d.winCoins || 350}</b> монет</div>`;
       card.addEventListener('click', () => {
         SaveManager.selectedDifficulty = d.id;
         SaveManager.save();
