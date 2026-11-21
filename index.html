@@ -71,7 +71,8 @@
 .tk-stun{color:#ffe066;border-color:#ffe06688;background:#ffe06612}
 .tk-slow{color:#9fd0ff;border-color:#9fd0ff88;background:#9fd0ff12}
 .tk-farm,.tk-money,.tk-atk-coin{color:#7fff9e;border-color:#7fff9e88;background:#7fff9e12}
-.tk-aura,.tk-boost{color:#ffd966;border-color:#ffd96688;background:#ffd96612}
+.tk-boost{color:#ffd966;border-color:#ffd96688;background:#ffd96612}
+  .tk-limit{color:#9fb0d0;border-color:#9fb0d088;background:#9fb0d012}
 .tk-big{color:#ff9dd0;border-color:#ff9dd088;background:#ff9dd012}
 .tk-atk-rocket{color:#ffd15c;border-color:#ffd15c88;background:#ffd15c12}
 .tk-atk-shell{color:#ffa64d;border-color:#ffa64d88;background:#ffa64d12}
@@ -159,29 +160,49 @@
   .diff-card.selected{border-color:#4fc3ff;box-shadow:0 0 20px #0077ff66,0 4px 0 #0a0e14}
   .diff-card .d-name{font-weight:800;font-size:1.05rem;color:#cfe0ff;margin-bottom:6px}
   .diff-card .d-row{font-size:.8rem;opacity:.75;line-height:1.7}
-  .gacha-stage{display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;padding:20px 0}
+  .gacha-stage{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;padding:10px 0}
   .gacha-reels{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;width:100%;max-width:720px}
-  .gacha-reel{width:80px;height:100px;background:#0e1420;border-radius:14px;box-shadow:0 0 0 2px #2a3a4e inset;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:2.4rem;
+  .gacha-reel{width:66px;height:84px;background:#0e1420;border-radius:12px;box-shadow:0 0 0 2px #2a3a4e inset;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:1.9rem;
     position:relative;overflow:hidden;transition:box-shadow .2s}
   .gacha-reel.spinning{box-shadow:0 0 0 2px #4fc3ff inset,0 0 20px #4fc3ff66}
   .gacha-reel.winner{box-shadow:0 0 0 3px #ffd966 inset,0 0 30px #ffd96688}
   .gacha-reel .r-label{position:absolute;bottom:4px;font-size:.6rem;font-weight:700;color:#7ee7ff;text-shadow:0 1px 3px #000}
   .gacha-strip{display:flex;flex-direction:column;will-change:transform;transition:transform 1s cubic-bezier(.15,.7,.2,1.05)}
-  .gacha-strip .cell{width:80px;height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;position:relative}
+  .gacha-strip .cell{width:66px;height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;position:relative}
   .gacha-strip .cell .cell-label{font-size:.62rem;font-weight:700;color:#7ee7ff;text-shadow:0 1px 3px #000}
   @keyframes popIn{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.18)}100%{transform:scale(1);opacity:1}}
   .gacha-result.pop{animation:popIn .4s ease}
   @keyframes confFall{0%{transform:translateY(-12vh) rotate(0);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:.2}}
   .confetti{position:fixed;top:0;font-size:1.5rem;pointer-events:none;z-index:400;animation:confFall 1.5s ease-in forwards}
-  /* v2.17: анимация крейта и открытие x10 */
+  /* v2.18: анимация крейта (ящик с крышкой) и Verity 1% */
   #crateOverlay{z-index:500}
-  #crateBox{font-size:7rem;line-height:1;filter:drop-shadow(0 0 30px #ffd96688)}
-  #crateBox.godly{filter:drop-shadow(0 0 40px #ffd966)}
+  #crateBox{position:relative;width:150px;height:130px;filter:drop-shadow(0 0 30px #ffd96688)}
   #crateOverlay.shaking #crateBox{animation:crateShake .16s linear infinite}
-  #crateOverlay.flash #crateBox{animation:crateBurst .5s ease-in forwards}
   @keyframes crateShake{0%{transform:rotate(-6deg) scale(1.04)}25%{transform:rotate(5deg) scale(1.09)}50%{transform:rotate(-4deg) scale(1.05)}75%{transform:rotate(6deg) scale(1.11)}100%{transform:rotate(-6deg) scale(1.04)}}
-  @keyframes crateBurst{0%{transform:scale(1);opacity:1}55%{transform:scale(1.9);filter:drop-shadow(0 0 60px #fff) brightness(3);opacity:1}100%{transform:scale(3.4);opacity:0;filter:drop-shadow(0 0 80px #fff) brightness(6)}}
+  .cb-base{position:absolute;left:0;right:0;bottom:0;height:80px;border-radius:10px;background:linear-gradient(180deg,#8a5f38,#533722);
+    box-shadow:inset 0 -8px 14px #00000055,0 0 0 3px var(--cb,#ffd96688),0 12px 30px #00000099}
+  .cb-base::before{content:'';position:absolute;left:12px;right:12px;top:50%;height:6px;transform:translateY(-50%);background:#00000038;border-radius:3px}
+  .cb-lid{position:absolute;left:-6px;right:-6px;top:6px;height:42px;border-radius:9px;background:linear-gradient(180deg,#9a6f42,#6b4a2a);
+    transform-origin:12% 100%;transition:transform .55s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 0 3px var(--cb,#ffd96688)}
+  #crateOverlay.flash .cb-lid{transform:rotate(-120deg) translate(-24px,-46px)}
+  #crateOverlay.flash .cb-base{animation:crateFade .8s ease .25s forwards}
+  @keyframes crateFade{0%{transform:scale(1)}60%{transform:scale(1.22)}100%{transform:scale(1.5) translateY(26px);opacity:0}}
+  .verity-tag{position:absolute;top:-48px;left:50%;transform:translateX(-50%);font-weight:900;font-size:1.6rem;color:#ff4d5e;
+    text-shadow:0 0 18px #ff4d5e;letter-spacing:2px;opacity:0;transition:opacity .25s;white-space:nowrap}
+  #crateBox.verity-on .verity-tag{opacity:1}
+  .verity-face{position:absolute;left:50%;bottom:70px;width:120px;height:120px;margin-left:-60px;border-radius:26px;
+    background:linear-gradient(160deg,#e8e8f2,#a9a9c2);box-shadow:0 0 0 3px #ff4d5e88,0 0 40px #ff4d5e66;
+    transform:translateY(40px) scale(.3);opacity:0;transition:transform .45s cubic-bezier(.34,1.4,.64,1),opacity .3s;z-index:2}
+  #crateBox.verity-on .verity-face{transform:translateY(0) scale(1);opacity:1}
+  .verity-eyes{display:flex;justify-content:center;gap:26px;padding-top:28px}
+  .verity-eyes i{width:14px;height:20px;border-radius:6px;background:#191c2e;box-shadow:0 0 10px #ff4d5e}
+  .verity-mouth{margin:12px auto 0;width:60px;height:14px;border-radius:0 0 30px 30px;background:#191c2e;
+    transition:all .35s ease .1s}
+  #crateBox.verity-on .verity-mouth{width:84px;height:64px;border-radius:14px 14px 40px 40px}
+  .verity-drops{position:absolute;left:50%;top:56%}
+  .v-drop{position:absolute;font-size:1.7rem;opacity:0;animation:unitDrop 1s cubic-bezier(.3,.7,.4,1) forwards}
+  @keyframes unitDrop{0%{transform:translate(0,0) scale(.4);opacity:0}15%{opacity:1}100%{transform:translate(var(--dx),150px) rotate(var(--rot)) scale(1.15);opacity:1}}
   .crate-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;width:100%;max-width:960px;margin:0 auto}
   .crate-cell{background:#141824;border:2px solid #5a6890;border-radius:12px;padding:10px 6px;text-align:center;animation:popIn .45s cubic-bezier(.2,.9,.3,1.25) backwards}
   .crate-cell.single{padding:26px 14px;margin:0 auto;max-width:300px}
@@ -270,6 +291,18 @@
 .gacha-boxes{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
   .gacha-box-tab{min-width:180px}
   .gacha-box-tab.accent{box-shadow:0 0 0 2px #ffd96666 inset}
+  #gachaScreen .subpanel{padding:14px 16px}
+  .gacha-toggles{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+  .gacha-toggles .btn{min-width:0;padding:6px 14px;font-size:.8rem}
+  .gacha-toggles .btn.on{box-shadow:0 0 0 2px #ffd96688 inset}
+  .hidden-sec{display:none!important}
+  @media (max-width:820px){
+    .gacha-reel,.gacha-strip .cell{width:62px;height:80px}
+    #gachaScreen .subpanel{padding:10px 10px}
+    .gacha-stage{padding:6px 0;gap:8px}
+    .gacha-reels{gap:4px}
+    .gacha-reel{font-size:1.7rem}
+  }
   .gacha-stock{background:#141b28;border-radius:14px;padding:10px 14px;margin-top:10px;box-shadow:0 0 0 1px #26324a inset}
   .gacha-stock .stock-head{font-weight:800;letter-spacing:.5px;color:#7ee7ff;text-align:center;font-size:.9rem}
   .gacha-stock .stock-head b{color:#ffd966}
@@ -319,6 +352,10 @@
       <div class="coin-badge"><span class="coin-ico">¢</span> <span id="metaCoinsGacha">0</span></div>
     </div>
     <div class="gacha-boxes" id="gachaBoxes"></div>
+    <div class="gacha-toggles">
+      <button class="btn small" id="tglStock">📦 СТОК</button>
+      <button class="btn small" id="tglColl">📋 КОЛЛЕКЦИЯ</button>
+    </div>
     <div class="gacha-stock" id="gachaStock"></div>
     <div class="gacha-stage">
       <div class="gacha-reels" id="gachaReels"></div>
@@ -481,7 +518,6 @@
     <button id="pauseBtn" class="btn small">⏸ ПАУЗА</button>
     <button id="speedBtn" class="btn small">⏩ ×1</button>
     <button id="autoSkipBtn" class="btn small">🤖 АВТО-СКИП: ВЫКЛ</button>
-    <button id="ultBtn" class="btn gold small">💥 УЛЬТА (60)</button>
     <button id="quitToLobbyBtn" class="btn small danger">🏠 ЛОББИ</button>
   </div>
   <div class="game-canvas-wrap"><canvas id="gameCanvas" width="960" height="640"></canvas></div>
@@ -524,7 +560,7 @@
   <div class="unit-detail" id="unitDetailContent"></div>
 </div>
 
-<div class="unit-detail-overlay" id="crateOverlay">
+<div class="unit-detail-overlay" id="crateDetailOverlay">
   <div class="unit-detail" id="crateContent"></div>
 </div>
 
@@ -560,7 +596,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
 const LOADOUT_SIZE = 5;
-const GAME_VERSION = 'v2.17-ULT-GODLY';
+const GAME_VERSION = 'v2.18-ULT-VERITY';
 
 const DCOL = { easy: '#4dff4d', normal: '#4fc3ff', hard: '#ffb347', insane: '#ff5555', endless: '#c86bff' };
 const I18N_EN = {
@@ -609,7 +645,6 @@ const I18N_EN = {
   "Спикермен": "Speakerman",
   "Звуковые волны оглушают врагов.": "Sound waves stun enemies.",
   "Стример": "Streamer",
-  "Аура поддержки БЕЗ ограничений карты. +деньги.": "Support aura with NO map limit. +money.",
   "Саунд-миксер": "Sound Mixer",
   "Мощные волны: урон + длинное оглушение.": "Powerful waves: damage + long stun.",
   "Титан Камерамен": "Titan Cameraman",
@@ -617,7 +652,6 @@ const I18N_EN = {
   "Титан Спикер": "Titan Speakerman",
   "Сокрушающие волны звука по всей арене.": "Crushing sound waves across the arena.",
   "Титан ТВ": "Titan TV Man",
-  "Абсолютный чемпион студии. Аура на всю карту.": "Absolute studio champion. Whole-map aura.",
   "Пиротехник": "Pyrotechnician",
   "Снаряды взрываются по площади при каждом попадании.": "Shells explode in an area with every hit.",
   "Снайпер": "Sniper",
@@ -625,7 +659,6 @@ const I18N_EN = {
   "Телохранитель": "Bodyguard",
   "Крепкий боец передовой линии. Огромная прочность.": "Tough front-line fighter. Huge durability.",
   "Хакер": "Hacker",
-  "Взламывает систему: аура урона и разряд с замедлением.": "Hacks the system: damage aura and slow discharge.",
   "Обычный Скибиди": "Common Skibidi",
   "Быстрый Скибиди": "Fast Skibidi",
   "Большой Скибиди": "Big Skibidi",
@@ -770,11 +803,8 @@ const I18N_EN = {
   "Код активирован: +%1 🪙": "Code activated: +%1 🪙",
   "Стелс": "Stealth",
   "📦 ОТКРЫВАЕМ...": "📦 OPENING...",
-  "💥 УЛЬТА (готова)": "💥 ULT (READY)",
-  "💥 УЛЬТА (%1с)": "💥 ULT (%1s)",
   "Ульта перезаряжается: %1с": "Ult recharging: %1s",
   "🎬 КИНЕМАТОГРАФИЧНЫЙ ВЗРЫВ!": "🎬 CINEMATIC BLAST!",
-  "🎬 УЛЬТА!": "🎬 ULT!",
   "%1 Новобранец": "%1 Rookie",
   "Звук включён": "Sound on",
   "Звук выключен": "Sound off",
@@ -805,6 +835,19 @@ const I18N_EN = {
   "🔧 Доход ферм: +%1💰/волну": "🔧 Farm income: +%1💰/wave",
   "Скип волны! +%1💰": "Wave skipped! +%1💰",
     "Обычный ящик": "Common Crate",
+    "📦 СТОК": "📦 STOCK",
+    "📋 КОЛЛЕКЦИЯ": "📋 COLLECTION",
+  "Ультимативный": "Ultimate",
+  "Титан-Камерамен 4.0": "Titan Cameraman 4.0",
+  "Последняя форма титана альянса: плазменные залпы по площади и несокрушимая броня. Шанс 0.05%.": "The titan\u2019s final form: area plasma salvos and indestructible armor. 0.05% chance.",
+  "Божественный покровитель кино: разрушительный фотонный залп по площади. Шанс 0.1%.": "Divine patron of cinema: devastating photon area salvo. 0.1% chance.",
+  "Стримит прямо с фронта. Знаменитость студии: +10% доходаVerse.": "Streams from the front line. Studio celebrity: +10% income.",
+  "Абсолютный чемпион студии: залпы по площади с разрушительным уроном.": "Absolute studio champion: devastating area-salvo bursts.",
+  "Взламывает систему: попадания замедляют скибиди, +8% доходаVerse.": "Hacks the system: hits slow skibidis, +8% income.",
+  "Голографический страйдер: очень дальний и точный огонь.": "Holographic strider: very long-range precise fire.",
+  "Лимит: %1": "Limit: %1",
+  "Лимит «%1» — максимум %2": "Limit of %1: max %2",
+  "VERITY!": "VERITY!",
     "Мифический сундук": "Mythic Chest",
     "СТОК — СБРОС ЧЕРЕЗ %1": "STOCK \u2014 RESETS IN %1",
     "ПРИЗЫВ ×1 (%1 🪙)": "SUMMON ×1 (%1 🪙)",
@@ -841,7 +884,6 @@ const I18N_EN = {
   "ТВ-Страйдер": "TV Strider",
   "ТВ-страйдер поддержки: попадания замедляют врагов.": "Support TV strider: hits slow enemies.",
   "Голо-Кам": "Holo-Cam",
-  "Голографический страйдер: аура +20% урона союзникам.": "Holographic strider: +20% ally damage aura.",
   "ТВ-Оверлорд": "TV Overlord",
   "Мифический оверлорд: тяжёлые залпы по площади. Шанс 0.2%.": "Mythic overlord: heavy area salvos. 0.2% chance.",
   "🕷️ Спайдер-крейт": "🕷️ Spider Crate",
@@ -942,20 +984,24 @@ function installLangObserver() {
 
 const MAX_HEROES = 15;
 
-const RARITY_ORDER = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Mythic', 'Godly'];
+const RARITY_ORDER = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Mythic', 'Godly', 'Ultimate'];
 const RARITY_RU = {
   'Common': 'Обычный', 'Uncommon': 'Необычный', 'Rare': 'Редкий',
-  'Epic': 'Эпический', 'Legendary': 'Легендарный', 'Mythic': 'Мифический', 'Godly': 'Божественный'
+  'Epic': 'Эпический', 'Legendary': 'Легендарный', 'Mythic': 'Мифический', 'Godly': 'Божественный',
+  'Ultimate': 'Ультимативный'
 };
 const RARITY_COST = {
-  'Common': 100, 'Uncommon': 175, 'Rare': 300, 'Epic': 450, 'Legendary': 700, 'Mythic': 1100, 'Godly': 1600
+  'Common': 100, 'Uncommon': 175, 'Rare': 300, 'Epic': 450, 'Legendary': 700, 'Mythic': 1100, 'Godly': 1600,
+  'Ultimate': 2000
 };
 const RARITY_DUP = {
-  'Common': 25, 'Uncommon': 45, 'Rare': 90, 'Epic': 160, 'Legendary': 500, 'Mythic': 900, 'Godly': 2000
+  'Common': 25, 'Uncommon': 45, 'Rare': 90, 'Epic': 160, 'Legendary': 500, 'Mythic': 900, 'Godly': 2000,
+  'Ultimate': 4000
 };
 const RARITY_COLOR = {
   'Common': '#aaaaaa', 'Uncommon': '#7fffa0', 'Rare': '#7ee7ff',
-  'Epic': '#b06bff', 'Legendary': '#ffd966', 'Mythic': '#ff66cc', 'Godly': '#ffcf3d'
+  'Epic': '#b06bff', 'Legendary': '#ffd966', 'Mythic': '#ff66cc', 'Godly': '#ffcf3d',
+  'Ultimate': '#ff4d5e'
 };
 const HERO_UPGRADE_COST = [0, 120, 280, 600, 1100];
 const RARITY_UPGRADE_MULT = {
@@ -988,7 +1034,8 @@ const UNIT_ATK = {
   titanTV: 'laser', pyrotech: 'shell', snipercam: 'laser', bodyguard: 'bullet', hacker: 'voxel',
   striderSpeaker: 'wave', striderCamera: 'laser', striderPlasma: 'voxel',
   tvStrider: 'wave', holoCam: 'ring', tvOverlord: 'laser',
-  rookie: 'bullet', soundengineer: 'wave', shadowop: 'laser', cinegod: 'laser'
+  rookie: 'bullet', soundengineer: 'wave', shadowop: 'laser', cinegod: 'laser',
+  titanCam40: 'laser'
 };
 const UNIT_CELLS = { titanCam: [2, 1], titanTV: [2, 1], titanSpeaker: [2, 1] };
 function unitCells(id) { return UNIT_CELLS[id] || [1, 1]; }
@@ -1006,11 +1053,11 @@ const ABILITY_RU = {
 
 const GACHA_BOXES = [
   { id: 'common', name: '\ud83d\udce6 \u041e\u0431\u044b\u0447\u043d\u044b\u0439 \u044f\u0449\u0438\u043a', cost1: 100, cost10: 900,
-    rates: { Common: 0.547, Uncommon: 0.30, Rare: 0.13, Epic: 0.018, Legendary: 0.002, Mythic: 0.002, Godly: 0.001 },
-    stock: { Common: 2, Uncommon: 2, Rare: 2, Epic: 1, Legendary: 1, Mythic: 1, Godly: 1 } },
+    rates: { Common: 0.4989, Uncommon: 0.30, Rare: 0.15, Epic: 0.04, Legendary: 0.01, Mythic: 0.0009, Godly: 0.0001, Ultimate: 0.0001 },
+    stock: { Common: 2, Uncommon: 2, Rare: 2, Epic: 1, Legendary: 1, Mythic: 1, Godly: 1, Ultimate: 1 } },
   { id: 'mythic', name: '\ud83d\udca0 \u041c\u0438\u0444\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u0441\u0443\u043d\u0434\u0443\u043a', cost1: 900, cost10: 4000,
-    rates: { Rare: 0.449, Epic: 0.40, Legendary: 0.12, Mythic: 0.03, Godly: 0.001 },
-    stock: { Rare: 2, Epic: 2, Legendary: 2, Mythic: 1, Godly: 1 } }
+    rates: { Rare: 0.449, Epic: 0.40, Legendary: 0.12, Mythic: 0.0295, Godly: 0.0015, Ultimate: 0.0005 },
+    stock: { Rare: 2, Epic: 2, Legendary: 2, Mythic: 1, Godly: 1, Ultimate: 1 } }
 ];
 const STOCK_PERIOD_MS = 15 * 60 * 1000;
 
@@ -1043,129 +1090,143 @@ function gachaStock(boxId, bucket) {
   return stock;
 }
 
+const UNIT_LIMITS = {
+  intern: 8, operator: 8, steadicam: 8, makeup: 8, dronepilot: 8, rookie: 8,
+  scientist: 4, engineer: 4,
+  gaffer: 8, boomop: 6, bodyguard: 6, pyrotech: 6,
+  director: 4, speaker: 4, streamer: 4, soundmixer: 4, soundengineer: 4,
+  titanCam: 2, titanSpeaker: 2, titanTV: 2,
+  snipercam: 3, hacker: 3, shadowop: 3,
+  striderSpeaker: 3, striderCamera: 3, striderPlasma: 2, tvStrider: 3, holoCam: 3, tvOverlord: 2,
+  cinegod: 1, titanCam40: 1
+};
+function unitLimit(id) { return UNIT_LIMITS[id] || MAX_HEROES; }
+
 const UNITS = [
   { id: 'intern', name: 'Стажёр', emoji: '🎥', rarity: 'Common', dropChance: 0.20,
     desc: 'Молодой стажёр студии. Первый боец против скибиди.',
     stats: { dmg: 18, range: 115, fireRate: 1.0, hp: 150 },
-    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', aura: 0 },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none' },
   { id: 'operator', name: 'Оператор', emoji: '📹', rarity: 'Common', dropChance: 0.14,
     desc: 'Опытный оператор камер. Надёжный и меткий.',
     stats: { dmg: 22, range: 130, fireRate: 0.95, hp: 200 },
-    passive: { dmgBonus: 0.05, moneyBonus: 0 }, ability: 'none', aura: 0 },
+    passive: { dmgBonus: 0.05, moneyBonus: 0 }, ability: 'none' },
   { id: 'steadicam', name: 'Стедикамен', emoji: '📸', rarity: 'Uncommon', dropChance: 0.10,
     desc: 'Очень быстрая стрельба, разгоняет союзников.',
     stats: { dmg: 26, range: 110, fireRate: 0.45, hp: 190 },
-    passive: { dmgBonus: 0, moneyBonus: 0.05 }, ability: 'speedBoost', aura: 0 },
+    passive: { dmgBonus: 0, moneyBonus: 0.05 }, ability: 'speedBoost' },
   { id: 'makeup', name: 'Гримёр', emoji: '💄', rarity: 'Uncommon', dropChance: 0.09,
     desc: 'Бодрит союзников в бою: снимает стан и даёт иммунитет к стану боссов.',
     stats: { dmg: 16, range: 120, fireRate: 1.2, hp: 220 },
-    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'antistan', aura: 0 },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'antistan' },
   { id: 'dronepilot', name: 'Пилот дрона', emoji: '🚁', rarity: 'Uncommon', dropChance: 0.07,
     desc: 'Ведёт огонь с воздуха. Большой радиус.',
     stats: { dmg: 24, range: 175, fireRate: 0.7, hp: 170 },
-    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', aura: 0 },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none' },
   { id: 'scientist', name: 'Учёный', emoji: '🔬', rarity: 'Rare', dropChance: 0.04,
     desc: 'Ферма. Приносит деньги в конце каждой волны.',
     stats: { dmg: 0, range: 125, fireRate: 0, hp: 180 },
-    passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash', aura: 0,
-    cashPerWave: 90, pureFarm: true },
+    passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash',    cashPerWave: 90, pureFarm: true },
   { id: 'gaffer', name: 'Осветитель', emoji: '💡', rarity: 'Rare', dropChance: 0.05,
     desc: 'Солёные лучи замедляют скибиди.',
     stats: { dmg: 22, range: 130, fireRate: 1.0, hp: 210 },
-    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'slow', aura: 0 },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'slow' },
   { id: 'boomop', name: 'Бум-оператор', emoji: '🎙️', rarity: 'Rare', dropChance: 0.03,
     desc: 'Звуковые атаки и бафф скорости союзникам.',
     stats: { dmg: 22, range: 120, fireRate: 0.85, hp: 200 },
-    passive: { dmgBonus: 0, moneyBonus: 0.07 }, ability: 'speedBoost', aura: 0 },
+    passive: { dmgBonus: 0, moneyBonus: 0.07 }, ability: 'speedBoost' },
   { id: 'engineer', name: 'Инженер', emoji: '🛠️', rarity: 'Epic', dropChance: 0.03,
     desc: 'Чистая ферма. Не атакует, приносит деньги в конце каждой волны.',
     stats: { dmg: 0, range: 130, fireRate: 0, hp: 230 },
-    passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash', aura: 0,
-    cashPerWave: 170, pureFarm: true },
+    passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash',    cashPerWave: 170, pureFarm: true },
   { id: 'director', name: 'Режиссёр', emoji: '🎬', rarity: 'Epic', dropChance: 0.02,
     desc: 'Командует огнём. Взрывы по площади.',
     stats: { dmg: 33, range: 150, fireRate: 1.05, hp: 240 },
-    passive: { dmgBonus: 0.10, moneyBonus: 0 }, ability: 'aoeBurst', aura: 0 },
+    passive: { dmgBonus: 0.10, moneyBonus: 0 }, ability: 'aoeBurst' },
   { id: 'speaker', name: 'Спикермен', emoji: '🔊', rarity: 'Epic', dropChance: 0.018,
     desc: 'Звуковые волны оглушают врагов.',
     stats: { dmg: 30, range: 135, fireRate: 1.0, hp: 250 },
-    passive: { dmgBonus: 0, moneyBonus: 0.05 }, ability: 'stun', aura: 0 },
+    passive: { dmgBonus: 0, moneyBonus: 0.05 }, ability: 'stun' },
   { id: 'streamer', name: 'Стример', emoji: '💎', rarity: 'Epic', dropChance: 0.012,
-    desc: 'Аура поддержки БЕЗ ограничений карты. +деньги.',
+    desc: 'Стримит прямо с фронта. Знаменитость студии: +10% дохода.',
     stats: { dmg: 28, range: 140, fireRate: 0.95, hp: 220 },
-    passive: { dmgBonus: 0, moneyBonus: 0.10 }, ability: 'none', aura: 0.12 },
+    passive: { dmgBonus: 0, moneyBonus: 0.10 }, ability: 'none' },
   { id: 'soundmixer', name: 'Саунд-миксер', emoji: '🎚️', rarity: 'Legendary', dropChance: 0.008,
     desc: 'Мощные волны: урон + длинное оглушение.',
     stats: { dmg: 38, range: 145, fireRate: 0.95, hp: 300 },
-    passive: { dmgBonus: 0.05, moneyBonus: 0.05 }, ability: 'stun', abilityPower: 2.0, aura: 0 },
+    passive: { dmgBonus: 0.05, moneyBonus: 0.05 }, ability: 'stun', abilityPower: 2.0 },
   { id: 'titanCam', name: 'Титан Камерамен', emoji: '🗿', rarity: 'Legendary', dropChance: 0.008,
     desc: 'Колосс огневой мощи. Один в поле воин.',
     stats: { dmg: 70, range: 160, fireRate: 0.9, hp: 420 },
-    passive: { dmgBonus: 0.10, moneyBonus: 0 }, ability: 'none', aura: 0 },
+    passive: { dmgBonus: 0.10, moneyBonus: 0 }, ability: 'none' },
   { id: 'titanSpeaker', name: 'Титан Спикер', emoji: '📢', rarity: 'Mythic', dropChance: 0.005,
     desc: 'Сокрушающие волны звука по всей арене.',
     stats: { dmg: 72, range: 170, fireRate: 1.0, hp: 520 },
-    passive: { dmgBonus: 0.05, moneyBonus: 0.05 }, ability: 'aoeBurst', aoeRadius: 90, aura: 0.05 },
+    passive: { dmgBonus: 0.05, moneyBonus: 0.05 }, ability: 'aoeBurst', aoeRadius: 90 },
   { id: 'titanTV', name: 'Титан ТВ', emoji: '👑', rarity: 'Mythic', dropChance: 0.003,
-    desc: 'Абсолютный чемпион студии. Аура на всю карту.',
+    desc: 'Абсолютный чемпион студии: залпы по площади с разрушительным уроном.',
     stats: { dmg: 88, range: 185, fireRate: 0.85, hp: 600 },
-    passive: { dmgBonus: 0.15, moneyBonus: 0.10 }, ability: 'aoeBurst', aoeRadius: 80, aura: 0.15 },
+    passive: { dmgBonus: 0.15, moneyBonus: 0.10 }, ability: 'aoeBurst', aoeRadius: 80 },
   { id: 'pyrotech', name: 'Пиротехник', emoji: '🎆', rarity: 'Rare', dropChance: 0.05,
     desc: 'Снаряды взрываются по площади при каждом попадании.',
     stats: { dmg: 17, range: 120, fireRate: 1.1, hp: 200 },
-    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'splash', splashRadius: 55, aura: 0 },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'splash', splashRadius: 55 },
   { id: 'snipercam', name: 'Снайпер', emoji: '🎯', rarity: 'Rare', dropChance: 0.05,
     desc: 'Очень дальний и точный огонь. Одна цель — один выстрел.',
     stats: { dmg: 58, range: 260, fireRate: 0.8, hp: 160 },
-    passive: { dmgBonus: 0.05, moneyBonus: 0 }, ability: 'none', aura: 0 },
+    passive: { dmgBonus: 0.05, moneyBonus: 0 }, ability: 'none' },
   { id: 'bodyguard', name: 'Телохранитель', emoji: '🛡️', rarity: 'Uncommon', dropChance: 0.07,
     desc: 'Крепкий боец передовой линии. Огромная прочность.',
     stats: { dmg: 18, range: 95, fireRate: 1.3, hp: 520 },
-    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', aura: 0 },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none' },
   { id: 'hacker', name: 'Хакер', emoji: '💻', rarity: 'Legendary', dropChance: 0.006,
-    desc: 'Взламывает систему: аура урона и разряд с замедлением.',
+    desc: 'Взламывает систему: попадания замедляют скибиди, +8% дохода.',
     stats: { dmg: 36, range: 140, fireRate: 0.9, hp: 260 },
-    passive: { dmgBonus: 0, moneyBonus: 0.08 }, ability: 'slow', aura: 0.10 },
+    passive: { dmgBonus: 0, moneyBonus: 0.08 }, ability: 'slow' },
   { id: 'striderSpeaker', name: 'Спикер-Страйдер', emoji: '🔊', rarity: 'Common', dropChance: 0.68, shopOnly: true,
     desc: 'Страйдер на паучьих ногах. Звуковые снаряды взрываются по площади.',
     stats: { dmg: 26, range: 155, fireRate: 0.85, hp: 240 },
-    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'splash', aura: 0, crate: 'spider' },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'splash', crate: 'spider' },
   { id: 'striderCamera', name: 'Камера-Страйдер', emoji: '📷', rarity: 'Uncommon', dropChance: 0.318, shopOnly: true,
     desc: 'Быстрый и точный стрелок на длинной ноге.',
     stats: { dmg: 36, range: 175, fireRate: 0.7, hp: 260 },
-    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', aura: 0, crate: 'spider' },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', crate: 'spider' },
   { id: 'striderPlasma', name: 'Плазма-Страйдер', emoji: '☄️', rarity: 'Legendary', dropChance: 0.002, shopOnly: true,
     desc: 'Легендарная плазменная голова: периодический взрыв по площади. Шанс 0.2%.',
     stats: { dmg: 62, range: 185, fireRate: 1.05, hp: 300 },
-    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'aoeBurst', aura: 0, crate: 'spider' },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'aoeBurst', crate: 'spider' },
   { id: 'tvStrider', name: 'ТВ-Страйдер', emoji: '📺', rarity: 'Common', dropChance: 0.68, shopOnly: true,
     desc: 'ТВ-страйдер поддержки: попадания замедляют врагов.',
     stats: { dmg: 24, range: 160, fireRate: 0.9, hp: 230 },
-    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'slow', aura: 0, crate: 'holo' },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'slow', crate: 'holo' },
   { id: 'holoCam', name: 'Голо-Кам', emoji: '💠', rarity: 'Epic', dropChance: 0.318, shopOnly: true,
-    desc: 'Голографический страйдер: аура +20% урона союзникам.',
+    desc: 'Голографический страйдер: очень дальний и точный огонь.',
     stats: { dmg: 44, range: 195, fireRate: 0.85, hp: 280 },
-    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', aura: 0.20, crate: 'holo' },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', crate: 'holo' },
   { id: 'tvOverlord', name: 'ТВ-Оверлорд', emoji: '👑', rarity: 'Mythic', dropChance: 0.002, shopOnly: true,
     desc: 'Мифический оверлорд: тяжёлые залпы по площади. Шанс 0.2%.',
     stats: { dmg: 90, range: 205, fireRate: 1.15, hp: 420 },
-    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'aoeBurst', aura: 0, crate: 'holo' },
-  { id: 'rookie', name: 'Новобранец', emoji: '\U0001F392', rarity: 'Common', dropChance: 0.20,
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'aoeBurst', crate: 'holo' },
+  { id: 'rookie', name: 'Новобранец', emoji: '🎒', rarity: 'Common', dropChance: 0.20,
     desc: 'Молодой боец альянса. Дешёвый и надёжный старт против скибиди.',
     stats: { dmg: 20, range: 125, fireRate: 1.0, hp: 180 },
-    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', aura: 0 },
-  { id: 'soundengineer', name: 'Звукорежиссёр', emoji: '\U0001F3A7', rarity: 'Epic', dropChance: 0.03,
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none' },
+  { id: 'soundengineer', name: 'Звукорежиссёр', emoji: '🎧', rarity: 'Epic', dropChance: 0.03,
     desc: 'Звуковые волны оглушают врагов: ставит скибиди на паузу.',
     stats: { dmg: 40, range: 170, fireRate: 0.8, hp: 260 },
-    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'stun', aura: 0, abilityPower: 2.2 },
-  { id: 'shadowop', name: 'Теневой оператор', emoji: '\U0001F576\uFE0F', rarity: 'Legendary', dropChance: 0.012,
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'stun', abilityPower: 2.2 },
+  { id: 'shadowop', name: 'Теневой оператор', emoji: '🕶️', rarity: 'Legendary', dropChance: 0.012,
     desc: 'Высокий урон из тени: враги атакуют его в последнюю очередь.',
     stats: { dmg: 85, range: 185, fireRate: 1.1, hp: 300 },
-    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', aura: 0, stealth: true },
-  { id: 'cinegod', name: 'Бог Кино', emoji: '\U0001F31F', rarity: 'Godly', dropChance: 0.001,
-    desc: 'Божественный покровитель кино: разрушительный фотонный залп и золотая аура. Шанс 0.1%.',
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', stealth: true },
+  { id: 'cinegod', name: 'Бог Кино', emoji: '🌟', rarity: 'Godly', dropChance: 0.001,
+    desc: 'Божественный покровитель кино: разрушительный фотонный залп по площади. Шанс 0.1%.',
     stats: { dmg: 500, range: 250, fireRate: 1.9, hp: 900 },
-    passive: { dmgBonus: 0.15, moneyBonus: 0 }, ability: 'aoeBurst', aura: 0.30 }
+    passive: { dmgBonus: 0.15, moneyBonus: 0 }, ability: 'aoeBurst' },
+  { id: 'titanCam40', name: 'Титан-Камерамен 4.0', emoji: '🎥', rarity: 'Ultimate', dropChance: 0.0005,
+    desc: 'Последняя форма титана альянса: плазменные залпы по площади и несокрушимая броня. Шанс 0.05%.',
+    stats: { dmg: 650, range: 260, fireRate: 0.7, hp: 1100 },
+    passive: { dmgBonus: 0.25, moneyBonus: 0 }, ability: 'aoeBurst', aoeRadius: 110 }
 ];
 
 function statRange(u) {
@@ -1193,7 +1254,8 @@ function unitTagData(u) {
   if (u.ability === 'speedBoost') tags.push({ k: 'boost', label: T('Бафф скорости') });
   if (u.ability === 'antistan') tags.push({ k: 'antistan', label: T('Анти-стан') });
   if (u.stealth) tags.push({ k: 'stealth', label: T('Стелс') });
-  if (u.aura) tags.push({ k: 'aura', label: fill(T('Аура +%1%'), Math.round(u.aura * 100)) });
+  const lim = unitLimit(u.id);
+  if (lim < MAX_HEROES) tags.push({ k: 'limit', label: fill(T('Лимит: %1'), lim) });
   if (u.passive && u.passive.moneyBonus) tags.push({ k: 'money', label: fill(T('доход +%1%'), Math.round(u.passive.moneyBonus * 100)) });
   if (u.stats && u.stats.range >= 200) tags.push({ k: 'sniper', label: T('Снайпер') });
   const cells = unitCells(u.id);
@@ -1949,10 +2011,10 @@ class Hero {
     this.ability = unit.ability;
     this.abilityMaxCd = unit.ability === 'speedBoost' ? 12 : (unit.ability === 'aoeBurst' ? 15 :
       (unit.ability === 'stun' ? 10 : (unit.ability === 'antistan' ? 12 : 999)));
-    this.aoe = (unit.ability === 'aoeBurst') ? (unit.aoeRadius || 45) : ((unit.ability === 'splash') ? (unit.splashRadius || 50) : 0);
+    this.aoe = (unit.ability === 'splash') ? (unit.splashRadius || 50) : 0;
+    this.burstRadius = (unit.ability === 'aoeBurst') ? (unit.aoeRadius || 45) : 0;
     this.stunPower = unit.abilityPower || 1.4;
     this.moneyBonus = unit.passive.moneyBonus || 0;
-    this.auraBonus = unit.aura || 0;
     this.pureFarm = !!unit.pureFarm;
     this.baseCash = unit.cashPerWave || 0;
     this.buildPrice = RARITY_COST[unit.rarity] || 100;
@@ -1967,8 +2029,7 @@ class Hero {
   _maxHpAt(level) { return this.baseMaxHp * Math.pow(1.1, level - 1); }
   recalc() {
     const lvlMul = Math.pow(1.25, this.level - 1);
-    const aura = 1 + (this.game ? this.game.totalAura(this) : 0);
-    this.damage = this.baseDamage * lvlMul * aura;
+    this.damage = this.baseDamage * lvlMul;
     this.range = this.baseRange * Math.pow(1.08, this.level - 1);
     this.fireRate = this.baseFireRate * Math.pow(0.9, this.level - 1);
     const newMax = this._maxHpAt(this.level);
@@ -1980,9 +2041,8 @@ class Hero {
     this.sellValue = Math.floor(this.spent * SELL_RATIO);
   }
   statValues(level) {
-    const aura = 1 + (this.game ? this.game.totalAura(this) : 0);
     return {
-      dmg: Math.round(this.baseDamage * Math.pow(1.25, level - 1) * aura),
+      dmg: Math.round(this.baseDamage * Math.pow(1.25, level - 1)),
       range: Math.round(this.baseRange * Math.pow(1.08, level - 1)),
       rate: +(this.baseFireRate * Math.pow(0.9, level - 1)).toFixed(2)
     };
@@ -2004,14 +2064,12 @@ class Hero {
       this.respawnTimer = 25;
       this.game.toast(fill(T('"%1" выведен из строя!'), T(this.name)));
       Sound.loseLife();
-      this.game.refreshAuras();
     }
   }
   respawn() {
     this.heroDead = false;
     this.hp = this.maxHp;
     this.game.toast(fill(T('"%1" вернулся в бой!'), T(this.name)));
-    this.game.refreshAuras();
   }
   update(dt) {
     if (this.heroDead) {
@@ -2151,11 +2209,6 @@ class Hero {
     ctx.fillStyle = '#0e1219';
     ctx.beginPath(); ctx.roundRect(x - size * 0.25, y + size * 0.25, size * 0.23, size * 0.25, 3); ctx.fill();
     ctx.beginPath(); ctx.roundRect(x + size * 0.25 - size * 0.23, y + size * 0.25, size * 0.23, size * 0.25, 3); ctx.fill();
-    if (this.auraBonus > 0) {
-      const pl = 0.5 + 0.5 * Math.sin(this.bobPhase * 1.5);
-      ctx.beginPath(); ctx.ellipse(x, y + size * 0.5, size * (0.95 + 0.1 * pl), size * 0.25, 0, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(255,217,102,${0.3 + 0.3 * pl})`; ctx.lineWidth = 2; ctx.stroke();
-    }
     const bgGrad = ctx.createLinearGradient(x, y - size * 0.6, x, y + size * 0.6);
     bgGrad.addColorStop(0, '#3d4660');
     bgGrad.addColorStop(0.55, '#252c3c');
@@ -2658,7 +2711,6 @@ class Game {
     this.beams = [];
     this.waveTime = 0;
     this._uiThrottle = 0;
-    this.ultCd = 0;
     this.shake = 0;
     this.bindUI();
   }
@@ -2674,8 +2726,6 @@ class Game {
     document.getElementById('pauseBtn').addEventListener('click', () => this.togglePause());
     document.getElementById('speedBtn').addEventListener('click', () => this.toggleSpeed());
     document.getElementById('autoSkipBtn').addEventListener('click', () => this.toggleAutoSkip());
-    const ub = document.getElementById('ultBtn');
-    if (ub) ub.addEventListener('click', () => this.castUltimate());
     window.addEventListener('keydown', (e) => this.handleKey(e));
     document.getElementById('quitToLobbyBtn').addEventListener('click', () => { this.stop(); App.showLobby(); });
   }
@@ -2700,7 +2750,6 @@ class Game {
     this.grid = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
     this.beams = [];
     this.waveTime = 0;
-    this.ultCd = 0;
     this.shake = 0;
     this.waveManager = new WaveManager(this);
     this.paused = false;
@@ -2740,16 +2789,8 @@ class Game {
     if (this._raf) { cancelAnimationFrame(this._raf); this._raf = null; }
     UI.hideTooltip();
   }
-  totalAura(self) {
-    let sum = 0;
-    for (const h of this.heroes) {
-      if (h === self || h.heroDead) continue;
-      sum += h.auraBonus || 0;
-    }
-    return Math.min(sum, 1.0);
-  }
-  refreshAuras() {
-    for (const h of this.heroes) h.recalc();
+  heroesOfUnit(id) {
+    return this.heroes.filter(h => h.unit.id === id).length;
   }
   moneyBonusSum() {
     let sum = 0;
@@ -2783,6 +2824,7 @@ class Game {
         Sound.init();
         if (this.gameOver || this.victory) return;
         if (this.heroes.length >= MAX_HEROES) { Sound.error(); this.toast(fill(T('Достигнут лимит юнитов (%1)'), MAX_HEROES)); return; }
+        if (this.heroesOfUnit(u.id) >= unitLimit(u.id)) { Sound.error(); this.toast(fill(T('Лимит «%1» — максимум %2'), T(u.name), unitLimit(u.id))); return; }
         if (this.money < price) { Sound.error(); this.toast(T('Не хватает денег')); return; }
         this.selectedBuild = (this.selectedBuild === 'hero:' + u.id) ? null : 'hero:' + u.id;
         this.selectedHero = null;
@@ -2807,15 +2849,6 @@ class Game {
     const hpP = this.baseHp / this.baseMaxHp;
     hpEl.style.color = hpP > 0.5 ? '' : (hpP > 0.25 ? '#ffcc00' : '#ff6666');
     document.getElementById('waveDisplay').textContent = `${this.wave} / ${this.difficulty.endless ? '∞' : this.maxWaves}`;
-    const ultBtn = document.getElementById('ultBtn');
-    if (ultBtn) {
-      ultBtn.disabled = !(this.ultCd <= 0 && !this.gameOver && !this.victory && !this.paused);
-      ultBtn.textContent = this.ultCd > 0 ? fill(T('💥 УЛЬТА (%1с)'), Math.ceil(this.ultCd)) : T('💥 УЛЬТА (готова)');
-      ultBtn.className = this.ultCd <= 0 ? 'btn gold small' : 'btn small';
-      ultBtn.style.opacity = this.ultCd > 0 ? '.6' : '1';
-      ultBtn.style.boxShadow = this.ultCd <= 0 ? '0 0 14px #ffd96688' : 'none';
-      ultBtn.style.animation = this.ultCd <= 0 ? 'godPulse 1.6s ease-in-out infinite' : 'none';
-    }
     const startBtn = document.getElementById('startWaveBtn');
     const waveTimer = document.getElementById('waveTimer');
     if (this.gameOver || this.victory) {
@@ -2910,7 +2943,6 @@ class Game {
         if (this.money >= t.upgradeCost) {
           this.money -= t.upgradeCost;
           t.upgrade();
-          this.refreshAuras();
           Quests.add('upgrades', 1);
           Sound.upgrade();
           this.updateUI();
@@ -2928,7 +2960,6 @@ class Game {
         this.money += t.sellValue;
         this.removeHero(t);
         this.selectedHero = null;
-        this.refreshAuras();
         Sound.hit();
         this.updateUI();
         return;
@@ -2941,6 +2972,7 @@ class Game {
       const unit = UNITS.find(u => u.id === id);
       const price = RARITY_COST[unit.rarity] || 100;
       if (this.heroes.length >= MAX_HEROES) { Sound.error(); this.toast(T('Достигнут лимит юнитов')); return; }
+      if (this.heroesOfUnit(unit.id) >= unitLimit(unit.id)) { Sound.error(); this.toast(fill(T('Лимит «%1» — максимум %2'), T(unit.name), unitLimit(unit.id))); return; }
       if (this.money < price) { Sound.error(); this.toast(T('Не хватает денег')); return; }
       const [cw, ch] = unitCells(unit.id);
       for (let dy = 0; dy < ch; dy++) for (let dx = 0; dx < cw; dx++) {
@@ -2953,7 +2985,6 @@ class Game {
       this.heroes.push(h);
       for (let dy = 0; dy < ch; dy++) for (let dx = 0; dx < cw; dx++) this.grid[row + dy][col + dx] = h;
       this.money -= price;
-      this.refreshAuras();
       Sound.place();
       this.updateUI();
       this.selectedBuild = null;
@@ -3063,7 +3094,6 @@ class Game {
       if (this.money >= t.upgradeCost) {
         this.money -= t.upgradeCost;
         t.upgrade();
-        this.refreshAuras();
         Quests.add('upgrades', 1);
         Sound.upgrade();
         this.updateUI();
@@ -3074,35 +3104,13 @@ class Game {
       this.money += t.sellValue;
       this.removeHero(t);
       this.selectedHero = null;
-      this.refreshAuras();
       Sound.hit();
       this.updateUI();
       this.toast('Продано: +' + t.sellValue + '¢');
-    } else if (e.code === 'Space') {
-      if (this.running && !this.paused && !this.gameOver && !this.victory) { e.preventDefault(); this.castUltimate(); }
     } else if (e.code === 'Escape') {
       this.selectedBuild = null;
       this.refreshBuildSelection();
     }
-  }
-  ULT_COOLDOWN() { return 60; }
-  castUltimate() {
-    if (!this.running || this.paused || this.gameOver || this.victory) return;
-    if (this.ultCd > 0) { Sound.error(); this.toast(fill(T('Ульта перезаряжается: %1с'), Math.ceil(this.ultCd))); return; }
-    const dmg = 300 + this.wave * 25;
-    for (const e of this.enemies) {
-      if (e.hp <= 0 || e.reachedEnd) continue;
-      e.takeDamage(dmg);
-    }
-    this.ultCd = this.ULT_COOLDOWN();
-    this.shake = 0.7;
-    for (let i = 0; i < 14; i++) {
-      this.explosions.push({ x: Math.random() * CANVAS_W, y: Math.random() * CANVAS_H, r: 0, maxR: 90 + Math.random() * 130, life: 0.5 + Math.random() * 0.3, maxLife: 0.8, rgb: '255,207,61' });
-    }
-    this.explosions.push({ x: CANVAS_W / 2, y: CANVAS_H / 2, r: 0, maxR: Math.max(CANVAS_W, CANVAS_H) * 0.75, life: 0.6, maxLife: 0.6, rgb: '255,255,220', ring: true });
-    Sound.explosion();
-    this.toast(T('🎬 КИНЕМАТОГРАФИЧНЫЙ ВЗРЫВ!'));
-    this.updateUI();
   }
   gameLoop(ts) {
     if (!this.running) return;
@@ -3128,7 +3136,6 @@ class Game {
       }
     }
     if (this.waveBanner) { this.waveBanner.life -= dt; if (this.waveBanner.life <= 0) this.waveBanner = null; }
-    this.ultCd = Math.max(0, this.ultCd - dt);
     this.shake = Math.max(0, this.shake - dt * 1.4);
     if (this.waveManager.waveActive) this.waveTime += dt;
     if (this.countdownActive && !this.waveManager.waveActive) {
@@ -3866,29 +3873,47 @@ const App = {
     const ov = document.getElementById('crateOverlay');
     const box = document.getElementById('crateBox');
     if (!ov || !box) { this.showCrateResults(results); return; }
-    const hasGodly = results.some(u => u.rarity === 'Godly');
-    box.textContent = hasGodly ? '🌟' : '📦';
+    const best = results.slice().sort((a, b) => RARITY_ORDER.indexOf(b.rarity) - RARITY_ORDER.indexOf(a.rarity))[0];
+    const col = RARITY_COLOR[best.rarity] || '#ffd966';
+    const hasTop = ['Godly', 'Ultimate'].includes(best.rarity);
+    const verity = Math.random() < 0.01;
+    box.style.filter = 'drop-shadow(0 0 30px ' + col + '99)';
+    box.className = '';
+    box.innerHTML = '<div class="cb-lid"></div><div class="cb-base"></div>';
+    if (verity) {
+      box.innerHTML += '<div class="verity-tag">' + T('VERITY!') + '</div>' +
+        '<div class="verity-face"><div class="verity-eyes"><i></i><i></i></div><div class="verity-mouth"></div></div>' +
+        '<div class="verity-drops">' + results.map((u, i) => {
+          const dx = Math.round((i - (results.length - 1) / 2) * 26);
+          const rot = Math.round(Math.random() * 120 - 60);
+          return '<span class="v-drop" style="--dx:' + dx + 'px;--rot:' + rot + 'deg;animation-delay:' + (1.7 + i * 0.16).toFixed(2) + 's">' + u.emoji + '</span>';
+        }).join('') + '</div>';
+    }
     ov.classList.remove('shaking', 'flash');
-    box.classList.toggle('godly', hasGodly);
     ov.classList.add('visible');
     void ov.offsetWidth;
     ov.classList.add('shaking');
     const t0 = performance.now();
     const tick = setInterval(() => {
-      if (performance.now() - t0 > 1600) { clearInterval(tick); return; }
+      if (performance.now() - t0 > 1200) { clearInterval(tick); return; }
       Sound.gachaClick();
     }, 110);
+    const openAt = 1650;
     setTimeout(() => {
       ov.classList.remove('shaking');
       ov.classList.add('flash');
-      if (hasGodly) { Sound.gachaWin(); this.confetti(); }
-    }, 1650);
+      if (verity) box.classList.add('verity-on');
+      Sound.explosion();
+      if (hasTop) { Sound.gachaWin(); this.confetti(); }
+    }, openAt);
+    if (verity) this.confetti();
+    const revealAt = verity ? openAt + 1100 + results.length * 160 : openAt + 750;
     setTimeout(() => {
       ov.classList.remove('visible', 'flash');
       this.showCrateResults(results);
-    }, 2000);
+    }, revealAt);
   },
-  highRarity(u) { return ['Godly', 'Mythic', 'Legendary'].includes(u.rarity); },
+  highRarity(u) { return ['Ultimate', 'Godly', 'Mythic', 'Legendary'].includes(u.rarity); },
   showCrateResults(results) {
     const reels = document.getElementById('gachaReels');
     reels.style.maxWidth = results.length === 10 ? '1000px' : '720px';
@@ -4057,13 +4082,6 @@ const App = {
         ab.textContent = ABILITY_RU[u.ability] || '';
         card.appendChild(ab);
       }
-      if (u.aura) {
-        const au = document.createElement('div');
-        au.className = 'u-bonus';
-        au.style.color = '#c9a4ff';
-        au.textContent = '🌟 Аура: +' + Math.round(u.aura * 100) + '% урона союзникам';
-        card.appendChild(au);
-      }
       card.addEventListener('click', () => {
         if (unlocked) this.showUnitDetail(u);
         else this.showLockedDetail(u);
@@ -4086,7 +4104,6 @@ const App = {
         <div class="ud-stat"><div class="label">Перезарядка</div><div class="val">${statRange(u).rate[0]} → ${statRange(u).rate[1]}с</div></div>
       </div>
       ${u.ability && u.ability !== 'none' ? `<div class="ud-ability">${ABILITY_RU[u.ability] || ''}${u.cashPerWave ? T(' (+') + statRange(u).cash[0] + T(' → +') + statRange(u).cash[1] + T('💰/волну)') : ''}</div>` : ''}
-      ${u.aura ? `<div class="ud-ability">🌟 Аура: +${Math.round(u.aura * 100)}% урона союзникам</div>` : ''}
       ${unitTagsHTML(u)}
       <button class="btn small" id="udCloseBtn" style="margin-top:6px">ЗАКРЫТЬ</button>`;
     content.querySelector('#udCloseBtn').addEventListener('click', () => overlay.classList.remove('visible'));
@@ -4251,7 +4268,6 @@ const App = {
       <div class="ud-rarity" style="color:${rarityColor}">${R(unit.rarity)}</div>
       <div style="text-align:center;font-size:.85rem;opacity:.7">${unit.desc}</div>
       ${unit.ability && unit.ability !== 'none' ? `<div class="ud-ability">${ABILITY_RU[unit.ability]}${unit.cashPerWave ? ' (+' + unit.cashPerWave + '💰/волна)' : ''}</div>` : ''}
-      ${unit.aura ? `<div class="ud-ability">🌟 Аура: +${Math.round(unit.aura * 100)}% урона союзникам</div>` : ''}
       <div class="ud-stats">
         <div class="ud-stat"><div class="label">${unit.pureFarm ? T('💸 Доход') : T('Урон')}</div><div class="val">${unit.pureFarm ? '+' + statRange(unit).cash[0] + T(' → +') + statRange(unit).cash[1] + '💰' : statRange(unit).dmg[0] + ' → ' + statRange(unit).dmg[1]}</div></div>
         <div class="ud-stat"><div class="label">${T('Радиус')}</div><div class="val">${statRange(unit).range[0]} → ${statRange(unit).range[1]}</div></div>
@@ -4555,7 +4571,7 @@ const App = {
       msg = fill(T('♻️ Дубликат: +%1 🪙'), comp);
       Sound.gachaCommon();
     }
-    const overlay = document.getElementById('crateOverlay');
+    const overlay = document.getElementById('crateDetailOverlay');
     const content = document.getElementById('crateContent');
     content.innerHTML = `
       <div class="ud-emoji"><span class="crate-open-emoji" style="text-shadow:0 0 14px ${RARITY_COLOR[unit.rarity]}">${unit.emoji}</span></div>
@@ -4587,6 +4603,15 @@ const App = {
     document.getElementById('btnCollection').addEventListener('click', () => this.showInventory());
     document.getElementById('btnSettings').addEventListener('click', () => this.showSettings());
     document.getElementById('gachaBack').addEventListener('click', () => this.showLobby());
+    for (const [btnId, secId] of [['tglStock', 'gachaStock'], ['tglColl', 'gachaGrid']]) {
+      const tb = document.getElementById(btnId), sec = document.getElementById(secId);
+      if (!tb || !sec) continue;
+      sec.classList.add('hidden-sec');
+      tb.addEventListener('click', () => {
+        const hid = sec.classList.toggle('hidden-sec');
+        tb.classList.toggle('on', !hid);
+      });
+    }
     document.getElementById('btnSpinX1').addEventListener('click', () => this.doSpin(1));
     document.getElementById('btnSpinX10').addEventListener('click', () => this.doSpin(10));
     document.getElementById('btnIndex').addEventListener('click', () => this.showIndex());
@@ -4641,9 +4666,9 @@ const App = {
       this.invSearch = e.target.value;
       this.renderInvContent();
     });
-    document.getElementById('crateOverlay').addEventListener('click', (e) => {
-      if (e.target === document.getElementById('crateOverlay'))
-        document.getElementById('crateOverlay').classList.remove('visible');
+    document.getElementById('crateDetailOverlay').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('crateDetailOverlay'))
+        document.getElementById('crateDetailOverlay').classList.remove('visible');
     });
     document.getElementById('unitDetailOverlay').addEventListener('click', (e) => {
       if (e.target === document.getElementById('unitDetailOverlay'))
