@@ -61,6 +61,25 @@
   .unit-card .u-name{font-weight:800;font-size:1.05rem;color:#cfe0ff}
   .unit-card .u-desc{font-size:.78rem;opacity:.65;min-height:32px}
   .unit-card .u-bonus{font-size:.78rem;color:#7ee7ff}
+.u-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;justify-content:center;width:100%}
+.unit-detail .u-tags{margin-top:10px}
+.u-tag{font-size:.6rem;font-weight:700;padding:1px 8px;border-radius:9px;border:1px solid;white-space:nowrap;color:#b8c8e0;border-color:#4a5a7a;background:#00000022}
+.tk-aoe{color:#ff8a5c;border-color:#ff8a5c88;background:#ff8a5c12}
+.tk-splash{color:#ffb35c;border-color:#ffb35c88;background:#ffb35c12}
+.tk-atk-laser{color:#ff5c74;border-color:#ff5c7488;background:#ff5c7412}
+.tk-atk-wave{color:#5cc8ff;border-color:#5cc8ff88;background:#5cc8ff12}
+.tk-stun{color:#ffe066;border-color:#ffe06688;background:#ffe06612}
+.tk-slow{color:#9fd0ff;border-color:#9fd0ff88;background:#9fd0ff12}
+.tk-farm,.tk-money,.tk-atk-coin{color:#7fff9e;border-color:#7fff9e88;background:#7fff9e12}
+.tk-aura,.tk-boost{color:#ffd966;border-color:#ffd96688;background:#ffd96612}
+.tk-big{color:#ff9dd0;border-color:#ff9dd088;background:#ff9dd012}
+.tk-atk-rocket{color:#ffd15c;border-color:#ffd15c88;background:#ffd15c12}
+.tk-atk-shell{color:#ffa64d;border-color:#ffa64d88;background:#ffa64d12}
+.tk-atk-voxel{color:#7dff8a;border-color:#7dff8a88;background:#7dff8a12}
+.tk-atk-ring{color:#c07dff;border-color:#c07dff88;background:#c07dff12}
+.tk-antistan{color:#7dd0ff;border-color:#7dd0ff88;background:#7dd0ff12}
+.tk-atk-bullet{color:#b8c8e0;border-color:#8a9ab855}
+.tk-sniper{color:#ff7d7d;border-color:#ff7d7d88;background:#ff7d7d12}
   .unit-card .u-status{font-size:.8rem;font-weight:700}
   .unit-card .u-actions{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap}
   #gameScreen{max-width:1000px}
@@ -463,7 +482,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
 const LOADOUT_SIZE = 5;
-const GAME_VERSION = 'v2.14-UNITS';
+const GAME_VERSION = 'v2.15-TAGS-HITBOX';
 
 const DCOL = { easy: '#4dff4d', normal: '#4fc3ff', hard: '#ffb347', insane: '#ff5555', endless: '#c86bff' };
 const I18N_EN = {
@@ -693,7 +712,27 @@ const I18N_EN = {
     "ПРИЗЫВ ×10 (%1 🪙)": "SUMMON ×10 (%1 🪙)",
     "УРОН": "DMG",
   "РАДИУС": "RNG",
-  "ЗАРЯД": "CD"
+  "ЗАРЯД": "CD",
+  "AOE": "AOE",
+  "Splash": "Splash",
+  "Пули": "Bullets",
+  "Кольцо": "Ring",
+  "Ракеты": "Rockets",
+  "Монеты": "Coins",
+  "Волна": "Wave",
+  "Снаряды": "Shells",
+  "Лазер": "Laser",
+  "Воксель": "Voxel",
+  "Ферма": "Farm",
+  "Замедление": "Slow",
+  "Стан": "Stun",
+  "Бафф скорости": "Speed buff",
+  "Анти-стан": "Anti-stun",
+  "Клетка занята": "Cell occupied",
+  "Снайпер": "Sniper",
+  "2 клетки": "2 cells",
+  "Аура +%1%": "Aura +%1%",
+  "доход +%1%": "+%1% income"
 };
 function gameLang() {
   try { return (SaveManager.data && SaveManager.data.lang === 'en') ? 'en' : 'ru'; } catch (e) { return 'ru'; }
@@ -800,6 +839,8 @@ const UNIT_ATK = {
   speaker: 'wave', streamer: 'coin', soundmixer: 'wave', titanCam: 'laser', titanSpeaker: 'wave',
   titanTV: 'laser', pyrotech: 'shell', snipercam: 'laser', bodyguard: 'bullet', hacker: 'voxel'
 };
+const UNIT_CELLS = { titanCam: [2, 1], titanTV: [2, 1], titanSpeaker: [2, 1] };
+function unitCells(id) { return UNIT_CELLS[id] || [1, 1]; }
 
 const ABILITY_RU = {
   'none': 'Без особых способностей',
@@ -942,6 +983,32 @@ function statRange(u) {
     cash: [u.cashPerWave || 0, Math.round((u.cashPerWave || 0) * Math.pow(1.5, 4))],
     pureFarm: !!u.pureFarm
   };
+}
+
+function unitTagData(u) {
+  const atkMap = { bullet: 'Пули', ring: 'Кольцо', rocket: 'Ракеты', coin: 'Монеты',
+    wave: 'Волна', shell: 'Снаряды', laser: 'Лазер', voxel: 'Воксель' };
+  const atk = UNIT_ATK[u.id];
+  const tags = [];
+  if (atkMap[atk]) tags.push({ k: 'atk-' + atk, label: T(atkMap[atk]) });
+  if (u.pureFarm || u.ability === 'cash') tags.push({ k: 'farm', label: T('Ферма') });
+  if (u.ability === 'aoeBurst') tags.push({ k: 'aoe', label: T('AOE') });
+  if (u.ability === 'splash') tags.push({ k: 'splash', label: T('Splash') });
+  if (u.ability === 'slow') tags.push({ k: 'slow', label: T('Замедление') });
+  if (u.ability === 'stun') tags.push({ k: 'stun', label: T('Стан') });
+  if (u.ability === 'speedBoost') tags.push({ k: 'boost', label: T('Бафф скорости') });
+  if (u.ability === 'antistan') tags.push({ k: 'antistan', label: T('Анти-стан') });
+  if (u.aura) tags.push({ k: 'aura', label: fill(T('Аура +%1%'), Math.round(u.aura * 100)) });
+  if (u.passive && u.passive.moneyBonus) tags.push({ k: 'money', label: fill(T('доход +%1%'), Math.round(u.passive.moneyBonus * 100)) });
+  if (u.stats && u.stats.range >= 200) tags.push({ k: 'sniper', label: T('Снайпер') });
+  const cells = unitCells(u.id);
+  if (cells[0] > 1 || cells[1] > 1) tags.push({ k: 'big', label: T('2 клетки') });
+  return tags;
+}
+function unitTagsHTML(u) {
+  const tags = unitTagData(u);
+  if (!tags.length) return '';
+  return '<div class="u-tags">' + tags.map(t => `<span class="u-tag tk-${t.k}">${t.label}</span>`).join('') + '</div>';
 }
 
 const ENEMIES = [
@@ -1516,8 +1583,9 @@ class Hero {
   constructor(game, col, row, unit) {
     this.game = game;
     this.col = col; this.row = row;
-    this.x = col * CELL + CELL / 2;
-    this.y = row * CELL + CELL / 2;
+    this.cw = unitCells(unit.id)[0]; this.ch = unitCells(unit.id)[1];
+    this.x = col * CELL + (this.cw * CELL) / 2;
+    this.y = row * CELL + (this.ch * CELL) / 2;
     this.unit = unit;
     this.unitId = unit.id;
     this.level = 1;
@@ -1701,10 +1769,11 @@ class Hero {
   }
   draw(ctx) {
     const x = this.x, y = this.y, size = CELL * 0.7;
+    const fw = CELL * (this.cw || 1), fh = CELL * (this.ch || 1);
     if (this.heroDead) {
       ctx.globalAlpha = 0.6;
       ctx.fillStyle = '#3a1a1a';
-      ctx.beginPath(); ctx.roundRect(x - size / 2, y - size / 2, size, size, 8); ctx.fill();
+      ctx.beginPath(); ctx.roundRect(x - fw / 2, y - fh / 2, fw, fh, 8); ctx.fill();
       ctx.strokeStyle = '#ff6666'; ctx.lineWidth = 2; ctx.stroke();
       ctx.font = `${CELL * 0.55}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText('💀', x, y + 2);
@@ -1745,11 +1814,11 @@ class Hero {
     bgGrad.addColorStop(0, '#3d4660');
     bgGrad.addColorStop(0.55, '#252c3c');
     bgGrad.addColorStop(1, '#151a26');
-    ctx.beginPath(); ctx.roundRect(x - size / 2, y - size / 2 + bob, size, size, 9);
+    ctx.beginPath(); ctx.roundRect(x - fw / 2, y - fh / 2 + bob, fw, fh, 9);
     ctx.fillStyle = bgGrad; ctx.fill();
     ctx.strokeStyle = rc; ctx.lineWidth = 2.5; ctx.stroke();
     ctx.save();
-    ctx.beginPath(); ctx.roundRect(x - size / 2, y - size / 2 + bob, size, size * 0.3, 9);
+    ctx.beginPath(); ctx.roundRect(x - fw / 2, y - fh / 2 + bob, fw, fh * 0.3, 9);
     ctx.clip();
     ctx.fillStyle = 'rgba(255,255,255,0.18)';
     ctx.fillRect(x - size / 2, y - size / 2 + bob, size, size * 0.25);
@@ -2440,6 +2509,13 @@ class Game {
       b.classList.toggle('disabled', this.money < price || this.heroes.length >= MAX_HEROES);
     });
   }
+  removeHero(h) {
+    for (let dy = 0; dy < (h.ch || 1); dy++) for (let dx = 0; dx < (h.cw || 1); dx++) {
+      const r = h.row + dy, c = h.col + dx;
+      if (this.grid[r] && this.grid[r][c] === h) this.grid[r][c] = null;
+    }
+    this.heroes = this.heroes.filter(x => x !== h);
+  }
   handleMouseMove(e) {
     const rect = this.canvas.getBoundingClientRect();
     const sx = this.canvas.width / rect.width, sy = this.canvas.height / rect.height;
@@ -2485,8 +2561,7 @@ class Game {
       }
       if (mx >= sellX && mx <= sellX + btnW && my >= btnY && my <= btnY + btnH) {
         this.money += t.sellValue;
-        this.grid[t.row][t.col] = null;
-        this.heroes = this.heroes.filter(h => h !== t);
+        this.removeHero(t);
         this.selectedHero = null;
         this.refreshAuras();
         Sound.hit();
@@ -2497,16 +2572,20 @@ class Game {
     const col = Math.floor(mx / CELL), row = Math.floor(my / CELL);
     if (col < 0 || col >= COLS || row < 0 || row >= ROWS) return;
     if (this.selectedBuild && this.selectedBuild.startsWith('hero:')) {
-      if (this.map.isRoad(col, row)) { Sound.error(); this.toast(T('Нельзя ставить на дорогу')); return; }
-      if (this.heroes.length >= MAX_HEROES) { Sound.error(); this.toast(T('Достигнут лимит юнитов')); return; }
-      if (this.grid[row][col]) { Sound.error(); return; }
       const id = this.selectedBuild.split(':')[1];
       const unit = UNITS.find(u => u.id === id);
       const price = RARITY_COST[unit.rarity] || 100;
+      if (this.heroes.length >= MAX_HEROES) { Sound.error(); this.toast(T('Достигнут лимит юнитов')); return; }
       if (this.money < price) { Sound.error(); this.toast(T('Не хватает денег')); return; }
+      const [cw, ch] = unitCells(unit.id);
+      for (let dy = 0; dy < ch; dy++) for (let dx = 0; dx < cw; dx++) {
+        const c = col + dx, r = row + dy;
+        if (c >= COLS || r >= ROWS || this.map.isRoad(c, r)) { Sound.error(); this.toast(T('Нельзя ставить на дорогу')); return; }
+        if (this.grid[r][c]) { Sound.error(); this.toast(T('Клетка занята')); return; }
+      }
       const h = new Hero(this, col, row, unit);
       this.heroes.push(h);
-      this.grid[row][col] = h;
+      for (let dy = 0; dy < ch; dy++) for (let dx = 0; dx < cw; dx++) this.grid[row + dy][col + dx] = h;
       this.money -= price;
       this.refreshAuras();
       Sound.place();
@@ -2626,8 +2705,7 @@ class Game {
       const t = this.selectedHero;
       if (!t) { this.toast('Сначала выбери юнита на поле'); return; }
       this.money += t.sellValue;
-      this.grid[t.row][t.col] = null;
-      this.heroes = this.heroes.filter(h => h !== t);
+      this.removeHero(t);
       this.selectedHero = null;
       this.refreshAuras();
       Sound.hit();
@@ -2794,7 +2872,7 @@ class Game {
       ctx.setLineDash([]);
       const prc = RARITY_COLOR[t.unit.rarity] || '#ffd966';
       const pulse = 0.5 + 0.5 * Math.sin(Date.now() / 240);
-      ctx.beginPath(); ctx.arc(t.x, t.y, CELL * 0.52 + pulse * 3, 0, Math.PI * 2);
+      ctx.beginPath(); ctx.arc(t.x, t.y, CELL * 0.52 * Math.max(t.cw || 1, t.ch || 1) + pulse * 3, 0, Math.PI * 2);
       ctx.strokeStyle = prc; ctx.lineWidth = 2.5;
       ctx.globalAlpha = 0.5 + 0.4 * pulse; ctx.stroke(); ctx.globalAlpha = 1;
       const mode = TARGET_MODES.find(m => m.id === t.targetMode) || TARGET_MODES[0];
@@ -2892,23 +2970,28 @@ class Game {
   drawPreview(ctx) {
     const col = this.mouse.col, row = this.mouse.row;
     if (col < 0 || col >= COLS || row < 0 || row >= ROWS) return;
-    const cx = col * CELL + CELL / 2, cy = row * CELL + CELL / 2;
-    const isRoad = this.map.isRoad(col, row);
-    const occupied = !!this.grid[row][col];
-    let valid = !isRoad && !occupied && !this.placementInvalid();
     const id = this.selectedBuild.split(':')[1];
     const unit = UNITS.find(u => u.id === id);
+    if (!unit) return;
+    const [cw, ch] = unitCells(unit.id);
+    const fx = col * CELL + (cw * CELL) / 2, fy = row * CELL + (ch * CELL) / 2;
+    let blocked = false;
+    for (let dy = 0; dy < ch && !blocked; dy++) for (let dx = 0; dx < cw; dx++) {
+      const c = col + dx, r = row + dy;
+      if (c >= COLS || r >= ROWS || this.map.isRoad(c, r) || this.grid[r][c]) { blocked = true; break; }
+    }
+    let valid = !blocked && !this.placementInvalid();
     const pl = 0.5 + 0.5 * Math.sin(Date.now() / 220);
-    ctx.beginPath(); ctx.arc(cx, cy, unit.stats.range, 0, Math.PI * 2);
+    ctx.beginPath(); ctx.arc(fx, fy, unit.stats.range, 0, Math.PI * 2);
     ctx.fillStyle = valid ? `rgba(255,217,102,${0.08 + 0.05 * pl})` : 'rgba(255,80,80,0.10)'; ctx.fill();
     ctx.strokeStyle = valid ? `rgba(255,217,102,${0.45 + 0.3 * pl})` : 'rgba(255,80,80,0.65)';
     ctx.lineWidth = 2; ctx.stroke();
     const inset = 2 + 3 * pl;
     ctx.fillStyle = valid ? `rgba(255,217,102,${0.15 + 0.2 * pl})` : 'rgba(255,80,80,0.25)';
-    ctx.beginPath(); ctx.roundRect(col * CELL + inset, row * CELL + inset, CELL - inset * 2, CELL - inset * 2, 6); ctx.fill();
+    ctx.beginPath(); ctx.roundRect(col * CELL + inset, row * CELL + inset, cw * CELL - inset * 2, ch * CELL - inset * 2, 6); ctx.fill();
     ctx.save();
     ctx.globalAlpha = 0.55 + 0.3 * pl;
-    drawUnitFigure(ctx, unit, cx, cy + CELL * 0.05, CELL * 0.7, true, 1.5 * (UF_SCALE[unit.id] || 1));
+    drawUnitFigure(ctx, unit, fx, fy + CELL * 0.05, CELL * 0.7, true, 1.5 * (UF_SCALE[unit.id] || 1));
     ctx.restore();
     ctx.globalAlpha = 1;
   }
@@ -3330,7 +3413,8 @@ const App = {
         <div class="u-status" style="color:${unlocked ? '#7fffa0' : '#ffb3b3'}">
           ${unlocked ? '✅ ОТКРЫТ' : '🔒 ' + (u.dropChance * 100).toFixed(1) + '%'}
         </div>
-        <div class="u-bonus">${statRange(u).pureFarm ? T('💰 Доход: ') + statRange(u).cash[0] + ' → ' + statRange(u).cash[1] + T('💰/волну') : '' + statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1] + T(' урон · ') + statRange(u).range[0] + ' → ' + statRange(u).range[1] + T(' радиус · ') + statRange(u).rate[0] + ' → ' + statRange(u).rate[1] + T('с заряд')}</div>`;
+        <div class="u-bonus">${statRange(u).pureFarm ? T('💰 Доход: ') + statRange(u).cash[0] + ' → ' + statRange(u).cash[1] + T('💰/волну') : '' + statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1] + T(' урон · ') + statRange(u).range[0] + ' → ' + statRange(u).range[1] + T(' радиус · ') + statRange(u).rate[0] + ' → ' + statRange(u).rate[1] + T('с заряд')}</div>
+        ${unitTagsHTML(u)}`;
       grid.appendChild(card);
     }
   },
@@ -3541,6 +3625,7 @@ const App = {
         <div class="u-name">${T(u.name)} <small style="opacity:.5;color:${RARITY_COLOR[u.rarity]}">${R(u.rarity)}</small></div>
         <div class="u-desc">${unlocked ? T(u.desc) : 'Юнит ещё не открыт'}</div>
         <div class="u-bonus">${statRange(u).pureFarm ? T('💰 Доход: ') + statRange(u).cash[0] + ' → ' + statRange(u).cash[1] + T('💰/волну') : T('Урон: ') + statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1] + T(' · Радиус: ') + statRange(u).range[0] + ' → ' + statRange(u).range[1] + T(' · Заряд: ') + statRange(u).rate[0] + ' → ' + statRange(u).rate[1] + 'с'}</div>
+        ${unitTagsHTML(u)}
         <div class="u-bonus">${T('Шанс выпадения: ')}${(u.dropChance * 100).toFixed(1)}%</div>`;
       if (u.ability && u.ability !== 'none') {
         const ab = document.createElement('div');
@@ -3579,6 +3664,7 @@ const App = {
       </div>
       ${u.ability && u.ability !== 'none' ? `<div class="ud-ability">${ABILITY_RU[u.ability] || ''}${u.cashPerWave ? T(' (+') + statRange(u).cash[0] + T(' → +') + statRange(u).cash[1] + T('💰/волну)') : ''}</div>` : ''}
       ${u.aura ? `<div class="ud-ability">🌟 Аура: +${Math.round(u.aura * 100)}% урона союзникам</div>` : ''}
+      ${unitTagsHTML(u)}
       <button class="btn small" id="udCloseBtn" style="margin-top:6px">ЗАКРЫТЬ</button>`;
     content.querySelector('#udCloseBtn').addEventListener('click', () => overlay.classList.remove('visible'));
     overlay.classList.add('visible');
@@ -3635,6 +3721,7 @@ const App = {
         <div class="u-name">${T(u.name)} <small style="opacity:.5;color:${RARITY_COLOR[u.rarity]}">${R(u.rarity)}</small></div>
         <div class="u-desc">${u.desc}</div>
         <div class="u-bonus">${statRange(u).pureFarm ? T('💰 Доход: ') + statRange(u).cash[0] + ' → ' + statRange(u).cash[1] + T('💰/волну') : T('Урон: ') + statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1] + T(' · Радиус: ') + statRange(u).range[0] + ' → ' + statRange(u).range[1] + T(' · Заряд: ') + statRange(u).rate[0] + ' → ' + statRange(u).rate[1] + 'с'}</div>
+        ${unitTagsHTML(u)}
         <div style="font-weight:700;color:#7fffa0;font-size:.95rem">${T('💰 Продать: ')}${RARITY_DUP[u.rarity] || 25}</div>
         <div class="u-actions"></div>`;
       const actions = card.querySelector('.u-actions');
@@ -3748,6 +3835,7 @@ const App = {
       <div class="ud-sell">${T('ПРОДАТЬ ЗА ')}💰 ${sellPrice}</div>
       <button class="btn ${equipped ? 'unequip' : 'equip'}" id="udEquipBtn" style="margin-top:6px">${equipped ? '✓ УБРАТЬ ИЗ ОТРЯДА' : '⚡ ВЗЯТЬ В ОТРЯД'}</button>
       <button class="btn danger" id="udSellBtn" style="margin-top:4px" ${unit.id === 'intern' ? 'disabled' : ''}>${T('ПРОДАТЬ ЮНИТ')}${unit.id === 'intern' ? ' ' + T('(СТАРТОВЫЙ)') : ''}</button>
+      ${unitTagsHTML(unit)}
       <button class="btn small" id="udCloseBtn" style="margin-top:4px">ЗАКРЫТЬ</button>
     `;
     content.querySelector('#udEquipBtn').addEventListener('click', () => {
