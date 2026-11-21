@@ -188,20 +188,21 @@
   #crateOverlay.flash .cb-lid{transform:rotate(-120deg) translate(-24px,-46px)}
   #crateOverlay.flash .cb-base{animation:crateFade .8s ease .25s forwards}
   @keyframes crateFade{0%{transform:scale(1)}60%{transform:scale(1.22)}100%{transform:scale(1.5) translateY(26px);opacity:0}}
-  .verity-tag{position:absolute;top:-48px;left:50%;transform:translateX(-50%);font-weight:900;font-size:1.6rem;color:#ff4d5e;
-    text-shadow:0 0 18px #ff4d5e;letter-spacing:2px;opacity:0;transition:opacity .25s;white-space:nowrap}
-  #crateBox.verity-on .verity-tag{opacity:1}
+  .verity-tag{position:absolute;top:-48px;left:50%;transform:translateX(-50%);font-weight:900;font-size:1.6rem;color:#ffd966;
+    text-shadow:0 0 18px #ffd966,0 2px 6px #00000088;letter-spacing:2px;opacity:0;white-space:nowrap}
+  #crateBox.verity-on .verity-tag{animation:verityTagPop .55s cubic-bezier(.34,1.8,.5,1) .12s forwards}
+  @keyframes verityTagPop{0%{opacity:0;transform:translateX(-50%) scale(.4)}70%{opacity:1;transform:translateX(-50%) scale(1.18)}100%{opacity:1;transform:translateX(-50%) scale(1)}}
   .verity-face{position:absolute;left:50%;bottom:70px;width:120px;height:120px;margin-left:-60px;border-radius:26px;
-    background:linear-gradient(160deg,#e8e8f2,#a9a9c2);box-shadow:0 0 0 3px #ff4d5e88,0 0 40px #ff4d5e66;
-    transform:translateY(40px) scale(.3);opacity:0;transition:transform .45s cubic-bezier(.34,1.4,.64,1),opacity .3s;z-index:2}
-  #crateBox.verity-on .verity-face{transform:translateY(0) scale(1);opacity:1}
+    background:linear-gradient(160deg,#ffe8a3,#dbb04a 55%,#b8860b);box-shadow:0 0 0 3px #ffd96699,0 0 44px #ffd96677;
+    transform:translateY(60px) scale(.45) rotate(-8deg);opacity:0;transition:transform .55s cubic-bezier(.34,1.75,.5,1),opacity .3s .05s;z-index:2}
+  #crateBox.verity-on .verity-face{transform:translateY(0) scale(1) rotate(0deg);opacity:1}
   .verity-eyes{display:flex;justify-content:center;gap:26px;padding-top:28px}
-  .verity-eyes i{width:14px;height:20px;border-radius:6px;background:#191c2e;box-shadow:0 0 10px #ff4d5e}
+  .verity-eyes i{width:14px;height:20px;border-radius:6px;background:#191c2e;box-shadow:0 0 10px #ffd966}
   .verity-mouth{margin:12px auto 0;width:60px;height:14px;border-radius:0 0 30px 30px;background:#191c2e;
-    transition:all .35s ease .1s}
-  #crateBox.verity-on .verity-mouth{width:84px;height:64px;border-radius:14px 14px 40px 40px}
+    box-shadow:inset 0 -4px 10px #7a5a00;transition:all .4s cubic-bezier(.34,1.56,.64,1) .12s}
+  #crateBox.verity-on .verity-mouth{width:84px;height:64px;border-radius:14px 14px 40px 40px;box-shadow:inset 0 -6px 14px #00000088}
   .verity-drops{position:absolute;left:50%;top:56%}
-  .v-drop{position:absolute;font-size:1.7rem;opacity:0;animation:unitDrop 1s cubic-bezier(.3,.7,.4,1) forwards}
+  .v-drop{position:absolute;font-size:1.8rem;opacity:0;filter:drop-shadow(0 0 6px #ffd96666);animation:unitDrop 1.1s cubic-bezier(.25,.6,.35,1) forwards}
   @keyframes unitDrop{0%{transform:translate(0,0) scale(.4);opacity:0}15%{opacity:1}100%{transform:translate(var(--dx),150px) rotate(var(--rot)) scale(1.15);opacity:1}}
   .crate-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;width:100%;max-width:960px;margin:0 auto}
   .crate-cell{background:#141824;border:2px solid #5a6890;border-radius:12px;padding:10px 6px;text-align:center;animation:popIn .45s cubic-bezier(.2,.9,.3,1.25) backwards}
@@ -302,6 +303,35 @@
     .gacha-stage{padding:6px 0;gap:8px}
     .gacha-reels{gap:4px}
     .gacha-reel{font-size:1.7rem}
+    .subpanel{padding:12px}
+    .panel-title{font-size:1.15rem}
+    .btn{padding:9px 16px;font-size:.9rem}
+    .cards-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  }
+  @media (max-width:520px){
+    html,body{padding:4px;min-height:100dvh}
+    .btn{padding:8px 12px;font-size:.84rem;border-radius:12px}
+    .btn.small{padding:6px 10px;font-size:.72rem}
+    .panel-title{font-size:1.02rem;letter-spacing:1px}
+    .panel-head{gap:6px}
+    .coin-badge{font-size:.8rem;padding:4px 10px 4px 7px;gap:6px}
+    .coin-ico{width:20px;height:20px;font-size:.7rem}
+    .game-title{letter-spacing:1.5px}
+    .game-subtitle{letter-spacing:2px;font-size:.78rem}
+    .lobby-content{gap:9px;padding:12px 6px 20px}
+    .menu-buttons{gap:6px}
+    .cards-grid{grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:7px}
+    .unit-card{padding:8px 6px;border-radius:12px}
+    .unit-card .u-emoji{font-size:1.6rem;min-height:38px}
+    .crate-grid{grid-template-columns:repeat(auto-fill,minmax(56px,1fr))}
+    .gacha-box-tab{min-width:0;flex:1 0 120px;font-size:.78rem}
+    .gacha-toggles .btn{padding:5px 10px;font-size:.7rem}
+    .stock-cell{font-size:.68rem;padding:4px 7px}
+    .crate-cell.single{max-width:230px}
+    .crate-name{font-size:.85rem}
+    .verity-face{width:104px;height:104px;margin-left:-52px}
+    .verity-eyes{gap:20px;padding-top:24px}
+    .v-drop{font-size:1.4rem}
   }
   .gacha-stock{background:#141b28;border-radius:14px;padding:10px 14px;margin-top:10px;box-shadow:0 0 0 1px #26324a inset}
   .gacha-stock .stock-head{font-weight:800;letter-spacing:.5px;color:#7ee7ff;text-align:center;font-size:.9rem}
@@ -330,6 +360,7 @@
     <div class="game-subtitle">ОБОРОНА СТУДИИ</div>
     <div class="coin-badge"><span class="coin-ico">¢</span> <span id="metaCoinsLobby">0</span> монет</div>
     <div class="coin-badge"><span>💎</span> <span id="metaCrystalsLobby">0</span> кристаллов</div>
+    <div class="coin-badge" id="potionBadgeLobby" style="display:none;color:#d9b0ff;box-shadow:0 0 0 1px #6a4fa0 inset"></div>
     <div class="record-badge" id="recordBadge" style="display:none">⚡ Рекорд бесконечного: <span id="endlessRecordVal">0</span> волн</div>
     <div class="menu-buttons">
       <button class="btn accent" id="btnPlay">▶ ИГРАТЬ</button>
@@ -596,7 +627,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
 const LOADOUT_SIZE = 5;
-const GAME_VERSION = 'v2.19-CRATE-COMPACT';
+const GAME_VERSION = 'v2.20-POTIONS-POLISH';
 
 const DCOL = { easy: '#4dff4d', normal: '#4fc3ff', hard: '#ffb347', insane: '#ff5555', endless: '#c86bff' };
 const I18N_EN = {
@@ -839,7 +870,7 @@ const I18N_EN = {
     "📋 КОЛЛЕКЦИЯ": "📋 COLLECTION",
   "Ультимативный": "Ultimate",
   "Титан-Камерамен 4.0": "Titan Cameraman 4.0",
-  "Последняя форма титана альянса: плазменные залпы по площади и несокрушимая броня. Шанс 0.05%.": "The titan\u2019s final form: area plasma salvos and indestructible armor. 0.05% chance.",
+  "Последняя форма титана альянса: плазменные залпы по площади и несокрушимая броня. Шанс: 0.001% в мифическом, 0.0001% в обычном ящике.": "The titan\u2019s final form: area plasma salvos and indestructible armor. 0.001% in mythic, 0.0001% in common box.",
   "Божественный покровитель кино: разрушительный фотонный залп по площади. Шанс 0.1%.": "Divine patron of cinema: devastating photon area salvo. 0.1% chance.",
   "Стримит прямо с фронта. Знаменитость студии: +10% доходаVerse.": "Streams from the front line. Studio celebrity: +10% income.",
   "Абсолютный чемпион студии: залпы по площади с разрушительным уроном.": "Absolute studio champion: devastating area-salvo bursts.",
@@ -893,6 +924,15 @@ const I18N_EN = {
   "КУПИТЬ КРЕЙТ": "BUY CRATE",
   "🎁 ОТКРЫТЬ": "🎁 OPEN",
   "🎁 ОТКРЫТЬ ×10": "🎁 OPEN ×10",
+  "🧪 Зелье удачи": "🧪 Luck Potion",
+  "💰 Зелье монет": "💰 Coin Potion",
+  "2× удача на 10 минут: удваивает шанс редких юнитов в гаче и крейтах": "2× luck for 10 minutes: doubles the chance of rare units in gacha and crates",
+  "2× монеты на 10 минут: весь заработок 🪙 удваивается": "2× coins for 10 minutes: all 🪙 earnings are doubled",
+  "💊 КУПИТЬ ЗЕЛЬЕ": "💊 BUY POTION",
+  "🔁 ПРОДЛИТЬ (+10 МИН)": "🔁 EXTEND (+10 MIN)",
+  "Эффект продлён на 10 минут!": "Effect extended by 10 minutes!",
+  "%1: +10 минут эффекта!": "%1: 10 minutes of effect!",
+  "Не хватает 💎 (нужно %1)": "Not enough 💎 (need %1)",
   "♻️ Дубликаты: +%1 🪙": "♻️ Duplicates: +%1 🪙",
   "📦 ВЕЩИ": "📦 ITEMS",
   "📦 Вещи": "📦 Items",
@@ -1055,10 +1095,10 @@ const ABILITY_RU = {
 
 const GACHA_BOXES = [
   { id: 'common', name: '📦 Обычный ящик', cost1: 100, cost10: 900,
-    rates: { Common: 0.4989, Uncommon: 0.30, Rare: 0.15, Epic: 0.04, Legendary: 0.01, Mythic: 0.00099, Godly: 0.0001, Ultimate: 0.00001 },
+    rates: { Common: 0.498999, Uncommon: 0.30, Rare: 0.15, Epic: 0.04, Legendary: 0.01, Mythic: 0.0009, Godly: 0.0001, Ultimate: 0.000001 },
     stock: { Common: 1, Uncommon: 1, Rare: 1, Epic: 1, Legendary: 1, Mythic: 1, Godly: 1, Ultimate: 1 } },
   { id: 'mythic', name: '💠 Мифический сундук', cost1: 900, cost10: 8100,
-    rates: { Rare: 0.449, Epic: 0.40, Legendary: 0.12, Mythic: 0.0299, Godly: 0.001, Ultimate: 0.0001 },
+    rates: { Rare: 0.449, Epic: 0.40, Legendary: 0.12, Mythic: 0.02999, Godly: 0.001, Ultimate: 0.00001 },
     stock: { Rare: 1, Epic: 1, Legendary: 1, Mythic: 1, Godly: 1, Ultimate: 1 } }
 ];
 const STOCK_PERIOD_MS = 15 * 60 * 1000;
@@ -1090,6 +1130,15 @@ function gachaStock(boxId, bucket) {
     }
   }
   return stock;
+}
+function fmtChance(p) {
+  const pct = (p || 0) * 100;
+  const d = pct >= 1 ? 1 : pct >= 0.1 ? 2 : pct >= 0.01 ? 3 : pct >= 0.001 ? 4 : 5;
+  return String(parseFloat(pct.toFixed(d)));
+}
+function fmtMM(ms) {
+  const m = Math.floor(ms / 60000), s = Math.floor(ms / 1000) % 60;
+  return m + ':' + String(s).padStart(2, '0');
 }
 
 const UNIT_LIMITS = {
@@ -1225,8 +1274,8 @@ const UNITS = [
     desc: 'Божественный покровитель кино: разрушительный фотонный залп по площади. Шанс 0.1%.',
     stats: { dmg: 500, range: 250, fireRate: 1.9, hp: 900 },
     passive: { dmgBonus: 0.15, moneyBonus: 0 }, ability: 'aoeBurst' },
-  { id: 'titanCam40', name: 'Титан-Камерамен 4.0', emoji: '🎥', rarity: 'Ultimate', dropChance: 0.0005,
-    desc: 'Последняя форма титана альянса: плазменные залпы по площади и несокрушимая броня. Шанс 0.05%.',
+  { id: 'titanCam40', name: 'Титан-Камерамен 4.0', emoji: '🎥', rarity: 'Ultimate', dropChance: 0.00001,
+    desc: 'Последняя форма титана альянса: плазменные залпы по площади и несокрушимая броня. Шанс: 0.001% в мифическом, 0.0001% в обычном ящике.',
     stats: { dmg: 650, range: 260, fireRate: 0.7, hp: 1100 },
     passive: { dmgBonus: 0.25, moneyBonus: 0 }, ability: 'aoeBurst', aoeRadius: 110 }
 ];
@@ -1364,6 +1413,7 @@ const SaveManager = {
       gachaBox: 'common',
       crystals: 60,
       items: {},
+      potions: { luck: 0, coins: 0 },
       quests: null,
       autoSell: {
         'Common': true, 'Uncommon': true, 'Rare': false,
@@ -1385,6 +1435,9 @@ const SaveManager = {
       if (!this.data.autoSell) this.data.autoSell = this.defaults().autoSell;
       if (typeof this.data.crystals !== 'number') this.data.crystals = 60;
       if (!this.data.items || typeof this.data.items !== 'object') this.data.items = {};
+      if (!this.data.potions || typeof this.data.potions !== 'object') this.data.potions = { luck: 0, coins: 0 };
+      if (typeof this.data.potions.luck !== 'number') this.data.potions.luck = 0;
+      if (typeof this.data.potions.coins !== 'number') this.data.potions.coins = 0;
       if (this.data.quests !== null && (typeof this.data.quests !== 'object' || Array.isArray(this.data.quests))) this.data.quests = null;
     } catch (e) { this.data = this.defaults(); }
     this.soundOn = !!this.data.soundOn;
@@ -1401,7 +1454,13 @@ const SaveManager = {
   },
   get coins() { return this.data.coins; },
   set coins(v) { this.data.coins = Math.max(0, Math.floor(v)); this.save(); },
-  addCoins(v) { this.coins = this.coins + Math.max(0, Math.floor(v)); },
+  addCoins(v) {
+    v = Math.max(0, Math.floor(v));
+    if (this.potionActive('coins')) v *= 2;
+    this.coins = this.coins + v;
+  },
+  potionActive(key) { const pp = this.data.potions || {}; return (pp[key] || 0) > Date.now(); },
+  potionLeftMs(key) { const pp = this.data.potions || {}; const left = (pp[key] || 0) - Date.now(); return left > 0 ? left : 0; },
   get crystals() { return (typeof this.data.crystals === 'number') ? this.data.crystals : 60; },
   set crystals(v) { this.data.crystals = Math.max(0, Math.floor(v)); this.save(); },
   addCrystals(v) { this.crystals = this.crystals + Math.max(0, Math.floor(v)); },
@@ -1487,6 +1546,14 @@ const SHOP_CRATES = [
     desc: 'Голографические технологии ТВ-альянса. Топ-юнит с шансом 0.2%.',
     units: ['tvStrider', 'holoCam', 'tvOverlord'] }
 ];
+
+const POTIONS = [
+  { id: 'luck', emoji: '🧪', name: '🧪 Зелье удачи',
+    desc: '2× удача на 10 минут: удваивает шанс редких юнитов в гаче и крейтах', cost: 750 },
+  { id: 'coins', emoji: '💰', name: '💰 Зелье монет',
+    desc: '2× монеты на 10 минут: весь заработок 🪙 удваивается', cost: 750 }
+];
+const POTION_DURATION_MS = 10 * 60 * 1000;
 
 const QUEST_DEFS = {
   daily: [
@@ -3781,7 +3848,7 @@ const App = {
     for (const r of RARITY_ORDER) {
       const el = document.getElementById('rate' + r);
       if (el) {
-        el.textContent = (R(r) || r) + ' ' + ((box.rates[r] || 0) * 100).toFixed(1) + '%';
+        el.textContent = (R(r) || r) + ' ' + fmtChance(box.rates[r] || 0) + '%';
         el.style.color = RARITY_COLOR[r] || '#aaa';
       }
     }
@@ -3829,7 +3896,7 @@ const App = {
         <div class="u-name">${unlocked ? T(u.name) : '???'} <small style="opacity:.5;color:${RARITY_COLOR[u.rarity]}">${R(u.rarity)}</small></div>
         <div class="u-desc">${unlocked ? T(u.desc) : 'Ещё не открыт'}</div>
         <div class="u-status" style="color:${unlocked ? '#7fffa0' : '#ffb3b3'}">
-          ${unlocked ? '✅ ОТКРЫТ' : '🔒 ' + (u.dropChance * 100).toFixed(1) + '%'}
+          ${unlocked ? '✅ ОТКРЫТ' : '🔒 ' + fmtChance(u.dropChance) + '%'}
         </div>
         <div class="u-bonus">${statRange(u).pureFarm ? T('💰 Доход: ') + statRange(u).cash[0] + ' → ' + statRange(u).cash[1] + T('💰/волну') : '' + statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1] + T(' урон · ') + statRange(u).range[0] + ' → ' + statRange(u).range[1] + T(' радиус · ') + statRange(u).rate[0] + ' → ' + statRange(u).rate[1] + T('с заряд')}</div>
         ${unitTagsHTML(u)}`;
@@ -4000,14 +4067,20 @@ const App = {
     return UNITS[0];
   },
   rollUnitBox(boxId) {
-    const box = GACHA_BOXES.find(b => b.id === boxId) || GACHA_BOXES[0];
-    const stock = gachaStock(box.id, Math.floor(Date.now() / STOCK_PERIOD_MS));
-    let acc = 0, rar = Object.keys(box.rates)[0];
-    const r = Math.random();
-    for (const [k, p] of Object.entries(box.rates)) { acc += p; if (r <= acc) { rar = k; break; } }
-    const pool = stock.filter(u => u.rarity === rar);
-    const from = pool.length ? pool : UNITS.filter(u => u.rarity === rar && !u.shopOnly);
-    return from[Math.floor(Math.random() * from.length)] || UNITS[0];
+    const roll = () => {
+      const box = GACHA_BOXES.find(b => b.id === boxId) || GACHA_BOXES[0];
+      const stock = gachaStock(box.id, Math.floor(Date.now() / STOCK_PERIOD_MS));
+      let acc = 0, rar = Object.keys(box.rates)[0];
+      const r = Math.random();
+      for (const [k, p] of Object.entries(box.rates)) { acc += p; if (r <= acc) { rar = k; break; } }
+      const pool = stock.filter(u => u.rarity === rar);
+      const from = pool.length ? pool : UNITS.filter(u => u.rarity === rar && !u.shopOnly);
+      return from[Math.floor(Math.random() * from.length)] || UNITS[0];
+    };
+    const one = roll();
+    if (!SaveManager.potionActive('luck')) return one;
+    const two = roll();
+    return RARITY_ORDER.indexOf(two.rarity) > RARITY_ORDER.indexOf(one.rarity) ? two : one;
   },
   renderBoxTabs() {
     const wrap = document.getElementById('gachaBoxes');
@@ -4043,7 +4116,7 @@ const App = {
       const pct = (box.rates[u.rarity] || 0) / same * 100;
       html += '<div class="stock-cell">' + this.unitAvatarHTML(u, 26) +
         '<span style="color:' + (RARITY_COLOR[u.rarity] || '#aaa') + '">' + T(u.name) + '</span>' +
-        '<span class="sc-pct">' + pct.toFixed(1) + '%</span></div>';
+        '<span class="sc-pct">' + fmtChance(pct / 100) + '%</span></div>';
     }
     html += '</div>';
     el.innerHTML = html;
@@ -4076,7 +4149,7 @@ const App = {
         <div class="u-desc">${unlocked ? T(u.desc) : 'Юнит ещё не открыт'}</div>
         <div class="u-bonus">${statRange(u).pureFarm ? T('💰 Доход: ') + statRange(u).cash[0] + ' → ' + statRange(u).cash[1] + T('💰/волну') : T('Урон: ') + statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1] + T(' · Радиус: ') + statRange(u).range[0] + ' → ' + statRange(u).range[1] + T(' · Заряд: ') + statRange(u).rate[0] + ' → ' + statRange(u).rate[1] + 'с'}</div>
         ${unitTagsHTML(u)}
-        <div class="u-bonus">${T('Шанс выпадения: ')}${(u.dropChance * 100).toFixed(1)}%</div>`;
+        <div class="u-bonus">${T('Шанс выпадения: ')}${fmtChance(u.dropChance)}%</div>`;
       if (u.ability && u.ability !== 'none') {
         const ab = document.createElement('div');
         ab.className = 'u-bonus';
@@ -4099,7 +4172,7 @@ const App = {
       <div class="ud-emoji">🔒</div>
       <div class="ud-name">${u.name}</div>
       <div class="ud-rarity" style="color:${RARITY_COLOR[u.rarity]}">${R(u.rarity)}</div>
-      <div class="ud-ability">🔒 Ещё не открыт · Шанс: ${(u.dropChance * 100).toFixed(1)}%</div>
+      <div class="ud-ability">🔒 Ещё не открыт · Шанс: ${fmtChance(u.dropChance)}%</div>
       <div class="ud-stats">
         <div class="ud-stat"><div class="label">${u.pureFarm ? T('💸 Доход') : T('Урон')}</div><div class="val">${u.pureFarm ? '+' + statRange(u).cash[0] + T(' → +') + statRange(u).cash[1] + '💰' : statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1]}</div></div>
         <div class="ud-stat"><div class="label">${T('Радиус')}</div><div class="val">${statRange(u).range[0]} → ${statRange(u).range[1]}</div></div>
@@ -4433,7 +4506,7 @@ const App = {
     return crate.units.map(uid => {
       const u = UNITS.find(x => x.id === uid);
       return '<span class="sc-item">' + this.unitAvatarHTML(u, 40) +
-        '<b style="color:' + RARITY_COLOR[u.rarity] + '">' + ((u.dropChance || 0) * 100).toFixed(1) + '%</b>' +
+        '<b style="color:' + RARITY_COLOR[u.rarity] + '">' + fmtChance(u.dropChance || 0) + '%</b>' +
         '<span style="opacity:.7">' + T(u.name) + '</span></span>';
     }).join('');
   },
@@ -4447,6 +4520,39 @@ const App = {
     const grid = document.getElementById('shopGrid');
     if (!grid) return;
     grid.innerHTML = '';
+    for (const pt of POTIONS) {
+      const cCol = pt.id === 'luck' ? '#d9b0ff' : '#ffe08a';
+      const card = document.createElement('div');
+      card.className = 'unit-card';
+      card.style.borderColor = pt.id === 'luck' ? '#8a5fbf' : '#a88a2a';
+      card.innerHTML = `
+        <div class="crate-emoji" style="text-shadow:0 0 18px ${cCol}88">${pt.emoji}</div>
+        <div class="u-name" style="color:${cCol}">${T(pt.name)}</div>
+        <div class="u-desc">${T(pt.desc)}</div>
+        <div class="crate-price"><span id="potionTimer-${pt.id}" style="color:#7fffa0;font-weight:800"></span>💎 ${pt.cost}</div>
+        <div class="u-actions"></div>`;
+      const buy = document.createElement('button');
+      buy.className = 'btn small ' + (SaveManager.potionActive(pt.id) ? 'accent' : 'gold');
+      const wasActive = SaveManager.potionActive(pt.id);
+      buy.textContent = T(wasActive ? '🔁 ПРОДЛИТЬ (+10 МИН)' : '💊 КУПИТЬ ЗЕЛЬЕ');
+      buy.addEventListener('click', () => {
+        if (SaveManager.crystals < pt.cost) {
+          Sound.error();
+          UI.toast(fill(T('Не хватает 💎 (нужно %1)'), pt.cost));
+          return;
+        }
+        SaveManager.crystals = SaveManager.crystals - pt.cost;
+        SaveManager.data.potions[pt.id] = Math.max(Date.now(), SaveManager.data.potions[pt.id] || 0) + POTION_DURATION_MS;
+        SaveManager.save();
+        Sound.upgrade();
+        UI.toast(wasActive ? T('Эффект продлён на 10 минут!') : fill(T('%1: +10 минут эффекта!'), T(pt.name)));
+        this.refreshMeta();
+        this.renderShop();
+        this.refreshPotionTimers();
+      });
+      card.querySelector('.u-actions').appendChild(buy);
+      grid.appendChild(card);
+    }
     for (const c of SHOP_CRATES) {
       const card = document.createElement('div');
       card.className = 'unit-card crate-card';
@@ -4476,6 +4582,19 @@ const App = {
       });
       card.querySelector('.u-actions').appendChild(buy);
       grid.appendChild(card);
+    }
+  },
+  refreshPotionTimers() {
+    for (const pt of POTIONS) {
+      const el = document.getElementById('potionTimer-' + pt.id);
+      if (el) { const left = SaveManager.potionLeftMs(pt.id); el.textContent = left > 0 ? '⏳ ' + fmtMM(left) + ' ' : ''; }
+    }
+    const badge = document.getElementById('potionBadgeLobby');
+    if (badge) {
+      const parts = [];
+      for (const pt of POTIONS) { const left = SaveManager.potionLeftMs(pt.id); if (left > 0) parts.push(pt.emoji + ' ' + fmtMM(left)); }
+      badge.style.display = parts.length ? '' : 'none';
+      badge.textContent = parts.join('   ');
     }
   },
   showQuests() {
@@ -4615,6 +4734,7 @@ const App = {
     setInterval(() => {
       const g = document.getElementById('gachaScreen');
       if (g && g.classList.contains('active')) this.renderGachaStock();
+      this.refreshPotionTimers();
     }, 1000);
     document.getElementById('btnShop').addEventListener('click', () => this.showShop());
     document.getElementById('btnQuests').addEventListener('click', () => this.showQuests());
