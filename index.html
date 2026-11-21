@@ -733,6 +733,7 @@ const I18N_EN = {
   "Код уже использован": "Code already used",
   "Неверный код": "Invalid code",
   "Код активирован: +%1 🎟": "Code activated: +%1 🎟",
+  "Код активирован: +%1 💎": "Code activated: +%1 💎",
   "Звук включён": "Sound on",
   "Звук выключен": "Sound off",
   "Сбросить весь прогресс? Это действие необратимо.": "Reset all progress? This cannot be undone.",
@@ -1203,7 +1204,8 @@ const COLORS = {
 const PROMO_CODES = {
   'SKIBIDI': 150,
   'CAMERAMAN': 100,
-  'PLUNGER': 75
+  'PLUNGER': 75,
+  'SHOPTEST': { crystals: 10000 }
 };
 
 function dist(ax, ay, bx, by) { return Math.hypot(ax - bx, ay - by); }
@@ -1336,6 +1338,10 @@ const SaveManager = {
     const amount = PROMO_CODES[code];
     if (!amount) return { ok: false, msg: T('Неверный код') };
     this.data.codes.push(code);
+    if (typeof amount === 'object' && amount.crystals) {
+      this.addCrystals(amount.crystals);
+      return { ok: true, msg: fill(T('Код активирован: +%1 💎'), amount.crystals) };
+    }
     this.addCoins(amount);
     return { ok: true, msg: fill(T('Код активирован: +%1 🪙'), amount) };
   }
