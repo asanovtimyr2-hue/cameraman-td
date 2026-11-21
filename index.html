@@ -389,7 +389,7 @@
     <div class="event-modes">
       <div class="unit-card crate-card" style="border-color:#7fa65c">
         <div class="crate-emoji" style="text-shadow:0 0 18px #7fa65c88">🏛️</div>
-        <div class="u-name" style="color:#7fa65c">СТОЛИЦА — ШТУРМ</div>
+        <div class="u-name" style="color:#7fa65c">СТОЛИЦА ЗА 3 ДНЯ</div>
         <div class="u-desc">Захвати базу врага (10000 HP) за 10 минут: спавни юнитов за монеты и качай их. Из базы лезут солдаты-скибидисты, по нашим летят шахеды.</div>
         <div class="crate-price" style="color:#7fffa0">Награда: 🎖️ Военный Крейт</div>
         <div class="u-actions"><button class="btn small accent" id="btnModeCapital">▶ ШТУРМОВАТЬ</button></div>
@@ -1014,7 +1014,7 @@ const I18N_EN = {
   "Заработай 8000 монет в боях": "Earn 8000 coins in battles",
   "кристаллов": "crystals",
   "🏖️ ИВЕНТ ДВИЖУХА": "🏖️ DVIZHUHA EVENT",
-  "СТОЛИЦА — ШТУРМ": "CAPITAL — STORM",
+  "СТОЛИЦА ЗА 3 ДНЯ": "CAPITAL IN 3 DAYS",
   "Захвати базу врага (10000 HP) за 10 минут: спавни юнитов за монеты и качай их. Из базы лезут солдаты-скибидисты, по нашим летят шахеды.": "Capture the enemy base (10000 HP) within 10 minutes: spawn units for coins and upgrade them. Skibidi soldiers pour out of the base, and shaheds fly at your troops.",
   "Награда: 🎖️ Военный Крейт": "Reward: 🎖️ Military Crate",
   "▶ ШТУРМОВАТЬ": "▶ STORM",
@@ -1357,15 +1357,15 @@ const UNITS = [
     stats: { dmg: 650, range: 260, fireRate: 0.7, hp: 1100 },
     passive: { dmgBonus: 0.25, moneyBonus: 0 }, ability: 'aoeBurst', aoeRadius: 110 },
   { id: 'mobilCam', name: '🎖️ Мобилизованный Камерамен', emoji: '🎖️', rarity: 'Special', dropChance: 0.5,
-    desc: 'Призван по мобилизации. Основа штурмового отряда. Награда режима «СТОЛИЦА».',
+    desc: 'Призван по мобилизации. Основа штурмового отряда. Награда режима «СТОЛИЦА ЗА 3 ДНЯ».',
     stats: { dmg: 30, range: 140, fireRate: 0.8, hp: 260 },
     passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'none' },
   { id: 'speakerVet', name: '📢 Спикер со Стажем', emoji: '📢', rarity: 'Special', dropChance: 0.3,
-    desc: 'Ветеран фронтовых бригад. Звуковые волны рвутся по площади. Награда режима «СТОЛИЦА».',
+    desc: 'Ветеран фронтовых бригад. Звуковые волны рвутся по площади. Награда режима «СТОЛИЦА ЗА 3 ДНЯ».',
     stats: { dmg: 55, range: 170, fireRate: 0.75, hp: 380 },
     passive: { dmgBonus: 0.15, moneyBonus: 0 }, ability: 'splash', splashRadius: 60 },
   { id: 'presidentTV', name: '📺 Президент ТВ Мен Титан', emoji: '📺', rarity: 'Special', dropChance: 0.2,
-    desc: 'Главнокомандующий ТВ-альянса. Периодические взрывы по площади. Награда режима «СТОЛИЦА».',
+    desc: 'Главнокомандующий ТВ-альянса. Периодические взрывы по площади. Награда режима «СТОЛИЦА ЗА 3 ДНЯ».',
     stats: { dmg: 110, range: 210, fireRate: 0.65, hp: 900 },
     passive: { dmgBonus: 0.2, moneyBonus: 0 }, ability: 'aoeBurst', aoeRadius: 100 },
   { id: 'camShahed', name: '🛩️ Камера-Шахед', emoji: '🛩️', rarity: 'Special', dropChance: 0.5,
@@ -1647,7 +1647,7 @@ const SHOP_CRATES = [
     desc: 'Голографические технологии ТВ-альянса. Топ-юнит с шансом 0.2%.',
     units: ['tvStrider', 'holoCam', 'tvOverlord'] },
   { id: 'militaryCrate', name: '🎖️ Военный Крейт', emoji: '🎖️', cost: 0, color: '#7fa65c', eventOnly: true,
-    desc: 'Награда режима «СТОЛИЦА». Мобилизованный 50%, Спикер со Стажем 30%, Президент ТВ Мен Титан 20%.',
+    desc: 'Награда режима «СТОЛИЦА ЗА 3 ДНЯ». Мобилизованный 50%, Спикер со Стажем 30%, Президент ТВ Мен Титан 20%.',
     units: ['mobilCam', 'speakerVet', 'presidentTV'] },
   { id: 'budgetCrate', name: '📦 Малобюджетный Крейт', emoji: '📦', cost: 0, color: '#7ec8a0', eventOnly: true,
     desc: 'Награда режима «ДАЙТЕ ДЕНЕГ». Камера-Шахед 50%, Американская Ферма 30%, Элегантный Президент Титан 20%.',
@@ -5109,7 +5109,7 @@ const App = {
    13) ЗАПУСК
    ============================================================ */
 /* ============================================================
-   12.5) ИВЕНТ «ДВИЖУХА» — режим «СТОЛИЦА» (фронт)
+   12.5) ИВЕНТ «ДВИЖУХА» — режим «СТОЛИЦА ЗА 3 ДНЯ» (фронт)
    ============================================================ */
 const FRONT_LANES = [200, 320, 440];
 const FRONT_COSTS = { mobilCam: 120, speakerVet: 280, presidentTV: 600 };
