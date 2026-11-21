@@ -425,6 +425,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
 const LOADOUT_SIZE = 5;
+const GAME_VERSION = 'v2.8-SKIPFIX';
 const MAX_HEROES = 15;
 
 const RARITY_ORDER = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Mythic'];
@@ -1521,7 +1522,7 @@ class Enemy {
     ctx.fillStyle = p > 0.5 ? '#4dff4d' : (p > 0.25 ? '#ffcc00' : '#ff4d4d');
     ctx.beginPath(); ctx.roundRect(bx, by, w * p, h, 3); ctx.fill();
     ctx.fillStyle = '#ffffff'; ctx.font = 'bold 9px monospace'; ctx.textAlign = 'center';
-    ctx.fillText(Math.ceil(this.hp) + '/' + Math.ceil(this.maxHp), x, by - 4 - (this.shieldMax > 0 ? 6 : 0));
+    if (this.game.enemies.length <= 20) ctx.fillText(Math.ceil(this.hp) + '/' + Math.ceil(this.maxHp), x, by - 4 - (this.shieldMax > 0 ? 6 : 0));
     if (this.slowTimer > 0) {
       ctx.beginPath(); ctx.arc(x, y, this.size + 4, 0, Math.PI * 2);
       ctx.strokeStyle = '#66ccff99'; ctx.lineWidth = 2; ctx.stroke();
@@ -1741,6 +1742,7 @@ class Game {
     this.selectedHero = null;
     this.speedMultiplier = 1;
     this.autoSkip = false;
+    this.waveKills = 0;
     this.mouse = { x: -1, y: -1, col: -1, row: -1, onCanvas: false };
     this.hoveredHero = null;
     this.floaters = [];
@@ -1790,6 +1792,7 @@ class Game {
     this.gameOver = false;
     this.victory = false;
     this.kills = 0;
+    this.waveKills = 0;
     this.lastTime = 0;
     this.speedMultiplier = 1;
     this.nextWaveTimer = 0;
@@ -1895,10 +1898,11 @@ class Game {
       waveTimer.style.display = 'none';
     } else if (this.waveManager.waveActive) {
       const canSkip = this.skipAvailable();
+      const killPct = this.waveManager.waveTotal > 0 ? Math.min(99, Math.floor(this.waveKills * 100 / this.waveManager.waveTotal)) : 0;
       startBtn.disabled = !canSkip;
       startBtn.textContent = canSkip
         ? '⏩ СКИП ВЫЗОВ +' + (5 + this.wave * 3) + '¢'
-        : '⏳ скип через ' + Math.max(0, Math.ceil(20 - this.waveTime)) + 'с';
+        : `⏳ скип: 20с (${Math.max(0, Math.ceil(20 - this.waveTime))}с) или 75% зачистки (${killPct}%)`;
       waveTimer.style.display = 'none';
     } else if (!this.difficulty.endless && this.wave >= this.maxWaves) {
       startBtn.disabled = true; startBtn.textContent = '✅ ВСЕ ВОЛНЫ';
@@ -2034,12 +2038,12 @@ class Game {
   skipAvailable() {
     if (!this.waveManager.waveActive) return true;
     if (this.waveTime >= 20) return true;
-    return this.waveManager.waveTotal > 0 && this.waveManager.spawnedRatio >= 0.75;
+    return this.waveManager.waveTotal > 0 && this.waveKills >= this.waveManager.waveTotal * 0.75;
   }
   waveButtonAction() {
     if (this.gameOver || this.victory) return;
     if (this.waveManager.waveActive) {
-      if (!this.skipAvailable()) { Sound.error(); this.toast('Скип будет доступен через ' + Math.max(0, Math.ceil(20 - this.waveTime)) + 'с'); return; }
+      if (!this.skipAvailable()) { const kp = this.waveManager.waveTotal > 0 ? Math.min(99, Math.floor(this.waveKills * 100 / this.waveManager.waveTotal)) : 0; Sound.error(); this.toast(`Скип: зачисти 75% волны (сейчас ${kp}%) или подожди ${Math.max(0, Math.ceil(20 - this.waveTime))}с`); return; }
       if (!this.waveManager.finishedSpawning) {
         this.waveManager.flushSpawns();
         this.updateUI();
@@ -2069,10 +2073,11 @@ class Game {
     Sound.init();
     this.wave++;
     this.waveTime = 0;
+    this.waveKills = 0;
     this.waveManager.startWave(this.wave);
     this.countdownActive = false;
     const isBoss = this.wave % 5 === 0;
-    this.waveBanner = { life: 2.2, maxLife: 2.2, boss: isBoss, text: isBoss ? 'ВОЛНА ' + this.wave + ' · БОСС!' : 'ВОЛНА ' + this.wave };
+    this.waveBanner = { life: 2.6, maxLife: 2.6, boss: isBoss, text: isBoss ? 'ВОЛНА ' + this.wave + ' · БОСС!' : 'ВОЛНА ' + this.wave };
     this.updateUI();
     Sound.waveStart();
     if (isBoss) Sound.bossHorn();
@@ -2100,18 +2105,42 @@ class Game {
   }
   handleKey(e) {
     if (!this.running || this.gameOver || this.victory) return;
-    if (e.key >= '1' && e.key <= '5') {
-      const id = SaveManager.loadout[+e.key - 1];
+    const tag = (e.target && e.target.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+    const ids = { Digit1: '1', Digit2: '2', Digit3: '3', Digit4: '4', Digit5: '5', Numpad1: '1', Numpad2: '2', Numpad3: '3', Numpad4: '4', Numpad5: '5' };
+    if (ids[e.code]) {
+      const id = SaveManager.loadout[+ids[e.code] - 1];
       const u = id && UNITS.find(x => x.id === id);
       if (!u) return;
-      if (this.heroes.length >= MAX_HEROES) { Sound.error(); this.toast('Достигнут лимит юнитов (' + MAX_HEROES + ')'); return; }
       Sound.init();
       this.selectedBuild = (this.selectedBuild === 'hero:' + id) ? null : 'hero:' + id;
       this.selectedHero = null;
       this.refreshBuildSelection();
       Sound.gachaClick();
-      this.toast('Выбран клавишей ' + e.key + ': ' + u.name);
-    } else if (e.key === 'Escape') {
+      this.toast('[' + ids[e.code] + '] ' + u.name + (this.selectedBuild ? ' — кликни по полю' : '— выбор снят'));
+    } else if (e.code === 'KeyE') {
+      const t = this.selectedHero;
+      if (!t) { this.toast('Сначала выбери юнита на поле'); return; }
+      if (t.level >= t.maxLevel) { this.toast('Максимальный уровень'); return; }
+      if (this.money >= t.upgradeCost) {
+        this.money -= t.upgradeCost;
+        t.upgrade();
+        this.refreshAuras();
+        Sound.upgrade();
+        this.updateUI();
+      } else { Sound.error(); this.toast('Не хватает денег на улучшение (' + t.upgradeCost + '¢)'); }
+    } else if (e.code === 'KeyQ') {
+      const t = this.selectedHero;
+      if (!t) { this.toast('Сначала выбери юнита на поле'); return; }
+      this.money += t.sellValue;
+      this.grid[t.row][t.col] = null;
+      this.heroes = this.heroes.filter(h => h !== t);
+      this.selectedHero = null;
+      this.refreshAuras();
+      Sound.hit();
+      this.updateUI();
+      this.toast('Продано: +' + t.sellValue + '¢');
+    } else if (e.code === 'Escape') {
       this.selectedBuild = null;
       this.refreshBuildSelection();
     }
@@ -2134,7 +2163,7 @@ class Game {
   update(dt) {
     if (this.autoSkip && !this.paused && !this.gameOver && !this.victory) {
       if (this.waveManager.waveActive) {
-        if (this.skipAvailable()) this.waveButtonAction();
+        if (this.waveManager.finishedSpawning && this.skipAvailable()) this.waveButtonAction();
       } else if (this.countdownActive) {
         this.skipCountdown();
       }
@@ -2168,6 +2197,7 @@ class Game {
         const reward = e.reward * (this.difficulty.rewardMul || 1) * (1 + this.moneyBonusSum());
         this.money += Math.round(reward);
         this.kills++;
+        this.waveKills++;
         e.onDeath();
         this.enemies.splice(i, 1);
         this.updateUI();
@@ -2322,7 +2352,11 @@ class Game {
     ctx.font = 'bold 14px "Segoe UI",sans-serif';
     ctx.fillStyle = '#ffffff55';
     ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic';
-    ctx.fillText('КАМЕРАМЕН TD', CANVAS_W - 18, 26);
+    ctx.fillText('КАМЕРАМЕН TD · ' + GAME_VERSION, CANVAS_W - 18, 26);
+    ctx.font = '12px "Segoe UI",sans-serif';
+    ctx.fillStyle = '#ffffff55';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    ctx.fillText('1-5: юнит · E: прокачка · Q: продажа · Esc: отмена', 14, CANVAS_H - 12);
     if (this.paused) {
       ctx.fillStyle = '#00000088'; ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
       ctx.fillStyle = '#fff'; ctx.font = 'bold 42px "Segoe UI",sans-serif';
@@ -2351,9 +2385,11 @@ class Game {
     ctx.fillStyle = valid ? `rgba(255,217,102,${0.08 + 0.05 * pl})` : 'rgba(255,80,80,0.10)'; ctx.fill();
     ctx.strokeStyle = valid ? `rgba(255,217,102,${0.45 + 0.3 * pl})` : 'rgba(255,80,80,0.65)';
     ctx.lineWidth = 2; ctx.stroke();
-    ctx.fillStyle = valid ? 'rgba(255,217,102,0.20)' : 'rgba(255,80,80,0.25)';
-    ctx.beginPath(); ctx.roundRect(col * CELL + 2, row * CELL + 2, CELL - 4, CELL - 4, 6); ctx.fill();
-    ctx.globalAlpha = 0.75; ctx.font = `${CELL * 0.52}px sans-serif`;
+    const inset = 2 + 3 * pl;
+    ctx.fillStyle = valid ? `rgba(255,217,102,${0.15 + 0.2 * pl})` : 'rgba(255,80,80,0.25)';
+    ctx.beginPath(); ctx.roundRect(col * CELL + inset, row * CELL + inset, CELL - inset * 2, CELL - inset * 2, 6); ctx.fill();
+    ctx.globalAlpha = 0.7 + 0.25 * pl;
+    ctx.font = `${CELL * (0.5 + 0.05 * pl)}px sans-serif`;
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(unit.emoji, cx, cy + 2); ctx.globalAlpha = 1;
   }
@@ -2384,13 +2420,16 @@ class Game {
   drawBanner(ctx) {
     if (!this.waveBanner) return;
     const b = this.waveBanner;
-    const appear = Math.min(1, (b.maxLife - b.life) * 4);
-    const scale = 1.35 - 0.35 * appear;
+    const appear = Math.min(1, (b.maxLife - b.life) * 3);
+    const scale = 1.45 - 0.45 * appear + 0.08 * Math.sin(appear * Math.PI);
     ctx.save();
     ctx.translate(CANVAS_W / 2, 90);
     ctx.scale(scale, scale);
-    ctx.translate(-(1 - appear) * 70, 0);
-    ctx.globalAlpha = Math.min(1, b.life / (b.maxLife * 0.3));
+    ctx.translate(-(1 - appear) * 90, 0);
+    ctx.globalAlpha = Math.min(1, b.life / (b.maxLife * 0.25)) * 0.8;
+    ctx.fillStyle = '#0a0e18d0';
+    ctx.beginPath(); ctx.roundRect(-240, -46, 480, 110, 16); ctx.fill();
+    ctx.globalAlpha = Math.min(1, b.life / (b.maxLife * 0.25));
     ctx.font = 'bold 44px "Segoe UI",sans-serif';
     const grad = ctx.createLinearGradient(-160, -30, 160, 30);
     if (b.boss) { grad.addColorStop(0, '#ff6666'); grad.addColorStop(1, '#ffd966'); }
