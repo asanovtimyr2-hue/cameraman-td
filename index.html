@@ -440,7 +440,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
 const LOADOUT_SIZE = 5;
-const GAME_VERSION = 'v2.10-UX';
+const GAME_VERSION = 'v2.11-VISUAL';
 
 const DCOL = { easy: '#4dff4d', normal: '#4fc3ff', hard: '#ffb347', insane: '#ff5555', endless: '#c86bff' };
 const I18N_EN = {
@@ -661,6 +661,9 @@ const I18N_EN = {
   "🧖 Снимает стан и даёт иммунитет к стану боссов": "🧖 Clears stun and grants immunity to boss stuns",
   "ПРИЗЫВ ×1 (100 🪙)": "SUMMON ×1 (100 🪙)",
   "ПРИЗЫВ ×10 (900 🪙)": "SUMMON ×10 (900 🪙)",
+  "ВЫХОД ВРАГОВ": "ENEMY SPAWN",
+  "🔧 Доход ферм: +%1💰/волну": "🔧 Farm income: +%1💰/wave",
+  "Скип волны! +%1💰": "Wave skipped! +%1💰",
   "УРОН": "DMG",
   "РАДИУС": "RNG",
   "ЗАРЯД": "CD"
@@ -783,11 +786,11 @@ const ABILITY_RU = {
 };
 
 const UNITS = [
-  { id: 'intern', name: 'Стажёр', emoji: '🎥', rarity: 'Common', dropChance: 0.30,
+  { id: 'intern', name: 'Стажёр', emoji: '🎥', rarity: 'Common', dropChance: 0.20,
     desc: 'Молодой стажёр студии. Первый боец против скибиди.',
-    stats: { dmg: 16, range: 115, fireRate: 1.0, hp: 150 },
+    stats: { dmg: 18, range: 115, fireRate: 1.0, hp: 150 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', aura: 0 },
-  { id: 'operator', name: 'Оператор', emoji: '📹', rarity: 'Common', dropChance: 0.20,
+  { id: 'operator', name: 'Оператор', emoji: '📹', rarity: 'Common', dropChance: 0.14,
     desc: 'Опытный оператор камер. Надёжный и меткий.',
     stats: { dmg: 22, range: 130, fireRate: 0.95, hp: 200 },
     passive: { dmgBonus: 0.05, moneyBonus: 0 }, ability: 'none', aura: 0 },
@@ -795,7 +798,7 @@ const UNITS = [
     desc: 'Очень быстрая стрельба, разгоняет союзников.',
     stats: { dmg: 26, range: 110, fireRate: 0.45, hp: 190 },
     passive: { dmgBonus: 0, moneyBonus: 0.05 }, ability: 'speedBoost', aura: 0 },
-  { id: 'makeup', name: 'Гримёр', emoji: '💄', rarity: 'Uncommon', dropChance: 0.08,
+  { id: 'makeup', name: 'Гримёр', emoji: '💄', rarity: 'Uncommon', dropChance: 0.09,
     desc: 'Бодрит союзников в бою: снимает стан и даёт иммунитет к стану боссов.',
     stats: { dmg: 16, range: 120, fireRate: 1.2, hp: 220 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'antistan', aura: 0 },
@@ -803,7 +806,7 @@ const UNITS = [
     desc: 'Ведёт огонь с воздуха. Большой радиус.',
     stats: { dmg: 24, range: 175, fireRate: 0.7, hp: 170 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', aura: 0 },
-  { id: 'scientist', name: 'Учёный', emoji: '🔬', rarity: 'Rare', dropChance: 0.06,
+  { id: 'scientist', name: 'Учёный', emoji: '🔬', rarity: 'Rare', dropChance: 0.04,
     desc: 'Ферма. Приносит деньги в конце каждой волны.',
     stats: { dmg: 0, range: 125, fireRate: 0, hp: 180 },
     passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash', aura: 0,
@@ -812,16 +815,16 @@ const UNITS = [
     desc: 'Солёные лучи замедляют скибиди.',
     stats: { dmg: 22, range: 130, fireRate: 1.0, hp: 210 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'slow', aura: 0 },
-  { id: 'boomop', name: 'Бум-оператор', emoji: '🎙️', rarity: 'Rare', dropChance: 0.04,
+  { id: 'boomop', name: 'Бум-оператор', emoji: '🎙️', rarity: 'Rare', dropChance: 0.03,
     desc: 'Звуковые атаки и бафф скорости союзникам.',
     stats: { dmg: 22, range: 120, fireRate: 0.85, hp: 200 },
     passive: { dmgBonus: 0, moneyBonus: 0.07 }, ability: 'speedBoost', aura: 0 },
-  { id: 'engineer', name: 'Инженер', emoji: '🛠️', rarity: 'Epic', dropChance: 0.025,
+  { id: 'engineer', name: 'Инженер', emoji: '🛠️', rarity: 'Epic', dropChance: 0.03,
     desc: 'Чистая ферма. Не атакует, приносит деньги в конце каждой волны.',
     stats: { dmg: 0, range: 130, fireRate: 0, hp: 230 },
     passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash', aura: 0,
     cashPerWave: 170, pureFarm: true },
-  { id: 'director', name: 'Режиссёр', emoji: '🎬', rarity: 'Epic', dropChance: 0.025,
+  { id: 'director', name: 'Режиссёр', emoji: '🎬', rarity: 'Epic', dropChance: 0.02,
     desc: 'Командует огнём. Взрывы по площади.',
     stats: { dmg: 33, range: 150, fireRate: 1.05, hp: 240 },
     passive: { dmgBonus: 0.10, moneyBonus: 0 }, ability: 'aoeBurst', aura: 0 },
@@ -833,35 +836,35 @@ const UNITS = [
     desc: 'Аура поддержки БЕЗ ограничений карты. +деньги.',
     stats: { dmg: 28, range: 140, fireRate: 0.95, hp: 220 },
     passive: { dmgBonus: 0, moneyBonus: 0.10 }, ability: 'none', aura: 0.12 },
-  { id: 'soundmixer', name: 'Саунд-миксер', emoji: '🎚️', rarity: 'Legendary', dropChance: 0.009,
+  { id: 'soundmixer', name: 'Саунд-миксер', emoji: '🎚️', rarity: 'Legendary', dropChance: 0.008,
     desc: 'Мощные волны: урон + длинное оглушение.',
     stats: { dmg: 38, range: 145, fireRate: 0.95, hp: 300 },
     passive: { dmgBonus: 0.05, moneyBonus: 0.05 }, ability: 'stun', abilityPower: 2.0, aura: 0 },
-  { id: 'titanCam', name: 'Титан Камерамен', emoji: '🗿', rarity: 'Legendary', dropChance: 0.006,
+  { id: 'titanCam', name: 'Титан Камерамен', emoji: '🗿', rarity: 'Legendary', dropChance: 0.008,
     desc: 'Колосс огневой мощи. Один в поле воин.',
     stats: { dmg: 70, range: 160, fireRate: 0.9, hp: 420 },
     passive: { dmgBonus: 0.10, moneyBonus: 0 }, ability: 'none', aura: 0 },
-  { id: 'titanSpeaker', name: 'Титан Спикер', emoji: '📢', rarity: 'Mythic', dropChance: 0.003,
+  { id: 'titanSpeaker', name: 'Титан Спикер', emoji: '📢', rarity: 'Mythic', dropChance: 0.005,
     desc: 'Сокрушающие волны звука по всей арене.',
     stats: { dmg: 72, range: 170, fireRate: 1.0, hp: 520 },
     passive: { dmgBonus: 0.05, moneyBonus: 0.05 }, ability: 'aoeBurst', aoeRadius: 90, aura: 0.05 },
-  { id: 'titanTV', name: 'Титан ТВ', emoji: '👑', rarity: 'Mythic', dropChance: 0.002,
+  { id: 'titanTV', name: 'Титан ТВ', emoji: '👑', rarity: 'Mythic', dropChance: 0.003,
     desc: 'Абсолютный чемпион студии. Аура на всю карту.',
     stats: { dmg: 88, range: 185, fireRate: 0.85, hp: 600 },
     passive: { dmgBonus: 0.15, moneyBonus: 0.10 }, ability: 'aoeBurst', aoeRadius: 80, aura: 0.15 },
-  { id: 'pyrotech', name: 'Пиротехник', emoji: '🎆', rarity: 'Uncommon', dropChance: 0.09,
+  { id: 'pyrotech', name: 'Пиротехник', emoji: '🎆', rarity: 'Rare', dropChance: 0.05,
     desc: 'Снаряды взрываются по площади при каждом попадании.',
     stats: { dmg: 17, range: 120, fireRate: 1.1, hp: 200 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'splash', splashRadius: 55, aura: 0 },
-  { id: 'snipercam', name: 'Снайпер', emoji: '🎯', rarity: 'Rare', dropChance: 0.035,
+  { id: 'snipercam', name: 'Снайпер', emoji: '🎯', rarity: 'Rare', dropChance: 0.05,
     desc: 'Очень дальний и точный огонь. Одна цель — один выстрел.',
     stats: { dmg: 58, range: 260, fireRate: 0.8, hp: 160 },
     passive: { dmgBonus: 0.05, moneyBonus: 0 }, ability: 'none', aura: 0 },
   { id: 'bodyguard', name: 'Телохранитель', emoji: '🛡️', rarity: 'Uncommon', dropChance: 0.07,
     desc: 'Крепкий боец передовой линии. Огромная прочность.',
-    stats: { dmg: 15, range: 95, fireRate: 1.3, hp: 520 },
+    stats: { dmg: 18, range: 95, fireRate: 1.3, hp: 520 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', aura: 0 },
-  { id: 'hacker', name: 'Хакер', emoji: '💻', rarity: 'Legendary', dropChance: 0.004,
+  { id: 'hacker', name: 'Хакер', emoji: '💻', rarity: 'Legendary', dropChance: 0.006,
     desc: 'Взламывает систему: аура урона и разряд с замедлением.',
     stats: { dmg: 36, range: 140, fireRate: 0.9, hp: 260 },
     passive: { dmgBonus: 0, moneyBonus: 0.08 }, ability: 'slow', aura: 0.10 }
@@ -1339,9 +1342,36 @@ class MapRenderer {
     draw(PATH_WIDTH + 18, 'rgba(0,0,0,.35)');
     draw(PATH_WIDTH + 8, sc === 'desert' ? '#8a6a3a' : (sc === 'sewer' ? '#2f4a3c' : '#2a3554'));
     draw(PATH_WIDTH, sc === 'desert' ? '#c8a468' : (sc === 'sewer' ? '#4a6e5c' : '#3d4c78'));
-    c.font = '900 22px Arial'; c.textAlign = 'center'; c.textBaseline = 'middle';
-    c.fillText('\ud83d\udeaa', pts[0].x, pts[0].y - 26);
     this._bg = cv;
+  }
+  drawPortal(ctx) {
+    const sp = this.waypoints[0];
+    const t = performance.now() / 1000;
+    const R = 20;
+    const gl = ctx.createRadialGradient(sp.x, sp.y, 2, sp.x, sp.y, R * 2.2);
+    gl.addColorStop(0, 'rgba(176,107,255,0.5)');
+    gl.addColorStop(0.6, 'rgba(120,60,200,0.17)');
+    gl.addColorStop(1, 'rgba(120,60,200,0)');
+    ctx.fillStyle = gl;
+    ctx.beginPath(); ctx.arc(sp.x, sp.y, R * 2.2, 0, Math.PI * 2); ctx.fill();
+    ctx.save(); ctx.translate(sp.x, sp.y);
+    const cols = ['rgba(255,120,255,0.85)', 'rgba(176,107,255,0.8)', 'rgba(126,231,255,0.6)'];
+    for (let i = 0; i < 3; i++) {
+      const rr = R * (0.45 + i * 0.27);
+      const a0 = t * (1.6 - i * 0.25) * (i % 2 ? -1 : 1) + i * 2.1;
+      ctx.beginPath(); ctx.arc(0, 0, rr, a0, a0 + Math.PI * 1.15);
+      ctx.strokeStyle = cols[i]; ctx.lineWidth = 3.5 - i * 0.7; ctx.lineCap = 'round'; ctx.stroke();
+    }
+    const core = ctx.createRadialGradient(0, 0, 1, 0, 0, R * 0.5);
+    core.addColorStop(0, '#ffffff');
+    core.addColorStop(0.55, '#d9a6ff');
+    core.addColorStop(1, '#7a3fd0');
+    ctx.beginPath(); ctx.arc(0, 0, R * 0.5 + Math.sin(t * 6) * 1.2, 0, Math.PI * 2);
+    ctx.fillStyle = core; ctx.fill();
+    ctx.restore();
+    ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'rgba(230,150,255,0.95)';
+    ctx.fillText('⚠ ' + T('ВЫХОД ВРАГОВ'), sp.x, sp.y - R - 24);
   }
   draw(ctx) {
     if (this._bg) {
@@ -1361,6 +1391,7 @@ class MapRenderer {
     ctx.stroke();
     ctx.setLineDash([]);
     ctx.lineDashOffset = 0;
+    this.drawPortal(ctx);
     const vg = ctx.createRadialGradient(CANVAS_W / 2, CANVAS_H / 2, CANVAS_H * 0.4, CANVAS_W / 2, CANVAS_H / 2, CANVAS_H * 0.85);
     vg.addColorStop(0, 'rgba(0,0,0,0)');
     vg.addColorStop(1, 'rgba(0,0,0,0.35)');
@@ -1589,6 +1620,13 @@ class Hero {
     const bob = Math.sin(this.bobPhase) * 1.5;
     ctx.beginPath(); ctx.ellipse(x, y + size * 0.55, size * 0.78, size * 0.3, 0, 0, Math.PI * 2);
     ctx.fillStyle = '#00000070'; ctx.fill();
+    const stepL = Math.sin(this.bobPhase * 2) * 2;
+    ctx.fillStyle = '#1a2130';
+    ctx.beginPath(); ctx.roundRect(x - size * 0.25, y + size * 0.25 - Math.max(0, stepL), size * 0.13, size * 0.25, 3); ctx.fill();
+    ctx.beginPath(); ctx.roundRect(x + size * 0.12, y + size * 0.25 - Math.max(0, -stepL), size * 0.13, size * 0.25, 3); ctx.fill();
+    ctx.fillStyle = '#0e1219';
+    ctx.beginPath(); ctx.roundRect(x - size * 0.25, y + size * 0.25, size * 0.23, size * 0.25, 3); ctx.fill();
+    ctx.beginPath(); ctx.roundRect(x + size * 0.25 - size * 0.23, y + size * 0.25, size * 0.23, size * 0.25, 3); ctx.fill();
     const glow = ctx.createRadialGradient(x, y + 6, 4, x, y + 6, size * 1.5);
     glow.addColorStop(0, rc + '33');
     glow.addColorStop(1, rc + '00');
@@ -1758,6 +1796,10 @@ class Enemy {
     const yy = y + bob;
     ctx.beginPath(); ctx.ellipse(x, y + this.size * 0.75, this.size * 0.85, this.size * 0.35, 0, 0, Math.PI * 2);
     ctx.fillStyle = '#00000055'; ctx.fill();
+    const fA = Math.sin(this.time * 12), fB = -fA;
+    ctx.fillStyle = shadeColor(this.def.color, 0.55);
+    ctx.beginPath(); ctx.ellipse(x - this.size * 0.38, y + this.size * 0.28 - Math.max(0, fB) * 2.5, this.size * 0.2, this.size * 0.13, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x + this.size * 0.38, y + this.size * 0.28 - Math.max(0, fA) * 2.5, this.size * 0.2, this.size * 0.13, 0, 0, Math.PI * 2); ctx.fill();
     if (this.def.id === 'fast' && this.speed > 0) {
       ctx.strokeStyle = this.def.color + '66'; ctx.lineWidth = 2;
       for (let i = 1; i <= 2; i++) {
@@ -2373,9 +2415,10 @@ class Game {
         this.updateUI();
       } else {
         if (!this.difficulty.endless && this.wave >= this.maxWaves) return;
+        this.awardWaveClear();
         const bonus = 5 + this.wave * 3;
         this.money += bonus;
-        this.floaters.push({ x: CANVAS_W / 2, y: 70, text: 'Скип волны! +' + bonus + '¢', life: 1.2, maxLife: 1.2, color: '#ffd966' });
+        this.floaters.push({ x: CANVAS_W / 2, y: 70, text: fill(T('Скип волны! +%1💰'), bonus), life: 1.2, maxLife: 1.2, color: '#ffd966' });
         Sound.zap();
         this.startWave(true);
       }
@@ -2529,23 +2572,7 @@ class Game {
     }
     if (this.waveManager.waveActive && this.waveManager.finishedSpawning && this.enemies.length === 0) {
       this.waveManager.waveActive = false;
-      this.baseHp = Math.min(this.baseMaxHp, this.baseHp + BASE_WAVE_REGEN);
-      const bonus = Math.round(50 + this.wave * 15);
-      this.money += bonus;
-      this._farmCash = 0;
-      for (const h of this.heroes) h.onWaveEnd();
-      const farmCash = this._farmCash;
-      if (this.difficulty.endless && !this.gameOver) {
-        const gain = 20 + this.wave + (this.wave % 5 === 0 ? 50 : 0);
-        this.runCoinsEarned = (this.runCoinsEarned || 0) + gain;
-        SaveManager.addCoins(gain);
-        this.floaters.push({ x: CANVAS_W / 2, y: 66, text: fill(T('За волну +%1💰 (в банк)'), gain),
-          life: 1.6, maxLife: 1.6, color: '#ffd966' });
-      }
-      this.floaters.push({ x: CANVAS_W / 2, y: 40, text: fill(T('Волна %1 пройдена! +%2💰'), this.wave, bonus),
-        life: 1.6, maxLife: 1.6, color: '#7fffa0' });
-      if (farmCash) this.toast(fill(T('🔧 Фермы принесли +%1💰 за волну'), farmCash));
-      Sound.waveClear();
+      this.awardWaveClear();
       this.updateUI();
       if (!this.difficulty.endless && this.wave >= this.maxWaves && !this.gameOver) {
         this.victory = true;
@@ -2570,6 +2597,29 @@ class Game {
       f.y -= 14 * dt;
       if (f.life <= 0) this.floaters.splice(i, 1);
     }
+  }
+  awardWaveClear() {
+    this.baseHp = Math.min(this.baseMaxHp, this.baseHp + BASE_WAVE_REGEN);
+    const bonus = Math.round(50 + this.wave * 15);
+    this.money += bonus;
+    this._farmCash = 0;
+    for (const h of this.heroes) h.onWaveEnd();
+    const farmCash = this._farmCash;
+    if (this.difficulty.endless && !this.gameOver) {
+      const gain = 20 + this.wave + (this.wave % 5 === 0 ? 50 : 0);
+      this.runCoinsEarned = (this.runCoinsEarned || 0) + gain;
+      SaveManager.addCoins(gain);
+      this.floaters.push({ x: CANVAS_W / 2, y: 66, text: fill(T('За волну +%1💰 (в банк)'), gain),
+        life: 1.6, maxLife: 1.6, color: '#ffd966' });
+    }
+    this.floaters.push({ x: CANVAS_W / 2, y: 40, text: fill(T('Волна %1 пройдена! +%2💰'), this.wave, bonus),
+      life: 1.6, maxLife: 1.6, color: '#7fffa0' });
+    if (farmCash) {
+      this.toast(fill(T('🔧 Фермы принесли +%1💰 за волну'), farmCash));
+      this._payMsg = fill(T('🔧 Фермы принесли +%1💰 за волну'), farmCash);
+      this._payMsgUntil = performance.now() + 4000;
+    }
+    Sound.waveClear();
   }
   finish(win) {
     this.running = false;
@@ -2604,6 +2654,8 @@ class Game {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
     this.map.draw(ctx);
+    this.drawPaymentNotice();
+    this.drawFarmChip(ctx);
     this.drawBase(ctx);
     if (this.selectedBuild && this.mouse.onCanvas) this.drawPreview(ctx);
     for (const h of this.heroes) h.draw(ctx);
@@ -2743,18 +2795,94 @@ class Game {
     ctx.fillText(text, x + w / 2, y + h / 2 + 1);
     ctx.globalAlpha = 1;
   }
+  drawFarmChip(ctx) {
+    const inc = this.heroes.reduce((s, h) => s + (!h.heroDead && h.pureFarm ? (h.cashPerWave || 0) : 0), 0);
+    if (inc <= 0) return;
+    const label = fill(T('🔧 Доход ферм: +%1💰/волну'), Math.round(inc));
+    ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    const w = ctx.measureText(label).width + 22;
+    ctx.fillStyle = 'rgba(10,14,24,0.72)';
+    ctx.beginPath(); ctx.roundRect(12, 10, w, 26, 13); ctx.fill();
+    ctx.strokeStyle = 'rgba(127,255,160,0.55)'; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.fillStyle = '#7fffa0';
+    ctx.fillText(label, 24, 23);
+  }
+  drawPaymentNotice() {
+    if (!this._payMsg || performance.now() > this._payMsgUntil) { this._payMsg = null; return; }
+    const label = this._payMsg;
+    ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    const w = ctx.measureText(label).width + 22;
+    ctx.fillStyle = 'rgba(10,14,24,0.78)';
+    ctx.beginPath(); ctx.roundRect(12, 42, w, 24, 12); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,217,102,0.6)'; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.fillStyle = '#ffd966';
+    ctx.fillText(label, 24, 55);
+  }
   drawBase(ctx) {
     const pts = this.map.waypoints;
     const b = pts[pts.length - 1];
     const p = clamp(this.baseHp / this.baseMaxHp, 0, 1);
-    ctx.font = '26px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('🏠', b.x, b.y + 2);
-    const w = 44, h = 6, bx = b.x - w / 2, by = b.y - 28;
+    const t = performance.now() / 1000;
+    ctx.save(); ctx.translate(b.x, b.y);
+    ctx.beginPath(); ctx.ellipse(0, 20, 32, 11, 0, 0, Math.PI * 2);
+    ctx.fillStyle = '#00000060'; ctx.fill();
+    const wallG = ctx.createLinearGradient(0, -18, 0, 20);
+    wallG.addColorStop(0, '#4a566f');
+    wallG.addColorStop(0.6, '#333c52');
+    wallG.addColorStop(1, '#232a3c');
+    ctx.beginPath(); ctx.roundRect(-24, -16, 48, 36, 5);
+    ctx.fillStyle = wallG; ctx.fill();
+    ctx.strokeStyle = p > 0.5 ? '#6d7a96' : (p > 0.25 ? '#9a7a3a' : '#8a4040');
+    ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#1b2130';
+    ctx.beginPath(); ctx.roundRect(-5, 4, 10, 16, 2); ctx.fill();
+    ctx.fillStyle = '#ffcc6699';
+    ctx.beginPath(); ctx.roundRect(-4, 11, 8, 2.5, 1); ctx.fill();
+    ctx.strokeStyle = '#20293c'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(-4, 12); ctx.lineTo(4, 12); ctx.stroke();
+    ctx.fillStyle = '#25324a';
+    ctx.fillRect(-19, -9, 10, 9); ctx.fillRect(9, -9, 10, 9);
+    const winOn = p > 0.25;
+    ctx.fillStyle = winOn ? 'rgba(126,231,255,0.85)' : 'rgba(255,110,80,0.8)';
+    ctx.fillRect(-18, -8, 8, 7); ctx.fillRect(10, -8, 8, 7);
+    const roofG = ctx.createLinearGradient(0, -36, 0, -16);
+    roofG.addColorStop(0, '#5a6890'); roofG.addColorStop(1, '#3a4460');
+    ctx.beginPath(); ctx.moveTo(-29, -15); ctx.lineTo(0, -36); ctx.lineTo(29, -15); ctx.closePath();
+    ctx.fillStyle = roofG; ctx.fill();
+    ctx.strokeStyle = '#20293c'; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.strokeStyle = '#8a93b0'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0, -36); ctx.lineTo(0, -48); ctx.stroke();
+    const bl = 0.5 + 0.5 * Math.sin(t * 5);
+    ctx.beginPath(); ctx.arc(0, -51, 2.5 + bl, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,90,90,' + (0.4 + 0.6 * bl).toFixed(2) + ')'; ctx.fill();
+    ctx.fillStyle = '#232a3c';
+    ctx.beginPath(); ctx.roundRect(-16, -29, 13, 10, 2); ctx.fill();
+    ctx.strokeStyle = '#232a3c'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(-13, -19); ctx.lineTo(-18, -12); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-9, -19); ctx.lineTo(-6, -12); ctx.stroke();
+    ctx.fillStyle = '#11151f';
+    ctx.beginPath(); ctx.arc(-19, -24, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(126,231,255,0.65)';
+    ctx.beginPath(); ctx.arc(-20, -24, 2, 0, Math.PI * 2); ctx.fill();
+    if (p < 0.55) {
+      ctx.strokeStyle = '#151a26'; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.moveTo(-14, -6); ctx.lineTo(-8, 2); ctx.lineTo(-12, 10); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(14, -10); ctx.lineTo(9, -2); ctx.lineTo(13, 8); ctx.stroke();
+    }
+    if (p < 0.3) {
+      const sm = 0.5 + 0.5 * Math.sin(t * 3);
+      ctx.fillStyle = 'rgba(190,190,200,' + (0.25 + 0.2 * sm).toFixed(2) + ')';
+      ctx.beginPath(); ctx.arc(-10, -44 - sm * 6, 5 + sm * 3, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'rgba(170,170,185,' + (0.2 + 0.2 * sm).toFixed(2) + ')';
+      ctx.beginPath(); ctx.arc(6, -50 - sm * 11, 4 + sm * 2.5, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+    const w = 54, h = 6, bx = b.x - w / 2, by = b.y - 64;
     ctx.fillStyle = '#2a1a1a';
     ctx.beginPath(); ctx.roundRect(bx, by, w, h, 3); ctx.fill();
     ctx.fillStyle = p > 0.5 ? '#4dff4d' : (p > 0.25 ? '#ffcc00' : '#ff4d4d');
     ctx.beginPath(); ctx.roundRect(bx, by, w * p, h, 3); ctx.fill();
-    ctx.fillStyle = '#ffffffcc'; ctx.font = 'bold 10px monospace';
+    ctx.fillStyle = '#ffffffcc'; ctx.font = 'bold 10px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(Math.max(0, Math.round(this.baseHp)) + ' HP', b.x, by - 8);
   }
   drawBanner(ctx) {
