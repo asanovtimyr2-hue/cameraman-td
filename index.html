@@ -425,7 +425,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
 const LOADOUT_SIZE = 5;
-const GAME_VERSION = 'v2.8-SKIPFIX';
+const GAME_VERSION = 'v2.9-FARMS';
 const MAX_HEROES = 15;
 
 const RARITY_ORDER = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Mythic'];
@@ -480,7 +480,7 @@ const ABILITY_RU = {
   'aoeBurst': '💥 Периодический взрыв по площади',
   'speedBoost': '⚡ Разгоняет атаки союзников рядом',
   'heal': '💖 Лечит союзников вокруг',
-  'cash': '💸 Приносит деньги в начале каждой волны',
+  'cash': '💸 Ферма: приносит деньги в конце каждой волны',
   'stun': '🌟 Периодически оглушает врагов вокруг',
   'splash': '💥 Снаряды взрываются по площади'
 };
@@ -507,10 +507,10 @@ const UNITS = [
     stats: { dmg: 24, range: 175, fireRate: 0.7, hp: 170 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', aura: 0 },
   { id: 'scientist', name: 'Учёный', emoji: '🔬', rarity: 'Rare', dropChance: 0.06,
-    desc: 'Приносит деньги в начале каждой волны.',
-    stats: { dmg: 17, range: 125, fireRate: 1.0, hp: 180 },
+    desc: 'Ферма. Приносит деньги в конце каждой волны.',
+    stats: { dmg: 0, range: 125, fireRate: 0, hp: 180 },
     passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash', aura: 0,
-    cashPerWave: 90 },
+    cashPerWave: 90, pureFarm: true },
   { id: 'gaffer', name: 'Осветитель', emoji: '💡', rarity: 'Rare', dropChance: 0.05,
     desc: 'Солёные лучи замедляют скибиди.',
     stats: { dmg: 22, range: 130, fireRate: 1.0, hp: 210 },
@@ -520,10 +520,10 @@ const UNITS = [
     stats: { dmg: 22, range: 120, fireRate: 0.85, hp: 200 },
     passive: { dmgBonus: 0, moneyBonus: 0.07 }, ability: 'speedBoost', aura: 0 },
   { id: 'engineer', name: 'Инженер', emoji: '🛠️', rarity: 'Epic', dropChance: 0.025,
-    desc: 'Мастер студии. Много денег каждую волну.',
-    stats: { dmg: 21, range: 130, fireRate: 0.95, hp: 230 },
+    desc: 'Чистая ферма. Не атакует, приносит деньги в конце каждой волны.',
+    stats: { dmg: 0, range: 130, fireRate: 0, hp: 230 },
     passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash', aura: 0,
-    cashPerWave: 170 },
+    cashPerWave: 170, pureFarm: true },
   { id: 'director', name: 'Режиссёр', emoji: '🎬', rarity: 'Epic', dropChance: 0.025,
     desc: 'Командует огнём. Взрывы по площади.',
     stats: { dmg: 33, range: 150, fireRate: 1.05, hp: 240 },
@@ -569,6 +569,17 @@ const UNITS = [
     stats: { dmg: 36, range: 140, fireRate: 0.9, hp: 260 },
     passive: { dmgBonus: 0, moneyBonus: 0.08 }, ability: 'slow', aura: 0.10 }
 ];
+
+function statRange(u) {
+  const s = u.stats;
+  return {
+    dmg: [s.dmg, Math.round(s.dmg * Math.pow(1.25, 4))],
+    range: [s.range, Math.round(s.range * Math.pow(1.08, 4))],
+    rate: [s.fireRate, +(s.fireRate * Math.pow(0.9, 4)).toFixed(2)],
+    cash: [u.cashPerWave || 0, Math.round((u.cashPerWave || 0) * Math.pow(1.5, 4))],
+    pureFarm: !!u.pureFarm
+  };
+}
 
 const ENEMIES = [
   { id: 'skibidi', name: 'Обычный Скибиди', emoji: '🚽', hp: 20, speed: 1.0, reward: 9, color: '#8a9a5a' },
@@ -941,17 +952,24 @@ class MapRenderer {
     }[sc] || ['crate'];
     let sd = mapSeed(sc + 'props:' + this.map.id);
     const rnd = () => { sd = (sd * 1103515245 + 12345) & 0x7fffffff; return (sd >>> 8) / 16777216; };
-    let tries = 0;
-    while (this.props.length < 22 && tries < 600) {
-      tries++;
-      const x = rnd() * CANVAS_W, y = CANVAS_H * 0.1 + rnd() * CANVAS_H * 0.85;
-      if (y < CANVAS_H * 0.05 || y > CANVAS_H * 0.96) continue;
-      if (this.distToRoad(x, y) < 52) continue;
-      if (sc === 'city' && y < CANVAS_H * 0.4) continue;
-      const col = Math.floor(x / CELL), row = Math.floor(y / CELL);
-      if (this.roadCells.has(col + ',' + row)) continue;
-      this.props.push({ type: types[Math.floor(rnd() * types.length)], x, y, s: 0.85 + rnd() * 0.5 });
-      this.propCells.add(col + ',' + row);
+    const SEC_COLS = 5, SEC_ROWS = 3;
+    const cw = CANVAS_W / SEC_COLS, ch = CANVAS_H / SEC_ROWS;
+    for (let srow = 0; srow < SEC_ROWS; srow++) {
+      for (let scol = 0; scol < SEC_COLS; scol++) {
+        let placed = 0, tries = 0;
+        while (placed < 2 && tries < 50) {
+          tries++;
+          const x = scol * cw + 12 + rnd() * (cw - 24), y = srow * ch + 12 + rnd() * (ch - 24);
+          if (y < CANVAS_H * 0.03 || y > CANVAS_H * 0.97) continue;
+          if (this.distToRoad(x, y) < 50) continue;
+          if (sc === 'city' && y < CANVAS_H * 0.4) continue;
+          const col = Math.floor(x / CELL), row = Math.floor(y / CELL);
+          if (this.roadCells.has(col + ',' + row)) continue;
+          this.props.push({ type: types[Math.floor(rnd() * types.length)], x, y, s: 0.85 + rnd() * 0.5 });
+          this.propCells.add(col + ',' + row);
+          placed++;
+        }
+      }
     }
   }
   paintBg() {
@@ -1091,7 +1109,8 @@ class Hero {
     this.stunPower = unit.abilityPower || 1.4;
     this.moneyBonus = unit.passive.moneyBonus || 0;
     this.auraBonus = unit.aura || 0;
-    this.cashPerWave = unit.cashPerWave || 0;
+    this.pureFarm = !!unit.pureFarm;
+    this.baseCash = unit.cashPerWave || 0;
     this.buildPrice = RARITY_COST[unit.rarity] || 100;
     this.spent = this.buildPrice;
     this._boostTargets = [];
@@ -1113,6 +1132,7 @@ class Hero {
     this.maxHp = newMax;
     this.hp = Math.min(newMax, Math.max(1, newMax * ratio));
     this.upgradeCost = Math.round((HERO_UPGRADE_COST[this.level] || 0) * (RARITY_UPGRADE_MULT[this.unit.rarity] || 1) / 10) * 10;
+    this.cashPerWave = this.baseCash ? Math.round(this.baseCash * Math.pow(1.5, this.level - 1)) : 0;
     this.sellValue = Math.floor(this.spent * SELL_RATIO);
   }
   statValues(level) {
@@ -1184,6 +1204,7 @@ class Hero {
         }
       }
     }
+    if (this.pureFarm) return;
     this.cooldown -= dt;
     if (this.cooldown > 0) return;
     let target = null, bestScore = 0;
@@ -1230,9 +1251,10 @@ class Hero {
       this.game.explosions.push({ x: this.x, y: this.y, r: 0, maxR: this.range, life: 0.3, maxLife: 0.3 });
     }
   }
-  onWaveStart() {
+  onWaveEnd() {
     if (this.heroDead || !this.cashPerWave) return;
     this.game.money += this.cashPerWave;
+    this.game._farmCash = (this.game._farmCash || 0) + this.cashPerWave;
     this.game.floaters.push({ x: this.x, y: this.y - 18, text: '+' + this.cashPerWave + '💰',
       life: 1.2, maxLife: 1.2, color: '#ffd966' });
   }
@@ -1366,7 +1388,7 @@ class Enemy {
       this.slowTimer -= dt;
       if (this.slowTimer <= 0) { this.slowFactor = 1; this.speed = this.baseSpeed; }
     }
-    if (this.regen > 0 && this.hp < this.maxHp) this.hp = Math.min(this.maxHp, this.hp + this.regen * dt);
+    if (this.regen > 0 && this.hp > 0 && this.hp < this.maxHp) this.hp = Math.min(this.maxHp, this.hp + this.regen * dt);
     this.time += dt;
     if (this.def.bossStunEvery) {
       this.stunCd -= dt;
@@ -1522,7 +1544,7 @@ class Enemy {
     ctx.fillStyle = p > 0.5 ? '#4dff4d' : (p > 0.25 ? '#ffcc00' : '#ff4d4d');
     ctx.beginPath(); ctx.roundRect(bx, by, w * p, h, 3); ctx.fill();
     ctx.fillStyle = '#ffffff'; ctx.font = 'bold 9px monospace'; ctx.textAlign = 'center';
-    if (this.game.enemies.length <= 20) ctx.fillText(Math.ceil(this.hp) + '/' + Math.ceil(this.maxHp), x, by - 4 - (this.shieldMax > 0 ? 6 : 0));
+    ctx.fillText(Math.ceil(this.hp) + '/' + Math.ceil(this.maxHp), x, by - 4 - (this.shieldMax > 0 ? 6 : 0));
     if (this.slowTimer > 0) {
       ctx.beginPath(); ctx.arc(x, y, this.size + 4, 0, Math.PI * 2);
       ctx.strokeStyle = '#66ccff99'; ctx.lineWidth = 2; ctx.stroke();
@@ -1702,7 +1724,6 @@ class WaveManager {
     this.spawnedCount = 0;
     this.spawnTimer = 0;
     this.waveActive = true;
-    for (const h of g.heroes) h.onWaveStart();
   }
   _spawnOne(def, hp, spd, rew) {
     const e = new Enemy(this.game, def, hp, spd, rew);
@@ -2089,7 +2110,7 @@ class Game {
   }
   toggleSpeed() {
     if (this.gameOver || this.victory) return;
-    this.speedMultiplier = this.speedMultiplier === 1 ? 2 : (this.speedMultiplier === 2 ? 3 : 1);
+    this.speedMultiplier = this.speedMultiplier === 1 ? 2 : 1;
     document.getElementById('speedBtn').textContent = this.speedMultiplier === 1 ? '⏩ ×1' : '⏩ ×' + this.speedMultiplier;
   }
   toggleAutoSkip() {
@@ -2208,8 +2229,12 @@ class Game {
       this.baseHp = Math.min(this.baseMaxHp, this.baseHp + BASE_WAVE_REGEN);
       const bonus = Math.round(50 + this.wave * 15);
       this.money += bonus;
+      this._farmCash = 0;
+      for (const h of this.heroes) h.onWaveEnd();
+      const farmCash = this._farmCash;
       this.floaters.push({ x: CANVAS_W / 2, y: 40, text: 'Волна ' + this.wave + ' пройдена! +' + bonus + '💰',
         life: 1.6, maxLife: 1.6, color: '#7fffa0' });
+      if (farmCash) this.toast('🔧 Фермы принесли +' + farmCash + '💰 за волну');
       Sound.waveClear();
       this.updateUI();
       if (!this.difficulty.endless && this.wave >= this.maxWaves && !this.gameOver) {
@@ -2560,9 +2585,10 @@ const UI = {
       <div class="tt-rarity" style="color:${color}">${RARITY_RU[unit.rarity] || unit.rarity}</div>
       ${unit.ability && unit.ability !== 'none' ? `<div class="tt-row"><span class="k">Способность</span></div>` +
         `<div style="color:#ffd966;font-size:.75rem;margin-top:2px">${ABILITY_RU[unit.ability] || ''}</div>` : ''}
-      <div class="tt-row"><span class="k">Урон</span><span class="v">${st.dmg}</span></div>
+      ${unit.pureFarm ? `<div class="tt-row"><span class="k">💸 Доход</span><span class="v">+${unit.cashPerWave}💰/волну</span></div>`
+        : `<div class="tt-row"><span class="k">Урон</span><span class="v">${st.dmg}</span></div>
       <div class="tt-row"><span class="k">Радиус</span><span class="v">${st.range}</span></div>
-      <div class="tt-row"><span class="k">Перезарядка</span><span class="v">${st.fireRate}с</span></div>`;
+      <div class="tt-row"><span class="k">Перезарядка</span><span class="v">${st.fireRate}с</span></div>`}`;
     tt.classList.add('visible');
     this.moveTooltip(x, y);
   },
@@ -2573,9 +2599,10 @@ const UI = {
       <div class="tt-title">${hero.emoji} ${hero.name} <span style="font-size:.75rem;opacity:.6">Ур.${hero.level}</span></div>
       <div class="tt-rarity" style="color:${color}">${RARITY_RU[hero.unit.rarity] || hero.unit.rarity}</div>
       ${hero.ability && hero.ability !== 'none' ? `<div style="color:#ffd966;font-size:.75rem;margin-top:2px">${ABILITY_RU[hero.ability] || ''}</div>` : ''}
-      <div class="tt-row"><span class="k">Урон</span><span class="v">${Math.round(hero.damage)}</span></div>
+      ${hero.pureFarm ? `<div class="tt-row"><span class="k">💸 Доход</span><span class="v">+${hero.cashPerWave}💰/волну</span></div>`
+        : `<div class="tt-row"><span class="k">Урон</span><span class="v">${Math.round(hero.damage)}</span></div>
       <div class="tt-row"><span class="k">Радиус</span><span class="v">${Math.round(hero.range)}</span></div>
-      <div class="tt-row"><span class="k">Перезарядка</span><span class="v">${hero.fireRate.toFixed(2)}с</span></div>`;
+      <div class="tt-row"><span class="k">Перезарядка</span><span class="v">${hero.fireRate.toFixed(2)}с</span></div>`}`;
     tt.classList.add('visible');
     this.moveTooltip(x, y);
   },
@@ -2654,10 +2681,10 @@ const App = {
       if (el) el.textContent = (RARITY_RU[r] || r) + ' ' + ((byR[r] || 0) / total * 100).toFixed(1) + '%';
     }
   },
-  renderGachaReels() {
+  renderGachaReels(iconCount) {
     const reels = document.getElementById('gachaReels');
     reels.innerHTML = '';
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < (iconCount || 5); i++) {
       const d = document.createElement('div');
       d.className = 'gacha-reel';
       d.id = 'reel' + i;
@@ -2699,7 +2726,7 @@ const App = {
         <div class="u-status" style="color:${unlocked ? '#7fffa0' : '#ffb3b3'}">
           ${unlocked ? '✅ ОТКРЫТ' : '🔒 ' + (u.dropChance * 100).toFixed(1) + '%'}
         </div>
-        <div class="u-bonus">${st.dmg} урон · ${st.range} радиус · ${st.fireRate}с заряд</div>`;
+        <div class="u-bonus">${statRange(u).pureFarm ? '💰 Доход: ' + statRange(u).cash[0] + ' → ' + statRange(u).cash[1] + '💰/волну' : '' + statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1] + ' урон · ' + statRange(u).range[0] + ' → ' + statRange(u).range[1] + ' радиус · ' + statRange(u).rate[0] + ' → ' + statRange(u).rate[1] + 'с заряд'}</div>`;
       grid.appendChild(card);
     }
   },
@@ -2734,8 +2761,10 @@ const App = {
       }
     }
     const rndUnit = () => UNITS[Math.floor(Math.random() * UNITS.length)];
+    this.renderGachaReels(count);
+    document.getElementById('gachaReels').style.maxWidth = count === 10 ? '960px' : '720px';
     const strips = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < count; i++) {
       const el = document.getElementById('reel' + i);
       el.classList.remove('winner');
       el.classList.add('spinning');
@@ -2850,7 +2879,7 @@ const App = {
         <div class="u-emoji">${unlocked ? u.emoji : '🔒'}</div>
         <div class="u-name">${u.name} <small style="opacity:.5;color:${RARITY_COLOR[u.rarity]}">${RARITY_RU[u.rarity]}</small></div>
         <div class="u-desc">${unlocked ? u.desc : 'Юнит ещё не открыт'}</div>
-        <div class="u-bonus">Урон: ${st.dmg} · Радиус: ${st.range} · Заряд: ${st.fireRate}с</div>
+        <div class="u-bonus">${statRange(u).pureFarm ? '💰 Доход: ' + statRange(u).cash[0] + ' → ' + statRange(u).cash[1] + '💰/волну' : 'Урон: ' + statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1] + ' · Радиус: ' + statRange(u).range[0] + ' → ' + statRange(u).range[1] + ' · Заряд: ' + statRange(u).rate[0] + ' → ' + statRange(u).rate[1] + 'с'}</div>
         <div class="u-bonus">Шанс выпадения: ${(u.dropChance * 100).toFixed(1)}%</div>`;
       if (u.ability && u.ability !== 'none') {
         const ab = document.createElement('div');
@@ -2883,11 +2912,11 @@ const App = {
       <div class="ud-rarity" style="color:${RARITY_COLOR[u.rarity]}">${RARITY_RU[u.rarity]}</div>
       <div class="ud-ability">🔒 Ещё не открыт · Шанс: ${(u.dropChance * 100).toFixed(1)}%</div>
       <div class="ud-stats">
-        <div class="ud-stat"><div class="label">Урон</div><div class="val">${st.dmg}</div></div>
-        <div class="ud-stat"><div class="label">Радиус</div><div class="val">${st.range}</div></div>
-        <div class="ud-stat"><div class="label">Перезарядка</div><div class="val">${st.fireRate}с</div></div>
+        <div class="ud-stat"><div class="label">${u.pureFarm ? '💸 Доход' : 'Урон'}</div><div class="val">${u.pureFarm ? '+' + statRange(u).cash[0] + ' → +' + statRange(u).cash[1] + '💰' : statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1]}</div></div>
+        <div class="ud-stat"><div class="label">Радиус</div><div class="val">${statRange(u).range[0]} → ${statRange(u).range[1]}</div></div>
+        <div class="ud-stat"><div class="label">Перезарядка</div><div class="val">${statRange(u).rate[0]} → ${statRange(u).rate[1]}с</div></div>
       </div>
-      ${u.ability && u.ability !== 'none' ? `<div class="ud-ability">${ABILITY_RU[u.ability] || ''}</div>` : ''}
+      ${u.ability && u.ability !== 'none' ? `<div class="ud-ability">${ABILITY_RU[u.ability] || ''}${u.cashPerWave ? ' (+' + statRange(u).cash[0] + ' → +' + statRange(u).cash[1] + '💰/волну)' : ''}</div>` : ''}
       ${u.aura ? `<div class="ud-ability">🌟 Аура: +${Math.round(u.aura * 100)}% урона союзникам</div>` : ''}
       <button class="btn small" id="udCloseBtn" style="margin-top:6px">ЗАКРЫТЬ</button>`;
     content.querySelector('#udCloseBtn').addEventListener('click', () => overlay.classList.remove('visible'));
@@ -2944,7 +2973,7 @@ const App = {
         <div class="u-emoji">${u.emoji}</div>
         <div class="u-name">${u.name} <small style="opacity:.5;color:${RARITY_COLOR[u.rarity]}">${RARITY_RU[u.rarity]}</small></div>
         <div class="u-desc">${u.desc}</div>
-        <div class="u-bonus">Урон: ${st.dmg} · Радиус: ${st.range} · Заряд: ${st.fireRate}с</div>
+        <div class="u-bonus">${statRange(u).pureFarm ? '💰 Доход: ' + statRange(u).cash[0] + ' → ' + statRange(u).cash[1] + '💰/волну' : 'Урон: ' + statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1] + ' · Радиус: ' + statRange(u).range[0] + ' → ' + statRange(u).range[1] + ' · Заряд: ' + statRange(u).rate[0] + ' → ' + statRange(u).rate[1] + 'с'}</div>
         <div style="font-weight:700;color:#7fffa0;font-size:.95rem">💰 Продать: ${RARITY_DUP[u.rarity] || 25}</div>
         <div class="u-actions"></div>`;
       const actions = card.querySelector('.u-actions');
@@ -3035,9 +3064,9 @@ const App = {
       ${unit.ability && unit.ability !== 'none' ? `<div class="ud-ability">${ABILITY_RU[unit.ability]}${unit.cashPerWave ? ' (+' + unit.cashPerWave + '💰/волна)' : ''}</div>` : ''}
       ${unit.aura ? `<div class="ud-ability">🌟 Аура: +${Math.round(unit.aura * 100)}% урона союзникам</div>` : ''}
       <div class="ud-stats">
-        <div class="ud-stat"><div class="label">Урон</div><div class="val">${st.dmg}</div></div>
-        <div class="ud-stat"><div class="label">Радиус</div><div class="val">${st.range}</div></div>
-        <div class="ud-stat"><div class="label">Перезарядка</div><div class="val">${st.fireRate}с</div></div>
+        <div class="ud-stat"><div class="label">${unit.pureFarm ? '💸 Доход' : 'Урон'}</div><div class="val">${unit.pureFarm ? '+' + statRange(unit).cash[0] + ' → +' + statRange(unit).cash[1] + '💰' : statRange(unit).dmg[0] + ' → ' + statRange(unit).dmg[1]}</div></div>
+        <div class="ud-stat"><div class="label">Радиус</div><div class="val">${statRange(unit).range[0]} → ${statRange(unit).range[1]}</div></div>
+        <div class="ud-stat"><div class="label">Перезарядка</div><div class="val">${statRange(unit).rate[0]} → ${statRange(unit).rate[1]}с</div></div>
       </div>
       <div class="ud-sell">ПРОДАТЬ ЗА 💰 ${sellPrice}</div>
       <button class="btn ${equipped ? 'unequip' : 'equip'}" id="udEquipBtn" style="margin-top:6px">${equipped ? '✓ УБРАТЬ ИЗ ОТРЯДА' : '⚡ ВЗЯТЬ В ОТРЯД'}</button>
@@ -3126,19 +3155,15 @@ const App = {
       nm.className = 'm-name'; nm.textContent = m.name;
       card.appendChild(nm);
       const c2d = cv.getContext('2d');
-      c2d.fillStyle = m.theme ? m.theme.bg : '#0e1420';
-      c2d.fillRect(0, 0, 180, 120);
-      const sx = 180 / COLS, sy = 120 / ROWS;
-      const pts = m.waypoints;
-      c2d.beginPath();
-      c2d.moveTo((pts[0][0] + 0.5) * sx, (pts[0][1] + 0.5) * sy);
-      for (let i = 1; i < pts.length; i++) c2d.lineTo((pts[i][0] + 0.5) * sx, (pts[i][1] + 0.5) * sy);
-      c2d.strokeStyle = '#5a4a2a'; c2d.lineWidth = 5; c2d.lineJoin = 'round'; c2d.stroke();
-      c2d.strokeStyle = '#3a2e1e'; c2d.lineWidth = 3; c2d.stroke();
-      c2d.fillStyle = '#66ff88';
-      c2d.beginPath(); c2d.arc((pts[0][0] + 0.5) * sx, (pts[0][1] + 0.5) * sy, 3, 0, Math.PI * 2); c2d.fill();
-      c2d.fillStyle = '#ff6666';
-      c2d.beginPath(); c2d.arc((pts[pts.length - 1][0] + 0.5) * sx, (pts[pts.length - 1][1] + 0.5) * sy, 3, 0, Math.PI * 2); c2d.fill();
+      const off = document.createElement('canvas');
+      off.width = CANVAS_W; off.height = CANVAS_H;
+      const oc = off.getContext('2d');
+      const mr = new MapRenderer(m);
+      mr.draw(oc);
+      const bp = mr.waypoints[mr.waypoints.length - 1];
+      oc.font = '900 26px Arial'; oc.textAlign = 'center'; oc.textBaseline = 'middle';
+      oc.fillText('\ud83c\udfe0', bp.x, bp.y + 2);
+      c2d.drawImage(off, 0, 0, 180, 120);
       card.addEventListener('click', () => {
         SaveManager.selectedMap = m.id;
         SaveManager.save();
