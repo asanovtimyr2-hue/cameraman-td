@@ -832,6 +832,7 @@ const I18N_EN = {
   "Божественный": "Godly",
   "Божественный 0.1%": "Godly 0.1%",
   "Код активирован: +%1 🪙": "Code activated: +%1 🪙",
+  "Код активирован: %1": "Code activated: %1",
   "Стелс": "Stealth",
   "📦 ОТКРЫВАЕМ...": "📦 OPENING...",
   "Ульта перезаряжается: %1с": "Ult recharging: %1s",
@@ -1380,7 +1381,8 @@ const PROMO_CODES = {
   'PLUNGER': 75,
   'SHOPTEST': { crystals: 10000 },
   'MILLIONAIRE': { coins: 1000000 },
-  'GEMGOD': { crystals: 1000000 }
+  'GEMGOD': { crystals: 1000000 },
+  'MEGARICH': { crystals: 1000000, coins: 1000000 }
 };
 
 function dist(ax, ay, bx, by) { return Math.hypot(ax - bx, ay - by); }
@@ -1524,14 +1526,10 @@ const SaveManager = {
     if (!amount) return { ok: false, msg: T('Неверный код') };
     this.data.codes.push(code);
     if (typeof amount === 'object') {
-      if (amount.crystals) {
-        this.addCrystals(amount.crystals);
-        return { ok: true, msg: fill(T('Код активирован: +%1 💎'), amount.crystals) };
-      }
-      if (amount.coins) {
-        this.addCoins(amount.coins);
-        return { ok: true, msg: fill(T('Код активирован: +%1 🪙'), amount.coins) };
-      }
+      const parts = [];
+      if (amount.crystals) { this.addCrystals(amount.crystals); parts.push('+' + amount.crystals.toLocaleString('ru-RU') + ' 💎'); }
+      if (amount.coins) { this.addCoins(amount.coins); parts.push('+' + amount.coins.toLocaleString('ru-RU') + ' 🪙'); }
+      return { ok: true, msg: fill(T('Код активирован: %1'), parts.join(' ')) };
     }
     this.addCoins(amount);
     return { ok: true, msg: fill(T('Код активирован: +%1 🪙'), amount) };
