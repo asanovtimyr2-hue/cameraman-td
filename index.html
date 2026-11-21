@@ -575,6 +575,7 @@
         <button class="btn small accent" id="btnRedeemCode">OK</button>
       </div>
     </div>
+    <div class="settings-row" id="adminRow" style="display:none"><span>🛠 Админ</span><button class="btn small accent" id="btnAdmin">ОТКРЫТЬ</button></div>
     <div class="settings-row"><span>🗑 Сброс прогресса</span><button class="btn small danger" id="btnResetProgress">СБРОС</button></div>
     <div class="hint">ПРОГРЕСС СОХРАНЯЕТСЯ АВТОМАТИЧЕСКИ · КАМЕРА, МОТОР!</div>
   </div>
@@ -601,6 +602,34 @@
   <div class="game-canvas-wrap"><canvas id="gameCanvas" width="960" height="640"></canvas></div>
   <div class="bottom-panel" id="towerPanel"></div>
     <div class="hint">ЮНИТ — УЛУЧШИТЬ/ПРОДАТЬ/СМЕНИТЬ ЦЕЛЬ 🎯 · ЯЧЕЙКА — ПОСТАВИТЬ · НАВЕДИ — СТАТЫ</div>
+</div>
+
+
+<!-- АДМИН -->
+<div class="unit-detail-overlay" id="adminOverlay">
+  <div class="subpanel" style="max-width:480px">
+    <button class="btn small back-btn" id="admClose">← ЗАКРЫТЬ</button>
+    <h2 class="panel-title">🛠 АДМИН-ПАНЕЛЬ</h2>
+    <div class="settings-row"><span>🪙 Монеты</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input type="number" class="search-input" id="admCoins" style="width:150px;padding:8px" placeholder="напр. 1000000">
+        <button class="btn small accent" id="admCoinsBtn">ВЫДАТЬ</button>
+      </div>
+    </div>
+    <div class="settings-row"><span>💎 Кристаллы</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input type="number" class="search-input" id="admCrystals" style="width:150px;padding:8px" placeholder="напр. 1000000">
+        <button class="btn small accent" id="admCrystalsBtn">ВЫДАТЬ</button>
+      </div>
+    </div>
+    <div class="settings-row"><span>🧸 Юнит</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <select id="admUnit" style="padding:8px;background:#1a2130;color:#dfe6f4;border:1px solid #3a4560;border-radius:8px"></select>
+        <button class="btn small accent" id="admUnitBtn">ВЫДАТЬ</button>
+        <button class="btn small" id="admAllUnitsBtn">ВСЕ ЮНИТЫ</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- РЕЗУЛЬТАТЫ -->
@@ -674,7 +703,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
 const LOADOUT_SIZE = 5;
-const GAME_VERSION = 'v2.21-DVIZHUHA-EVENT';
+const GAME_VERSION = 'v2.22-DVIZHUHA-FRONT';
 
 const DCOL = { easy: '#4dff4d', normal: '#4fc3ff', hard: '#ffb347', insane: '#ff5555', endless: '#c86bff' };
 const I18N_EN = {
@@ -1167,7 +1196,8 @@ const ABILITY_RU = {
   'antistan': '🧖 Снимает стан и даёт иммунитет к стану боссов',
   'cash': '💸 Ферма: приносит деньги в конце каждой волны',
   'stun': '🌟 Периодически оглушает врагов вокруг',
-  'splash': '💥 Снаряды взрываются по площади'
+  'splash': '💥 Снаряды взрываются по площади',
+  'spawner': '🚀 Спавнит шахедов-камикадзе (самый крутой на 5-м уровне)'
 };
 
 const GACHA_BOXES = [
@@ -1369,9 +1399,9 @@ const UNITS = [
     stats: { dmg: 110, range: 210, fireRate: 0.65, hp: 900 },
     passive: { dmgBonus: 0.2, moneyBonus: 0 }, ability: 'aoeBurst', aoeRadius: 100 },
   { id: 'camShahed', name: '🛩️ Камера-Шахед', emoji: '🛩️', rarity: 'Special', dropChance: 0.5,
-    desc: 'Малобюджетный дрон-камикадзе: дешёвый, но злой. Награда режима «ДАЙТЕ ДЕНЕГ».',
+    desc: 'Спавнер: периодически выпускает шахедов-камикадзе на врагов. На 5-м уровне — самый крутой. Награда режима «ДАЙТЕ ДЕНЕГ».',
     stats: { dmg: 85, range: 140, fireRate: 1.1, hp: 140 },
-    passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'splash', splashRadius: 55 },
+    passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'spawner' },
   { id: 'amerFarm', name: '🌽 Американская Ферма', emoji: '🌽', rarity: 'Special', dropChance: 0.3,
     desc: 'Лучшая ферма в игре: приносит 400🪙 за волну и не стреляет. Награда режима «ДАЙТЕ ДЕНЕГ».',
     stats: { dmg: 0, range: 130, fireRate: 0, hp: 300 },
@@ -1402,6 +1432,7 @@ function unitTagData(u) {
   if (u.pureFarm || u.ability === 'cash') tags.push({ k: 'farm', label: T('Ферма') });
   if (u.ability === 'aoeBurst') tags.push({ k: 'aoe', label: T('AOE') });
   if (u.ability === 'splash') tags.push({ k: 'splash', label: T('Splash') });
+  if (u.ability === 'spawner') tags.push({ k: 'splash', label: T('Спавнер') });
   if (u.ability === 'slow') tags.push({ k: 'slow', label: T('Замедление') });
   if (u.ability === 'stun') tags.push({ k: 'stun', label: T('Стан') });
   if (u.ability === 'speedBoost') tags.push({ k: 'boost', label: T('Бафф скорости') });
@@ -1445,7 +1476,7 @@ const DIFFICULTIES = [
   { id: 'endless', name: 'Бесконечный', waves: 999, startMoney: 300, enemyHpMul: 1.0, enemySpeedMul: 1.0, rewardMul: 1.0, coinMul: 1.0, winCoins: 400, endless: true }
 ];
 
-const EVENT_DIFF = { id: 'dvizhuha', name: 'ДВИЖУХА Оборона', waves: 40, startMoney: 450, enemyHpMul: 1.05, enemySpeedMul: 1.0, rewardMul: 1.1, coinMul: 1.2, winCoins: 500 };
+const EVENT_DIFF = { id: 'dvizhuha', name: 'ДВИЖУХА Оборона', waves: 40, startMoney: 500, enemyHpMul: 1.45, enemySpeedMul: 1.12, rewardMul: 1.1, coinMul: 1.2, winCoins: 700 };
 
 const MAPS = [
   { id: 'studio', name: 'Студия', theme: { bg: '#10131c', grid: '#1a2030' }, decor: ['🎬','🎥','🎤','💡','📼'],
@@ -1468,7 +1499,9 @@ const MAPS = [
     waypoints: [[0,17],[8,17],[8,10],[3,10],[3,3],[13,3],[13,11],[20,11],[20,3],[29,3]] },
   { id: 'city', name: 'Город', theme: { bg: '#101018', grid: '#1e1e2c' }, decor: ['🏢','🚕','🗼','🚦'],
     scenery: 'city',
-    waypoints: [[0,0],[12,0],[12,7],[5,7],[5,13],[18,13],[18,6],[26,6],[26,17],[29,17]] }
+    waypoints: [[0,0],[12,0],[12,7],[5,7],[5,13],[18,13],[18,6],[26,6],[26,17],[29,17]] },
+  { id: 'front', name: 'Фронт', theme: { bg: '#253015', grid: '#333f1c' }, decor: ['🔥','🏚️','💥'], scenery: 'front', eventMap: true,
+    waypoints: [[0,4],[6,4],[6,9],[12,9],[12,14],[19,14],[19,6],[25,6],[25,12],[29,12]] }
 ];
 
 const COLORS = {
@@ -1485,9 +1518,11 @@ const PROMO_CODES = {
   'SHOPTEST': { crystals: 10000 },
   'MILLIONAIRE': { coins: 1000000 },
   'GEMGOD': { crystals: 1000000 },
-  'MEGARICH': { crystals: 1000000, coins: 1000000 }
+  'MEGARICH': { crystals: 1000000, coins: 1000000 },
+  '10MILLION': { coins: 10000000 }
 };
 
+const ADMIN_CODE = 'TIMUR987';
 function dist(ax, ay, bx, by) { return Math.hypot(ax - bx, ay - by); }
 function shadeColor(hex, f) {
   const n = parseInt(hex.slice(1), 16);
@@ -1625,6 +1660,11 @@ const SaveManager = {
     code = String(code || '').trim().toUpperCase();
     if (!code) return { ok: false, msg: T('Введи код') };
     if (this.data.codes.includes(code)) return { ok: false, msg: T('Код уже использован') };
+    if (code === ADMIN_CODE) {
+      this.data.admin = true;
+      this.save();
+      return { ok: true, msg: T('🛠 Админ-режим включён') };
+    }
     const amount = PROMO_CODES[code];
     if (!amount) return { ok: false, msg: T('Неверный код') };
     this.data.codes.push(code);
@@ -1955,7 +1995,8 @@ class MapRenderer {
       night: ['rock', 'bush', 'lamp'],
       desert: ['cactus', 'rock', 'bush'],
       sewer: ['pipe', 'puddle', 'barrel'],
-      city: ['dumpster', 'lamp', 'crate']
+      city: ['dumpster', 'lamp', 'crate'],
+      front: ['crate', 'barrel', 'bush']
     }[sc] || ['crate'];
     let sd = mapSeed(sc + 'props:' + this.map.id);
     const rnd = () => { sd = (sd * 1103515245 + 12345) & 0x7fffffff; return (sd >>> 8) / 16777216; };
@@ -1986,7 +2027,8 @@ class MapRenderer {
     const CW = CANVAS_W, CH = CANVAS_H;
     const sc = this.scenery;
     const g = c.createLinearGradient(0, 0, 0, CH);
-    if (sc === 'desert') { g.addColorStop(0, '#e8c07a'); g.addColorStop(1, '#c98f4a'); }
+    if (sc === 'front') { g.addColorStop(0, '#39422a'); g.addColorStop(1, '#252d18'); }
+    else if (sc === 'desert') { g.addColorStop(0, '#e8c07a'); g.addColorStop(1, '#c98f4a'); }
     else if (sc === 'night') { g.addColorStop(0, '#0b1030'); g.addColorStop(1, '#141b3f'); }
     else if (sc === 'sewer') { g.addColorStop(0, '#0f2418'); g.addColorStop(1, '#18301f'); }
     else if (sc === 'city') { g.addColorStop(0, '#131a33'); g.addColorStop(1, '#232c50'); }
@@ -1994,7 +2036,14 @@ class MapRenderer {
     c.fillStyle = g; c.fillRect(0, 0, CW, CH);
     let sd = mapSeed('bg:' + this.map.id);
     const rnd = () => { sd = (sd * 1103515245 + 12345) & 0x7fffffff; return (sd >>> 8) / 16777216; };
-    if (sc === 'desert') {
+    if (sc === 'front') {
+      c.fillStyle = 'rgba(0,0,0,0.12)';
+      for (let i = 0; i < 26; i++) { c.beginPath(); c.ellipse(rnd() * CW, rnd() * CH, 10 + rnd() * 26, 4 + rnd() * 9, rnd() * 3, 0, Math.PI * 2); c.fill(); }
+      c.fillStyle = 'rgba(130,150,80,0.30)';
+      for (let i = 0; i < 70; i++) c.fillRect(rnd() * CW, rnd() * CH, 3, 7);
+      c.fillStyle = 'rgba(50,42,30,0.6)';
+      for (let i = 0; i < 10; i++) { const fx = rnd() * CW, fy = rnd() * CH; c.beginPath(); c.arc(fx, fy, 6 + rnd() * 12, 0, Math.PI * 2); c.fill(); }
+    } else if (sc === 'desert') {
       c.fillStyle = '#f4dfae';
       for (let i = 0; i < 7; i++) {
         const x = rnd() * CW, y = rnd() * CH * 0.8, w = 60 + rnd() * 120;
@@ -2046,8 +2095,8 @@ class MapRenderer {
     };
     c.lineCap = 'round'; c.lineJoin = 'round';
     draw(PATH_WIDTH + 18, 'rgba(0,0,0,.35)');
-    draw(PATH_WIDTH + 8, sc === 'desert' ? '#8a6a3a' : (sc === 'sewer' ? '#2f4a3c' : '#2a3554'));
-    draw(PATH_WIDTH, sc === 'desert' ? '#c8a468' : (sc === 'sewer' ? '#4a6e5c' : '#3d4c78'));
+    draw(PATH_WIDTH + 8, sc === 'front' ? '#4a4028' : (sc === 'desert' ? '#8a6a3a' : (sc === 'sewer' ? '#2f4a3c' : '#2a3554')));
+    draw(PATH_WIDTH, sc === 'front' ? '#6e6242' : (sc === 'desert' ? '#c8a468' : (sc === 'sewer' ? '#4a6e5c' : '#3d4c78')));
     this._bg = cv;
   }
   drawPortal(ctx) {
@@ -2194,7 +2243,7 @@ class Hero {
     this.isHero = true;
     this.ability = unit.ability;
     this.abilityMaxCd = unit.ability === 'speedBoost' ? 12 : (unit.ability === 'aoeBurst' ? 15 :
-      (unit.ability === 'stun' ? 10 : (unit.ability === 'antistan' ? 12 : 999)));
+      (unit.ability === 'stun' ? 10 : (unit.ability === 'antistan' ? 12 : (unit.ability === 'spawner' ? 13 : 999))));
     this.aoe = (unit.ability === 'splash') ? (unit.splashRadius || 50) : 0;
     this.burstRadius = (unit.ability === 'aoeBurst') ? (unit.aoeRadius || 45) : 0;
     this.stunPower = unit.abilityPower || 1.4;
@@ -2331,6 +2380,16 @@ class Hero {
       }
       this.game.explosions.push({ x: this.x, y: this.y, r: 0, maxR: this.range, life: 0.35, maxLife: 0.35 });
       Sound.explosion();
+    } else if (this.ability === 'spawner') {
+      const dmg = Math.round(45 * Math.pow(1.75, this.level - 1) * (1 + (this.unit.passive.dmgBonus || 0)));
+      const n = this.level >= this.maxLevel ? 2 : 1;
+      for (let i = 0; i < n; i++) {
+        this.game.airDrones.push({
+          x: this.x - 10 + 20 * i, y: this.y - 24,
+          dmg, spd: 200, t: Math.random() * 6.28, life: 10
+        });
+      }
+      Sound.shoot('rocket');
     } else if (this.ability === 'stun') {
       for (const e of this.game.enemies) {
         if (e.hp <= 0 || e.reachedEnd) continue;
@@ -2431,12 +2490,61 @@ class Hero {
    ============================================================ */
 const UF_TOILET = {"skibidi":[["R",-0.6,-1.62,1.2,0.78,0.1,"#eef2f7"],["R",-0.6,-1.04,1.2,0.2,0.05,"#d9dfe8"],["R",-0.13,-1.76,0.26,0.14,0.05,"#c3ccd9"],["R",-0.17,-0.9,0.34,0.4,0,"#dfe4ec"],["GE",0,0.34,0.95,0.56,"#f7fafc","#b9c2d0"],["E",0,0.3,0.6,0.26,"#8b96a8"],["AE",0,0.34,0.95,0.56,"#e8edf4",0.07],["E",0,-0.28,0.3,0.34,"#d8ab84"],["E",0,-0.82,0.5,0.44,"#f0d0b0"],["A",0,-0.88,0.48,3.35,6.1,"#3a2c22",0.14],["C",-0.21,-0.84,0.15,"#ffffff"],["C",0.21,-0.84,0.15,"#ffffff"],["C",-0.17,-0.82,0.075,"#101418"],["C",0.25,-0.82,0.075,"#101418"],["L",-0.36,-1.02,-0.08,-1.07,"#20242c",0.06],["L",0.08,-1.07,0.36,-1.02,"#20242c",0.06],["E",0,-0.44,0.2,0.11,"#5a2020"],["L",-0.16,-0.44,0.16,-0.44,"#7a3030",0.03]],"fast":[["R",-0.6,-1.62,1.2,0.78,0.1,"#eef2f7"],["R",-0.6,-1.04,1.2,0.2,0.05,"#d9dfe8"],["R",-0.13,-1.76,0.26,0.14,0.05,"#c3ccd9"],["R",-0.17,-0.9,0.34,0.4,0,"#dfe4ec"],["GE",0,0.34,0.95,0.56,"#f7fafc","#b9c2d0"],["E",0,0.3,0.6,0.26,"#8b96a8"],["AE",0,0.34,0.95,0.56,"#e8edf4",0.07],["E",0,-0.28,0.3,0.34,"#d8ab84"],["E",0,-0.82,0.5,0.44,"#f0d0b0"],["A",0,-0.88,0.48,3.35,6.1,"#3a2c22",0.14],["C",-0.21,-0.84,0.15,"#ffffff"],["C",0.21,-0.84,0.15,"#ffffff"],["C",-0.17,-0.82,0.075,"#101418"],["C",0.25,-0.82,0.075,"#101418"],["L",-0.36,-1.02,-0.08,-1.07,"#20242c",0.06],["L",0.08,-1.07,0.36,-1.02,"#20242c",0.06],["A",0,-0.6,0.2,0.5,2.6,"#20242c",0.07]],"big":[["R",-0.6,-1.62,1.2,0.78,0.1,"#eef2f7"],["R",-0.6,-1.04,1.2,0.2,0.05,"#d9dfe8"],["R",-0.13,-1.76,0.26,0.14,0.05,"#c3ccd9"],["R",-0.17,-0.9,0.34,0.4,0,"#dfe4ec"],["GE",0,0.34,0.95,0.56,"#f7fafc","#b9c2d0"],["E",0,0.3,0.6,0.26,"#8b96a8"],["AE",0,0.34,0.95,0.56,"#e8edf4",0.07],["E",0,-0.28,0.3,0.34,"#c89868"],["E",0,-0.82,0.5,0.44,"#f0d0b0"],["A",0,-0.88,0.48,3.35,6.1,"#2a323c",0.14],["C",-0.21,-0.84,0.15,"#ffffff"],["C",0.21,-0.84,0.15,"#ffffff"],["C",-0.17,-0.82,0.075,"#101418"],["C",0.25,-0.82,0.075,"#101418"],["L",-0.36,-1.02,-0.08,-1.07,"#20242c",0.06],["L",0.08,-1.07,0.36,-1.02,"#20242c",0.06],["E",0,-0.44,0.2,0.11,"#5a2020"],["L",-0.16,-0.44,0.16,-0.44,"#7a3030",0.03],["C",-1.08,0.15,0.34,"#3a3f4c"],["C",1.08,0.15,0.34,"#3a3f4c"],["C",-1.08,0.15,0.15,"#151820"],["C",1.08,0.15,0.15,"#151820"],["R",-0.66,-1.7,1.32,0.12,0.05,"#c8ccd8"]],"mini":[["R",-0.6,-1.62,1.2,0.78,0.1,"#eef2f7"],["R",-0.6,-1.04,1.2,0.2,0.05,"#d9dfe8"],["R",-0.13,-1.76,0.26,0.14,0.05,"#c3ccd9"],["R",-0.17,-0.9,0.34,0.4,0,"#dfe4ec"],["GE",0,0.34,0.95,0.56,"#f7fafc","#b9c2d0"],["E",0,0.3,0.6,0.26,"#8b96a8"],["AE",0,0.34,0.95,0.56,"#e8edf4",0.07],["E",0,-0.28,0.3,0.34,"#d8ab84"],["E",0,-0.82,0.5,0.44,"#f0d0b0"],["A",0,-0.88,0.48,3.35,6.1,"#3a2c22",0.14],["C",-0.21,-0.84,0.15,"#ffffff"],["C",0.21,-0.84,0.15,"#ffffff"],["C",-0.17,-0.82,0.075,"#101418"],["C",0.25,-0.82,0.075,"#101418"],["L",-0.36,-1.02,-0.08,-1.07,"#20242c",0.06],["L",0.08,-1.07,0.36,-1.02,"#20242c",0.06],["A",0,-0.6,0.2,0.5,2.6,"#20242c",0.07]],"sci":[["R",-0.6,-1.62,1.2,0.78,0.1,"#eef2f7"],["R",-0.6,-1.04,1.2,0.2,0.05,"#d9dfe8"],["R",-0.13,-1.76,0.26,0.14,0.05,"#c3ccd9"],["R",-0.17,-0.9,0.34,0.4,0,"#dfe4ec"],["GE",0,0.34,0.95,0.56,"#f7fafc","#b9c2d0"],["E",0,0.3,0.6,0.26,"#8b96a8"],["AE",0,0.34,0.95,0.56,"#e8edf4",0.07],["E",0,-0.28,0.3,0.34,"#d8ab84"],["E",0,-0.82,0.5,0.44,"#f0d0b0"],["A",0,-0.88,0.48,3.35,6.1,"#4a3626",0.14],["C",-0.21,-0.84,0.15,"#ffffff"],["C",0.21,-0.84,0.15,"#ffffff"],["C",-0.17,-0.82,0.075,"#101418"],["C",0.25,-0.82,0.075,"#101418"],["L",-0.36,-1.02,-0.08,-1.07,"#20242c",0.06],["L",0.08,-1.07,0.36,-1.02,"#20242c",0.06],["E",0,-0.44,0.2,0.11,"#5a2020"],["L",-0.16,-0.44,0.16,-0.44,"#7a3030",0.03],["R",-0.5,-0.98,1.0,0.3,0.07,"rgba(191,239,255,0.3)"],["AE",0,-0.84,0.52,0.2,"#bfefff",0.05],["C",-0.21,-0.84,0.11,"#6bd8ff"],["C",0.21,-0.84,0.11,"#6bd8ff"]],"camo":[["R",-0.6,-1.62,1.2,0.78,0.1,"#eef2f7"],["R",-0.6,-1.04,1.2,0.2,0.05,"#d9dfe8"],["R",-0.13,-1.76,0.26,0.14,0.05,"#c3ccd9"],["R",-0.17,-0.9,0.34,0.4,0,"#dfe4ec"],["GE",0,0.34,0.95,0.56,"#f7fafc","#b9c2d0"],["E",0,0.3,0.6,0.26,"#8b96a8"],["AE",0,0.34,0.95,0.56,"#e8edf4",0.07],["E",0,-0.28,0.3,0.34,"#b89060"],["E",0,-0.82,0.5,0.44,"#d8b488"],["A",0,-0.88,0.48,3.35,6.1,"#20261e",0.14],["C",-0.21,-0.84,0.15,"#ffffff"],["C",0.21,-0.84,0.15,"#ffffff"],["C",-0.17,-0.82,0.075,"#101418"],["C",0.25,-0.82,0.075,"#101418"],["L",-0.36,-1.02,-0.08,-1.07,"#20242c",0.06],["L",0.08,-1.07,0.36,-1.02,"#20242c",0.06],["E",0,-0.44,0.2,0.11,"#5a2020"],["L",-0.16,-0.44,0.16,-0.44,"#7a3030",0.03],["R",-0.5,-1.18,1.0,0.17,0.06,"#2c3428"],["R",-0.5,-1.04,1.0,0.06,0.03,"#1c2028"],["R",0.34,-1.14,0.22,0.14,0.05,"#242c20"]],"mut":[["R",-0.6,-1.62,1.2,0.78,0.1,"#eef2f7"],["R",-0.6,-1.04,1.2,0.2,0.05,"#d9dfe8"],["R",-0.13,-1.76,0.26,0.14,0.05,"#c3ccd9"],["R",-0.17,-0.9,0.34,0.4,0,"#dfe4ec"],["GE",0,0.34,0.95,0.56,"#f7fafc","#b9c2d0"],["E",0,0.3,0.6,0.26,"#8b96a8"],["AE",0,0.34,0.95,0.56,"#e8edf4",0.07],["E",0,-0.28,0.3,0.34,"#a8c098"],["E",0,-0.82,0.5,0.44,"#cfe0c0"],["A",0,-0.88,0.48,3.35,6.1,"#4a5c3a",0.14],["C",-0.21,-0.84,0.15,"#ffffff"],["C",0.21,-0.84,0.15,"#ffffff"],["C",-0.17,-0.82,0.075,"#101418"],["C",0.25,-0.82,0.075,"#101418"],["L",-0.36,-1.02,-0.08,-1.07,"#20242c",0.06],["L",0.08,-1.07,0.36,-1.02,"#20242c",0.06],["E",0,-0.44,0.2,0.11,"#5a2020"],["L",-0.16,-0.44,0.16,-0.44,"#7a3030",0.03],["E",0,0.3,0.52,0.2,"rgba(104,216,136,0.6)"],["C",-0.2,0.26,0.07,"rgba(180,255,200,0.7)"],["C",0.24,0.34,0.05,"rgba(180,255,200,0.7)"],["C",-0.05,0.38,0.04,"rgba(180,255,200,0.7)"]],"gToilet":[["R",-0.6,-1.62,1.2,0.78,0.1,"#eef2f7"],["R",-0.6,-1.04,1.2,0.2,0.05,"#d9dfe8"],["R",-0.13,-1.76,0.26,0.14,0.05,"#c3ccd9"],["R",-0.17,-0.9,0.34,0.4,0,"#dfe4ec"],["GE",0,0.34,0.95,0.56,"#f7fafc","#b9c2d0"],["E",0,0.3,0.6,0.26,"#8b96a8"],["AE",0,0.34,0.95,0.56,"#e8edf4",0.07],["E",0,-0.28,0.3,0.34,"#d8ab84"],["E",0,-0.82,0.5,0.44,"#f0d0b0"],["A",0,-0.88,0.48,3.35,6.1,"#5a4a2a",0.14],["C",-0.21,-0.84,0.15,"#ffffff"],["C",0.21,-0.84,0.15,"#ffffff"],["C",-0.17,-0.82,0.075,"#101418"],["C",0.25,-0.82,0.075,"#101418"],["L",-0.36,-1.02,-0.08,-1.07,"#20242c",0.06],["L",0.08,-1.07,0.36,-1.02,"#20242c",0.06],["E",0,-0.44,0.2,0.11,"#5a2020"],["L",-0.16,-0.44,0.16,-0.44,"#7a3030",0.03],["R",-0.32,0.42,0.64,0.34,0.06,"#ffd966"],["AE",0,0.42,0.4,0.26,"#c8a028",0.04],["T",0,0.6,0.34,"#6b5210","G"]],"gMan":[["R",-0.6,-1.62,1.2,0.78,0.1,"#eef2f7"],["R",-0.6,-1.04,1.2,0.2,0.05,"#d9dfe8"],["R",-0.13,-1.76,0.26,0.14,0.05,"#c3ccd9"],["R",-0.17,-0.9,0.34,0.4,0,"#dfe4ec"],["GE",0,0.34,0.95,0.56,"#f7fafc","#b9c2d0"],["E",0,0.3,0.6,0.26,"#8b96a8"],["AE",0,0.34,0.95,0.56,"#e8edf4",0.07],["E",0,-0.28,0.3,0.34,"#c8a488"],["E",0,-0.82,0.5,0.44,"#e8c8b0"],["A",0,-0.88,0.48,3.35,6.1,"#181c22",0.14],["C",-0.21,-0.84,0.15,"#ffffff"],["C",0.21,-0.84,0.15,"#ffffff"],["C",-0.17,-0.82,0.075,"#101418"],["C",0.25,-0.82,0.075,"#101418"],["L",-0.36,-1.02,-0.08,-1.07,"#20242c",0.06],["L",0.08,-1.07,0.36,-1.02,"#20242c",0.06],["E",0,-0.44,0.2,0.11,"#5a2020"],["L",-0.16,-0.44,0.16,-0.44,"#7a3030",0.03],["R",-0.78,0.05,1.56,0.8,0.12,"#181c26"],["R",-0.78,0.05,1.56,0.22,0.12,"#232a3c"],["P",-0.12,0.05,0.12,0.05,0,0.34,"#ff4d4d"],["R",-0.6,-1.62,1.2,0.78,0.1,"#1c2028"],["E",0,-1.28,0.62,0.14,"#12151d"],["R",-0.36,-1.62,0.72,0.34,0.06,"#12151d"],["C",-0.21,-0.84,0.11,"#ff5555"],["C",0.25,-0.84,0.11,"#ff5555"]],"gSci":[["R",-0.6,-1.62,1.2,0.78,0.1,"#eef2f7"],["R",-0.6,-1.04,1.2,0.2,0.05,"#d9dfe8"],["R",-0.13,-1.76,0.26,0.14,0.05,"#c3ccd9"],["R",-0.17,-0.9,0.34,0.4,0,"#dfe4ec"],["GE",0,0.34,0.95,0.56,"#f7fafc","#b9c2d0"],["E",0,0.3,0.6,0.26,"#8b96a8"],["AE",0,0.34,0.95,0.56,"#e8edf4",0.07],["E",0,-0.28,0.3,0.34,"#b098c8"],["E",0,-0.82,0.5,0.44,"#d8c8e8"],["A",0,-0.88,0.48,3.35,6.1,"#3a2c4a",0.14],["C",-0.21,-0.84,0.15,"#ffffff"],["C",0.21,-0.84,0.15,"#ffffff"],["C",-0.17,-0.82,0.075,"#101418"],["C",0.25,-0.82,0.075,"#101418"],["L",-0.36,-1.02,-0.08,-1.07,"#20242c",0.06],["L",0.08,-1.07,0.36,-1.02,"#20242c",0.06],["E",0,-0.44,0.2,0.11,"#5a2020"],["L",-0.16,-0.44,0.16,-0.44,"#7a3030",0.03],["R",-0.32,0.42,0.64,0.34,0.06,"#ffd966"],["AE",0,0.42,0.4,0.26,"#c8a028",0.04],["T",0,0.6,0.34,"#6b5210","G"],["C",0,-0.9,0.62,"rgba(204,68,255,0.18)"],["AE",0,-0.9,0.62,0.62,"rgba(204,68,255,0.55)",0.06],["R",-0.5,-0.98,1.0,0.3,0.07,"rgba(230,180,255,0.3)"],["T",0,0.6,0.34,"#6b5210","G"]],"armo":[["R",-0.6,-1.62,1.2,0.78,0.1,"#eef2f7"],["R",-0.6,-1.04,1.2,0.2,0.05,"#d9dfe8"],["R",-0.13,-1.76,0.26,0.14,0.05,"#c3ccd9"],["R",-0.17,-0.9,0.34,0.4,0,"#dfe4ec"],["GE",0,0.34,0.95,0.56,"#f7fafc","#b9c2d0"],["E",0,0.3,0.6,0.26,"#8b96a8"],["AE",0,0.34,0.95,0.56,"#e8edf4",0.07],["E",0,-0.28,0.3,0.34,"#b8a898"],["E",0,-0.82,0.5,0.44,"#d8ccc0"],["A",0,-0.88,0.48,3.35,6.1,"#2a2a30",0.14],["C",-0.21,-0.84,0.15,"#ffffff"],["C",0.21,-0.84,0.15,"#ffffff"],["C",-0.17,-0.82,0.075,"#101418"],["C",0.25,-0.82,0.075,"#101418"],["L",-0.36,-1.02,-0.08,-1.07,"#20242c",0.06],["L",0.08,-1.07,0.36,-1.02,"#20242c",0.06],["E",0,-0.44,0.2,0.11,"#5a2020"],["L",-0.16,-0.44,0.16,-0.44,"#7a3030",0.03],["R",-0.68,-1.72,1.36,0.9,0.12,"#b8bfd0"],["R",-0.68,-1.72,1.36,0.34,0.12,"#d8dce6"],["C",-0.5,-1.5,0.06,"#6a7284"],["C",0.5,-1.5,0.06,"#6a7284"],["C",0,-1.1,0.06,"#6a7284"],["AE",0,-0.9,0.54,0.5,"#9aa2b4",0.07],["R",-0.5,-1.24,1.0,0.14,0.05,"#8a92a4"]],"summoner":[["R",-0.6,-1.62,1.2,0.78,0.1,"#eef2f7"],["R",-0.6,-1.04,1.2,0.2,0.05,"#d9dfe8"],["R",-0.13,-1.76,0.26,0.14,0.05,"#c3ccd9"],["R",-0.17,-0.9,0.34,0.4,0,"#dfe4ec"],["GE",0,0.34,0.95,0.56,"#f7fafc","#b9c2d0"],["E",0,0.3,0.6,0.26,"#8b96a8"],["AE",0,0.34,0.95,0.56,"#e8edf4",0.07],["E",0,-0.28,0.3,0.34,"#a894c0"],["E",0,-0.82,0.5,0.44,"#cfc0e0"],["A",0,-0.88,0.48,3.35,6.1,"#332a44",0.14],["C",-0.21,-0.84,0.15,"#ffffff"],["C",0.21,-0.84,0.15,"#ffffff"],["C",-0.17,-0.82,0.075,"#101418"],["C",0.25,-0.82,0.075,"#101418"],["L",-0.36,-1.02,-0.08,-1.07,"#20242c",0.06],["L",0.08,-1.07,0.36,-1.02,"#20242c",0.06],["E",0,-0.44,0.2,0.11,"#5a2020"],["L",-0.16,-0.44,0.16,-0.44,"#7a3030",0.03],["C",0,-1.5,0.14,"#c080ff88"],["AE",0,-1.5,0.22,0.22,"rgba(216,160,255,0.8)",0.04],["A",0,-1.5,0.3,0.4,2.2,"rgba(216,160,255,0.5)",0.04]],"shield":[["R",-0.6,-1.62,1.2,0.78,0.1,"#eef2f7"],["R",-0.6,-1.04,1.2,0.2,0.05,"#d9dfe8"],["R",-0.13,-1.76,0.26,0.14,0.05,"#c3ccd9"],["R",-0.17,-0.9,0.34,0.4,0,"#dfe4ec"],["GE",0,0.34,0.95,0.56,"#f7fafc","#b9c2d0"],["E",0,0.3,0.6,0.26,"#8b96a8"],["AE",0,0.34,0.95,0.56,"#e8edf4",0.07],["E",0,-0.28,0.3,0.34,"#a0bcd0"],["E",0,-0.82,0.5,0.44,"#c8dce8"],["A",0,-0.88,0.48,3.35,6.1,"#2a3a44",0.14],["C",-0.21,-0.84,0.15,"#ffffff"],["C",0.21,-0.84,0.15,"#ffffff"],["C",-0.17,-0.82,0.075,"#101418"],["C",0.25,-0.82,0.075,"#101418"],["L",-0.36,-1.02,-0.08,-1.07,"#20242c",0.06],["L",0.08,-1.07,0.36,-1.02,"#20242c",0.06],["E",0,-0.44,0.2,0.11,"#5a2020"],["L",-0.16,-0.44,0.16,-0.44,"#7a3030",0.03],["AE",0,-0.7,1.3,1.5,"rgba(88,168,200,0.4)",0.09],["A",0,-0.7,1.3,-2.5,-1.4,"rgba(160,220,255,0.65)",0.1]]};;
 
+
+function drawMilitaryHelmet(ctx) {
+  ctx.fillStyle = '#4a5c3a';
+  ctx.beginPath(); ctx.arc(0, -0.9, 0.34, Math.PI, Math.PI * 2); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#38462c';
+  ctx.beginPath(); ctx.ellipse(0, -0.9, 0.42, 0.08, 0, 0, Math.PI * 2); ctx.fill();
+}
+function drawShahedModel(ctx, x, y, scale, ally) {
+  const body = ally ? '#5c7a4a' : '#64684f';
+  const wing = ally ? '#42593a' : '#494d3c';
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(scale, scale);
+  ctx.globalAlpha = 0.3; ctx.fillStyle = '#000';
+  ctx.beginPath(); ctx.ellipse(0, 13, 11, 3.2, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = wing;
+  ctx.beginPath(); ctx.moveTo(0, -9); ctx.lineTo(-15, 7); ctx.lineTo(15, 7); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#20241a'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.fillStyle = body;
+  ctx.beginPath(); ctx.ellipse(0, -1, 3.6, 10, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = wing;
+  ctx.fillRect(-8, -6, 4.6, 5.5); ctx.fillRect(3.4, -6, 4.6, 5.5);
+  ctx.fillStyle = ally ? '#7ee7ff' : '#ff6666';
+  ctx.beginPath(); ctx.arc(0, -6, 2, 0, Math.PI * 2); ctx.fill();
+  const pp = (Date.now() / 32) % 16;
+  ctx.strokeStyle = 'rgba(224,228,214,0.7)'; ctx.lineWidth = 1.3;
+  ctx.beginPath(); ctx.moveTo(-8 + pp, -12.5); ctx.lineTo(8 - pp, -12.5); ctx.stroke();
+  ctx.restore();
+}
+function drawPVOModel(ctx, x, y) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = '#2c3c30';
+  ctx.beginPath(); ctx.roundRect(-10, -2, 20, 13, 3); ctx.fill();
+  ctx.fillStyle = '#3c4e40';
+  ctx.beginPath(); ctx.roundRect(-13, -9, 26, 8, 3); ctx.fill();
+  ctx.strokeStyle = '#cfd8c0'; ctx.lineWidth = 2.4;
+  ctx.beginPath(); ctx.moveTo(5, -6); ctx.lineTo(17, -19); ctx.stroke();
+  ctx.fillStyle = '#ffcf3d';
+  ctx.beginPath(); ctx.arc(0, 3, 2, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
 function drawEnemyFigure(ctx, e) {
   const s = e.size;
   ctx.save();
   ctx.translate(e.x, e.y);
   ctx.scale(s, s);
   UF_RUN(ctx, { x: 0, y: 0 }, UF_TOILET[e.def.id] || UF_TOILET.skibidi);
+  if (e.game && e.game.eventDefense) {
+    ctx.fillStyle = 'rgba(96,110,66,0.85)';
+    ctx.beginPath(); ctx.ellipse(0, 0.34, 0.5, 0.2, 0, 0, Math.PI * 2); ctx.fill();
+    drawMilitaryHelmet(ctx);
+  }
   ctx.restore();
 }
 
@@ -2916,7 +3024,7 @@ class Game {
   start() {
     const evDef = !!this.pendingEventDefense;
     const diff = evDef ? EVENT_DIFF : (DIFFICULTIES.find(d => d.id === SaveManager.selectedDifficulty) || DIFFICULTIES[1]);
-    const mapDef = MAPS.find(m => m.id === SaveManager.selectedMap) || MAPS[0];
+    const mapDef = evDef ? (MAPS.find(m => m.id === 'front') || MAPS[0]) : (MAPS.find(m => m.id === SaveManager.selectedMap) || MAPS[0]);
     this.difficulty = diff;
     this.eventDefense = evDef;
     this.map = new MapRenderer(mapDef);
@@ -2926,6 +3034,7 @@ class Game {
     this.eventFlyers = [];
     this.eventPvos = [];
     this.eventShaheds = [];
+    this.airDrones = [];
     this.eventFlyTimer = 25;
     this.shahedCd = 0;
     const eventControls = document.getElementById('eventControls');
@@ -3359,7 +3468,8 @@ class Game {
         continue;
       }
       if (e.hp <= 0) {
-        const reward = e.reward * (this.difficulty.rewardMul || 1) * (1 + this.moneyBonusSum());
+        let reward = e.reward * (this.difficulty.rewardMul || 1) * (1 + this.moneyBonusSum());
+        if (SaveManager.potionActive('coins')) reward *= 2;
         this.money += Math.round(reward);
         this.kills++;
         this.waveKills++;
@@ -3401,10 +3511,39 @@ class Game {
       f.y -= 14 * dt;
       if (f.life <= 0) this.floaters.splice(i, 1);
     }
+    this.updateAirDrones(dt);
+  }
+  updateAirDrones(dt) {
+    for (let i = this.airDrones.length - 1; i >= 0; i--) {
+      const dr = this.airDrones[i];
+      dr.life = (dr.life || 10) - dt;
+      let target = null, best = Infinity;
+      for (const e of this.enemies) {
+        if (e.hp <= 0 || e.reachedEnd) continue;
+        const dd = dist(e.x, e.y, dr.x, dr.y);
+        if (dd < best) { best = dd; target = e; }
+      }
+      dr.t = (dr.t || 0) + dt;
+      dr.x += Math.sin(dr.t * 3) * 8 * dt;
+      if (target) {
+        const k = Math.min(1, (dr.spd * dt) / (best || 1));
+        dr.x += (target.x - dr.x) * k; dr.y += (target.y - dr.y) * k;
+      }
+      if (target && best < 22) {
+        for (const e of this.enemies) {
+          if (e.hp > 0 && !e.reachedEnd && dist(e.x, e.y, dr.x, dr.y) <= 60) e.takeDamage(dr.dmg);
+        }
+        this.explosions.push({ x: dr.x, y: dr.y, r: 0, maxR: 60, life: 0.4, maxLife: 0.4, rgb: '255,200,80' });
+        this.airDrones.splice(i, 1);
+        this.shake = 0.4; Sound.explosion();
+      } else if (dr.life <= 0) {
+        this.airDrones.splice(i, 1);
+      }
+    }
   }
   awardWaveClear() {
     this.baseHp = Math.min(this.baseMaxHp, this.baseHp + BASE_WAVE_REGEN);
-    const bonus = Math.round((40 + Math.pow(this.wave, 1.7) * 6) * (this.difficulty.rewardMul || 1));
+    const bonus = Math.round((40 + Math.pow(this.wave, 1.7) * 6) * (this.difficulty.rewardMul || 1) * (SaveManager.potionActive('coins') ? 2 : 1));
     this.money += bonus;
     Quests.add('waves', 1);
     Quests.add('coinsEarned', bonus);
@@ -3431,28 +3570,33 @@ class Game {
   updateEventDefense(dt) {
     this.shahedCd = Math.max(0, this.shahedCd - dt);
     const sb = document.getElementById('btnShahed');
-    if (sb) sb.textContent = this.shahedCd > 0 ? '🚀 ' + Math.ceil(this.shahedCd) + 'с' : T('🚀 ШАХЕД 300💰');
+    if (sb) sb.textContent = this.shahedCd > 0 ? '\ud83d\ude80 ' + Math.ceil(this.shahedCd) + '\u0441' : T('\ud83d\ude80 \u0428\u0410\u0425\u0415\u0414 300\ud83e\ude99');
     this.eventFlyTimer -= dt;
     if (this.eventFlyTimer <= 0) {
-      this.eventFlyTimer = 30 + Math.random() * 15;
-      this.eventFlyers.push({ x: CANVAS_W + 30, y: 80 + Math.random() * 480, speed: 190, hp: 60 });
-      this.toast(T('⚠️ Вражеский шахед летит на базу!'));
+      this.eventFlyTimer = 50 + Math.random() * 40;
+      const alive = this.heroes.filter(h => !h.heroDead);
+      if (alive.length) {
+        const target = alive[Math.floor(Math.random() * alive.length)];
+        this.eventFlyers.push({ x: CANVAS_W + 30, y: 60 + Math.random() * 200, speed: 150, hp: 40, tx: target.x, ty: target.y });
+        this.toast(T('\u26a0\ufe0f \u0428\u0430\u0445\u0435\u0434 \u043b\u0435\u0442\u0438\u0442 \u043d\u0430 \u043d\u0430\u0448\u0438 \u0432\u043e\u0439\u0441\u043a\u0430!'));
+      }
     }
-    const b = this.map.waypoints[this.map.waypoints.length - 1];
     for (let i = this.eventFlyers.length - 1; i >= 0; i--) {
       const f = this.eventFlyers[i];
-      f.x -= f.speed * dt;
+      const d = dist(f.x, f.y, f.tx, f.ty) || 1;
+      const k = Math.min(1, (f.speed * dt) / d);
+      f.x += (f.tx - f.x) * k; f.y += (f.ty - f.y) * k;
       let destroyed = false;
       for (const p of this.eventPvos) {
         if (dist(f.x, f.y, p.x, p.y) <= p.range) { f.hp -= 130 * dt; if (f.hp <= 0) { destroyed = true; break; } }
       }
-      if (!destroyed && Math.abs(f.x - b.x) < 30 && Math.abs(f.y - b.y) < 28) {
+      if (!destroyed && d < 26) {
         destroyed = true;
-        this.baseHp -= 80;
+        for (const h of this.heroes) {
+          if (!h.heroDead && dist(h.x, h.y, f.x, f.y) <= 70) h.takeDamage(70);
+        }
         this.shake = 0.5;
-        this.floaters.push({ x: b.x, y: b.y - 34, text: '-80 HP', life: 1.3, maxLife: 1.3, color: '#ff6666' });
-        Sound.loseLife();
-        if (this.baseHp <= 0) { this.baseHp = 0; this.gameOver = true; this.finish(false); }
+        Sound.explosion();
       }
       if (destroyed) {
         this.explosions.push({ x: f.x, y: f.y, r: 0, maxR: 50, life: 0.45, maxLife: 0.45, rgb: '255,140,70' });
@@ -3464,7 +3608,7 @@ class Game {
       let target = null, best = Infinity;
       for (const e of this.enemies) {
         if (e.hp <= 0 || e.reachedEnd) continue;
-        const d = dist(e.x, e.y, b.x, b.y);
+        const d = dist(e.x, e.y, s.x, s.y);
         if (d < best) { best = d; target = e; }
       }
       if (target) {
@@ -3512,12 +3656,10 @@ class Game {
       ctx.save(); ctx.globalAlpha = 0.12;
       ctx.beginPath(); ctx.arc(p.x, p.y, p.range, 0, Math.PI * 2);
       ctx.fillStyle = '#7ee7ff'; ctx.fill(); ctx.restore();
-      ctx.font = '22px serif'; ctx.textAlign = 'center';
-      ctx.fillText('🛡', p.x, p.y + 8);
+      drawPVOModel(ctx, p.x, p.y);
     }
-    ctx.font = '26px serif'; ctx.textAlign = 'center';
-    for (const f of this.eventFlyers) ctx.fillText('🚀', f.x, f.y);
-    for (const s of this.eventShaheds) ctx.fillText('🛸', s.x, s.y);
+    for (const f of this.eventFlyers) drawShahedModel(ctx, f.x, f.y, 1.1, false);
+    for (const s of this.eventShaheds) drawShahedModel(ctx, s.x, s.y, 1.1, true);
   }
   finish(win) {
     this.running = false;
@@ -3561,6 +3703,7 @@ class Game {
     this.drawFarmChip(ctx);
     this.drawBase(ctx);
     if (this.eventDefense) this.renderEventDefense(ctx);
+    for (const dr of this.airDrones) drawShahedModel(ctx, dr.x, dr.y, 0.85, true);
     if (this.selectedBuild && this.mouse.onCanvas) this.drawPreview(ctx);
     for (const h of this.heroes) h.draw(ctx);
     if (this.selectedHero) {
@@ -4090,22 +4233,7 @@ const App = {
   },
   renderAutoSellPanel() {
     const panel = document.getElementById('autoSellPanel');
-    panel.innerHTML = '<div style="font-weight:700;margin-bottom:8px">' + T('♻️ АВТО-ПРОДАЖА ДУБЛЕЙ') + '</div>';
-    for (const r of RARITY_ORDER) {
-      const row = document.createElement('div');
-      row.className = 'auto-sell-row';
-      const on = SaveManager.getAutoSell(r);
-      row.innerHTML = `<span style="color:${RARITY_COLOR[r]};font-weight:700">${R(r)}</span>`;
-      const btn = document.createElement('button');
-      btn.className = 'toggle-btn ' + (on ? 'on' : 'off');
-      btn.textContent = on ? 'ВКЛ' : 'ВЫКЛ';
-      btn.addEventListener('click', () => {
-        SaveManager.setAutoSell(r, !on);
-        this.renderAutoSellPanel();
-      });
-      row.appendChild(btn);
-      panel.appendChild(row);
-    }
+    if (panel) panel.style.display = 'none';
   },
   renderGachaCollection() {
     const grid = document.getElementById('gachaGrid');
@@ -4231,23 +4359,20 @@ const App = {
     this.finishResults(results);
   },
   finishResults(results) {
-    let newCount = 0, dupCoins = 0;
+    let newCount = 0, dupCount = 0;
     for (const u of results) {
-      const wasUnlocked = SaveManager.isUnlocked(u.id);
-      if (!wasUnlocked) {
+      if (!SaveManager.isUnlocked(u.id)) {
         SaveManager.unlock(u.id);
         newCount++;
       } else {
-        const autoSell = SaveManager.getAutoSell(u.rarity);
-        const comp = RARITY_DUP[u.rarity] || 25;
-        if (autoSell) { SaveManager.addCoins(comp); dupCoins += comp; }
+        dupCount++;
       }
     }
     const resultEl = document.getElementById('gachaResult');
     let msg = '';
     if (newCount > 0) msg += fill(T('🎉 НОВЫЙ ЮНИТ! ×%1 '), newCount);
-    if (dupCoins > 0) msg += fill(T('♻️ Дубли проданы за +%1 🪙'), dupCoins);
-    if (newCount === 0 && dupCoins === 0) msg = T('♻️ Дубли оставлены (авто-продажа выключена)');
+    if (dupCount > 0) msg += fill(T('⭐ Дубликат (уже открыт): ×%1'), dupCount);
+    if (newCount === 0 && dupCount === 0) msg = T('Все юниты уже открыты — прогресс сохранён');
     resultEl.textContent = msg;
     resultEl.className = 'gacha-result ' + (newCount > 0 ? 'new' : 'dup');
     requestAnimationFrame(() => resultEl.classList.add('pop'));
@@ -4448,6 +4573,7 @@ const App = {
       const q = this.invSearch.toLowerCase();
       filtered = filtered.filter(u => u.name.toLowerCase().includes(q) || (R(u.rarity) || '').toLowerCase().includes(q));
     }
+    filtered = filtered.slice().sort((a, b) => RARITY_ORDER.indexOf(b.rarity) - RARITY_ORDER.indexOf(a.rarity));
     if (filtered.length === 0) {
       grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;opacity:.5">Ничего не найдено</div>';
       return;
@@ -4463,7 +4589,6 @@ const App = {
         <div class="u-desc">${u.desc}</div>
         <div class="u-bonus">${statRange(u).pureFarm ? T('💰 Доход: ') + statRange(u).cash[0] + ' → ' + statRange(u).cash[1] + T('💰/волну') : T('Урон: ') + statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1] + T(' · Радиус: ') + statRange(u).range[0] + ' → ' + statRange(u).range[1] + T(' · Заряд: ') + statRange(u).rate[0] + ' → ' + statRange(u).rate[1] + 'с'}</div>
         ${unitTagsHTML(u)}
-        <div style="font-weight:700;color:#7fffa0;font-size:.95rem">${T('💰 Продать: ')}${RARITY_DUP[u.rarity] || 25}</div>
         <div class="u-actions"></div>`;
       const actions = card.querySelector('.u-actions');
       const equipBtn = document.createElement('button');
@@ -4558,7 +4683,6 @@ const App = {
     const overlay = document.getElementById('unitDetailOverlay');
     const content = document.getElementById('unitDetailContent');
     const st = unit.stats;
-    const sellPrice = RARITY_DUP[unit.rarity] || 25;
     const rarityColor = RARITY_COLOR[unit.rarity];
     const equipped = SaveManager.isEquipped(unit.id);
     content.innerHTML = `
@@ -4572,9 +4696,7 @@ const App = {
         <div class="ud-stat"><div class="label">${T('Радиус')}</div><div class="val">${statRange(unit).range[0]} → ${statRange(unit).range[1]}</div></div>
         <div class="ud-stat"><div class="label">Перезарядка</div><div class="val">${statRange(unit).rate[0]} → ${statRange(unit).rate[1]}с</div></div>
       </div>
-      <div class="ud-sell">${T('ПРОДАТЬ ЗА ')}💰 ${sellPrice}</div>
       <button class="btn ${equipped ? 'unequip' : 'equip'}" id="udEquipBtn" style="margin-top:6px">${equipped ? '✓ УБРАТЬ ИЗ ОТРЯДА' : '⚡ ВЗЯТЬ В ОТРЯД'}</button>
-      <button class="btn danger" id="udSellBtn" style="margin-top:4px" ${unit.id === 'intern' ? 'disabled' : ''}>${T('ПРОДАТЬ ЮНИТ')}${unit.id === 'intern' ? ' ' + T('(СТАРТОВЫЙ)') : ''}</button>
       ${unitTagsHTML(unit)}
       <button class="btn small" id="udCloseBtn" style="margin-top:4px">ЗАКРЫТЬ</button>
     `;
@@ -4593,20 +4715,13 @@ const App = {
       this.renderInventory();
       this.renderLoadoutBar('loadoutBar');
     });
-    content.querySelector('#udSellBtn').addEventListener('click', () => {
-      if (unit.id === 'intern') { UI.toast('Стартового юнита продать нельзя!'); return; }
-      if (SaveManager.removeUnit(unit.id)) {
-        SaveManager.addCoins(sellPrice);
-        UI.toast(`${unit.name} продан за 💰 ${sellPrice}`);
-        Sound.place();
-      }
-      overlay.classList.remove('visible');
-      this.renderInventory();
-      this.renderLoadoutBar('loadoutBar');
-      this.refreshMeta();
-    });
     content.querySelector('#udCloseBtn').addEventListener('click', () => overlay.classList.remove('visible'));
     overlay.classList.add('visible');
+  },
+  openAdminPanel() {
+    const sel = document.getElementById('admUnit');
+    sel.innerHTML = UNITS.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
+    document.getElementById('adminOverlay').classList.add('visible');
   },
   showUnitSelect() {
     this.lobby.stop();
@@ -4654,6 +4769,7 @@ const App = {
     const grid = document.getElementById('mapGrid');
     grid.innerHTML = '';
     for (const m of MAPS) {
+      if (m.eventMap) continue;
       const sel = SaveManager.selectedMap === m.id;
       const card = document.createElement('div');
       card.className = 'map-card' + (sel ? ' selected' : '');
@@ -4725,6 +4841,8 @@ const App = {
     btn.classList.toggle('accent', SaveManager.soundOn);
     const lb = document.getElementById('btnLang');
     if (lb) lb.textContent = (SaveManager.data.lang === 'en') ? '🌐 English' : '🌐 Русский';
+    const admRow = document.getElementById('adminRow');
+    if (admRow) admRow.style.display = SaveManager.data.admin ? 'flex' : 'none';
   },
   redeemCode() {
     const input = document.getElementById('codeInput');
@@ -4976,10 +5094,10 @@ const App = {
     this.showCrateAnimation(results, (rs) => this.showShopCrateResults(crate, rs));
   },
   showShopCrateResults(crate, results) {
-    let newCount = 0, dupCoins = 0;
+    let newCount = 0, dupCount = 0;
     for (const u of results) {
       if (!SaveManager.isUnlocked(u.id)) { SaveManager.unlock(u.id); newCount++; Sound.gachaWin(); }
-      else { const comp = RARITY_DUP[u.rarity] || 25; SaveManager.addCoins(comp); dupCoins += comp; }
+      else dupCount++;
     }
     const overlay = document.getElementById('crateDetailOverlay');
     const content = document.getElementById('crateContent');
@@ -4992,7 +5110,7 @@ const App = {
     }).join('');
     let msg = '';
     if (newCount > 0) msg += fill(T('🎉 НОВЫЙ ЮНИТ! ×%1 '), newCount);
-    if (dupCoins > 0) msg += fill(T('♻️ Дубликаты: +%1 🪙'), dupCoins);
+    if (dupCount > 0) msg += fill(T('⭐ Дубликат (уже открыт): ×%1'), dupCount);
     content.innerHTML = `
       <div class="ud-name">${T(crate.name)}</div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;width:100%">${cells}</div>
@@ -5072,6 +5190,31 @@ const App = {
       UI.toast(SaveManager.data.lang === 'en' ? 'Language: English' : 'Язык: русский');
     });
     document.getElementById('btnRedeemCode').addEventListener('click', () => this.redeemCode());
+    document.getElementById('btnAdmin').addEventListener('click', () => this.openAdminPanel());
+    document.getElementById('admClose').addEventListener('click', () => {
+      document.getElementById('adminOverlay').classList.remove('visible');
+    });
+    document.getElementById('admCoinsBtn').addEventListener('click', () => {
+      const v = Math.max(0, Math.floor(Number(document.getElementById('admCoins').value) || 0));
+      SaveManager.coins += v;
+      UI.toast('🪙 +' + v.toLocaleString('ru-RU'));
+      this.refreshMeta();
+    });
+    document.getElementById('admCrystalsBtn').addEventListener('click', () => {
+      const v = Math.max(0, Math.floor(Number(document.getElementById('admCrystals').value) || 0));
+      SaveManager.addCrystals(v);
+      UI.toast('💎 +' + v.toLocaleString('ru-RU'));
+      this.refreshMeta();
+    });
+    document.getElementById('admUnitBtn').addEventListener('click', () => {
+      const id = document.getElementById('admUnit').value;
+      if (id && !SaveManager.isUnlocked(id)) { SaveManager.unlock(id); UI.toast('Юнит выдан: ' + id); this.refreshMeta(); }
+    });
+    document.getElementById('admAllUnitsBtn').addEventListener('click', () => {
+      for (const u of UNITS) if (!SaveManager.isUnlocked(u.id)) SaveManager.unlock(u.id);
+      UI.toast('Все юниты выданы');
+      this.refreshMeta();
+    });
     document.getElementById('btnResetProgress').addEventListener('click', () => {
       if (confirm(T('Сбросить весь прогресс? Это действие необратимо.'))) {
         SaveManager.reset();
@@ -5113,6 +5256,46 @@ const App = {
    ============================================================ */
 const FRONT_LANES = [200, 320, 440];
 const FRONT_COSTS = { mobilCam: 120, speakerVet: 280, presidentTV: 600 };
+function drawFrontBases(ctx, enemyHp, enemyMax) {
+  ctx.save();
+  ctx.translate(46, 320);
+  ctx.fillStyle = '#3d422e';
+  ctx.beginPath(); ctx.roundRect(-38, -40, 76, 84, 8); ctx.fill();
+  ctx.fillStyle = '#4d5439';
+  ctx.fillRect(-30, -48, 60, 12);
+  ctx.fillStyle = '#252a18';
+  ctx.fillRect(-10, 6, 20, 38);
+  ctx.strokeStyle = '#20241a'; ctx.lineWidth = 2;
+  ctx.strokeRect(-38, -40, 76, 84);
+  ctx.fillStyle = '#7fd9ff66';
+  ctx.fillRect(-30, -26, 12, 10); ctx.fillRect(18, -26, 12, 10);
+  ctx.fillStyle = '#5a86c8';
+  ctx.fillRect(-2, -78, 4, 32);
+  ctx.beginPath(); ctx.moveTo(2, -78); ctx.lineTo(34, -70); ctx.lineTo(2, -62); ctx.closePath(); ctx.fill();
+  ctx.restore();
+  ctx.save();
+  ctx.translate(912, 320);
+  ctx.fillStyle = '#4a4440';
+  ctx.beginPath(); ctx.roundRect(-52, -78, 104, 158, 6); ctx.fill();
+  ctx.fillStyle = '#5a544e';
+  ctx.fillRect(-58, -90, 116, 16);
+  ctx.fillStyle = '#38332c';
+  for (let i = -3; i <= 3; i++) ctx.fillRect(i * 16 - 4, -104, 8, 16);
+  ctx.fillStyle = '#23201c';
+  ctx.fillRect(-12, 30, 24, 50);
+  ctx.fillStyle = '#ffcf7a33';
+  for (let i = -2; i <= 2; i++) ctx.fillRect(i * 20 - 5, -58, 10, 14);
+  ctx.fillStyle = '#8a5fbf';
+  ctx.fillRect(-3, -136, 6, 48);
+  ctx.beginPath(); ctx.moveTo(3, -136); ctx.lineTo(40, -126); ctx.lineTo(3, -116); ctx.closePath(); ctx.fill();
+  ctx.restore();
+  const ep = clamp(enemyHp / enemyMax, 0, 1);
+  ctx.fillStyle = '#25324a'; ctx.fillRect(858, 130, 108, 10);
+  ctx.fillStyle = ep > 0.5 ? '#ff8888' : (ep > 0.25 ? '#ffd966' : '#7fffa0');
+  ctx.fillRect(858, 130, Math.round(108 * ep), 10);
+  ctx.strokeStyle = '#3a4560'; ctx.lineWidth = 1; ctx.strokeRect(858, 130, 108, 10);
+}
+
 class FrontGame {
   constructor() {
     this.canvas = document.getElementById('frontCanvas');
@@ -5145,7 +5328,7 @@ class FrontGame {
     this.upg = { dmg: 0, hp: 0, spd: 0 };
     this.elapsed = 0;
     this.enemyTimer = 1.5;
-    this.shahedTimer = 38;
+    this.shahedTimer = 45;
     this.shahedWarn = null;
     this.kills = 0;
     this.gameOver = false;
@@ -5166,6 +5349,7 @@ class FrontGame {
   }
   unitDef(id) { return UNITS.find(u => u.id === id); }
   unitPrice(id) { return Math.round(FRONT_COSTS[id] * Math.pow(1.15, this.spawnCount[id])); }
+  coinBoost() { return SaveManager.potionActive('coins') ? 2 : 1; }
   buildPanel() {
     const panel = document.getElementById('frontPanel');
     panel.innerHTML = '';
@@ -5179,7 +5363,7 @@ class FrontGame {
       this.btnRefs.spawn[id] = btn;
       panel.appendChild(btn);
     }
-    const ups = [['dmg', '\u2694\ufe0f УРОН +15%'], ['hp', '\u2764\ufe0f ХП +15%'], ['spd', '\U0001F45F СКОРОСТЬ +10%']];
+    const ups = [['dmg', '\u2694\ufe0f \u0423\u0420\u041e\u041d +15%'], ['hp', '\u2764\ufe0f \u0425\u041f +15%'], ['spd', '\U0001F45F \u0421\u041a\u041e\u0420\u041e\u0421\u0422\u042c +10%']];
     for (const [id, label] of ups) {
       const btn = document.createElement('div');
       btn.className = 'tower-btn';
@@ -5195,21 +5379,21 @@ class FrontGame {
       const btn = this.btnRefs.spawn[id];
       if (!btn) continue;
       btn.querySelector('.price').textContent = '\U0001FA99 ' + this.unitPrice(id);
-      btn.querySelector('.desc').textContent = fill(T('%1 шт'), this.spawnCount[id]);
+      btn.querySelector('.desc').textContent = fill(T('%1 \u0448\u0442'), this.spawnCount[id]);
     }
     for (const id of ['dmg', 'hp', 'spd']) {
       const btn = this.btnRefs.upg[id];
       if (!btn) continue;
-      if (this.upg[id] >= 5) { btn.querySelector('.price').textContent = T('МАКС'); btn.style.opacity = 0.5; }
+      if (this.upg[id] >= 5) { btn.querySelector('.price').textContent = T('\u041c\u0410\u041a\u0421'); btn.style.opacity = 0.5; }
       else { btn.querySelector('.price').textContent = '\U0001FA99 ' + this.upgCost(id); btn.style.opacity = 1; }
     }
   }
   upgCost(id) { return Math.round(150 * Math.pow(1.7, this.upg[id])); }
   spawnUnit(id) {
     if (this.gameOver) return;
-    if (this.mine.length >= 25) { Sound.error(); this.toastMsg(fill(T('Лимит юнитов (%1)'), 25)); return; }
+    if (this.mine.length >= 25) { Sound.error(); this.toastMsg(fill(T('\u041b\u0438\u043c\u0438\u0442 \u044e\u043d\u0438\u0442\u043e\u0432 (%1)'), 25)); return; }
     const price = this.unitPrice(id);
-    if (this.money < price) { Sound.error(); this.toastMsg(T('Не хватает денег')); return; }
+    if (this.money < price) { Sound.error(); this.toastMsg(T('\u041d\u0435 \u0445\u0432\u0430\u0442\u0430\u0435\u0442 \u0434\u0435\u043d\u0435\u0433')); return; }
     this.money -= price;
     this.spawnCount[id]++;
     const u = this.unitDef(id);
@@ -5229,7 +5413,7 @@ class FrontGame {
   buyUpgrade(id) {
     if (this.gameOver || this.upg[id] >= 5) return;
     const cost = this.upgCost(id);
-    if (this.money < cost) { Sound.error(); this.toastMsg(T('Не хватает денег')); return; }
+    if (this.money < cost) { Sound.error(); this.toastMsg(T('\u041d\u0435 \u0445\u0432\u0430\u0442\u0430\u0435\u0442 \u0434\u0435\u043d\u0435\u0433')); return; }
     this.money -= cost;
     this.upg[id]++;
     for (const m of this.mine) {
@@ -5266,20 +5450,26 @@ class FrontGame {
   update(dt) {
     this.time -= dt;
     this.elapsed += dt;
-    this.money += 12 * dt;
+    this.money += 12 * dt * this.coinBoost();
     if (this.time <= 0) { this.finish(false); return; }
     this.shahedTimer -= dt;
     if (this.shahedTimer <= 0 && !this.shahedWarn) {
-      this.shahedTimer = 35 + Math.random() * 15;
+      this.shahedTimer = 55 + Math.random() * 35;
       const target = this.mine[Math.floor(Math.random() * this.mine.length)];
-      if (target) this.shahedWarn = { x: target.x, y: target.y, t: 2 };
+      if (target) {
+        this.shahedWarn = { x: CANVAS_W + 20, y: 70, tx: target.x, ty: target.y, t: 3 };
+        this.toastMsg(T('\u26a0\ufe0f \u0428\u0430\u0445\u0435\u0434 \u043b\u0435\u0442\u0438\u0442 \u043d\u0430 \u043d\u0430\u0448\u0438 \u0432\u043e\u0439\u0441\u043a\u0430!'));
+      }
     }
     if (this.shahedWarn) {
       const w = this.shahedWarn;
       w.t -= dt;
+      const d = dist(w.x, w.y, w.tx, w.ty) || 1;
+      const k = Math.min(1, (280 * dt) / d);
+      w.x += (w.tx - w.x) * k; w.y += (w.ty - w.y) * k;
       if (w.t <= 0) {
-        for (const m of this.mine) if (dist(m.x, m.y, w.x, w.y) <= 100) m.hp -= 150;
-        this.explosions.push({ x: w.x, y: w.y, r: 0, maxR: 100, life: 0.5, maxLife: 0.5, rgb: '255,140,70' });
+        for (const m of this.mine) if (dist(m.x, m.y, w.tx, w.ty) <= 80) m.hp -= 90;
+        this.explosions.push({ x: w.tx, y: w.ty, r: 0, maxR: 80, life: 0.5, maxLife: 0.5, rgb: '255,140,70' });
         Sound.explosion();
         this.shahedWarn = null;
       }
@@ -5288,7 +5478,7 @@ class FrontGame {
     if (this.enemyTimer <= 0) {
       this.enemyTimer = Math.max(0.4, 1.4 - this.elapsed * 0.0015);
       const lane = Math.floor(Math.random() * 3);
-      this.enemies.push({ lane, x: 930, y: FRONT_LANES[lane], hp: 40 + this.elapsed * 0.35, speed: 50 + this.elapsed * 0.25, cd: 0 });
+      this.enemies.push({ lane, kind: Math.floor(Math.random() * 3), x: 930, y: FRONT_LANES[lane], hp: 40 + this.elapsed * 0.35, speed: 50 + this.elapsed * 0.25, cd: 0 });
     }
     for (let i = this.mine.length - 1; i >= 0; i--) {
       const m = this.mine[i];
@@ -5312,7 +5502,7 @@ class FrontGame {
       } else if (m.x >= 830) {
         m.cd = 1 / m.rate;
         this.baseHp -= m.dmg;
-        this.money += 2;
+        this.money += 2 * this.coinBoost();
         this.tracers.push({ x1: m.x + 8, y1: m.y - 8, x2: 880, y2: m.y - 8, life: 0.07, color: '#ffd966' });
         if (this.baseHp <= 0) { this.baseHp = 0; this.victory = true; this.finish(true); return; }
       } else {
@@ -5323,9 +5513,10 @@ class FrontGame {
     for (let i = this.enemies.length - 1; i >= 0; i--) {
       const e = this.enemies[i];
       if (e.hp <= 0) {
-        this.money += 12; this.kills++;
+        const gain = Math.round(12 * this.coinBoost());
+        this.money += gain; this.kills++;
         this.explosions.push({ x: e.x, y: e.y - 8, r: 0, maxR: 26, life: 0.35, maxLife: 0.35, rgb: '160,200,255' });
-        this.floaters.push({ x: e.x, y: e.y - 20, text: '+12', life: 0.9, maxLife: 0.9, color: '#7fffa0' });
+        this.floaters.push({ x: e.x, y: e.y - 20, text: '+' + gain, life: 0.9, maxLife: 0.9, color: '#7fffa0' });
         this.enemies.splice(i, 1);
         continue;
       }
@@ -5355,52 +5546,63 @@ class FrontGame {
       SaveManager.addItem('militaryCrate', 1);
       SaveManager.addCoins(400);
       Sound.victory();
-      UI.toast(T('\U0001F396\ufe0f Военный Крейт получен!'));
+      UI.toast(T('\U0001F396\ufe0f \u0412\u043e\u0435\u043d\u043d\u044b\u0439 \u041a\u0440\u0435\u0439\u0442 \u043f\u043e\u043b\u0443\u0447\u0435\u043d!'));
     } else { Sound.defeat(); }
     const t = document.getElementById('resultsTitle');
-    t.textContent = win ? T('\U0001F3C6 БАЗА ВРАГА ПАЛА!') : T('\U0001F480 ВРЕМЯ ВЫШЛО');
+    t.textContent = win ? T('\U0001F3C6 \u0411\u0410\u0417\u0410 \u0412\u0420\u0410\u0413\u0410 \u041f\u0410\u041b\u0410!') : T('\U0001F480 \u0412\u0420\u0415\u041c\u042f \u0412\u042b\u0428\u041b\u041e');
     t.className = 'title ' + (win ? 'win' : 'lose');
     document.getElementById('resWaves').textContent = this.kills || 0;
     document.getElementById('resKills').textContent = this.kills || 0;
     document.getElementById('resBase').textContent = win ? '0 / 10000' : Math.max(0, Math.round(this.baseHp)) + ' / 10000';
-    document.getElementById('resCoins').textContent = win ? '+400\U0001FA99' : T('0 (монеты только за победу)');
+    document.getElementById('resCoins').textContent = win ? '+400\U0001FA99' : T('0 (\u043c\u043e\u043d\u0435\u0442\u044b \u0442\u043e\u043b\u044c\u043a\u043e \u0437\u0430 \u043f\u043e\u0431\u0435\u0434\u0443)');
     document.getElementById('resultsOverlay').classList.add('visible');
     App.refreshMeta();
   }
   render() {
     const ctx = this.ctx;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
-    ctx.fillStyle = '#0d1016';
+    const g = ctx.createLinearGradient(0, 0, 0, CANVAS_H);
+    g.addColorStop(0, '#3d452c'); g.addColorStop(1, '#2a3020');
+    ctx.fillStyle = g;
     ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
-    ctx.strokeStyle = '#1a2030'; ctx.lineWidth = 2; ctx.setLineDash([10, 10]);
-    for (const y of FRONT_LANES) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(CANVAS_W, y); ctx.stroke(); }
-    ctx.setLineDash([]);
-    ctx.font = '52px serif'; ctx.textAlign = 'center';
-    ctx.fillText('\U0001F3E0', 40, 330);
-    ctx.fillText('\U0001F3DB\ufe0f', 902, 320);
-    const p = clamp(this.baseHp / this.baseMaxHp, 0, 1);
-    ctx.fillStyle = '#25324a'; ctx.fillRect(840, 160, 104, 12);
-    ctx.fillStyle = p > 0.5 ? '#7fffa0' : (p > 0.25 ? '#ffd966' : '#ff6666');
-    ctx.fillRect(840, 160, Math.round(104 * p), 12);
-    ctx.strokeStyle = '#3a4560'; ctx.lineWidth = 1; ctx.strokeRect(840, 160, 104, 12);
-    if (this.shahedWarn) {
-      const w = this.shahedWarn;
-      ctx.font = '30px serif';
-      ctx.fillText('\u26a0\ufe0f', w.x, w.y - 46 + Math.sin(Date.now() / 100) * 4);
+    ctx.fillStyle = 'rgba(0,0,0,0.10)';
+    for (let i = 0; i < 26; i++) {
+      const fx = (i * 173 + 45) % CANVAS_W, fy = (i * 97 + 35) % CANVAS_H;
+      ctx.beginPath(); ctx.ellipse(fx, fy, 16 + (i % 5) * 9, 6 + (i % 3) * 4, 0.3, 0, Math.PI * 2); ctx.fill();
     }
+    ctx.fillStyle = 'rgba(130,150,80,0.35)';
+    for (let i = 0; i < 60; i++) ctx.fillRect((i * 151 + 20) % CANVAS_W, (i * 83 + 12) % CANVAS_H, 3, 7);
+    for (const y of FRONT_LANES) {
+      ctx.fillStyle = '#6b5c40'; ctx.fillRect(0, y - 26, CANVAS_W, 52);
+      ctx.fillStyle = '#7a6a4a'; ctx.fillRect(0, y - 26, CANVAS_W, 6); ctx.fillRect(0, y + 20, CANVAS_W, 6);
+      ctx.fillStyle = 'rgba(0,0,0,0.08)';
+      for (let x = 0; x < CANVAS_W; x += 46) ctx.fillRect(x, y - 14, 26, 4);
+    }
+    ctx.fillStyle = '#8a7c58';
+    for (let i = 0; i < 5; i++) {
+      ctx.beginPath(); ctx.ellipse(130 + i * 17, FRONT_LANES[0] - 36 + (i % 2) * 9, 9, 6, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(130 + i * 17, FRONT_LANES[2] + 36 - (i % 2) * 9, 9, 6, 0, 0, Math.PI * 2); ctx.fill();
+    }
+    drawFrontBases(ctx, this.baseHp, this.baseMaxHp);
+    ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillStyle = '#d8e4c0'; ctx.fillText(T('\u041d\u0410\u0428\u0410 \u0411\u0410\u0417\u0410'), 46, 176);
+    ctx.fillStyle = '#f2cab8'; ctx.fillText(T('\u0421\u0422\u041e\u041b\u0418\u0426\u0410 \u0412\u0420\u0410\u0413\u0410'), 912, 176);
+    if (this.shahedWarn) drawShahedModel(ctx, this.shahedWarn.x, this.shahedWarn.y, 1.3, false);
     for (const m of this.mine) {
       const u = this.unitDef(m.id);
       ctx.save(); ctx.globalAlpha = 0.5;
       ctx.fillStyle = '#000'; ctx.beginPath(); ctx.ellipse(m.x, m.y + 16, 14, 5, 0, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
-      drawUnitFigure(ctx, u, m.x, m.y - 10, m.id === 'presidentTV' ? 62 : 48, false, UF_SCALE[m.id] || 1);
-      ctx.fillStyle = '#25324a'; ctx.fillRect(m.x - 16, m.y - 44, 32, 4);
-      ctx.fillStyle = '#7fffa0'; ctx.fillRect(m.x - 16, m.y - 44, Math.round(32 * clamp(m.hp / m.maxHp, 0, 1)), 4);
+      drawUnitFigure(ctx, u, m.x, m.y - 10, m.id === 'presidentTV' ? 64 : 50, false, UF_SCALE[m.id] || 1);
+      ctx.fillStyle = '#25324a'; ctx.fillRect(m.x - 16, m.y - 48, 32, 4);
+      ctx.fillStyle = '#7fffa0'; ctx.fillRect(m.x - 16, m.y - 48, Math.round(32 * clamp(m.hp / m.maxHp, 0, 1)), 4);
     }
     for (const e of this.enemies) {
-      ctx.save(); ctx.translate(e.x, e.y - 6); ctx.scale(0.28, 0.28);
-      UF_RUN(ctx, { x: 0, y: 0 }, ufSub(UF_TOILET.skibidi, '#a06bd0'));
+      ctx.save(); ctx.translate(e.x, e.y - 6); ctx.scale(13, 13);
+      UF_RUN(ctx, { x: 0, y: 0 }, UF_TOILET.skibidi);
+      ctx.fillStyle = e.kind === 0 ? 'rgba(122,138,90,0.9)' : (e.kind === 1 ? 'rgba(138,112,72,0.9)' : 'rgba(90,106,122,0.9)');
+      ctx.beginPath(); ctx.ellipse(0, 0.34, 0.5, 0.2, 0, 0, Math.PI * 2); ctx.fill();
+      drawMilitaryHelmet(ctx);
       ctx.restore();
       const maxE = Math.max(40, 40 + this.elapsed * 0.35);
       ctx.fillStyle = '#25324a'; ctx.fillRect(e.x - 12, e.y - 46, 24, 4);
