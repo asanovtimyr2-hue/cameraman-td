@@ -80,6 +80,22 @@
 .tk-antistan{color:#7dd0ff;border-color:#7dd0ff88;background:#7dd0ff12}
 .tk-atk-bullet{color:#b8c8e0;border-color:#8a9ab855}
 .tk-sniper{color:#ff7d7d;border-color:#ff7d7d88;background:#ff7d7d12}
+.inv-tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px 0 10px}
+.crate-card{display:flex;flex-direction:column;align-items:center;gap:6px}
+.crate-emoji{font-size:2.6rem;line-height:1.1;margin-top:4px}
+.crate-pool{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:8px 0 4px}
+.crate-pool .sc-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.72rem}
+.crate-price{font-weight:800;color:#7ee7ff;font-size:1.05rem}
+.q-card{background:#141a26;border:1px solid #2a3a4e;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.q-card.q-done{border-color:#4dff8888}
+.q-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.q-name{font-weight:700;font-size:.95rem}
+.q-reward{font-weight:800;color:#7ee7ff}
+.q-progress{height:10px;background:#0d1118;border-radius:6px;overflow:hidden;border:1px solid #2a3a4e}
+.q-fill{height:100%;width:0;background:linear-gradient(90deg,#4fc3ff,#7ee7ff);border-radius:6px;transition:width .3s}
+.q-card.q-done .q-fill{background:linear-gradient(90deg,#4dff88,#7fffa0)}
+.q-prog{opacity:.6;font-size:.8rem}
+.q-claimed{color:#7fffa0;font-weight:700}
   .unit-card .u-status{font-size:.8rem;font-weight:700}
   .unit-card .u-actions{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap}
   #gameScreen{max-width:1000px}
@@ -262,10 +278,13 @@
     <h1 class="game-title">КАМЕРАМЕН TD</h1>
     <div class="game-subtitle">ОБОРОНА СТУДИИ</div>
     <div class="coin-badge"><span class="coin-ico">¢</span> <span id="metaCoinsLobby">0</span> монет</div>
+    <div class="coin-badge"><span>💎</span> <span id="metaCrystalsLobby">0</span> кристаллов</div>
     <div class="record-badge" id="recordBadge" style="display:none">⚡ Рекорд бесконечного: <span id="endlessRecordVal">0</span> волн</div>
     <div class="menu-buttons">
       <button class="btn accent" id="btnPlay">▶ ИГРАТЬ</button>
       <button class="btn gold" id="btnGacha">🎰 ПРИЗЫВ (ГАЧА)</button>
+      <button class="btn" id="btnShop">🛒 МАГАЗИН</button>
+      <button class="btn" id="btnQuests">📜 КВЕСТЫ</button>
       <button class="btn" id="btnCollection">🎒 ИНВЕНТАРЬ</button>
       <button class="btn" id="btnSettings">⚙ НАСТРОЙКИ</button>
     </div>
@@ -316,6 +335,7 @@
       <h2 class="panel-title" id="inventoryTitle">🎒 ИНВЕНТАРЬ</h2>
       <div class="coin-badge"><span class="coin-ico">¢</span> <span id="metaCoinsInventory">0</span></div>
     </div>
+    <div class="inv-tabs" id="invTabs"></div>
     <div class="search-filter-row">
       <input type="text" class="search-input" id="inventorySearch" placeholder="🔍 Поиск юнита...">
       <div id="inventoryFilters" style="display:flex;gap:6px;flex-wrap:wrap"></div>
@@ -325,6 +345,38 @@
       БОЕВОЙ ОТРЯД <span style="opacity:.5;font-weight:400">(5 слотов — эти юниты в бою)</span>
     </div>
     <div class="loadout-bar" id="loadoutBar"></div>
+  </div>
+</div>
+
+<!-- МАГАЗИН -->
+<div class="screen" id="shopScreen">
+  <div class="subpanel">
+    <button class="btn small back-btn" id="shopBack">← ЛОББИ</button>
+    <div class="panel-head">
+      <h2 class="panel-title">🛒 МАГАЗИН КРЕЙТОВ</h2>
+      <div class="coin-badge"><span>💎</span> <span id="metaCrystalsShop">0</span></div>
+    </div>
+    <div style="text-align:center;opacity:.7;margin:8px 0 4px;font-size:.9rem">Купленные крейты складываются в «Вещи» инвентаря — там их можно открыть</div>
+    <div class="cards-grid" id="shopGrid" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- КВЕСТЫ -->
+<div class="screen" id="questsScreen">
+  <div class="subpanel">
+    <button class="btn small back-btn" id="questsBack">← ЛОББИ</button>
+    <div class="panel-head">
+      <h2 class="panel-title">📜 КВЕСТЫ</h2>
+      <div class="coin-badge"><span>💎</span> <span id="metaCrystalsQuests">0</span></div>
+    </div>
+    <div style="text-align:center;font-weight:800;letter-spacing:1px;margin:12px 0 4px">
+      📅 ЕЖЕДНЕВНЫЕ КВЕСТЫ <span style="opacity:.55;font-weight:400;font-size:.85rem">⏱ <span id="questsDailyTimer"></span></span>
+    </div>
+    <div class="cards-grid" id="questsDailyGrid" style="margin-top:6px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))"></div>
+    <div style="text-align:center;font-weight:800;letter-spacing:1px;margin:16px 0 4px">
+      🗓️ 3-ДНЕВНЫЕ КВЕСТЫ <span style="opacity:.55;font-weight:400;font-size:.85rem">⏱ <span id="questsTriTimer"></span></span>
+    </div>
+    <div class="cards-grid" id="questsTriGrid" style="margin-top:6px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))"></div>
   </div>
 </div>
 
@@ -450,6 +502,10 @@
   <div class="unit-detail" id="unitDetailContent"></div>
 </div>
 
+<div class="unit-detail-overlay" id="crateOverlay">
+  <div class="unit-detail" id="crateContent"></div>
+</div>
+
 <div class="toast" id="toast"></div>
 <div class="stat-tooltip" id="statTooltip"></div>
 
@@ -482,7 +538,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
 const LOADOUT_SIZE = 5;
-const GAME_VERSION = 'v2.15-TAGS-HITBOX';
+const GAME_VERSION = 'v2.16-SHOP-QUESTS';
 
 const DCOL = { easy: '#4dff4d', normal: '#4fc3ff', hard: '#ffb347', insane: '#ff5555', endless: '#c86bff' };
 const I18N_EN = {
@@ -732,7 +788,56 @@ const I18N_EN = {
   "Снайпер": "Sniper",
   "2 клетки": "2 cells",
   "Аура +%1%": "Aura +%1%",
-  "доход +%1%": "+%1% income"
+  "доход +%1%": "+%1% income",
+  "Спикер-Страйдер": "Speaker Strider",
+  "Страйдер на паучьих ногах. Звуковые снаряды взрываются по площади.": "Strider on spider legs. Sound shells explode in an area.",
+  "Камера-Страйдер": "Camera Strider",
+  "Быстрый и точный стрелок на длинной ноге.": "Fast and precise shooter on a long leg.",
+  "Плазма-Страйдер": "Plasma Strider",
+  "Легендарная плазменная голова: периодический взрыв по площади. Шанс 0.2%.": "Legendary plasma head: periodic area explosion. 0.2% chance.",
+  "ТВ-Страйдер": "TV Strider",
+  "ТВ-страйдер поддержки: попадания замедляют врагов.": "Support TV strider: hits slow enemies.",
+  "Голо-Кам": "Holo-Cam",
+  "Голографический страйдер: аура +20% урона союзникам.": "Holographic strider: +20% ally damage aura.",
+  "ТВ-Оверлорд": "TV Overlord",
+  "Мифический оверлорд: тяжёлые залпы по площади. Шанс 0.2%.": "Mythic overlord: heavy area salvos. 0.2% chance.",
+  "🕷️ Спайдер-крейт": "🕷️ Spider Crate",
+  "Страйдеры альянса на паучьих ногах. Топ-юнит с шансом 0.2%.": "Alliance striders on spider legs. Top unit at 0.2% chance.",
+  "📡 Голокрейт": "📡 Holo Crate",
+  "Голографические технологии ТВ-альянса. Топ-юнит с шансом 0.2%.": "Holographic tech of the TV alliance. Top unit at 0.2% chance.",
+  "КУПИТЬ КРЕЙТ": "BUY CRATE",
+  "🎁 ОТКРЫТЬ": "🎁 OPEN",
+  "📦 ВЕЩИ": "📦 ITEMS",
+  "📦 Вещи": "📦 Items",
+  "Юниты": "Units",
+  "Крейтов нет — купи их в магазине": "No crates — buy some in the Shop",
+  "ЗАБРАТЬ": "CLAIM",
+  "ЗАБРАНО": "CLAIMED",
+  "ЕЖЕДНЕВНЫЕ КВЕСТЫ": "DAILY QUESTS",
+  "3-ДНЕВНЫЕ КВЕСТЫ": "3-DAY QUESTS",
+  "Обновление: %1": "Resets in: %1",
+  "Не хватает 💎 (нужно %1)": "Not enough 💎 (need %1)",
+  "%1 куплен! Открой его в разделе «Вещи» инвентаря": "%1 purchased! Open it in the Inventory Items tab",
+  "+%1 💎": "+%1 💎",
+  "♻️ Дубликат: +%1 🪙": "♻️ Duplicate: +%1 🪙",
+  "🎉 НОВЫЙ ЮНИТ!": "🎉 NEW UNIT!",
+  "🛒 МАГАЗИН": "🛒 SHOP",
+  "📜 КВЕСТЫ": "📜 QUESTS",
+  "🛒 МАГАЗИН КРЕЙТОВ": "🛒 CRATE SHOP",
+  "Победи в бою": "Win a battle",
+  "Пройди 5 волн": "Clear 5 waves",
+  "Убей 100 скибиди": "Kill 100 skibidi",
+  "Расставь 10 юнитов": "Place 10 units",
+  "Сделай 5 улучшений": "Make 5 upgrades",
+  "Убей 2 боссов": "Kill 2 bosses",
+  "Заработай 1500 монет в боях": "Earn 1500 coins in battles",
+  "Победи в 5 боях": "Win 5 battles",
+  "Пройди 30 волн": "Clear 30 waves",
+  "Убей 600 скибиди": "Kill 600 skibidi",
+  "Убей 10 боссов": "Kill 10 bosses",
+  "Сделай 20 улучшений": "Make 20 upgrades",
+  "Заработай 8000 монет в боях": "Earn 8000 coins in battles",
+  "кристаллов": "crystals"
 };
 function gameLang() {
   try { return (SaveManager.data && SaveManager.data.lang === 'en') ? 'en' : 'ru'; } catch (e) { return 'ru'; }
@@ -837,7 +942,9 @@ const UNIT_ATK = {
   intern: 'bullet', operator: 'bullet', steadicam: 'ring', makeup: 'bullet', dronepilot: 'rocket',
   scientist: 'coin', gaffer: 'ring', boomop: 'wave', engineer: 'coin', director: 'shell',
   speaker: 'wave', streamer: 'coin', soundmixer: 'wave', titanCam: 'laser', titanSpeaker: 'wave',
-  titanTV: 'laser', pyrotech: 'shell', snipercam: 'laser', bodyguard: 'bullet', hacker: 'voxel'
+  titanTV: 'laser', pyrotech: 'shell', snipercam: 'laser', bodyguard: 'bullet', hacker: 'voxel',
+  striderSpeaker: 'wave', striderCamera: 'laser', striderPlasma: 'voxel',
+  tvStrider: 'wave', holoCam: 'ring', tvOverlord: 'laser'
 };
 const UNIT_CELLS = { titanCam: [2, 1], titanTV: [2, 1], titanSpeaker: [2, 1] };
 function unitCells(id) { return UNIT_CELLS[id] || [1, 1]; }
@@ -873,9 +980,12 @@ function mulberry32(a) {
 }
 function gachaStock(boxId, bucket) {
   const box = GACHA_BOXES.find(b => b.id === boxId) || GACHA_BOXES[0];
+  if (box.shopOnly) {
+    return box.units.map(id => UNITS.find(u => u.id === id)).filter(Boolean);
+  }
   const stock = [];
   for (const rar of Object.keys(box.stock)) {
-    const pool = UNITS.filter(u => u.rarity === rar);
+    const pool = UNITS.filter(u => u.rarity === rar && !u.shopOnly);
     if (!pool.length) continue;
     const rnd = mulberry32(mapSeed(box.id + ':' + bucket + ':' + rar) ^ 0x9e3779b9);
     const idxs = pool.map((_, i) => i);
@@ -971,7 +1081,31 @@ const UNITS = [
   { id: 'hacker', name: 'Хакер', emoji: '💻', rarity: 'Legendary', dropChance: 0.006,
     desc: 'Взламывает систему: аура урона и разряд с замедлением.',
     stats: { dmg: 36, range: 140, fireRate: 0.9, hp: 260 },
-    passive: { dmgBonus: 0, moneyBonus: 0.08 }, ability: 'slow', aura: 0.10 }
+    passive: { dmgBonus: 0, moneyBonus: 0.08 }, ability: 'slow', aura: 0.10 },
+  { id: 'striderSpeaker', name: 'Спикер-Страйдер', emoji: '🔊', rarity: 'Common', dropChance: 0.68, shopOnly: true,
+    desc: 'Страйдер на паучьих ногах. Звуковые снаряды взрываются по площади.',
+    stats: { dmg: 26, range: 155, fireRate: 0.85, hp: 240 },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'splash', aura: 0, crate: 'spider' },
+  { id: 'striderCamera', name: 'Камера-Страйдер', emoji: '📷', rarity: 'Uncommon', dropChance: 0.318, shopOnly: true,
+    desc: 'Быстрый и точный стрелок на длинной ноге.',
+    stats: { dmg: 36, range: 175, fireRate: 0.7, hp: 260 },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', aura: 0, crate: 'spider' },
+  { id: 'striderPlasma', name: 'Плазма-Страйдер', emoji: '☄️', rarity: 'Legendary', dropChance: 0.002, shopOnly: true,
+    desc: 'Легендарная плазменная голова: периодический взрыв по площади. Шанс 0.2%.',
+    stats: { dmg: 62, range: 185, fireRate: 1.05, hp: 300 },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'aoeBurst', aura: 0, crate: 'spider' },
+  { id: 'tvStrider', name: 'ТВ-Страйдер', emoji: '📺', rarity: 'Common', dropChance: 0.68, shopOnly: true,
+    desc: 'ТВ-страйдер поддержки: попадания замедляют врагов.',
+    stats: { dmg: 24, range: 160, fireRate: 0.9, hp: 230 },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'slow', aura: 0, crate: 'holo' },
+  { id: 'holoCam', name: 'Голо-Кам', emoji: '💠', rarity: 'Epic', dropChance: 0.318, shopOnly: true,
+    desc: 'Голографический страйдер: аура +20% урона союзникам.',
+    stats: { dmg: 44, range: 195, fireRate: 0.85, hp: 280 },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', aura: 0.20, crate: 'holo' },
+  { id: 'tvOverlord', name: 'ТВ-Оверлорд', emoji: '👑', rarity: 'Mythic', dropChance: 0.002, shopOnly: true,
+    desc: 'Мифический оверлорд: тяжёлые залпы по площади. Шанс 0.2%.',
+    stats: { dmg: 90, range: 205, fireRate: 1.15, hp: 420 },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'aoeBurst', aura: 0, crate: 'holo' }
 ];
 
 function statRange(u) {
@@ -1100,6 +1234,9 @@ const SaveManager = {
       codes: [],
       autoSkip: false,
       gachaBox: 'common',
+      crystals: 60,
+      items: {},
+      quests: null,
       autoSell: {
         'Common': true, 'Uncommon': true, 'Rare': false,
         'Epic': false, 'Legendary': false, 'Mythic': false
@@ -1118,6 +1255,9 @@ const SaveManager = {
       while (this.data.loadout.length > LOADOUT_SIZE) this.data.loadout.pop();
       if (!Array.isArray(this.data.codes)) this.data.codes = [];
       if (!this.data.autoSell) this.data.autoSell = this.defaults().autoSell;
+      if (typeof this.data.crystals !== 'number') this.data.crystals = 60;
+      if (!this.data.items || typeof this.data.items !== 'object') this.data.items = {};
+      if (this.data.quests !== null && (typeof this.data.quests !== 'object' || Array.isArray(this.data.quests))) this.data.quests = null;
     } catch (e) { this.data = this.defaults(); }
     this.soundOn = !!this.data.soundOn;
     return this.data;
@@ -1134,6 +1274,20 @@ const SaveManager = {
   get coins() { return this.data.coins; },
   set coins(v) { this.data.coins = Math.max(0, Math.floor(v)); this.save(); },
   addCoins(v) { this.coins = this.coins + Math.max(0, Math.floor(v)); },
+  get crystals() { return (typeof this.data.crystals === 'number') ? this.data.crystals : 60; },
+  set crystals(v) { this.data.crystals = Math.max(0, Math.floor(v)); this.save(); },
+  addCrystals(v) { this.crystals = this.crystals + Math.max(0, Math.floor(v)); },
+  addItem(crateId, n) {
+    if (!this.data.items || typeof this.data.items !== 'object') this.data.items = {};
+    this.data.items[crateId] = Math.max(0, (this.data.items[crateId] || 0) + n);
+    this.save();
+  },
+  itemCount(crateId) { return (this.data.items && this.data.items[crateId]) || 0; },
+  takeItem(crateId) {
+    if (this.itemCount(crateId) <= 0) return false;
+    this.addItem(crateId, -1);
+    return true;
+  },
   isUnlocked(id) { return this.data.unlockedUnits.includes(id); },
   unlock(id) {
     if (!this.data.unlockedUnits.includes(id)) {
@@ -1184,6 +1338,115 @@ const SaveManager = {
     this.data.codes.push(code);
     this.addCoins(amount);
     return { ok: true, msg: fill(T('Код активирован: +%1 🪙'), amount) };
+  }
+};
+
+const SHOP_CRATES = [
+  { id: 'spider', name: '🕷️ Спайдер-крейт', emoji: '🕷️', cost: 90, color: '#ff8a5c',
+    desc: 'Страйдеры альянса на паучьих ногах. Топ-юнит с шансом 0.2%.',
+    units: ['striderSpeaker', 'striderCamera', 'striderPlasma'] },
+  { id: 'holo', name: '📡 Голокрейт', emoji: '📡', cost: 130, color: '#7ee7ff',
+    desc: 'Голографические технологии ТВ-альянса. Топ-юнит с шансом 0.2%.',
+    units: ['tvStrider', 'holoCam', 'tvOverlord'] }
+];
+
+const QUEST_DEFS = {
+  daily: [
+    { id: 'd_win', type: 'wins', target: 1, reward: 10, name: 'Победи в бою' },
+    { id: 'd_waves', type: 'waves', target: 5, reward: 10, name: 'Пройди 5 волн' },
+    { id: 'd_kills', type: 'kills', target: 100, reward: 10, name: 'Убей 100 скибиди' },
+    { id: 'd_places', type: 'places', target: 10, reward: 8, name: 'Расставь 10 юнитов' },
+    { id: 'd_upg', type: 'upgrades', target: 5, reward: 8, name: 'Сделай 5 улучшений' },
+    { id: 'd_boss', type: 'bosses', target: 2, reward: 8, name: 'Убей 2 боссов' },
+    { id: 'd_coins', type: 'coinsEarned', target: 1500, reward: 8, name: 'Заработай 1500 монет в боях' }
+  ],
+  tri: [
+    { id: 't_win', type: 'wins', target: 5, reward: 40, name: 'Победи в 5 боях' },
+    { id: 't_waves', type: 'waves', target: 30, reward: 40, name: 'Пройди 30 волн' },
+    { id: 't_kills', type: 'kills', target: 600, reward: 40, name: 'Убей 600 скибиди' },
+    { id: 't_boss', type: 'bosses', target: 10, reward: 35, name: 'Убей 10 боссов' },
+    { id: 't_upg', type: 'upgrades', target: 20, reward: 30, name: 'Сделай 20 улучшений' },
+    { id: 't_coins', type: 'coinsEarned', target: 8000, reward: 30, name: 'Заработай 8000 монет в боях' }
+  ]
+};
+
+const QUESTS_DAY_MS = 24 * 3600 * 1000;
+function questDayKey(ts) {
+  const d = new Date(ts);
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function rollQuestIds(scope, seedStr) {
+  const rnd = mulberry32(mapSeed(seedStr));
+  const pool = QUEST_DEFS[scope].map(d => d.id);
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    const tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+  }
+  return pool.slice(0, 3);
+}
+function emptyQuestCounters() {
+  return { wins: 0, waves: 0, kills: 0, places: 0, upgrades: 0, bosses: 0, coinsEarned: 0 };
+}
+const Quests = {
+  ensure() {
+    const now = Date.now();
+    const day = questDayKey(now);
+    const bucket = Math.floor(now / (3 * QUESTS_DAY_MS));
+    const q = SaveManager.data.quests;
+    if (!q || typeof q !== 'object' || q.day !== day || q.bucket !== bucket) {
+      const fresh = {
+        day, bucket,
+        counters: emptyQuestCounters(),
+        dailySel: rollQuestIds('daily', 'daily:' + day),
+        triSel: rollQuestIds('tri', 'tri:' + bucket),
+        dailyClaimed: [false, false, false],
+        triClaimed: [false, false, false]
+      };
+      SaveManager.data.quests = fresh;
+      SaveManager.save();
+      return fresh;
+    }
+    if (!q.counters || typeof q.counters !== 'object') q.counters = emptyQuestCounters();
+    if (!Array.isArray(q.dailySel)) q.dailySel = rollQuestIds('daily', 'daily:' + day);
+    if (!Array.isArray(q.triSel)) q.triSel = rollQuestIds('tri', 'tri:' + bucket);
+    if (!Array.isArray(q.dailyClaimed)) q.dailyClaimed = [false, false, false];
+    if (!Array.isArray(q.triClaimed)) q.triClaimed = [false, false, false];
+    return q;
+  },
+  progress(type) {
+    const q = this.ensure();
+    return q.counters[type] || 0;
+  },
+  add(type, n) {
+    if (!n) return;
+    const q = this.ensure();
+    if (!(type in q.counters)) q.counters[type] = 0;
+    q.counters[type] += n;
+    SaveManager.save();
+  },
+  claim(scope, idx) {
+    const q = this.ensure();
+    const selected = q[scope + 'Sel'] || [];
+    const claimed = q[scope + 'Claimed'] || [];
+    const qid = selected[idx];
+    const def = QUEST_DEFS[scope].find(d => d.id === qid);
+    if (!def || claimed[idx]) return 0;
+    if ((q.counters[def.type] || 0) < def.target) return 0;
+    claimed[idx] = true;
+    SaveManager.addCrystals(def.reward);
+    SaveManager.save();
+    return def.reward;
+  },
+  mmLeft(ms) {
+    const h = Math.floor(ms / 3600000), m = Math.floor(ms / 60000) % 60;
+    return h + ':' + String(m).padStart(2, '0');
+  },
+  dailyTimeLeft() {
+    const now = new Date();
+    return this.mmLeft(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1) - now);
+  },
+  triTimeLeft() {
+    return this.mmLeft((this.ensure().bucket + 1) * 3 * QUESTS_DAY_MS - Date.now());
   }
 };
 
@@ -1558,7 +1821,7 @@ function UF_RUN(ctx, t, list) {
   }
 }
 
-const UF_TABLE = {"intern":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#2e3750"],["R",-34,-40,68,30,10,"#55628a"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#2e3750"],["R",34,-34,10,32,4,"#2e3750"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,12,0,6.2832,"#0e1219",3],["C",15,-72,12,"#0d1118"],["C",15,-72,8,"#7ee7ff"],["C",17.0,-72,3.6,"#0d1118"],["C",17,-75,2.0,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-9,-88,3,"#ff5555"],["L",0,-96,-8,-114,"#8a93b0",2.5],["C",-8,-114,3.5,"RC"]],"operator":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#2a3540"],["R",-34,-40,68,30,10,"#4e5f6e"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#2a3540"],["R",34,-34,10,32,4,"#2a3540"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,13.5,0,6.2832,"#0e1219",3],["C",15,-72,13.5,"#0d1118"],["C",15,-72,9.5,"#7ee7ff"],["C",17.375,-72,4.275,"#0d1118"],["C",17,-75,2.375,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-9,-88,3,"#ff5555"],["C",-4,-102,7,"#232b3d"],["C",-4,-102,3,"#5a6890"],["C",4,-102,7,"#232b3d"],["C",4,-102,3,"#5a6890"]],"steadicam":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#332e42"],["R",-34,-40,68,30,10,"#5d5470"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#332e42"],["R",34,-34,10,32,4,"#332e42"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,12.5,0,6.2832,"#0e1219",3],["C",15,-72,12.5,"#0d1118"],["C",15,-72,8.5,"#7ee7ff"],["C",17.125,-72,3.825,"#0d1118"],["C",17,-75,2.125,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-17,-72,6.375,"#0d1118"],["C",-17,-72,4.25,"#7ee7ff"],["L",30,-22,52,-36,"#444d66",5],["L",52,-36,52,-8,"#8a93b0",4],["R",40,-46,24,18,3,"#1a2130"],["R",43,-43,18,12,2,"#7ee7ff"]],"snipercam":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#2a3d31"],["R",-34,-40,68,30,10,"#4e6e58"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#2a3d31"],["R",34,-34,10,32,4,"#2a3d31"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,11,0,6.2832,"#0e1219",3],["C",15,-72,11,"#0d1118"],["C",15,-72,7,"#7ee7ff"],["C",16.75,-72,3.15,"#0d1118"],["C",17,-75,1.75,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-9,-88,3,"#ff5555"],["R",17,-78,28,12,3,"#232b3d"],["C",47,-72,6,"#0d1118"],["C",47,-72,3,"#7ee7ff"],["R",-16,-102,26,8,3,"#1a2130"],["C",12,-98,3,"#7ee7ff"],["L",20,-72,20,-66,"#444d66",2.5],["L",20,-66,34,-58,"#444d66",2.5]],"titanCam":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-42,-40,84,72,10,"#3d362e"],["R",-42,-40,84,30,10,"#6e6255"],["S",-42,-40,84,72,10,"rgba(8,12,18,0.55)",3],["RG",-38,-37,76,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-42,-12,84,6,2,"RC"],["R",-52,-34,10,32,4,"#3d362e"],["R",42,-34,10,32,4,"#3d362e"],["C",-47,0,5,"#1a2130"],["C",47,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-37,6,2.5,"#5a6890"],["C",37,6,2.5,"#5a6890"],["R",-54,-44,16,12,4,"#8f9ab5"],["R",38,-44,16,12,4,"#8f9ab5"],["P",0,-34,7,-24,0,-14,-7,-24,"RC"],["R",-9,-54,18,14,4,"#1a2130"],["R",-20,-96,40,46,6,"#1a2130"],["RG",-18,-92,36,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",20,-72,19,0,6.2832,"#0e1219",3],["C",20,-72,19,"#0d1118"],["C",20,-72,15,"#7ee7ff"],["C",23.75,-72,6.75,"#0d1118"],["C",22,-75,3.75,"rgba(255,255,255,0.8)"],["C",-14,-58,2,"#5a6890"],["C",14,-58,2,"#5a6890"],["C",-14,-88,3,"#ff5555"],["R",-22,-100,44,9,3,"#8f9ab5"],["C",-22,-72,11.25,"#0d1118"],["C",-22,-72,7.5,"#7ee7ff"]],"hacker":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#2b3045"],["R",-34,-40,68,30,10,"#4e5570"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#2b3045"],["R",34,-34,10,32,4,"#2b3045"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-28,-98,56,48,5,"#253048"],["S",-28,-98,56,48,5,"rgba(8,12,18,0.5)",2.5],["R",-24,-92,48,34,3,"#0d1118"],["R",-21,-89,42,28,2,"#b06bff"],["RG",-21,-89,42,14,2,"rgba(255,255,255,0.18)","rgba(255,255,255,0.03)"],["L",14,-98,24,-117,"#8a93b0",2.5],["C",24,-117,3,"RC"],["L",-21,-80,21,-80,"rgba(255,255,255,0.3)",1.5],["L",-14,-89,-14,-61,"rgba(255,255,255,0.2)",1.2],["L",-14,-70,21,-70,"rgba(255,255,255,0.3)",1.5],["C",13,-64,2.5,"#4dff8a"],["L",-20,-50,-26,-40,"#444d66",2],["L",20,-50,26,-40,"#444d66",2]],"titanTV":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-42,-40,84,72,10,"#33383f"],["R",-42,-40,84,30,10,"#5a6070"],["S",-42,-40,84,72,10,"rgba(8,12,18,0.55)",3],["RG",-38,-37,76,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-42,-12,84,6,2,"RC"],["R",-52,-34,10,32,4,"#33383f"],["R",42,-34,10,32,4,"#33383f"],["C",-47,0,5,"#1a2130"],["C",47,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-37,6,2.5,"#5a6890"],["C",37,6,2.5,"#5a6890"],["R",-54,-44,16,12,4,"#8f9ab5"],["R",38,-44,16,12,4,"#8f9ab5"],["P",0,-34,7,-24,0,-14,-7,-24,"RC"],["R",-9,-54,18,14,4,"#1a2130"],["R",-28,-98,56,48,5,"#253048"],["S",-28,-98,56,48,5,"rgba(8,12,18,0.5)",2.5],["R",-24,-92,48,34,3,"#0d1118"],["R",-21,-89,42,28,2,"#7ee7ff"],["RG",-21,-89,42,14,2,"rgba(255,255,255,0.18)","rgba(255,255,255,0.03)"],["L",-14,-98,-23,-117,"#8a93b0",2.5],["C",-23,-117,3,"RC"],["L",14,-98,23,-117,"#8a93b0",2.5],["C",23,-117,3,"RC"],["S",-28,-98,56,48,5,"RCaa",2.5]],"speaker":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#2d3140"],["R",-34,-40,68,30,10,"#52586a"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#2d3140"],["R",34,-34,10,32,4,"#2d3140"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-26.0,-104,52.0,54,6,"#232b3d"],["S",-26.0,-104,52.0,54,6,"#39445e",2],["RG",-23.0,-101,46.0,10,4,"rgba(255,255,255,0.12)","rgba(255,255,255,0.03)"],["C",0,-70,16.0,"#0d1118"],["C",0,-70,10.0,"#39445e"],["C",0,-70,4.5,"RC"],["AE",0,-70,19.0,19.0,"RCaa",2],["C",-14.0,-96,7.0,"#0d1118"],["C",-14.0,-96,3.0,"RC"],["C",14.0,-96,7.0,"#0d1118"],["C",14.0,-96,3.0,"RC"]],"titanSpeaker":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-42,-40,84,72,10,"#3d3328"],["R",-42,-40,84,30,10,"#6e5a48"],["S",-42,-40,84,72,10,"rgba(8,12,18,0.55)",3],["RG",-38,-37,76,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-42,-12,84,6,2,"RC"],["R",-52,-34,10,32,4,"#3d3328"],["R",42,-34,10,32,4,"#3d3328"],["C",-47,0,5,"#1a2130"],["C",47,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-37,6,2.5,"#5a6890"],["C",37,6,2.5,"#5a6890"],["R",-54,-44,16,12,4,"#8f9ab5"],["R",38,-44,16,12,4,"#8f9ab5"],["P",0,-34,7,-24,0,-14,-7,-24,"RC"],["R",-9,-54,18,14,4,"#1a2130"],["R",-29.9,-104,59.8,54,6,"#232b3d"],["S",-29.9,-104,59.8,54,6,"#39445e",2],["RG",-26.9,-101,53.8,10,4,"rgba(255,255,255,0.12)","rgba(255,255,255,0.03)"],["C",0,-70,18.4,"#0d1118"],["C",0,-70,11.5,"#39445e"],["C",0,-70,5.175,"RC"],["AE",0,-70,21.849999999999998,21.849999999999998,"RCaa",2],["C",-16.099999999999998,-96,8.049999999999999,"#0d1118"],["C",-16.099999999999998,-96,3.4499999999999997,"RC"],["C",16.099999999999998,-96,8.049999999999999,"#0d1118"],["C",16.099999999999998,-96,3.4499999999999997,"RC"]],"makeup":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#4e2a3c"],["R",-34,-40,68,30,10,"#8a4a6a"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#4e2a3c"],["R",34,-34,10,32,4,"#4e2a3c"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,10,0,6.2832,"#0e1219",3],["C",15,-72,10,"#0d1118"],["C",15,-72,6,"#7ee7ff"],["C",16.5,-72,2.7,"#0d1118"],["C",17,-75,1.5,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-9,-88,3,"#ff5555"],["L",-40,-6,-46,-50,"#8a93b0",3],["C",-46,-58,10,"#c0c8d8"],["C",-46,-58,7,"#e8f0fa"],["C",-49,-61,2,"rgba(255,255,255,0.9)"],["R",32,-18,16,10,2,"#d06090"],["C",40,-13,3,"#f0a0c0"]],"dronepilot":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#2a3b4a"],["R",-34,-40,68,30,10,"#4e6a80"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#2a3b4a"],["R",34,-34,10,32,4,"#2a3b4a"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,12,0,6.2832,"#0e1219",3],["C",15,-72,12,"#0d1118"],["C",15,-72,8,"#7ee7ff"],["C",17.0,-72,3.6,"#0d1118"],["C",17,-75,2.0,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["L",0,-96,-8,-114,"#8a93b0",2.5],["C",-8,-114,3.5,"RC"],["R",-10,-44,20,10,3,"#39445e"],["L",0,-44,0,-64,"#444d66",3],["L",-17,-66,17,-66,"#8a93b0",3.5],["C",0,-66,3,"#ff5555"]],"scientist":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#2a4536"],["R",-34,-40,68,30,10,"#4e7a62"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#2a4536"],["R",34,-34,10,32,4,"#2a4536"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,12,0,6.2832,"#0e1219",3],["C",15,-72,12,"#0d1118"],["C",15,-72,8,"#7ee7ff"],["C",17.0,-72,3.6,"#0d1118"],["C",17,-75,2.0,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-4,-102,7,"#232b3d"],["C",-4,-102,3,"#5a6890"],["C",4,-102,7,"#232b3d"],["C",4,-102,3,"#5a6890"],["R",33,-24,11,26,4,"rgba(190,220,255,0.5)"],["R",33,-10,11,12,3,"#63e68c"],["R",36,-30,5,6,2,"#9fb8d8"],["C",38,-16,1.5,"#aef7c3"],["C",41,-20,1.2,"#aef7c3"]],"gaffer":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#4e4222"],["R",-34,-40,68,30,10,"#8a773e"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#4e4222"],["R",34,-34,10,32,4,"#4e4222"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,12,0,6.2832,"#0e1219",3],["C",15,-72,12,"#0d1118"],["C",15,-72,8,"#7ee7ff"],["C",17.0,-72,3.6,"#0d1118"],["C",17,-75,2.0,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-9,-88,3,"#ff5555"],["R",34,-54,12,10,3,"#1a2130"],["R",28,-72,18,14,3,"#232b3d"],["C",46,-65,5.5,"#fff3b0"],["P",46,-68,82,-88,90,-56,"rgba(255,243,176,0.3)"]],"director":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#252833"],["R",-34,-40,68,30,10,"#43485a"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#252833"],["R",34,-34,10,32,4,"#252833"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,12,0,6.2832,"#0e1219",3],["C",15,-72,12,"#0d1118"],["C",15,-72,8,"#7ee7ff"],["C",17.0,-72,3.6,"#0d1118"],["C",17,-75,2.0,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["R",-18,-116,36,13,2,"#1a2130"],["R",-18,-116,8,13,2,"#dfe3ea"],["R",-3,-116,8,13,2,"#dfe3ea"],["R",12,-116,6.5,13,2,"#dfe3ea"],["R",-18,-103,36,4,2,"#5a6890"],["P",32,-30,56,-38,56,-10,32,-18,"#c0c8d8"],["R",28,-28,6,12,2,"#1a2130"]],"streamer":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#452b35"],["R",-34,-40,68,30,10,"#7a4e5e"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#452b35"],["R",34,-34,10,32,4,"#452b35"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,11,0,6.2832,"#0e1219",3],["C",15,-72,11,"#0d1118"],["C",15,-72,7,"#7ee7ff"],["C",16.75,-72,3.15,"#0d1118"],["C",17,-75,1.75,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-9,-88,3,"#ff5555"],["L",-44,24,-44,-104,"#444d66",3.5],["R",-54,24,20,6,3,"#1a2130"],["AE",-44,-74,19,19,"rgba(255,217,102,0.95)",5],["C",-44,-74,11,"rgba(255,243,176,0.35)"]],"pyrotech":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#453522"],["R",-34,-40,68,30,10,"#7a5e3e"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#453522"],["R",34,-34,10,32,4,"#453522"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,12,0,6.2832,"#0e1219",3],["C",15,-72,12,"#0d1118"],["C",15,-72,8,"#7ee7ff"],["C",17.0,-72,3.6,"#0d1118"],["C",17,-75,2.0,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-9,-88,3,"#ff5555"],["R",-16,-52,32,10,3,"#5a4530"],["R",-19,-76,10,28,4,"#5a4530"],["P",-19,-76,-14,-88,-9,-76,"#ff5555"],["R",9,-76,10,28,4,"#5a4530"],["P",9,-76,14,-88,19,-76,"#ff5555"],["C",-14,-50,3,"rgba(255,224,102,0.6)"]],"boomop":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#323d32"],["R",-34,-40,68,30,10,"#5a6a5a"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#323d32"],["R",34,-34,10,32,4,"#323d32"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,12,0,6.2832,"#0e1219",3],["C",15,-72,12,"#0d1118"],["C",15,-72,8,"#7ee7ff"],["C",17.0,-72,3.6,"#0d1118"],["C",17,-75,2.0,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["L",0,-96,-8,-114,"#8a93b0",2.5],["C",-8,-114,3.5,"RC"],["L",-26,-10,-52,-96,"#444d66",5],["C",-52,-102,8,"#0d1118"],["C",-52,-102,4,"#555f75"],["A",-52,-102,13,-0.7,0.7,"rgba(126,231,255,0.5)",2.5],["L",-26,-10,-20,4,"#444d66",2]],"engineer":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#3a3a40"],["R",-34,-40,68,30,10,"#6a6a70"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#3a3a40"],["R",34,-34,10,32,4,"#3a3a40"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,13,0,6.2832,"#0e1219",3],["C",15,-72,13,"#0d1118"],["C",15,-72,9,"#7ee7ff"],["C",17.25,-72,4.05,"#0d1118"],["C",17,-75,2.25,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-9,-88,3,"#ff5555"],["R",-14,-104,28,10,5,"#ffb84d"],["R",-3,-108,6,10,3,"#e09a2d"],["L",36,-6,50,-28,"#9aa4ba",4],["C",51,-31,4.5,"#9aa4ba"],["E",-40,6,10,13,"#8a6a3a"],["R",-44,-8,8,6,2,"#6a4e28"],["C",-40,0,3,"#ffd966"]],"soundmixer":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#2b2b45"],["R",-34,-40,68,30,10,"#4e4e7a"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#2b2b45"],["R",34,-34,10,32,4,"#2b2b45"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-26.0,-104,52.0,54,6,"#232b3d"],["S",-26.0,-104,52.0,54,6,"#39445e",2],["RG",-23.0,-101,46.0,10,4,"rgba(255,255,255,0.12)","rgba(255,255,255,0.03)"],["C",0,-70,16.0,"#0d1118"],["C",0,-70,10.0,"#39445e"],["C",0,-70,4.5,"RC"],["AE",0,-70,19.0,19.0,"RCaa",2],["C",-14.0,-96,7.0,"#0d1118"],["C",-14.0,-96,3.0,"RC"],["C",14.0,-96,7.0,"#0d1118"],["C",14.0,-96,3.0,"RC"],["R",-28,12,56,22,4,"#1a2130"],["S",-28,12,56,22,4,"#39445e",2],["L",-18,16,-18,30,"#7ee7ff",2.5],["C",-18,16,2.5,"RC"],["L",-7,16,-7,30,"#7ee7ff",2.5],["C",-7,16,2.5,"RC"],["L",4,16,4,30,"#7ee7ff",2.5],["C",4,16,2.5,"RC"],["L",15,16,15,30,"#7ee7ff",2.5],["C",15,16,2.5,"RC"]],"bodyguard":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#1c222c"],["R",-34,-40,68,30,10,"#2e3542"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#1c222c"],["R",34,-34,10,32,4,"#1c222c"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,12,0,6.2832,"#0e1219",3],["C",15,-72,12,"#0d1118"],["C",15,-72,8,"#7ee7ff"],["C",17.0,-72,3.6,"#0d1118"],["C",17,-75,2.0,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-9,-88,3,"#ff5555"],["R",-52,-38,15,46,7,"#8f9ab5"],["AE",-44,-15,10,26,"#c8cfe0",2.5],["C",-44,-15,4.5,"RC"],["R",-16,-104,32,9,4,"#181c26"],["C",-18,-100,3,"#ff5555"]]};;
+const UF_TABLE = {"intern":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#2e3750"],["R",-34,-40,68,30,10,"#55628a"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#2e3750"],["R",34,-34,10,32,4,"#2e3750"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,12,0,6.2832,"#0e1219",3],["C",15,-72,12,"#0d1118"],["C",15,-72,8,"#7ee7ff"],["C",17.0,-72,3.6,"#0d1118"],["C",17,-75,2.0,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-9,-88,3,"#ff5555"],["L",0,-96,-8,-114,"#8a93b0",2.5],["C",-8,-114,3.5,"RC"]],"operator":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#2a3540"],["R",-34,-40,68,30,10,"#4e5f6e"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#2a3540"],["R",34,-34,10,32,4,"#2a3540"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,13.5,0,6.2832,"#0e1219",3],["C",15,-72,13.5,"#0d1118"],["C",15,-72,9.5,"#7ee7ff"],["C",17.375,-72,4.275,"#0d1118"],["C",17,-75,2.375,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-9,-88,3,"#ff5555"],["C",-4,-102,7,"#232b3d"],["C",-4,-102,3,"#5a6890"],["C",4,-102,7,"#232b3d"],["C",4,-102,3,"#5a6890"]],"steadicam":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#332e42"],["R",-34,-40,68,30,10,"#5d5470"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#332e42"],["R",34,-34,10,32,4,"#332e42"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,12.5,0,6.2832,"#0e1219",3],["C",15,-72,12.5,"#0d1118"],["C",15,-72,8.5,"#7ee7ff"],["C",17.125,-72,3.825,"#0d1118"],["C",17,-75,2.125,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-17,-72,6.375,"#0d1118"],["C",-17,-72,4.25,"#7ee7ff"],["L",30,-22,52,-36,"#444d66",5],["L",52,-36,52,-8,"#8a93b0",4],["R",40,-46,24,18,3,"#1a2130"],["R",43,-43,18,12,2,"#7ee7ff"]],"snipercam":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#2a3d31"],["R",-34,-40,68,30,10,"#4e6e58"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#2a3d31"],["R",34,-34,10,32,4,"#2a3d31"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,11,0,6.2832,"#0e1219",3],["C",15,-72,11,"#0d1118"],["C",15,-72,7,"#7ee7ff"],["C",16.75,-72,3.15,"#0d1118"],["C",17,-75,1.75,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-9,-88,3,"#ff5555"],["R",17,-78,28,12,3,"#232b3d"],["C",47,-72,6,"#0d1118"],["C",47,-72,3,"#7ee7ff"],["R",-16,-102,26,8,3,"#1a2130"],["C",12,-98,3,"#7ee7ff"],["L",20,-72,20,-66,"#444d66",2.5],["L",20,-66,34,-58,"#444d66",2.5]],"titanCam":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-42,-40,84,72,10,"#3d362e"],["R",-42,-40,84,30,10,"#6e6255"],["S",-42,-40,84,72,10,"rgba(8,12,18,0.55)",3],["RG",-38,-37,76,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-42,-12,84,6,2,"RC"],["R",-52,-34,10,32,4,"#3d362e"],["R",42,-34,10,32,4,"#3d362e"],["C",-47,0,5,"#1a2130"],["C",47,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-37,6,2.5,"#5a6890"],["C",37,6,2.5,"#5a6890"],["R",-54,-44,16,12,4,"#8f9ab5"],["R",38,-44,16,12,4,"#8f9ab5"],["P",0,-34,7,-24,0,-14,-7,-24,"RC"],["R",-9,-54,18,14,4,"#1a2130"],["R",-20,-96,40,46,6,"#1a2130"],["RG",-18,-92,36,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",20,-72,19,0,6.2832,"#0e1219",3],["C",20,-72,19,"#0d1118"],["C",20,-72,15,"#7ee7ff"],["C",23.75,-72,6.75,"#0d1118"],["C",22,-75,3.75,"rgba(255,255,255,0.8)"],["C",-14,-58,2,"#5a6890"],["C",14,-58,2,"#5a6890"],["C",-14,-88,3,"#ff5555"],["R",-22,-100,44,9,3,"#8f9ab5"],["C",-22,-72,11.25,"#0d1118"],["C",-22,-72,7.5,"#7ee7ff"]],"hacker":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#2b3045"],["R",-34,-40,68,30,10,"#4e5570"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#2b3045"],["R",34,-34,10,32,4,"#2b3045"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-28,-98,56,48,5,"#253048"],["S",-28,-98,56,48,5,"rgba(8,12,18,0.5)",2.5],["R",-24,-92,48,34,3,"#0d1118"],["R",-21,-89,42,28,2,"#b06bff"],["RG",-21,-89,42,14,2,"rgba(255,255,255,0.18)","rgba(255,255,255,0.03)"],["L",14,-98,24,-117,"#8a93b0",2.5],["C",24,-117,3,"RC"],["L",-21,-80,21,-80,"rgba(255,255,255,0.3)",1.5],["L",-14,-89,-14,-61,"rgba(255,255,255,0.2)",1.2],["L",-14,-70,21,-70,"rgba(255,255,255,0.3)",1.5],["C",13,-64,2.5,"#4dff8a"],["L",-20,-50,-26,-40,"#444d66",2],["L",20,-50,26,-40,"#444d66",2]],"titanTV":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-42,-40,84,72,10,"#33383f"],["R",-42,-40,84,30,10,"#5a6070"],["S",-42,-40,84,72,10,"rgba(8,12,18,0.55)",3],["RG",-38,-37,76,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-42,-12,84,6,2,"RC"],["R",-52,-34,10,32,4,"#33383f"],["R",42,-34,10,32,4,"#33383f"],["C",-47,0,5,"#1a2130"],["C",47,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-37,6,2.5,"#5a6890"],["C",37,6,2.5,"#5a6890"],["R",-54,-44,16,12,4,"#8f9ab5"],["R",38,-44,16,12,4,"#8f9ab5"],["P",0,-34,7,-24,0,-14,-7,-24,"RC"],["R",-9,-54,18,14,4,"#1a2130"],["R",-28,-98,56,48,5,"#253048"],["S",-28,-98,56,48,5,"rgba(8,12,18,0.5)",2.5],["R",-24,-92,48,34,3,"#0d1118"],["R",-21,-89,42,28,2,"#7ee7ff"],["RG",-21,-89,42,14,2,"rgba(255,255,255,0.18)","rgba(255,255,255,0.03)"],["L",-14,-98,-23,-117,"#8a93b0",2.5],["C",-23,-117,3,"RC"],["L",14,-98,23,-117,"#8a93b0",2.5],["C",23,-117,3,"RC"],["S",-28,-98,56,48,5,"RCaa",2.5]],"speaker":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#2d3140"],["R",-34,-40,68,30,10,"#52586a"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#2d3140"],["R",34,-34,10,32,4,"#2d3140"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-26.0,-104,52.0,54,6,"#232b3d"],["S",-26.0,-104,52.0,54,6,"#39445e",2],["RG",-23.0,-101,46.0,10,4,"rgba(255,255,255,0.12)","rgba(255,255,255,0.03)"],["C",0,-70,16.0,"#0d1118"],["C",0,-70,10.0,"#39445e"],["C",0,-70,4.5,"RC"],["AE",0,-70,19.0,19.0,"RCaa",2],["C",-14.0,-96,7.0,"#0d1118"],["C",-14.0,-96,3.0,"RC"],["C",14.0,-96,7.0,"#0d1118"],["C",14.0,-96,3.0,"RC"]],"titanSpeaker":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-42,-40,84,72,10,"#3d3328"],["R",-42,-40,84,30,10,"#6e5a48"],["S",-42,-40,84,72,10,"rgba(8,12,18,0.55)",3],["RG",-38,-37,76,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-42,-12,84,6,2,"RC"],["R",-52,-34,10,32,4,"#3d3328"],["R",42,-34,10,32,4,"#3d3328"],["C",-47,0,5,"#1a2130"],["C",47,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-37,6,2.5,"#5a6890"],["C",37,6,2.5,"#5a6890"],["R",-54,-44,16,12,4,"#8f9ab5"],["R",38,-44,16,12,4,"#8f9ab5"],["P",0,-34,7,-24,0,-14,-7,-24,"RC"],["R",-9,-54,18,14,4,"#1a2130"],["R",-29.9,-104,59.8,54,6,"#232b3d"],["S",-29.9,-104,59.8,54,6,"#39445e",2],["RG",-26.9,-101,53.8,10,4,"rgba(255,255,255,0.12)","rgba(255,255,255,0.03)"],["C",0,-70,18.4,"#0d1118"],["C",0,-70,11.5,"#39445e"],["C",0,-70,5.175,"RC"],["AE",0,-70,21.849999999999998,21.849999999999998,"RCaa",2],["C",-16.099999999999998,-96,8.049999999999999,"#0d1118"],["C",-16.099999999999998,-96,3.4499999999999997,"RC"],["C",16.099999999999998,-96,8.049999999999999,"#0d1118"],["C",16.099999999999998,-96,3.4499999999999997,"RC"]],"makeup":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#4e2a3c"],["R",-34,-40,68,30,10,"#8a4a6a"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#4e2a3c"],["R",34,-34,10,32,4,"#4e2a3c"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,10,0,6.2832,"#0e1219",3],["C",15,-72,10,"#0d1118"],["C",15,-72,6,"#7ee7ff"],["C",16.5,-72,2.7,"#0d1118"],["C",17,-75,1.5,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-9,-88,3,"#ff5555"],["L",-40,-6,-46,-50,"#8a93b0",3],["C",-46,-58,10,"#c0c8d8"],["C",-46,-58,7,"#e8f0fa"],["C",-49,-61,2,"rgba(255,255,255,0.9)"],["R",32,-18,16,10,2,"#d06090"],["C",40,-13,3,"#f0a0c0"]],"dronepilot":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#2a3b4a"],["R",-34,-40,68,30,10,"#4e6a80"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#2a3b4a"],["R",34,-34,10,32,4,"#2a3b4a"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,12,0,6.2832,"#0e1219",3],["C",15,-72,12,"#0d1118"],["C",15,-72,8,"#7ee7ff"],["C",17.0,-72,3.6,"#0d1118"],["C",17,-75,2.0,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["L",0,-96,-8,-114,"#8a93b0",2.5],["C",-8,-114,3.5,"RC"],["R",-10,-44,20,10,3,"#39445e"],["L",0,-44,0,-64,"#444d66",3],["L",-17,-66,17,-66,"#8a93b0",3.5],["C",0,-66,3,"#ff5555"]],"scientist":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#2a4536"],["R",-34,-40,68,30,10,"#4e7a62"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#2a4536"],["R",34,-34,10,32,4,"#2a4536"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,12,0,6.2832,"#0e1219",3],["C",15,-72,12,"#0d1118"],["C",15,-72,8,"#7ee7ff"],["C",17.0,-72,3.6,"#0d1118"],["C",17,-75,2.0,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-4,-102,7,"#232b3d"],["C",-4,-102,3,"#5a6890"],["C",4,-102,7,"#232b3d"],["C",4,-102,3,"#5a6890"],["R",33,-24,11,26,4,"rgba(190,220,255,0.5)"],["R",33,-10,11,12,3,"#63e68c"],["R",36,-30,5,6,2,"#9fb8d8"],["C",38,-16,1.5,"#aef7c3"],["C",41,-20,1.2,"#aef7c3"]],"gaffer":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#4e4222"],["R",-34,-40,68,30,10,"#8a773e"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#4e4222"],["R",34,-34,10,32,4,"#4e4222"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,12,0,6.2832,"#0e1219",3],["C",15,-72,12,"#0d1118"],["C",15,-72,8,"#7ee7ff"],["C",17.0,-72,3.6,"#0d1118"],["C",17,-75,2.0,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-9,-88,3,"#ff5555"],["R",34,-54,12,10,3,"#1a2130"],["R",28,-72,18,14,3,"#232b3d"],["C",46,-65,5.5,"#fff3b0"],["P",46,-68,82,-88,90,-56,"rgba(255,243,176,0.3)"]],"director":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#252833"],["R",-34,-40,68,30,10,"#43485a"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#252833"],["R",34,-34,10,32,4,"#252833"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,12,0,6.2832,"#0e1219",3],["C",15,-72,12,"#0d1118"],["C",15,-72,8,"#7ee7ff"],["C",17.0,-72,3.6,"#0d1118"],["C",17,-75,2.0,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["R",-18,-116,36,13,2,"#1a2130"],["R",-18,-116,8,13,2,"#dfe3ea"],["R",-3,-116,8,13,2,"#dfe3ea"],["R",12,-116,6.5,13,2,"#dfe3ea"],["R",-18,-103,36,4,2,"#5a6890"],["P",32,-30,56,-38,56,-10,32,-18,"#c0c8d8"],["R",28,-28,6,12,2,"#1a2130"]],"streamer":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#452b35"],["R",-34,-40,68,30,10,"#7a4e5e"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#452b35"],["R",34,-34,10,32,4,"#452b35"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,11,0,6.2832,"#0e1219",3],["C",15,-72,11,"#0d1118"],["C",15,-72,7,"#7ee7ff"],["C",16.75,-72,3.15,"#0d1118"],["C",17,-75,1.75,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-9,-88,3,"#ff5555"],["L",-44,24,-44,-104,"#444d66",3.5],["R",-54,24,20,6,3,"#1a2130"],["AE",-44,-74,19,19,"rgba(255,217,102,0.95)",5],["C",-44,-74,11,"rgba(255,243,176,0.35)"]],"pyrotech":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#453522"],["R",-34,-40,68,30,10,"#7a5e3e"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#453522"],["R",34,-34,10,32,4,"#453522"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,12,0,6.2832,"#0e1219",3],["C",15,-72,12,"#0d1118"],["C",15,-72,8,"#7ee7ff"],["C",17.0,-72,3.6,"#0d1118"],["C",17,-75,2.0,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-9,-88,3,"#ff5555"],["R",-16,-52,32,10,3,"#5a4530"],["R",-19,-76,10,28,4,"#5a4530"],["P",-19,-76,-14,-88,-9,-76,"#ff5555"],["R",9,-76,10,28,4,"#5a4530"],["P",9,-76,14,-88,19,-76,"#ff5555"],["C",-14,-50,3,"rgba(255,224,102,0.6)"]],"boomop":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#323d32"],["R",-34,-40,68,30,10,"#5a6a5a"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#323d32"],["R",34,-34,10,32,4,"#323d32"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,12,0,6.2832,"#0e1219",3],["C",15,-72,12,"#0d1118"],["C",15,-72,8,"#7ee7ff"],["C",17.0,-72,3.6,"#0d1118"],["C",17,-75,2.0,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["L",0,-96,-8,-114,"#8a93b0",2.5],["C",-8,-114,3.5,"RC"],["L",-26,-10,-52,-96,"#444d66",5],["C",-52,-102,8,"#0d1118"],["C",-52,-102,4,"#555f75"],["A",-52,-102,13,-0.7,0.7,"rgba(126,231,255,0.5)",2.5],["L",-26,-10,-20,4,"#444d66",2]],"engineer":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#3a3a40"],["R",-34,-40,68,30,10,"#6a6a70"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#3a3a40"],["R",34,-34,10,32,4,"#3a3a40"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,13,0,6.2832,"#0e1219",3],["C",15,-72,13,"#0d1118"],["C",15,-72,9,"#7ee7ff"],["C",17.25,-72,4.05,"#0d1118"],["C",17,-75,2.25,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-9,-88,3,"#ff5555"],["R",-14,-104,28,10,5,"#ffb84d"],["R",-3,-108,6,10,3,"#e09a2d"],["L",36,-6,50,-28,"#9aa4ba",4],["C",51,-31,4.5,"#9aa4ba"],["E",-40,6,10,13,"#8a6a3a"],["R",-44,-8,8,6,2,"#6a4e28"],["C",-40,0,3,"#ffd966"]],"soundmixer":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#2b2b45"],["R",-34,-40,68,30,10,"#4e4e7a"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#2b2b45"],["R",34,-34,10,32,4,"#2b2b45"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-26.0,-104,52.0,54,6,"#232b3d"],["S",-26.0,-104,52.0,54,6,"#39445e",2],["RG",-23.0,-101,46.0,10,4,"rgba(255,255,255,0.12)","rgba(255,255,255,0.03)"],["C",0,-70,16.0,"#0d1118"],["C",0,-70,10.0,"#39445e"],["C",0,-70,4.5,"RC"],["AE",0,-70,19.0,19.0,"RCaa",2],["C",-14.0,-96,7.0,"#0d1118"],["C",-14.0,-96,3.0,"RC"],["C",14.0,-96,7.0,"#0d1118"],["C",14.0,-96,3.0,"RC"],["R",-28,12,56,22,4,"#1a2130"],["S",-28,12,56,22,4,"#39445e",2],["L",-18,16,-18,30,"#7ee7ff",2.5],["C",-18,16,2.5,"RC"],["L",-7,16,-7,30,"#7ee7ff",2.5],["C",-7,16,2.5,"RC"],["L",4,16,4,30,"#7ee7ff",2.5],["C",4,16,2.5,"RC"],["L",15,16,15,30,"#7ee7ff",2.5],["C",15,16,2.5,"RC"]],"bodyguard":[["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],["R",-34,-40,68,72,10,"#1c222c"],["R",-34,-40,68,30,10,"#2e3542"],["S",-34,-40,68,72,10,"rgba(8,12,18,0.55)",3],["RG",-30,-37,60,13,5,"rgba(255,255,255,0.14)","rgba(255,255,255,0.03)"],["C",-13,20,2.5,"#5a6890"],["C",13,20,2.5,"#5a6890"],["R",-34,-12,68,6,2,"RC"],["R",-44,-34,10,32,4,"#1c222c"],["R",34,-34,10,32,4,"#1c222c"],["C",-39,0,5,"#1a2130"],["C",39,0,5,"#1a2130"],["C",0,-24,4,"#7ee7ff"],["C",-29,6,2.5,"#5a6890"],["C",29,6,2.5,"#5a6890"],["R",-9,-54,18,14,4,"#1a2130"],["R",-15,-96,30,46,6,"#1a2130"],["RG",-13,-92,26,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["A",15,-72,12,0,6.2832,"#0e1219",3],["C",15,-72,12,"#0d1118"],["C",15,-72,8,"#7ee7ff"],["C",17.0,-72,3.6,"#0d1118"],["C",17,-75,2.0,"rgba(255,255,255,0.8)"],["C",-9,-58,2,"#5a6890"],["C",9,-58,2,"#5a6890"],["C",-9,-88,3,"#ff5555"],["R",-52,-38,15,46,7,"#8f9ab5"],["AE",-44,-15,10,26,"#c8cfe0",2.5],["C",-44,-15,4.5,"RC"],["R",-16,-104,32,9,4,"#181c26"],["C",-18,-100,3,"#ff5555"]],"striderSpeaker":[["L",9,0,28,22,"#1a2130",4.5],["L",28,22,34,44,"#1a2130",5.5],["C",28,22,3.5,"#1a2130"],["R",29,42,10,6,2,"#0e1219"],["L",-9,0,-28,22,"#1a2130",4.5],["L",-28,22,-34,44,"#1a2130",5.5],["C",-28,22,3.5,"#1a2130"],["R",-39,42,10,6,2,"#0e1219"],["R",-13,-20,26,26,6,"#2d3a2c"],["RG",-10,-17,20,8,4,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["C",-6,-6,2,"#5a6890"],["C",6,-6,2,"#5a6890"],["R",-6,-36,12,18,4,"#2d3a2c"],["R",-6,-36,12,6,3,"#4e6e48"],["R",-19,-84,38,32,5,"#232b3d"],["S",-19,-84,38,32,5,"#39445e",2],["RG",-16,-81,32,8,3,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["C",0,-66,10.45,"#0d1118"],["C",0,-66,6.6499999999999995,"#39445e"],["C",0,-66,3.04,"RC"],["AE",0,-66,12.35,12.35,"RCaa",2],["C",-11,-78,4.5,"#0d1118"],["C",-11,-78,2,"RC"],["C",11,-78,4.5,"#0d1118"],["C",11,-78,2,"RC"]],"striderCamera":[["L",9,0,28,22,"#1a2130",4.5],["L",28,22,34,44,"#1a2130",5.5],["C",28,22,3.5,"#1a2130"],["R",29,42,10,6,2,"#0e1219"],["L",-9,0,-28,22,"#1a2130",4.5],["L",-28,22,-34,44,"#1a2130",5.5],["C",-28,22,3.5,"#1a2130"],["R",-39,42,10,6,2,"#0e1219"],["R",-13,-20,26,26,6,"#26313a"],["RG",-10,-17,20,8,4,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["C",-6,-6,2,"#5a6890"],["C",6,-6,2,"#5a6890"],["R",-6,-36,12,18,4,"#26313a"],["R",-6,-36,12,6,3,"#48626e"],["R",-15.2,-80.0,32.3,28.5,5,"#232b3d"],["S",-15.2,-80,32.3,28.5,5,"rgba(8,12,18,0.55)",2.5],["A",18,-50,7.6,0,6.2832,"#0d1118",4.4],["C",20,-50,5.699999999999999,"#0d1118"],["C",20,-50,3.8,"#7ee7ff"],["C",18.5,-52,1.4,"rgba(255,255,255,0.85)"],["C",-10,-76,3,"#ff5555"],["R",-19,-84,36.1,8,3,"#39445e"]],"striderPlasma":[["L",9,0,28,22,"#1a2130",4.5],["L",28,22,34,44,"#1a2130",5.5],["C",28,22,3.5,"#1a2130"],["R",29,42,10,6,2,"#0e1219"],["L",-9,0,-28,22,"#1a2130",4.5],["L",-28,22,-34,44,"#1a2130",5.5],["C",-28,22,3.5,"#1a2130"],["R",-39,42,10,6,2,"#0e1219"],["R",-13,-20,26,26,6,"#2c2440"],["RG",-10,-17,20,8,4,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["C",-6,-6,2,"#5a6890"],["C",6,-6,2,"#5a6890"],["R",-6,-36,12,18,4,"#2c2440"],["R",-6,-36,12,6,3,"#5c4a8a"],["R",-16.0,-80.0,34.0,30.0,5,"#232b3d"],["S",-16.0,-80,34.0,30.0,5,"rgba(8,12,18,0.55)",2.5],["A",18,-50,8.0,0,6.2832,"#0d1118",4.4],["C",20,-50,6.0,"#0d1118"],["C",20,-50,4.0,"#b06bff"],["C",18.5,-52,1.4,"rgba(255,255,255,0.85)"],["C",-10,-76,3,"#ff5555"],["R",-19,-84,38.0,8,3,"#39445e"],["C",24,-44,8,"#b06bff"],["AE",24,-44,12,12,"#b06bffaa",2],["C",22,-46,3,"#ffffffcc"]],"tvStrider":[["L",9,0,28,22,"#1a2130",4.5],["L",28,22,34,44,"#1a2130",5.5],["C",28,22,3.5,"#1a2130"],["R",29,42,10,6,2,"#0e1219"],["L",-9,0,-28,22,"#1a2130",4.5],["L",-28,22,-34,44,"#1a2130",5.5],["C",-28,22,3.5,"#1a2130"],["R",-39,42,10,6,2,"#0e1219"],["R",-13,-20,26,26,6,"#2d3140"],["RG",-10,-17,20,8,4,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["C",-6,-6,2,"#5a6890"],["C",6,-6,2,"#5a6890"],["R",-6,-36,12,18,4,"#2d3140"],["R",-6,-36,12,6,3,"#52586a"],["R",-20,-88,40,34,5,"#232b3d"],["S",-20,-88,40,34,5,"rgba(8,12,18,0.5)",2.5],["R",-16,-84,32,26,3,"#0d1118"],["R",-16,-84,32,26,3,"#7ee7ff"],["RG",-16,-84,32,10,2,"rgba(255,255,255,0.18)","rgba(255,255,255,0.03)"],["L",-10,-88,-16,-100,"#8a93b0",2.5],["C",-16,-100,3,"RC"],["L",10,-88,16,-100,"#8a93b0",2.5],["C",16,-100,3,"RC"]],"holoCam":[["L",9,0,28,22,"#1a2130",4.5],["L",28,22,34,44,"#1a2130",5.5],["C",28,22,3.5,"#1a2130"],["R",29,42,10,6,2,"#0e1219"],["L",-9,0,-28,22,"#1a2130",4.5],["L",-28,22,-34,44,"#1a2130",5.5],["C",-28,22,3.5,"#1a2130"],["R",-39,42,10,6,2,"#0e1219"],["R",-13,-20,26,26,6,"#1f3530"],["RG",-10,-17,20,8,4,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["C",-6,-6,2,"#5a6890"],["C",6,-6,2,"#5a6890"],["R",-6,-36,12,18,4,"#1f3530"],["R",-6,-36,12,6,3,"#3a6e5e"],["R",-20,-88,40,34,5,"#232b3d"],["S",-20,-88,40,34,5,"rgba(8,12,18,0.5)",2.5],["R",-16,-84,32,26,3,"#0d1118"],["R",-16,-84,32,26,3,"#7dff8a"],["RG",-16,-84,32,10,2,"rgba(255,255,255,0.18)","rgba(255,255,255,0.03)"],["L",-10,-88,-16,-100,"#8a93b0",2.5],["C",-16,-100,3,"RC"],["L",10,-88,16,-100,"#8a93b0",2.5],["C",16,-100,3,"RC"],["S",-20,-88,40,34,5,"#7dff8aaa",2.5],["R",-16,-84,32,26,3,"rgba(125,255,138,0.55)"],["RG",-16,-84,32,10,2,"rgba(255,255,255,0.25)","rgba(255,255,255,0.03)"]],"tvOverlord":[["L",9,0,28,22,"#1a2130",4.5],["L",28,22,34,44,"#1a2130",5.5],["C",28,22,3.5,"#1a2130"],["R",29,42,10,6,2,"#0e1219"],["L",-9,0,-28,22,"#1a2130",4.5],["L",-28,22,-34,44,"#1a2130",5.5],["C",-28,22,3.5,"#1a2130"],["R",-39,42,10,6,2,"#0e1219"],["R",-13,-20,26,26,6,"#2b2233"],["RG",-10,-17,20,8,4,"rgba(255,255,255,0.15)","rgba(255,255,255,0.03)"],["C",-6,-6,2,"#5a6890"],["C",6,-6,2,"#5a6890"],["R",-6,-36,12,18,4,"#2b2233"],["R",-6,-36,12,6,3,"#55406a"],["R",-20,-88,40,34,5,"#232b3d"],["S",-20,-88,40,34,5,"rgba(8,12,18,0.5)",2.5],["R",-16,-84,32,26,3,"#0d1118"],["R",-16,-84,32,26,3,"#ff66cc"],["RG",-16,-84,32,10,2,"rgba(255,255,255,0.18)","rgba(255,255,255,0.03)"],["L",-10,-88,-16,-100,"#8a93b0",2.5],["C",-16,-100,3,"RC"],["L",10,-88,16,-100,"#8a93b0",2.5],["C",16,-100,3,"RC"],["S",-20,-88,40,34,5,"#ff66ccaa",2.5],["R",-24,-90,48,8,4,"#55406a"],["C",0,-94,4,"RC"],["L",-20,-53,20,-53,"#ff66cc66",1.5],["L",9,0,32,24,"#3a2f45",5],["L",32,24,38,44,"#3a2f45",6],["C",32,24,3.5,"#3a2f45"],["R",33,42,10,6,2,"#0e1219"],["L",-9,0,-32,24,"#3a2f45",5],["L",-32,24,-38,44,"#3a2f45",6],["C",-32,24,3.5,"#3a2f45"],["R",-43,42,10,6,2,"#0e1219"]]};
 
 function drawUnitFigure(ctx, unit, x, y, size, noEmoji, scaleMul) {
   const rc = RARITY_COLOR[unit.rarity] || '#ffd966';
@@ -2547,6 +2810,7 @@ class Game {
           this.money -= t.upgradeCost;
           t.upgrade();
           this.refreshAuras();
+          Quests.add('upgrades', 1);
           Sound.upgrade();
           this.updateUI();
         } else { Sound.error(); this.toast(T('Не хватает денег на улучшение')); }
@@ -2584,6 +2848,7 @@ class Game {
         if (this.grid[r][c]) { Sound.error(); this.toast(T('Клетка занята')); return; }
       }
       const h = new Hero(this, col, row, unit);
+      Quests.add('places', 1);
       this.heroes.push(h);
       for (let dy = 0; dy < ch; dy++) for (let dx = 0; dx < cw; dx++) this.grid[row + dy][col + dx] = h;
       this.money -= price;
@@ -2698,6 +2963,7 @@ class Game {
         this.money -= t.upgradeCost;
         t.upgrade();
         this.refreshAuras();
+        Quests.add('upgrades', 1);
         Sound.upgrade();
         this.updateUI();
       } else { Sound.error(); this.toast('Не хватает денег на улучшение (' + t.upgradeCost + '¢)'); }
@@ -2769,6 +3035,12 @@ class Game {
         this.money += Math.round(reward);
         this.kills++;
         this.waveKills++;
+        Quests.add('kills', 1);
+        Quests.add('coinsEarned', Math.round(reward));
+        if (e.def.boss) {
+          SaveManager.addCrystals(1);
+          this.floaters.push({ x: e.x, y: e.y - 26, text: '+1💎', life: 1.2, maxLife: 1.2, color: '#7ee7ff' });
+        }
         e.onDeath();
         this.enemies.splice(i, 1);
         this.updateUI();
@@ -2806,9 +3078,12 @@ class Game {
     this.baseHp = Math.min(this.baseMaxHp, this.baseHp + BASE_WAVE_REGEN);
     const bonus = Math.round((40 + Math.pow(this.wave, 1.7) * 6) * (this.difficulty.rewardMul || 1));
     this.money += bonus;
+    Quests.add('waves', 1);
+    Quests.add('coinsEarned', bonus);
     this._farmCash = 0;
     for (const h of this.heroes) h.onWaveEnd();
     const farmCash = this._farmCash;
+    Quests.add('coinsEarned', farmCash);
     if (this.difficulty.endless && !this.gameOver) {
       const gain = 20 + this.wave + (this.wave % 5 === 0 ? 50 : 0);
       this.runCoinsEarned = (this.runCoinsEarned || 0) + gain;
@@ -2833,10 +3108,12 @@ class Game {
     if (win) coins = this.difficulty.winCoins || 350;
     SaveManager.addCoins(coins);
     if (win) Sound.victory(); else Sound.defeat();
+    if (win) { Quests.add('wins', 1); SaveManager.addCrystals(5); }
     if (this.difficulty.endless) {
       const survived = Math.max(0, this.wave - 1);
       if (survived > (SaveManager.data.endlessRecord || 0)) {
         SaveManager.data.endlessRecord = survived;
+        SaveManager.addCrystals(Math.max(1, Math.floor(survived / 10)));
         SaveManager.save();
       }
     }
@@ -3312,6 +3589,7 @@ const App = {
   },
   init() {
     SaveManager.load();
+    Quests.ensure();
     installLangObserver();
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => applyStaticLang());
     else applyStaticLang();
@@ -3335,6 +3613,11 @@ const App = {
     ['metaCoinsLobby', 'metaCoinsInventory', 'metaCoinsUnitSelect', 'metaCoinsGacha', 'metaCoinsIndex'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.textContent = c;
+    });
+    const cr = SaveManager.crystals;
+    ['metaCrystalsLobby', 'metaCrystalsShop', 'metaCrystalsQuests'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = cr;
     });
     const rec = SaveManager.data.endlessRecord || 0;
     const badge = document.getElementById('recordBadge');
@@ -3544,9 +3827,10 @@ const App = {
     }
   },
   rollUnit() {
-    const total = UNITS.reduce((sum, u) => sum + u.dropChance, 0);
+    const pool = UNITS.filter(u => !u.shopOnly);
+    const total = pool.reduce((sum, u) => sum + u.dropChance, 0);
     let r = Math.random() * total;
-    for (const u of UNITS) { r -= u.dropChance; if (r <= 0) return u; }
+    for (const u of pool) { r -= u.dropChance; if (r <= 0) return u; }
     return UNITS[0];
   },
   rollUnitBox(boxId) {
@@ -3556,7 +3840,7 @@ const App = {
     const r = Math.random();
     for (const [k, p] of Object.entries(box.rates)) { acc += p; if (r <= acc) { rar = k; break; } }
     const pool = stock.filter(u => u.rarity === rar);
-    const from = pool.length ? pool : UNITS.filter(u => u.rarity === rar);
+    const from = pool.length ? pool : UNITS.filter(u => u.rarity === rar && !u.shopOnly);
     return from[Math.floor(Math.random() * from.length)] || UNITS[0];
   },
   renderBoxTabs() {
@@ -3673,9 +3957,11 @@ const App = {
     this.lobby.stop();
     this.invFilter = 'all';
     this.invSearch = '';
+    this.invTab = 'units';
     document.getElementById('inventorySearch').value = '';
     this.renderInventoryFilters();
-    this.renderInventory();
+    this.renderInvTabs();
+    this.renderInvContent();
     this.renderLoadoutBar('loadoutBar');
     UI.showScreen('inventoryScreen');
     this.refreshMeta();
@@ -3965,6 +4251,191 @@ const App = {
     if (res.ok) { Sound.upgrade(); UI.toast(res.msg); input.value = ''; this.refreshMeta(); }
     else { Sound.error(); UI.toast(res.msg); }
   },
+  renderInvTabs() {
+    const wrap = document.getElementById('invTabs');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    const tabs = [['units', T('Юниты')], ['items', T('📦 Вещи')]];
+    for (const [id, label] of tabs) {
+      const btn = document.createElement('button');
+      btn.className = 'filter-btn' + (this.invTab === id ? ' active' : '');
+      btn.textContent = label;
+      btn.addEventListener('click', () => {
+        this.invTab = id;
+        this.renderInvTabs();
+        this.renderInvContent();
+      });
+      wrap.appendChild(btn);
+    }
+  },
+  renderInvContent() {
+    if (this.invTab === 'items') this.renderItems();
+    else this.renderInventory();
+  },
+  cratePoolHTML(crate) {
+    return crate.units.map(uid => {
+      const u = UNITS.find(x => x.id === uid);
+      return '<span class="sc-item">' + this.unitAvatarHTML(u, 40) +
+        '<b style="color:' + RARITY_COLOR[u.rarity] + '">' + ((u.dropChance || 0) * 100).toFixed(1) + '%</b>' +
+        '<span style="opacity:.7">' + T(u.name) + '</span></span>';
+    }).join('');
+  },
+  showShop() {
+    this.lobby.stop();
+    this.renderShop();
+    UI.showScreen('shopScreen');
+    this.refreshMeta();
+  },
+  renderShop() {
+    const grid = document.getElementById('shopGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    for (const c of SHOP_CRATES) {
+      const card = document.createElement('div');
+      card.className = 'unit-card crate-card';
+      card.style.borderColor = c.color;
+      card.innerHTML = `
+        <div class="crate-emoji" style="text-shadow:0 0 18px ${c.color}88">${c.emoji}</div>
+        <div class="u-name" style="color:${c.color}">${T(c.name)}</div>
+        <div class="u-desc">${T(c.desc)}</div>
+        <div class="crate-pool">${this.cratePoolHTML(c)}</div>
+        <div class="crate-price">💎 ${c.cost}</div>
+        <div class="u-actions"></div>`;
+      const buy = document.createElement('button');
+      buy.className = 'btn small gold';
+      buy.textContent = T('КУПИТЬ КРЕЙТ');
+      buy.addEventListener('click', () => {
+        if (SaveManager.crystals < c.cost) {
+          Sound.error();
+          UI.toast(fill(T('Не хватает 💎 (нужно %1)'), c.cost));
+          return;
+        }
+        SaveManager.crystals = SaveManager.crystals - c.cost;
+        SaveManager.addItem(c.id, 1);
+        Sound.upgrade();
+        UI.toast(fill(T('%1 куплен! Открой его в разделе «Вещи» инвентаря'), T(c.name)));
+        this.refreshMeta();
+        this.renderShop();
+      });
+      card.querySelector('.u-actions').appendChild(buy);
+      grid.appendChild(card);
+    }
+  },
+  showQuests() {
+    this.lobby.stop();
+    this.renderQuests();
+    UI.showScreen('questsScreen');
+    this.refreshMeta();
+  },
+  renderQuests() {
+    Quests.ensure();
+    const q = SaveManager.data.quests;
+    const dailyGrid = document.getElementById('questsDailyGrid');
+    const triGrid = document.getElementById('questsTriGrid');
+    if (!dailyGrid || !triGrid) return;
+    dailyGrid.innerHTML = ''; triGrid.innerHTML = '';
+    document.getElementById('questsDailyTimer').textContent = Quests.dailyTimeLeft();
+    document.getElementById('questsTriTimer').textContent = Quests.triTimeLeft();
+    for (const scope of ['daily', 'tri']) {
+      const gridEl = scope === 'daily' ? dailyGrid : triGrid;
+      const sel = q[scope + 'Sel'] || [];
+      sel.forEach((qid, i) => {
+        const def = QUEST_DEFS[scope].find(d => d.id === qid);
+        if (!def) return;
+        const prog = Math.min(def.target, Quests.progress(def.type));
+        const done = prog >= def.target;
+        const claimed = q[scope + 'Claimed'][i];
+        const card = document.createElement('div');
+        card.className = 'q-card' + (done ? ' q-done' : '');
+        card.innerHTML = `
+          <div class="q-row"><span class="q-name">${T(def.name)}</span><span class="q-reward">💎 ${def.reward}</span></div>
+          <div class="q-progress"><div class="q-fill" style="width:${Math.round(prog / def.target * 100)}%"></div></div>
+          <div class="q-row"><span class="q-prog">${prog}/${def.target}</span>${claimed
+            ? `<span class="q-claimed">✔ ${T('ЗАБРАНО')}</span>`
+            : `<button class="btn small ${done && !claimed ? 'accent' : ''}" ${done ? '' : 'disabled'}>💎 ${T('ЗАБРАТЬ')}</button>`}</div>`;
+        const btn = card.querySelector('button');
+        if (btn) btn.addEventListener('click', () => this.claimQuest(scope, i));
+        gridEl.appendChild(card);
+      });
+    }
+  },
+  claimQuest(scope, idx) {
+    const reward = Quests.claim(scope, idx);
+    if (reward > 0) { Sound.gachaWin(); this.confetti(); UI.toast(fill(T('+%1 💎'), reward)); }
+    else Sound.error();
+    this.renderQuests();
+    this.refreshMeta();
+  },
+  renderItems() {
+    const grid = document.getElementById('inventoryGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    document.getElementById('inventoryTitle').textContent = T('📦 ВЕЩИ');
+    const any = SHOP_CRATES.some(c => SaveManager.itemCount(c.id) > 0);
+    if (!any) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;opacity:.5">' + T('Крейтов нет — купи их в магазине') + '</div>';
+      return;
+    }
+    for (const c of SHOP_CRATES) {
+      const qty = SaveManager.itemCount(c.id);
+      if (qty <= 0) continue;
+      const card = document.createElement('div');
+      card.className = 'unit-card crate-card';
+      card.style.borderColor = c.color;
+      card.innerHTML = `
+        <div class="crate-emoji" style="text-shadow:0 0 18px ${c.color}88">${c.emoji}</div>
+        <div class="u-name" style="color:${c.color}">${T(c.name)} <small>×${qty}</small></div>
+        <div class="crate-pool">${this.cratePoolHTML(c)}</div>
+        <div class="u-actions"></div>`;
+      const openBtn = document.createElement('button');
+      openBtn.className = 'btn small accent';
+      openBtn.textContent = T('🎁 ОТКРЫТЬ');
+      openBtn.addEventListener('click', (e) => { e.stopPropagation(); this.openCrate(c.id); });
+      card.querySelector('.u-actions').appendChild(openBtn);
+      grid.appendChild(card);
+    }
+  },
+  openCrate(crateId) {
+    const crate = SHOP_CRATES.find(c => c.id === crateId);
+    if (!crate) return;
+    if (!SaveManager.takeItem(crateId)) { Sound.error(); return; }
+    const pool = crate.units.map(id => UNITS.find(u => u.id === id)).filter(Boolean);
+    const total = pool.reduce((s, u) => s + (u.dropChance || 0), 0) || 1;
+    let r = Math.random() * total, unit = pool[0];
+    for (const u of pool) { r -= (u.dropChance || 0); if (r <= 0) { unit = u; break; } }
+    const wasUnlocked = SaveManager.isUnlocked(unit.id);
+    let msg = '';
+    if (!wasUnlocked) {
+      SaveManager.unlock(unit.id);
+      msg = T('🎉 НОВЫЙ ЮНИТ!');
+      this.confetti();
+      Sound.gachaWin();
+    } else {
+      const comp = RARITY_DUP[unit.rarity] || 25;
+      SaveManager.addCoins(comp);
+      msg = fill(T('♻️ Дубликат: +%1 🪙'), comp);
+      Sound.gachaCommon();
+    }
+    const overlay = document.getElementById('crateOverlay');
+    const content = document.getElementById('crateContent');
+    content.innerHTML = `
+      <div class="ud-emoji"><span class="crate-open-emoji" style="text-shadow:0 0 14px ${RARITY_COLOR[unit.rarity]}">${unit.emoji}</span></div>
+      <div class="ud-name" style="color:${RARITY_COLOR[unit.rarity]}">${T(unit.name)}</div>
+      <div class="ud-rarity" style="color:${RARITY_COLOR[unit.rarity]}">${R(unit.rarity)}</div>
+      <div class="ud-ability">${T(crate.name)}</div>
+      <div class="ud-ability" style="color:${wasUnlocked ? '#7fffa0' : '#ffd966'}">${msg}</div>
+      ${unitTagsHTML(unit)}
+      <button class="btn small" id="crateCloseBtn" style="margin-top:6px">${T('ЗАБРАТЬ')}</button>`;
+    content.querySelector('#crateCloseBtn').addEventListener('click', () => {
+      overlay.classList.remove('visible');
+      this.renderItems();
+      if (this.invTab === 'units') this.renderInventory();
+      this.renderLoadoutBar('loadoutBar');
+      this.refreshMeta();
+    });
+    overlay.classList.add('visible');
+    this.refreshMeta();
+  },
   bindMenu() {
     document.getElementById('btnPlay').addEventListener('click', () => this.showUnitSelect());
     document.getElementById('btnGacha').addEventListener('click', () => this.showGacha());
@@ -3972,6 +4443,8 @@ const App = {
       const g = document.getElementById('gachaScreen');
       if (g && g.classList.contains('active')) this.renderGachaStock();
     }, 1000);
+    document.getElementById('btnShop').addEventListener('click', () => this.showShop());
+    document.getElementById('btnQuests').addEventListener('click', () => this.showQuests());
     document.getElementById('btnCollection').addEventListener('click', () => this.showInventory());
     document.getElementById('btnSettings').addEventListener('click', () => this.showSettings());
     document.getElementById('gachaBack').addEventListener('click', () => this.showLobby());
@@ -3982,6 +4455,8 @@ const App = {
     document.getElementById('indexClose').addEventListener('click', closeIndex);
     document.getElementById('indexCloseX').addEventListener('click', closeIndex);
     document.getElementById('inventoryBack').addEventListener('click', () => this.showLobby());
+    document.getElementById('shopBack').addEventListener('click', () => this.showLobby());
+    document.getElementById('questsBack').addEventListener('click', () => this.showLobby());
     document.getElementById('unitSelectBack').addEventListener('click', () => this.showLobby());
     document.getElementById('unitSelectNext').addEventListener('click', () => this.showDifficultySelect());
     document.getElementById('difficultyBack').addEventListener('click', () => this.showUnitSelect());
@@ -4025,7 +4500,11 @@ const App = {
     });
     document.getElementById('inventorySearch').addEventListener('input', (e) => {
       this.invSearch = e.target.value;
-      this.renderInventory();
+      this.renderInvContent();
+    });
+    document.getElementById('crateOverlay').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('crateOverlay'))
+        document.getElementById('crateOverlay').classList.remove('visible');
     });
     document.getElementById('unitDetailOverlay').addEventListener('click', (e) => {
       if (e.target === document.getElementById('unitDetailOverlay'))
