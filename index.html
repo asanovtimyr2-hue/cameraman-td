@@ -199,6 +199,18 @@
     .tower-btn .desc{display:none}
     .loadout-slot{width:68px;height:80px}
   }
+  .side-close{margin-top:10px;margin-right:10px;width:34px;height:34px;border-radius:10px;
+    border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;
+    font-size:15px;cursor:pointer;flex:0 0 auto}
+  .side-close:hover{background:rgba(255,255,255,.2);border-color:#4fc3ff}
+  .sticky-close-row{position:sticky;top:0;z-index:12;height:0;display:flex;justify-content:flex-end}
+  #indexOverlay .panel-head{padding-right:44px}
+  .loadout-summary{margin-top:14px;text-align:center;font-size:.92rem;color:#cfe6ff;
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 14px}
+  .loadout-summary b{color:#ffd966}
+  .diff-card{transition:transform .15s,box-shadow .15s}
+  .diff-card:hover{transform:translateY(-3px)}
+  .diff-card .d-name{letter-spacing:.5px;text-shadow:0 0 14px currentColor}
 </style>
 </head>
 <body>
@@ -268,7 +280,7 @@
     </div>
     <div class="cards-grid" id="inventoryGrid" style="margin-top:8px"></div>
     <div style="margin-top:20px;font-weight:800;letter-spacing:1px;font-size:1rem;text-align:center">
-      БОЕВОЙ ОТРЯД <span style="opacity:.5;font-weight:400">(8 слотов — эти юниты в бою)</span>
+      БОЕВОЙ ОТРЯД <span style="opacity:.5;font-weight:400">(5 слотов — эти юниты в бою)</span>
     </div>
     <div class="loadout-bar" id="loadoutBar"></div>
   </div>
@@ -288,6 +300,7 @@
       Твой боевой отряд (можно менять в инвентаре)
     </div>
     <div class="loadout-bar" id="unitSelectLoadout" style="border-top:none;margin-top:0"></div>
+    <div class="loadout-summary" id="unitSelectSummary"></div>
     <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:24px;justify-content:space-between">
       <button class="btn small" id="unitSelectBack">← ЛОББИ</button>
       <button class="btn accent" id="unitSelectNext" style="min-width:200px">ДАЛЕЕ →</button>
@@ -331,6 +344,7 @@
     <button class="btn small back-btn" id="settingsBack">← ЛОББИ</button>
     <h2 class="panel-title">НАСТРОЙКИ</h2>
     <div class="settings-row"><span>🔊 Звук</span><button class="btn small" id="btnToggleSound">ВКЛ</button></div>
+    <div class="settings-row"><span>🌐 Язык</span><button class="btn small" id="btnLang">🌐 Русский</button></div>
     <div class="settings-row"><span>🎁 Промокод</span>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <input type="text" class="search-input" id="codeInput" style="min-width:140px;padding:8px 12px" placeholder="Введи код">
@@ -378,7 +392,8 @@
 
 <!-- ДЕТАЛИ ЮНИТА -->
 <div class="unit-detail-overlay" id="indexOverlay">
-  <div class="subpanel" style="max-width:940px;width:100%;max-height:86vh;overflow:auto">
+  <div class="subpanel" style="max-width:940px;width:100%;max-height:86vh;overflow:auto;position:relative">
+    <div class="sticky-close-row"><button class="side-close" id="indexCloseX" title="Закрыть">✕</button></div>
     <div class="panel-head">
       <h2 class="panel-title" id="indexTitle">📑 ИНДЕКС ЮНИТОВ</h2>
       <div class="coin-badge"><span class="coin-ico">¢</span> <span id="metaCoinsIndex">0</span></div>
@@ -425,7 +440,289 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
 const LOADOUT_SIZE = 5;
-const GAME_VERSION = 'v2.9-FARMS';
+const GAME_VERSION = 'v2.10-UX';
+
+const DCOL = { easy: '#4dff4d', normal: '#4fc3ff', hard: '#ffb347', insane: '#ff5555', endless: '#c86bff' };
+const I18N_EN = {
+  "Обычный": "Normal",
+  "Необычный": "Uncommon",
+  "Редкий": "Rare",
+  "Эпический": "Epic",
+  "Легендарный": "Legendary",
+  "Мифический": "Mythic",
+  "Без особых способностей": "No special abilities",
+  "🧊 Замедляет врагов своими попаданиями": "🧊 Slows enemies with its hits",
+  "💥 Периодический взрыв по площади": "💥 Periodic area explosion",
+  "⚡ Разгоняет атаки союзников рядом": "⚡ Speeds up attacks of nearby allies",
+  "💖 Лечит союзников вокруг": "💖 Heals nearby allies",
+  "💸 Ферма: приносит деньги в конце каждой волны": "💸 Farm: brings money at the end of each wave",
+  "🌟 Периодически оглушает врагов вокруг": "🌟 Periodically stuns nearby enemies",
+  "💥 Снаряды взрываются по площади": "💥 Shells explode in an area",
+  "Стажёр": "Intern",
+  "Молодой стажёр студии. Первый боец против скибиди.": "Young studio intern. First fighter against skibidi.",
+  "Оператор": "Operator",
+  "Опытный оператор камер. Надёжный и меткий.": "Experienced camera operator. Reliable and precise.",
+  "Стедикамен": "Steadicam",
+  "Очень быстрая стрельба, разгоняет союзников.": "Very fast fire rate, speeds up allies.",
+  "Гримёр": "Makeup Artist",
+  "Латает союзников прямо в бою.": "Cheers up allies mid-battle: clears stun and grants immunity to boss stuns.",
+  "Пилот дрона": "Drone Pilot",
+  "Ведёт огонь с воздуха. Большой радиус.": "Air support. Huge range.",
+  "Учёный": "Scientist",
+  "Ферма. Приносит деньги в конце каждой волны.": "Farm. Brings money at the end of each wave.",
+  "Осветитель": "Gaffer",
+  "Солёные лучи замедляют скибиди.": "Golden rays slow skibidi down.",
+  "Бум-оператор": "Boom Operator",
+  "Звуковые атаки и бафф скорости союзникам.": "Sound attacks and a speed buff for allies.",
+  "Инженер": "Engineer",
+  "Чистая ферма. Не атакует, приносит деньги в конце каждой волны.": "Pure farm. Never attacks, brings money at the end of each wave.",
+  "Режиссёр": "Director",
+  "Командует огнём. Взрывы по площади.": "Commands fire. Area explosions.",
+  "Спикермен": "Speakerman",
+  "Звуковые волны оглушают врагов.": "Sound waves stun enemies.",
+  "Стример": "Streamer",
+  "Аура поддержки БЕЗ ограничений карты. +деньги.": "Support aura with NO map limit. +money.",
+  "Саунд-миксер": "Sound Mixer",
+  "Мощные волны: урон + длинное оглушение.": "Powerful waves: damage + long stun.",
+  "Титан Камерамен": "Titan Cameraman",
+  "Колосс огневой мощи. Один в поле воин.": "Colossus of firepower. One-man army.",
+  "Титан Спикер": "Titan Speakerman",
+  "Сокрушающие волны звука по всей арене.": "Crushing sound waves across the arena.",
+  "Титан ТВ": "Titan TV Man",
+  "Абсолютный чемпион студии. Аура на всю карту.": "Absolute studio champion. Whole-map aura.",
+  "Пиротехник": "Pyrotechnician",
+  "Снаряды взрываются по площади при каждом попадании.": "Shells explode in an area with every hit.",
+  "Снайпер": "Sniper",
+  "Очень дальний и точный огонь. Одна цель — один выстрел.": "Very long and precise fire. One target — one shot.",
+  "Телохранитель": "Bodyguard",
+  "Крепкий боец передовой линии. Огромная прочность.": "Tough front-line fighter. Huge durability.",
+  "Хакер": "Hacker",
+  "Взламывает систему: аура урона и разряд с замедлением.": "Hacks the system: damage aura and slow discharge.",
+  "Обычный Скибиди": "Common Skibidi",
+  "Быстрый Скибиди": "Fast Skibidi",
+  "Большой Скибиди": "Big Skibidi",
+  "Мини-Скибиди": "Mini Skibidi",
+  "Учёный Скибиди": "Scientist Skibidi",
+  "Скибиди-Ниндзя": "Skibidi Ninja",
+  "Скибиди-Мутант": "Skibidi Mutant",
+  "G-Туалет": "G-Toilet",
+  "G-Человек": "G-Man",
+  "Учёный-G-Туалет": "Scientist G-Toilet",
+  "Бронескибиди": "Armored Skibidi",
+  "Призыватель": "Summoner",
+  "Щит-Скибиди": "Shield Skibidi",
+  "Легко": "Easy",
+  "Сложный": "Hard",
+  "Безумный": "Insane",
+  "Бесконечный": "Endless",
+  "Студия": "Studio",
+  "Зигзаг": "Zigzag",
+  "Спираль": "Spiral",
+  "Развилка": "Fork",
+  "Пустыня": "Desert",
+  "Канализация": "Sewers",
+  "Город": "City",
+  "Первый (головной)": "First (front)",
+  "Последний": "Last",
+  "Самый сильный": "Strongest",
+  "Ближайший": "Closest",
+  "💸 Доход": "💰 Income",
+  "ОБОРОНА СТУДИИ": "STUDIO DEFENSE",
+  "▶ ИГРАТЬ": "▶ PLAY",
+  "🎰 ПРИЗЫВ (ГАЧА)": "🎰 SUMMON (GACHA)",
+  "🎒 ИНВЕНТАРЬ": "🎒 INVENTORY",
+  "⚙ НАСТРОЙКИ": "⚙ SETTINGS",
+  "⚡ Рекорд бесконечного:": "⚡ Endless record:",
+  "волн": "waves",
+  "монет": "coins",
+  "СКИБИДИ-ТУАЛЕТЫ ЛОМАЮТ СТУДИЮ · ЗАЩИТИ ЕЁ · ПРОГРЕСС СОХРАНЯЕТСЯ АВТОМАТИЧЕСКИ": "SKIBIDI TOILETS BREAK THE STUDIO · DEFEND IT · PROGRESS IS SAVED AUTOMATICALLY",
+  "← ЛОББИ": "← LOBBY",
+  "← НАЗАД": "← BACK",
+  "ДАЛЕЕ →": "NEXT →",
+  "🚀 В БОЙ": "🚀 BATTLE",
+  "🎰 ПРИЗЫВ": "🎰 SUMMON",
+  "📖 ИНДЕКС": "📖 INDEX",
+  "ШАНСЫ": "ODDS",
+  "♻️ АВТО-ПРОДАЖА ДУБЛЕЙ": "♻️ AUTO-SELL DUPLICATES",
+  "🔍 Поиск юнита...": "🔍 Search unit...",
+  "БОЕВОЙ ОТРЯД": "BATTLE SQUAD",
+  "(5 слотов — эти юниты в бою)": "(5 slots — these units fight)",
+  "Все юниты игры и их характеристики. Нажми на карточку для подробностей.": "All units of the game and their stats. Click a card for details.",
+  "Юнит ещё не открыт": "Unit not unlocked yet",
+  "НАСТРОЙКИ": "SETTINGS",
+  "🔊 Звук": "🔊 Sound",
+  "ВКЛ": "ON",
+  "ВЫКЛ": "OFF",
+  "🌐 Язык": "🌐 Language",
+  "🎁 Промокод": "🎁 Promo code",
+  "Введи код": "Enter code",
+  "🗑 Сброс прогресса": "🗑 Reset progress",
+  "СБРОС": "RESET",
+  "ПРОГРЕСС СОХРАНЯЕТСЯ АВТОМАТИЧЕСКИ · КАМЕРА, МОТОР!": "PROGRESS IS SAVED AUTOMATICALLY · LIGHTS, CAMERA, ACTION!",
+  "▶ СЛЕДУЮЩАЯ ВОЛНА": "▶ NEXT WAVE",
+  "⏸ ПАУЗА": "⏸ PAUSE",
+  "▶ ПРОДОЛЖИТЬ": "▶ RESUME",
+  "⏩ ×1": "⏩ ×1",
+  "🤖 АВТО-СКИП: ВЫКЛ": "🤖 AUTO-SKIP: OFF",
+  "🤖 АВТО-СКИП: ВКЛ": "🤖 AUTO-SKIP: ON",
+  "🏠 ЛОББИ": "🏠 LOBBY",
+  "Волн пройдено": "Waves completed",
+  "Скбиди уничтожено": "Skibidi destroyed",
+  "Прочность базы": "Base durability",
+  "Монет заработано": "Coins earned",
+  "🔄 ЕЩЁ РАЗ": "🔄 AGAIN",
+  "ЗАКРЫТЬ": "CLOSE",
+  "Все": "All",
+  "юнитов": "units",
+  "павших": "down",
+  "Ур.": "Lv.",
+  "Урон": "Damage",
+  "Радиус": "Range",
+  "Перезарядка": "Reload",
+  "Способность": "Ability",
+  "💰 Доход": "💰 Income",
+  "/волну": "/wave",
+  "Урон: ": "Damage: ",
+  "Радиус: ": "Range: ",
+  "Заряд: ": "Reload: ",
+  "💰 Доход: ": "💰 Income: ",
+  "💰/волну": "💰/wave",
+  " урон · ": " dmg · ",
+  " радиус · ": " range · ",
+  "с заряд": "s reload",
+  " (+": " (+",
+  " → +": " → +",
+  "💰/волну)": "💰/wave)",
+  "ПРОДАТЬ ЗА ": "SELL FOR ",
+  "ПРОДАТЬ ЮНИТ": "SELL UNIT",
+  "(СТАРТОВЫЙ)": "(STARTER)",
+  "Шанс выпадения: %1%": "Drop chance: %1%",
+  "Волна %1 пройдена! +%2💰": "Wave %1 done! +%2💰",
+  "За волну +%1💰 (в банк)": "+%1💰 banked for the wave",
+  "🔧 Фермы принесли +%1💰 за волну": "🔧 Farms brought +%1💰 this wave",
+  "ВОЛНА": "WAVE",
+  "БОСС!": "BOSS!",
+  "⚠ БОСС! %1": "⚠ BOSS! %1",
+  "Приготовься!": "Get ready!",
+  "🏆 ПОБЕДА!": "🏆 VICTORY!",
+  "💀 ПОРАЖЕНИЕ": "💀 DEFEAT",
+  "0 (монеты только за победу)": "0 (coins only for victory)",
+  "+%1💰 (заработано за %2 волн)": "+%1 coins (earned for %2 waves)",
+  "ЮНИТ — УЛУЧШИТЬ/ПРОДАТЬ/СМЕНИТЬ ЦЕЛЬ 🎯 · ЯЧЕЙКА — ПОСТАВИТЬ · НАВЕДИ — СТАТЫ": "UNIT — UPGRADE/SELL/TARGET 🎯 · CELL — PLACE · HOVER — STATS",
+  "1-5: юнит · E: прокачка · Q: продажа · Esc: отмена": "1-5: unit · E: upgrade · Q: sell · Esc: cancel",
+  "ПАУЗА": "PAUSED",
+  "Лимит юнитов: %1": "Unit limit: %1",
+  "Не хватает денег: нужно 💰%1": "Not enough money: need 💰%1",
+  "Не хватает денег": "Not enough money",
+  "Не хватает денег на улучшение": "Not enough money for upgrade",
+  "Максимальный уровень": "Max level",
+  "Нельзя ставить на дорогу": "Can't place on the road",
+  "Скип: зачисти 75% волны (сейчас %1%) или подожди %2с": "Skip: clear 75% of the wave (%1% now) or wait %2s",
+  "⏩ СКИП ВЫЗОВ +%1💰": "⏩ SKIP CALL +%1💰",
+  "⏳ скип: 20с (%1с) или 75% зачистки (%2%)": "⏳ skip: 20s (%1s) or 75% cleared (%2%)",
+  "✅ ВСЕ ВОЛНЫ": "✅ ALL WAVES",
+  "⏩ СКИП — НАЧАТЬ ВОЛНУ": "⏩ SKIP — START THE WAVE",
+  "Цель: %1": "Target: %1",
+  "Достигнут лимит юнитов (%1)": "Unit limit reached (%1)",
+  "Достигнут лимит юнитов": "Unit limit reached",
+  "\"%1\" выведен из строя!": "\"%1\" is down!",
+  "\"%1\" вернулся в бой!": "\"%1\" is back!",
+  "Нет юнитов в отряде! Зайди в ИНВЕНТАРЬ и собери отряд.": "No units in the squad! Open the INVENTORY to assemble one.",
+  "Зайди в Инвентарь, чтобы собрать отряд": "Open the Inventory to assemble a squad",
+  "🎉 НОВЫЙ ЮНИТ! ×%1 ": "🎉 NEW UNIT! ×%1 ",
+  "♻️ Дубли проданы за +%1 🎟": "♻️ Duplicates sold for +%1 🎟",
+  "♻️ Дубли оставлены (авто-продажа выключена)": "♻️ Duplicates kept (auto-sell is off)",
+  "Код уже использован": "Code already used",
+  "Неверный код": "Invalid code",
+  "Код активирован: +%1 🎟": "Code activated: +%1 🎟",
+  "Звук включён": "Sound on",
+  "Звук выключен": "Sound off",
+  "Сбросить весь прогресс? Это действие необратимо.": "Reset all progress? This cannot be undone.",
+  "Прогресс сброшен": "Progress reset",
+  "⚔ DPS отряда: <b>%1</b> · 💰 Доход ферм: <b>%2💰</b>/волну · Юнитов: <b>%3/%4</b>": "⚔ Squad DPS: <b>%1</b> · 💰 Farm income: <b>%2💰</b>/wave · Units: <b>%3/%4</b>",
+  "Отряд пуст — зайди в Инвентарь и собери отряд.": "Squad is empty — open the Inventory to assemble it.",
+  "Твой боевой отряд (можно менять в инвентаре)": "Your battle squad (editable in the inventory)",
+  "1. ОТРЯД": "1. SQUAD",
+  "2. СЛОЖНОСТЬ": "2. DIFFICULTY",
+  "3. КАРТА": "3. MAP",
+  "Волн": "Waves",
+  "Старт": "Start",
+  "База": "Base",
+  "Скор.": "Speed",
+  "Победа": "Victory",
+  "рекорд": "record",
+  "Награда": "Reward",
+  "20+💰 за каждую волну (+50 за каждые 5)": "20+💰 per wave survived (+50 every 5th)",
+  "Язык: русский": "Language: Russian",
+  "Бодрит союзников в бою: снимает стан и даёт иммунитет к стану боссов.": "Cheers up allies mid-battle: clears stun and grants immunity to boss stuns.",
+  "📑 ИНДЕКС ЮНИТОВ (%1/%2)": "📑 UNIT INDEX (%1/%2)",
+  "Шанс выпадения: ": "Drop chance: ",
+  "💰 Продать: ": "💰 Sell for: ",
+  "🧖 Снимает стан и даёт иммунитет к стану боссов": "🧖 Clears stun and grants immunity to boss stuns",
+  "ПРИЗЫВ ×1 (100 🪙)": "SUMMON ×1 (100 🪙)",
+  "ПРИЗЫВ ×10 (900 🪙)": "SUMMON ×10 (900 🪙)",
+  "УРОН": "DMG",
+  "РАДИУС": "RNG",
+  "ЗАРЯД": "CD"
+};
+function gameLang() {
+  try { return (SaveManager.data && SaveManager.data.lang === 'en') ? 'en' : 'ru'; } catch (e) { return 'ru'; }
+}
+function T(s) {
+  if (gameLang() !== 'en') return s;
+  let v = I18N_EN[s];
+  if (v) return v;
+  for (const k in I18N_EN) {
+    const i = k.indexOf('%1');
+    if (i < 0) continue;
+    const a = k.slice(0, i), b = k.slice(i + 2);
+    if (a && b && s.startsWith(a) && s.endsWith(b) && s.length > a.length + b.length)
+      return I18N_EN[k].replace('%1', s.slice(a.length, s.length - b.length));
+  }
+  return s;
+}
+function fill(s) {
+  for (let i = 1; i < arguments.length; i++) s = s.split('%' + i).join(String(arguments[i]));
+  return s;
+}
+function R(r) {
+  const ru = r;
+  return gameLang() === 'en' ? (I18N_EN[ru] || ru) : ru;
+}
+function applyStaticLang() {
+  if (applyStaticLang._busy) return;
+  applyStaticLang._busy = true;
+  try {
+    if (typeof document.createTreeWalker !== 'function') return;
+    const en = gameLang() === 'en';
+    if (!en && !applyStaticLang._done) return;
+    applyStaticLang._done = true;
+    if (!document.body) return;
+    const walker = document.createTreeWalker(document.body, 4, null);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (const nd of nodes) {
+      const t = nd.textContent;
+      if (!t || !t.trim()) continue;
+      if (nd.__ru === undefined) nd.__ru = t;
+      let target = t;
+      if (en) {
+        const key = t.trim();
+        if (I18N_EN[key]) target = (t.trim() === t) ? I18N_EN[key] : t.replace(key, I18N_EN[key]);
+      } else {
+        target = nd.__ru;
+      }
+      if (target !== t) nd.textContent = target;
+    }
+  } finally { applyStaticLang._busy = false; }
+}
+function installLangObserver() {
+  if (typeof MutationObserver !== 'function' || installLangObserver._done) return;
+  installLangObserver._done = true;
+  new MutationObserver(() => applyStaticLang())
+    .observe(document.body, { childList: true, subtree: true, characterData: true });
+}
+
 const MAX_HEROES = 15;
 
 const RARITY_ORDER = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Mythic'];
@@ -479,7 +776,7 @@ const ABILITY_RU = {
   'slow': '🧊 Замедляет врагов своими попаданиями',
   'aoeBurst': '💥 Периодический взрыв по площади',
   'speedBoost': '⚡ Разгоняет атаки союзников рядом',
-  'heal': '💖 Лечит союзников вокруг',
+  'antistan': '🧖 Снимает стан и даёт иммунитет к стану боссов',
   'cash': '💸 Ферма: приносит деньги в конце каждой волны',
   'stun': '🌟 Периодически оглушает врагов вокруг',
   'splash': '💥 Снаряды взрываются по площади'
@@ -499,9 +796,9 @@ const UNITS = [
     stats: { dmg: 26, range: 110, fireRate: 0.45, hp: 190 },
     passive: { dmgBonus: 0, moneyBonus: 0.05 }, ability: 'speedBoost', aura: 0 },
   { id: 'makeup', name: 'Гримёр', emoji: '💄', rarity: 'Uncommon', dropChance: 0.08,
-    desc: 'Латает союзников прямо в бою.',
+    desc: 'Бодрит союзников в бою: снимает стан и даёт иммунитет к стану боссов.',
     stats: { dmg: 16, range: 120, fireRate: 1.2, hp: 220 },
-    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'heal', aura: 0 },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'antistan', aura: 0 },
   { id: 'dronepilot', name: 'Пилот дрона', emoji: '🚁', rarity: 'Uncommon', dropChance: 0.07,
     desc: 'Ведёт огонь с воздуха. Большой радиус.',
     stats: { dmg: 24, range: 175, fireRate: 0.7, hp: 170 },
@@ -664,6 +961,7 @@ const SaveManager = {
       loadout: ['intern'],
       selectedDifficulty: 'normal',
       selectedMap: 'studio',
+      lang: 'ru',
       soundOn: true,
       endlessRecord: 0,
       codes: [],
@@ -745,13 +1043,13 @@ const SaveManager = {
   },
   redeemCode(code) {
     code = String(code || '').trim().toUpperCase();
-    if (!code) return { ok: false, msg: 'Введи код' };
-    if (this.data.codes.includes(code)) return { ok: false, msg: 'Код уже использован' };
+    if (!code) return { ok: false, msg: T('Введи код') };
+    if (this.data.codes.includes(code)) return { ok: false, msg: T('Код уже использован') };
     const amount = PROMO_CODES[code];
-    if (!amount) return { ok: false, msg: 'Неверный код' };
+    if (!amount) return { ok: false, msg: T('Неверный код') };
     this.data.codes.push(code);
     this.addCoins(amount);
-    return { ok: true, msg: `Код активирован: +${amount} 🪙` };
+    return { ok: true, msg: fill(T('Код активирован: +%1 🪙'), amount) };
   }
 };
 
@@ -1091,6 +1389,7 @@ class Hero {
     this.targetMode = 'first';
     this.shootAnim = 0;
     this.stunTimer = 0;
+    this.antistanUntil = 0;
     this.atkKind = UNIT_ATK[this.unitId] || 'bullet';
     this.bobPhase = Math.random() * 6.28;
 
@@ -1104,7 +1403,7 @@ class Hero {
     this.isHero = true;
     this.ability = unit.ability;
     this.abilityMaxCd = unit.ability === 'speedBoost' ? 12 : (unit.ability === 'aoeBurst' ? 15 :
-      (unit.ability === 'stun' ? 10 : 999));
+      (unit.ability === 'stun' ? 10 : (unit.ability === 'antistan' ? 12 : 999)));
     this.aoe = (unit.ability === 'aoeBurst') ? (unit.aoeRadius || 45) : ((unit.ability === 'splash') ? (unit.splashRadius || 50) : 0);
     this.stunPower = unit.abilityPower || 1.4;
     this.moneyBonus = unit.passive.moneyBonus || 0;
@@ -1158,7 +1457,7 @@ class Hero {
       this.hp = 0;
       this.heroDead = true;
       this.respawnTimer = 25;
-      this.game.toast(`"${this.name}" выведен из строя!`);
+      this.game.toast(fill(T('"%1" выведен из строя!'), T(this.name)));
       Sound.loseLife();
       this.game.refreshAuras();
     }
@@ -1166,7 +1465,7 @@ class Hero {
   respawn() {
     this.heroDead = false;
     this.hp = this.maxHp;
-    this.game.toast(`"${this.name}" вернулся в бой!`);
+    this.game.toast(fill(T('"%1" вернулся в бой!'), T(this.name)));
     this.game.refreshAuras();
   }
   update(dt) {
@@ -1191,14 +1490,16 @@ class Hero {
         this.abilityCd = this.abilityMaxCd;
         this.fireAbility();
       }
-      if (this.ability === 'heal') {
+      if (this.ability === 'antistan') {
         this.pulseCd -= dt;
         if (this.pulseCd <= 0) {
           this.pulseCd = 2;
           for (const t of this.game.heroes) {
-            if (t === this || t.heroDead) continue;
+            if (t.heroDead) continue;
             if (dist(this.x, this.y, t.x, t.y) <= this.range) {
-              t.hp = Math.min(t.maxHp, t.hp + t.maxHp * 0.08);
+              t.stunTimer = 0;
+              t.antistanUntil = (this.game.waveTime || 0) + 3;
+              this.game.explosions.push({ x: t.x, y: t.y, r: 0, maxR: 30, life: 0.4, maxLife: 0.4, rgb: '255,150,200', ring: true });
             }
           }
         }
@@ -1397,6 +1698,7 @@ class Enemy {
         let stunned = 0;
         for (const h of this.game.heroes) {
           if (h.heroDead) continue;
+          if (h.antistanUntil && h.antistanUntil > (this.game.waveTime || 0)) continue;
           if (dist(this.x, this.y, h.x, h.y) <= 110) { h.stunTimer = Math.max(h.stunTimer || 0, 1.8); stunned++; }
         }
         if (stunned) {
@@ -1814,17 +2116,18 @@ class Game {
     this.victory = false;
     this.kills = 0;
     this.waveKills = 0;
+    this.runCoinsEarned = 0;
     this.lastTime = 0;
     this.speedMultiplier = 1;
     this.nextWaveTimer = 0;
     this.countdownActive = false;
-    document.getElementById('pauseBtn').textContent = '⏸ ПАУЗА';
-    document.getElementById('speedBtn').textContent = '⏩ ×1';
+    document.getElementById('pauseBtn').textContent = T('⏸ ПАУЗА');
+    document.getElementById('speedBtn').textContent = T('⏩ ×1');
     document.getElementById('waveTimer').style.display = 'none';
     document.getElementById('resultsOverlay').classList.remove('visible');
     this.autoSkip = !!SaveManager.data.autoSkip;
     const askBtn = document.getElementById('autoSkipBtn');
-    askBtn.textContent = '🤖 АВТО-СКИП: ' + (this.autoSkip ? 'ВКЛ' : 'ВЫКЛ');
+    askBtn.textContent = this.autoSkip ? T('🤖 АВТО-СКИП: ВКЛ') : T('🤖 АВТО-СКИП: ВЫКЛ');
     askBtn.className = 'btn small' + (this.autoSkip ? ' accent' : '');
     this.buildHeroPanel();
     this.updateUI();
@@ -1869,7 +2172,7 @@ class Game {
     panel.innerHTML = '';
     const loadout = SaveManager.loadout;
     if (loadout.length === 0) {
-      panel.innerHTML = '<div style="padding:20px;opacity:.5;text-align:center;width:100%">Нет юнитов в отряде! Зайди в ИНВЕНТАРЬ и собери отряд.</div>';
+      panel.innerHTML = '<div style="padding:20px;opacity:.5;text-align:center;width:100%">' + T('Нет юнитов в отряде! Зайди в ИНВЕНТАРЬ и собери отряд.') + '</div>';
       return;
     }
     for (const id of loadout) {
@@ -1881,14 +2184,14 @@ class Game {
       btn.dataset.build = 'hero:' + u.id;
       btn.innerHTML = `
         <div class="emoji">${u.emoji}</div>
-        <div class="name">${u.name}</div>
+        <div class="name">${T(u.name)}</div>
         <div class="price">💰 ${price}</div>
-        <div class="desc">${RARITY_RU[u.rarity] || u.rarity}</div>`;
+        <div class="desc">${R(u.rarity) || u.rarity}</div>`;
       btn.addEventListener('click', () => {
         Sound.init();
         if (this.gameOver || this.victory) return;
-        if (this.heroes.length >= MAX_HEROES) { Sound.error(); this.toast('Достигнут лимит юнитов (' + MAX_HEROES + ')'); return; }
-        if (this.money < price) { Sound.error(); this.toast('Не хватает денег'); return; }
+        if (this.heroes.length >= MAX_HEROES) { Sound.error(); this.toast(fill(T('Достигнут лимит юнитов (%1)'), MAX_HEROES)); return; }
+        if (this.money < price) { Sound.error(); this.toast(T('Не хватает денег')); return; }
         this.selectedBuild = (this.selectedBuild === 'hero:' + u.id) ? null : 'hero:' + u.id;
         this.selectedHero = null;
         this.refreshBuildSelection();
@@ -1922,14 +2225,14 @@ class Game {
       const killPct = this.waveManager.waveTotal > 0 ? Math.min(99, Math.floor(this.waveKills * 100 / this.waveManager.waveTotal)) : 0;
       startBtn.disabled = !canSkip;
       startBtn.textContent = canSkip
-        ? '⏩ СКИП ВЫЗОВ +' + (5 + this.wave * 3) + '¢'
-        : `⏳ скип: 20с (${Math.max(0, Math.ceil(20 - this.waveTime))}с) или 75% зачистки (${killPct}%)`;
+        ? fill(T('⏩ СКИП ВЫЗОВ +%1¢'), 5 + this.wave * 3)
+        : fill(T('⏳ скип: 20с (%1с) или 75% зачистки (%2%)'), Math.max(0, Math.ceil(20 - this.waveTime)), killPct);
       waveTimer.style.display = 'none';
     } else if (!this.difficulty.endless && this.wave >= this.maxWaves) {
-      startBtn.disabled = true; startBtn.textContent = '✅ ВСЕ ВОЛНЫ';
+      startBtn.disabled = true; startBtn.textContent = T('✅ ВСЕ ВОЛНЫ');
       waveTimer.style.display = 'none';
     } else if (this.countdownActive) {
-      startBtn.disabled = false; startBtn.textContent = '⏩ СКИП — НАЧАТЬ ВОЛНУ';
+      startBtn.disabled = false; startBtn.textContent = T('⏩ СКИП — НАЧАТЬ ВОЛНУ');
       waveTimer.style.display = '';
       document.getElementById('waveTimerVal').textContent = Math.ceil(this.nextWaveTimer);
       const compEl = document.getElementById('waveComp');
@@ -1940,10 +2243,10 @@ class Game {
         }
         const pieces = [];
         for (const [def, n] of this._previewCache) pieces.push(def.emoji + '×' + n);
-        compEl.textContent = (this.wave + 1) % 5 === 0 ? '⚠ БОСС! ' + pieces.join(' ') : pieces.join(' ');
+        compEl.textContent = fill((this.wave + 1) % 5 === 0 ? T('⚠ БОСС! %1') : '%1', pieces.join(' '));
       }
     } else {
-      startBtn.disabled = false; startBtn.textContent = '▶ СЛЕДУЮЩАЯ ВОЛНА';
+      startBtn.disabled = false; startBtn.textContent = T('▶ СЛЕДУЮЩАЯ ВОЛНА');
       waveTimer.style.display = 'none';
     }
     this.refreshPrices();
@@ -1951,10 +2254,10 @@ class Game {
     const deadCount = this.heroes.filter(h => h.heroDead).length;
     if (deadCount > 0) {
       badge.classList.add('dead');
-      badge.innerHTML = `💀 <span>${deadCount} павших</span>`;
+      badge.innerHTML = `💀 <span>${deadCount} ${T('павших')}</span>`;
     } else {
       badge.classList.remove('dead');
-      badge.innerHTML = `🎥 <span>${this.heroes.length} юнитов</span>`;
+      badge.innerHTML = `🎥 <span>${this.heroes.length} ${T('юнитов')}</span>`;
     }
   }
   refreshPrices() {
@@ -1995,20 +2298,20 @@ class Game {
       const btnY = t.y - 58, btnW = 46, btnH = 26;
       const upX = t.x - 73, tX = t.x - 23, sellX = t.x + 27;
       if (mx >= upX && mx <= upX + btnW && my >= btnY && my <= btnY + btnH) {
-        if (t.level >= t.maxLevel) { this.toast('Максимальный уровень'); return; }
+        if (t.level >= t.maxLevel) { this.toast(T('Максимальный уровень')); return; }
         if (this.money >= t.upgradeCost) {
           this.money -= t.upgradeCost;
           t.upgrade();
           this.refreshAuras();
           Sound.upgrade();
           this.updateUI();
-        } else { Sound.error(); this.toast('Не хватает денег на улучшение'); }
+        } else { Sound.error(); this.toast(T('Не хватает денег на улучшение')); }
         return;
       }
       if (mx >= tX && mx <= tX + btnW && my >= btnY && my <= btnY + btnH) {
         const idx = TARGET_MODES.findIndex(m => m.id === t.targetMode);
         t.targetMode = TARGET_MODES[(idx + 1) % TARGET_MODES.length].id;
-        this.toast('Цель: ' + (TARGET_MODES.find(m => m.id === t.targetMode) || TARGET_MODES[0]).name);
+        this.toast(fill(T('Цель: %1'), T((TARGET_MODES.find(m => m.id === t.targetMode) || TARGET_MODES[0]).name)));
         Sound.gachaClick();
         return;
       }
@@ -2026,13 +2329,13 @@ class Game {
     const col = Math.floor(mx / CELL), row = Math.floor(my / CELL);
     if (col < 0 || col >= COLS || row < 0 || row >= ROWS) return;
     if (this.selectedBuild && this.selectedBuild.startsWith('hero:')) {
-      if (this.map.isRoad(col, row)) { Sound.error(); this.toast('Нельзя ставить на дорогу'); return; }
-      if (this.heroes.length >= MAX_HEROES) { Sound.error(); this.toast('Достигнут лимит юнитов'); return; }
+      if (this.map.isRoad(col, row)) { Sound.error(); this.toast(T('Нельзя ставить на дорогу')); return; }
+      if (this.heroes.length >= MAX_HEROES) { Sound.error(); this.toast(T('Достигнут лимит юнитов')); return; }
       if (this.grid[row][col]) { Sound.error(); return; }
       const id = this.selectedBuild.split(':')[1];
       const unit = UNITS.find(u => u.id === id);
       const price = RARITY_COST[unit.rarity] || 100;
-      if (this.money < price) { Sound.error(); this.toast('Не хватает денег'); return; }
+      if (this.money < price) { Sound.error(); this.toast(T('Не хватает денег')); return; }
       const h = new Hero(this, col, row, unit);
       this.heroes.push(h);
       this.grid[row][col] = h;
@@ -2064,7 +2367,7 @@ class Game {
   waveButtonAction() {
     if (this.gameOver || this.victory) return;
     if (this.waveManager.waveActive) {
-      if (!this.skipAvailable()) { const kp = this.waveManager.waveTotal > 0 ? Math.min(99, Math.floor(this.waveKills * 100 / this.waveManager.waveTotal)) : 0; Sound.error(); this.toast(`Скип: зачисти 75% волны (сейчас ${kp}%) или подожди ${Math.max(0, Math.ceil(20 - this.waveTime))}с`); return; }
+      if (!this.skipAvailable()) { const kp = this.waveManager.waveTotal > 0 ? Math.min(99, Math.floor(this.waveKills * 100 / this.waveManager.waveTotal)) : 0; Sound.error(); this.toast(fill(T('Скип: зачисти 75% волны (сейчас %1%) или подожди %2с'), kp, Math.max(0, Math.ceil(20 - this.waveTime)))); return; }
       if (!this.waveManager.finishedSpawning) {
         this.waveManager.flushSpawns();
         this.updateUI();
@@ -2106,12 +2409,12 @@ class Game {
   togglePause() {
     if (this.gameOver || this.victory) return;
     this.paused = !this.paused;
-    document.getElementById('pauseBtn').textContent = this.paused ? '▶ ПРОДОЛЖИТЬ' : '⏸ ПАУЗА';
+    document.getElementById('pauseBtn').textContent = this.paused ? T('▶ ПРОДОЛЖИТЬ') : T('⏸ ПАУЗА');
   }
   toggleSpeed() {
     if (this.gameOver || this.victory) return;
     this.speedMultiplier = this.speedMultiplier === 1 ? 2 : 1;
-    document.getElementById('speedBtn').textContent = this.speedMultiplier === 1 ? '⏩ ×1' : '⏩ ×' + this.speedMultiplier;
+    document.getElementById('speedBtn').textContent = this.speedMultiplier === 1 ? T('⏩ ×1') : T('⏩ ×%1').replace('%1', this.speedMultiplier);
   }
   toggleAutoSkip() {
     if (this.gameOver || this.victory) return;
@@ -2119,7 +2422,7 @@ class Game {
     SaveManager.data.autoSkip = this.autoSkip;
     SaveManager.save();
     const askBtn = document.getElementById('autoSkipBtn');
-    askBtn.textContent = '🤖 АВТО-СКИП: ' + (this.autoSkip ? 'ВКЛ' : 'ВЫКЛ');
+    askBtn.textContent = this.autoSkip ? T('🤖 АВТО-СКИП: ВКЛ') : T('🤖 АВТО-СКИП: ВЫКЛ');
     askBtn.className = 'btn small' + (this.autoSkip ? ' accent' : '');
     this.toast('Авто-скип: ' + (this.autoSkip ? 'включен — волны начинаются сами, скип нажимается автоматом' : 'выключен'));
     Sound.gachaClick();
@@ -2232,9 +2535,16 @@ class Game {
       this._farmCash = 0;
       for (const h of this.heroes) h.onWaveEnd();
       const farmCash = this._farmCash;
-      this.floaters.push({ x: CANVAS_W / 2, y: 40, text: 'Волна ' + this.wave + ' пройдена! +' + bonus + '💰',
+      if (this.difficulty.endless && !this.gameOver) {
+        const gain = 20 + this.wave + (this.wave % 5 === 0 ? 50 : 0);
+        this.runCoinsEarned = (this.runCoinsEarned || 0) + gain;
+        SaveManager.addCoins(gain);
+        this.floaters.push({ x: CANVAS_W / 2, y: 66, text: fill(T('За волну +%1💰 (в банк)'), gain),
+          life: 1.6, maxLife: 1.6, color: '#ffd966' });
+      }
+      this.floaters.push({ x: CANVAS_W / 2, y: 40, text: fill(T('Волна %1 пройдена! +%2💰'), this.wave, bonus),
         life: 1.6, maxLife: 1.6, color: '#7fffa0' });
-      if (farmCash) this.toast('🔧 Фермы принесли +' + farmCash + '💰 за волну');
+      if (farmCash) this.toast(fill(T('🔧 Фермы принесли +%1💰 за волну'), farmCash));
       Sound.waveClear();
       this.updateUI();
       if (!this.difficulty.endless && this.wave >= this.maxWaves && !this.gameOver) {
@@ -2269,17 +2579,22 @@ class Game {
     if (win) coins = this.difficulty.winCoins || 350;
     SaveManager.addCoins(coins);
     if (win) Sound.victory(); else Sound.defeat();
-    if (this.difficulty.endless && this.wave > (SaveManager.data.endlessRecord || 0)) {
-      SaveManager.data.endlessRecord = this.wave;
-      SaveManager.save();
+    if (this.difficulty.endless) {
+      const survived = Math.max(0, this.wave - 1);
+      if (survived > (SaveManager.data.endlessRecord || 0)) {
+        SaveManager.data.endlessRecord = survived;
+        SaveManager.save();
+      }
     }
     setTimeout(() => {
-      document.getElementById('resultsTitle').textContent = win ? '🏆 ПОБЕДА!' : '💀 ПОРАЖЕНИЕ';
+      document.getElementById('resultsTitle').textContent = win ? T('🏆 ПОБЕДА!') : T('💀 ПОРАЖЕНИЕ');
       document.getElementById('resultsTitle').className = 'title ' + (win ? 'win' : 'lose');
       document.getElementById('resWaves').textContent = `${completed} / ${this.difficulty.endless ? '∞' : this.maxWaves}`;
       document.getElementById('resKills').textContent = this.kills;
       document.getElementById('resBase').textContent = Math.max(0, Math.round(this.baseHp)) + ' / ' + BASE_MAX_HP;
-      document.getElementById('resCoins').textContent = win ? '+' + coins : '0 (монеты только за победу)';
+      document.getElementById('resCoins').textContent = this.difficulty.endless
+        ? fill(T('+%1💰 (заработано за %2 волн)'), this.runCoinsEarned || 0, Math.max(0, this.wave - 1))
+        : (win ? '+' + coins : T('0 (монеты только за победу)'));
       document.getElementById('resultsOverlay').classList.add('visible');
       App.refreshMeta();
     }, 350);
@@ -2331,9 +2646,9 @@ class Game {
           ctx.fillText(nix, px + 176, yy);
         }
       };
-      row('УРОН', cur.dmg, nxt && nxt.dmg, 0);
-      row('РАДИУС', cur.range, nxt && nxt.range, 1);
-      row('ЗАРЯД', cur.rate + 'с', nxt && nxt.rate + 'с', 2);
+      row(T('УРОН'), cur.dmg, nxt && nxt.dmg, 0);
+      row(T('РАДИУС'), cur.range, nxt && nxt.range, 1);
+      row(T('ЗАРЯД'), cur.rate + 'с', nxt && nxt.rate + 'с', 2);
     }
     for (const e of this.enemies) e.draw(ctx);
     for (const p of this.projectiles) p.draw(ctx);
@@ -2381,19 +2696,19 @@ class Game {
     ctx.font = '12px "Segoe UI",sans-serif';
     ctx.fillStyle = '#ffffff55';
     ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
-    ctx.fillText('1-5: юнит · E: прокачка · Q: продажа · Esc: отмена', 14, CANVAS_H - 12);
+    ctx.fillText(T('1-5: юнит · E: прокачка · Q: продажа · Esc: отмена'), 14, CANVAS_H - 12);
     if (this.paused) {
       ctx.fillStyle = '#00000088'; ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
       ctx.fillStyle = '#fff'; ctx.font = 'bold 42px "Segoe UI",sans-serif';
-      ctx.textAlign = 'center'; ctx.fillText('ПАУЗА', CANVAS_W / 2, CANVAS_H / 2);
+      ctx.textAlign = 'center'; ctx.fillText(T('ПАУЗА'), CANVAS_W / 2, CANVAS_H / 2);
     }
   }
   placementInvalid() {
-    if (this.heroes.length >= MAX_HEROES) return 'Лимит юнитов: ' + MAX_HEROES;
+    if (this.heroes.length >= MAX_HEROES) return fill(T('Лимит юнитов: %1'), MAX_HEROES);
     const id = this.selectedBuild.split(':')[1];
     const unit = UNITS.find(u => u.id === id);
     const price = RARITY_COST[unit.rarity] || 100;
-    if (this.money < price) return 'Не хватает денег: нужно 💰' + price;
+    if (this.money < price) return fill(T('Не хватает денег: нужно 💰%1'), price);
     return '';
   }
   drawPreview(ctx) {
@@ -2465,7 +2780,7 @@ class Game {
     ctx.fillText(b.text, 0, 0);
     ctx.font = 'bold 20px "Segoe UI",sans-serif';
     ctx.fillStyle = b.boss ? '#ff8888' : '#ffd966';
-    ctx.fillText('Приготовься!', 0, 34);
+    ctx.fillText(T('Приготовься!'), 0, 34);
     ctx.globalAlpha *= 0.55;
     ctx.fillStyle = b.boss ? '#ff8888' : '#ffd966';
     ctx.fillRect(-120, 48, 240 * Math.min(1, (b.maxLife - b.life) * 2), 3);
@@ -2565,13 +2880,14 @@ const UI = {
   spinning: false,
   toastTimer: null,
   showScreen(id) {
+    this.current = id;
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const el = document.getElementById(id);
     if (el) el.classList.add('active');
   },
   toast(msg) {
     const el = document.getElementById('toast');
-    el.textContent = msg;
+    el.textContent = T(msg);
     el.classList.add('visible');
     clearTimeout(this.toastTimer);
     this.toastTimer = setTimeout(() => el.classList.remove('visible'), 1800);
@@ -2581,13 +2897,13 @@ const UI = {
     const st = unit.stats;
     const color = RARITY_COLOR[unit.rarity] || '#aaa';
     tt.innerHTML = `
-      <div class="tt-title">${unit.emoji} ${unit.name}</div>
-      <div class="tt-rarity" style="color:${color}">${RARITY_RU[unit.rarity] || unit.rarity}</div>
-      ${unit.ability && unit.ability !== 'none' ? `<div class="tt-row"><span class="k">Способность</span></div>` +
+      <div class="tt-title">${unit.emoji} ${T(unit.name)}</div>
+      <div class="tt-rarity" style="color:${color}">${R(unit.rarity) || unit.rarity}</div>
+      ${unit.ability && unit.ability !== 'none' ? `<div class="tt-row"><span class="k">${T('Способность')}</span></div>` +
         `<div style="color:#ffd966;font-size:.75rem;margin-top:2px">${ABILITY_RU[unit.ability] || ''}</div>` : ''}
-      ${unit.pureFarm ? `<div class="tt-row"><span class="k">💸 Доход</span><span class="v">+${unit.cashPerWave}💰/волну</span></div>`
-        : `<div class="tt-row"><span class="k">Урон</span><span class="v">${st.dmg}</span></div>
-      <div class="tt-row"><span class="k">Радиус</span><span class="v">${st.range}</span></div>
+      ${unit.pureFarm ? `<div class="tt-row"><span class="k">${T('💸 Доход')}</span><span class="v">+${unit.cashPerWave}💰${T('/волну')}</span></div>`
+        : `<div class="tt-row"><span class="k">${T('Урон')}</span><span class="v">${st.dmg}</span></div>
+      <div class="tt-row"><span class="k">${T('Радиус')}</span><span class="v">${st.range}</span></div>
       <div class="tt-row"><span class="k">Перезарядка</span><span class="v">${st.fireRate}с</span></div>`}`;
     tt.classList.add('visible');
     this.moveTooltip(x, y);
@@ -2596,12 +2912,12 @@ const UI = {
     const tt = document.getElementById('statTooltip');
     const color = RARITY_COLOR[hero.unit.rarity] || '#aaa';
     tt.innerHTML = `
-      <div class="tt-title">${hero.emoji} ${hero.name} <span style="font-size:.75rem;opacity:.6">Ур.${hero.level}</span></div>
-      <div class="tt-rarity" style="color:${color}">${RARITY_RU[hero.unit.rarity] || hero.unit.rarity}</div>
+      <div class="tt-title">${hero.emoji} ${T(hero.name)} <span style="font-size:.75rem;opacity:.6">${T('Ур.')}${hero.level}</span></div>
+      <div class="tt-rarity" style="color:${color}">${R(hero.unit.rarity) || hero.unit.rarity}</div>
       ${hero.ability && hero.ability !== 'none' ? `<div style="color:#ffd966;font-size:.75rem;margin-top:2px">${ABILITY_RU[hero.ability] || ''}</div>` : ''}
-      ${hero.pureFarm ? `<div class="tt-row"><span class="k">💸 Доход</span><span class="v">+${hero.cashPerWave}💰/волну</span></div>`
-        : `<div class="tt-row"><span class="k">Урон</span><span class="v">${Math.round(hero.damage)}</span></div>
-      <div class="tt-row"><span class="k">Радиус</span><span class="v">${Math.round(hero.range)}</span></div>
+      ${hero.pureFarm ? `<div class="tt-row"><span class="k">${T('💸 Доход')}</span><span class="v">+${hero.cashPerWave}💰${T('/волну')}</span></div>`
+        : `<div class="tt-row"><span class="k">${T('Урон')}</span><span class="v">${Math.round(hero.damage)}</span></div>
+      <div class="tt-row"><span class="k">${T('Радиус')}</span><span class="v">${Math.round(hero.range)}</span></div>
       <div class="tt-row"><span class="k">Перезарядка</span><span class="v">${hero.fireRate.toFixed(2)}с</span></div>`}`;
     tt.classList.add('visible');
     this.moveTooltip(x, y);
@@ -2633,6 +2949,9 @@ const App = {
   invSearch: '',
   init() {
     SaveManager.load();
+    installLangObserver();
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => applyStaticLang());
+    else applyStaticLang();
     this.lobby = new Lobby();
     this.game = new Game();
     this.bindMenu();
@@ -2678,7 +2997,7 @@ const App = {
     for (const u of UNITS) byR[u.rarity] = (byR[u.rarity] || 0) + u.dropChance;
     for (const r of RARITY_ORDER) {
       const el = document.getElementById('rate' + r);
-      if (el) el.textContent = (RARITY_RU[r] || r) + ' ' + ((byR[r] || 0) / total * 100).toFixed(1) + '%';
+      if (el) el.textContent = (R(r) || r) + ' ' + ((byR[r] || 0) / total * 100).toFixed(1) + '%';
     }
   },
   renderGachaReels(iconCount) {
@@ -2694,12 +3013,12 @@ const App = {
   },
   renderAutoSellPanel() {
     const panel = document.getElementById('autoSellPanel');
-    panel.innerHTML = '<div style="font-weight:700;margin-bottom:8px">♻️ АВТО-ПРОДАЖА ДУБЛЕЙ</div>';
+    panel.innerHTML = '<div style="font-weight:700;margin-bottom:8px">' + T('♻️ АВТО-ПРОДАЖА ДУБЛЕЙ') + '</div>';
     for (const r of RARITY_ORDER) {
       const row = document.createElement('div');
       row.className = 'auto-sell-row';
       const on = SaveManager.getAutoSell(r);
-      row.innerHTML = `<span style="color:${RARITY_COLOR[r]};font-weight:700">${RARITY_RU[r]}</span>`;
+      row.innerHTML = `<span style="color:${RARITY_COLOR[r]};font-weight:700">${R(r)}</span>`;
       const btn = document.createElement('button');
       btn.className = 'toggle-btn ' + (on ? 'on' : 'off');
       btn.textContent = on ? 'ВКЛ' : 'ВЫКЛ';
@@ -2721,12 +3040,12 @@ const App = {
       const st = u.stats;
       card.innerHTML = `
         <div class="u-emoji">${unlocked ? u.emoji : '🔒'}</div>
-        <div class="u-name">${unlocked ? u.name : '???'} <small style="opacity:.5;color:${RARITY_COLOR[u.rarity]}">${RARITY_RU[u.rarity]}</small></div>
-        <div class="u-desc">${unlocked ? u.desc : 'Ещё не открыт'}</div>
+        <div class="u-name">${unlocked ? T(u.name) : '???'} <small style="opacity:.5;color:${RARITY_COLOR[u.rarity]}">${R(u.rarity)}</small></div>
+        <div class="u-desc">${unlocked ? T(u.desc) : 'Ещё не открыт'}</div>
         <div class="u-status" style="color:${unlocked ? '#7fffa0' : '#ffb3b3'}">
           ${unlocked ? '✅ ОТКРЫТ' : '🔒 ' + (u.dropChance * 100).toFixed(1) + '%'}
         </div>
-        <div class="u-bonus">${statRange(u).pureFarm ? '💰 Доход: ' + statRange(u).cash[0] + ' → ' + statRange(u).cash[1] + '💰/волну' : '' + statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1] + ' урон · ' + statRange(u).range[0] + ' → ' + statRange(u).range[1] + ' радиус · ' + statRange(u).rate[0] + ' → ' + statRange(u).rate[1] + 'с заряд'}</div>`;
+        <div class="u-bonus">${statRange(u).pureFarm ? T('💰 Доход: ') + statRange(u).cash[0] + ' → ' + statRange(u).cash[1] + T('💰/волну') : '' + statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1] + T(' урон · ') + statRange(u).range[0] + ' → ' + statRange(u).range[1] + T(' радиус · ') + statRange(u).rate[0] + ' → ' + statRange(u).rate[1] + T('с заряд')}</div>`;
       grid.appendChild(card);
     }
   },
@@ -2783,7 +3102,7 @@ const App = {
         const cell = document.createElement('div');
         cell.className = 'cell';
         cell.innerHTML = `<div style="font-size:2rem;line-height:1">${u.emoji}</div>` +
-          `<div class="cell-label" style="color:${RARITY_COLOR[u.rarity]}">${last ? RARITY_RU[u.rarity] : ''}</div>`;
+          `<div class="cell-label" style="color:${RARITY_COLOR[u.rarity]}">${last ? R(u.rarity) : ''}</div>`;
         strip.appendChild(cell);
       }
       el.appendChild(strip);
@@ -2823,9 +3142,9 @@ const App = {
     }
     const resultEl = document.getElementById('gachaResult');
     let msg = '';
-    if (newCount > 0) msg += `🎉 НОВЫЙ ЮНИТ! ×${newCount} `;
-    if (dupCoins > 0) msg += `♻️ Дубли проданы за +${dupCoins} 🪙`;
-    if (newCount === 0 && dupCoins === 0) msg = '♻️ Дубли оставлены (авто-продажа выключена)';
+    if (newCount > 0) msg += fill(T('🎉 НОВЫЙ ЮНИТ! ×%1 '), newCount);
+    if (dupCoins > 0) msg += fill(T('♻️ Дубли проданы за +%1 🪙'), dupCoins);
+    if (newCount === 0 && dupCoins === 0) msg = T('♻️ Дубли оставлены (авто-продажа выключена)');
     resultEl.textContent = msg;
     resultEl.className = 'gacha-result ' + (newCount > 0 ? 'new' : 'dup');
     requestAnimationFrame(() => resultEl.classList.add('pop'));
@@ -2838,8 +3157,8 @@ const App = {
     const btn1 = document.getElementById('btnSpinX1');
     const btn10 = document.getElementById('btnSpinX10');
     btn1.disabled = false; btn10.disabled = false;
-    btn1.textContent = 'ПРИЗЫВ ×1 (100 🪙)';
-    btn10.textContent = 'ПРИЗЫВ ×10 (900 🪙)';
+    btn1.textContent = T('ПРИЗЫВ ×1 (100 🪙)');
+    btn10.textContent = T('ПРИЗЫВ ×10 (900 🪙)');
   },
   confetti() {
     const glyphs = ['🎉', '⭐', '✨', '🎊', '🪙'];
@@ -2868,7 +3187,7 @@ const App = {
     const grid = document.getElementById('indexGrid');
     grid.innerHTML = '';
     const owned = UNITS.filter(u => SaveManager.isUnlocked(u.id)).length;
-    document.getElementById('indexTitle').textContent = `📑 ИНДЕКС ЮНИТОВ (${owned}/${UNITS.length})`;
+    document.getElementById('indexTitle').textContent = fill(T('📑 ИНДЕКС ЮНИТОВ (%1/%2)'), owned, UNITS.length);
     for (const u of UNITS) {
       const unlocked = SaveManager.isUnlocked(u.id);
       const st = u.stats;
@@ -2877,10 +3196,10 @@ const App = {
       card.style.opacity = unlocked ? '' : '0.62';
       card.innerHTML = `
         <div class="u-emoji">${unlocked ? u.emoji : '🔒'}</div>
-        <div class="u-name">${u.name} <small style="opacity:.5;color:${RARITY_COLOR[u.rarity]}">${RARITY_RU[u.rarity]}</small></div>
-        <div class="u-desc">${unlocked ? u.desc : 'Юнит ещё не открыт'}</div>
-        <div class="u-bonus">${statRange(u).pureFarm ? '💰 Доход: ' + statRange(u).cash[0] + ' → ' + statRange(u).cash[1] + '💰/волну' : 'Урон: ' + statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1] + ' · Радиус: ' + statRange(u).range[0] + ' → ' + statRange(u).range[1] + ' · Заряд: ' + statRange(u).rate[0] + ' → ' + statRange(u).rate[1] + 'с'}</div>
-        <div class="u-bonus">Шанс выпадения: ${(u.dropChance * 100).toFixed(1)}%</div>`;
+        <div class="u-name">${T(u.name)} <small style="opacity:.5;color:${RARITY_COLOR[u.rarity]}">${R(u.rarity)}</small></div>
+        <div class="u-desc">${unlocked ? T(u.desc) : 'Юнит ещё не открыт'}</div>
+        <div class="u-bonus">${statRange(u).pureFarm ? T('💰 Доход: ') + statRange(u).cash[0] + ' → ' + statRange(u).cash[1] + T('💰/волну') : T('Урон: ') + statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1] + T(' · Радиус: ') + statRange(u).range[0] + ' → ' + statRange(u).range[1] + T(' · Заряд: ') + statRange(u).rate[0] + ' → ' + statRange(u).rate[1] + 'с'}</div>
+        <div class="u-bonus">${T('Шанс выпадения: ')}${(u.dropChance * 100).toFixed(1)}%</div>`;
       if (u.ability && u.ability !== 'none') {
         const ab = document.createElement('div');
         ab.className = 'u-bonus';
@@ -2909,14 +3228,14 @@ const App = {
     content.innerHTML = `
       <div class="ud-emoji">🔒</div>
       <div class="ud-name">${u.name}</div>
-      <div class="ud-rarity" style="color:${RARITY_COLOR[u.rarity]}">${RARITY_RU[u.rarity]}</div>
+      <div class="ud-rarity" style="color:${RARITY_COLOR[u.rarity]}">${R(u.rarity)}</div>
       <div class="ud-ability">🔒 Ещё не открыт · Шанс: ${(u.dropChance * 100).toFixed(1)}%</div>
       <div class="ud-stats">
-        <div class="ud-stat"><div class="label">${u.pureFarm ? '💸 Доход' : 'Урон'}</div><div class="val">${u.pureFarm ? '+' + statRange(u).cash[0] + ' → +' + statRange(u).cash[1] + '💰' : statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1]}</div></div>
-        <div class="ud-stat"><div class="label">Радиус</div><div class="val">${statRange(u).range[0]} → ${statRange(u).range[1]}</div></div>
+        <div class="ud-stat"><div class="label">${u.pureFarm ? T('💸 Доход') : T('Урон')}</div><div class="val">${u.pureFarm ? '+' + statRange(u).cash[0] + T(' → +') + statRange(u).cash[1] + '💰' : statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1]}</div></div>
+        <div class="ud-stat"><div class="label">${T('Радиус')}</div><div class="val">${statRange(u).range[0]} → ${statRange(u).range[1]}</div></div>
         <div class="ud-stat"><div class="label">Перезарядка</div><div class="val">${statRange(u).rate[0]} → ${statRange(u).rate[1]}с</div></div>
       </div>
-      ${u.ability && u.ability !== 'none' ? `<div class="ud-ability">${ABILITY_RU[u.ability] || ''}${u.cashPerWave ? ' (+' + statRange(u).cash[0] + ' → +' + statRange(u).cash[1] + '💰/волну)' : ''}</div>` : ''}
+      ${u.ability && u.ability !== 'none' ? `<div class="ud-ability">${ABILITY_RU[u.ability] || ''}${u.cashPerWave ? T(' (+') + statRange(u).cash[0] + T(' → +') + statRange(u).cash[1] + T('💰/волну)') : ''}</div>` : ''}
       ${u.aura ? `<div class="ud-ability">🌟 Аура: +${Math.round(u.aura * 100)}% урона союзникам</div>` : ''}
       <button class="btn small" id="udCloseBtn" style="margin-top:6px">ЗАКРЫТЬ</button>`;
     content.querySelector('#udCloseBtn').addEventListener('click', () => overlay.classList.remove('visible'));
@@ -2940,7 +3259,7 @@ const App = {
     for (const r of rarities) {
       const btn = document.createElement('button');
       btn.className = 'filter-btn' + (this.invFilter === r ? ' active' : '');
-      btn.textContent = r === 'all' ? 'Все' : RARITY_RU[r];
+      btn.textContent = r === 'all' ? T('Все') : R(r);
       btn.addEventListener('click', () => {
         this.invFilter = r;
         this.renderInventoryFilters();
@@ -2958,7 +3277,7 @@ const App = {
     if (this.invFilter !== 'all') filtered = filtered.filter(u => u.rarity === this.invFilter);
     if (this.invSearch.trim()) {
       const q = this.invSearch.toLowerCase();
-      filtered = filtered.filter(u => u.name.toLowerCase().includes(q) || (RARITY_RU[u.rarity] || '').toLowerCase().includes(q));
+      filtered = filtered.filter(u => u.name.toLowerCase().includes(q) || (R(u.rarity) || '').toLowerCase().includes(q));
     }
     if (filtered.length === 0) {
       grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;opacity:.5">Ничего не найдено</div>';
@@ -2971,10 +3290,10 @@ const App = {
       const equipped = SaveManager.isEquipped(u.id);
       card.innerHTML = `
         <div class="u-emoji">${u.emoji}</div>
-        <div class="u-name">${u.name} <small style="opacity:.5;color:${RARITY_COLOR[u.rarity]}">${RARITY_RU[u.rarity]}</small></div>
+        <div class="u-name">${T(u.name)} <small style="opacity:.5;color:${RARITY_COLOR[u.rarity]}">${R(u.rarity)}</small></div>
         <div class="u-desc">${u.desc}</div>
-        <div class="u-bonus">${statRange(u).pureFarm ? '💰 Доход: ' + statRange(u).cash[0] + ' → ' + statRange(u).cash[1] + '💰/волну' : 'Урон: ' + statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1] + ' · Радиус: ' + statRange(u).range[0] + ' → ' + statRange(u).range[1] + ' · Заряд: ' + statRange(u).rate[0] + ' → ' + statRange(u).rate[1] + 'с'}</div>
-        <div style="font-weight:700;color:#7fffa0;font-size:.95rem">💰 Продать: ${RARITY_DUP[u.rarity] || 25}</div>
+        <div class="u-bonus">${statRange(u).pureFarm ? T('💰 Доход: ') + statRange(u).cash[0] + ' → ' + statRange(u).cash[1] + T('💰/волну') : T('Урон: ') + statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1] + T(' · Радиус: ') + statRange(u).range[0] + ' → ' + statRange(u).range[1] + T(' · Заряд: ') + statRange(u).rate[0] + ' → ' + statRange(u).rate[1] + 'с'}</div>
+        <div style="font-weight:700;color:#7fffa0;font-size:.95rem">${T('💰 Продать: ')}${RARITY_DUP[u.rarity] || 25}</div>
         <div class="u-actions"></div>`;
       const actions = card.querySelector('.u-actions');
       const equipBtn = document.createElement('button');
@@ -3043,10 +3362,25 @@ const App = {
       slot.className = 'loadout-slot';
       slot.innerHTML = '<div class="ls-empty">➕</div>';
       slot.addEventListener('click', () => {
-        UI.toast('Зайди в Инвентарь, чтобы собрать отряд');
+        UI.toast(T('Зайди в Инвентарь, чтобы собрать отряд'));
         this.showInventory();
       });
       container.appendChild(slot);
+    }
+    if (containerId === 'unitSelectLoadout') {
+      const sum = document.getElementById('unitSelectSummary');
+      if (sum) {
+        let dps = 0, cash = 0;
+        for (const uid of loadout) {
+          const uu = UNITS.find(x => x.id === uid);
+          if (!uu) continue;
+          if (uu.pureFarm) cash += uu.cashPerWave || 0;
+          else dps += Math.round((uu.stats.dmg || 0) / (uu.stats.fireRate || 1));
+        }
+        sum.innerHTML = loadout.length
+          ? fill(T('⚔ DPS отряда: <b>%1</b> · 💰 Доход ферм: <b>%2💰</b>/волну · Юнитов: <b>%3/%4</b>'), dps, cash, loadout.length, LOADOUT_SIZE)
+          : T('Отряд пуст — зайди в Инвентарь и собери отряд.');
+      }
     }
   },
   showUnitDetail(unit) {
@@ -3059,18 +3393,18 @@ const App = {
     content.innerHTML = `
       <div class="ud-emoji">${unit.emoji}</div>
       <div class="ud-name">${unit.name}</div>
-      <div class="ud-rarity" style="color:${rarityColor}">${RARITY_RU[unit.rarity]}</div>
+      <div class="ud-rarity" style="color:${rarityColor}">${R(unit.rarity)}</div>
       <div style="text-align:center;font-size:.85rem;opacity:.7">${unit.desc}</div>
       ${unit.ability && unit.ability !== 'none' ? `<div class="ud-ability">${ABILITY_RU[unit.ability]}${unit.cashPerWave ? ' (+' + unit.cashPerWave + '💰/волна)' : ''}</div>` : ''}
       ${unit.aura ? `<div class="ud-ability">🌟 Аура: +${Math.round(unit.aura * 100)}% урона союзникам</div>` : ''}
       <div class="ud-stats">
-        <div class="ud-stat"><div class="label">${unit.pureFarm ? '💸 Доход' : 'Урон'}</div><div class="val">${unit.pureFarm ? '+' + statRange(unit).cash[0] + ' → +' + statRange(unit).cash[1] + '💰' : statRange(unit).dmg[0] + ' → ' + statRange(unit).dmg[1]}</div></div>
-        <div class="ud-stat"><div class="label">Радиус</div><div class="val">${statRange(unit).range[0]} → ${statRange(unit).range[1]}</div></div>
+        <div class="ud-stat"><div class="label">${unit.pureFarm ? T('💸 Доход') : T('Урон')}</div><div class="val">${unit.pureFarm ? '+' + statRange(unit).cash[0] + T(' → +') + statRange(unit).cash[1] + '💰' : statRange(unit).dmg[0] + ' → ' + statRange(unit).dmg[1]}</div></div>
+        <div class="ud-stat"><div class="label">${T('Радиус')}</div><div class="val">${statRange(unit).range[0]} → ${statRange(unit).range[1]}</div></div>
         <div class="ud-stat"><div class="label">Перезарядка</div><div class="val">${statRange(unit).rate[0]} → ${statRange(unit).rate[1]}с</div></div>
       </div>
-      <div class="ud-sell">ПРОДАТЬ ЗА 💰 ${sellPrice}</div>
+      <div class="ud-sell">${T('ПРОДАТЬ ЗА ')}💰 ${sellPrice}</div>
       <button class="btn ${equipped ? 'unequip' : 'equip'}" id="udEquipBtn" style="margin-top:6px">${equipped ? '✓ УБРАТЬ ИЗ ОТРЯДА' : '⚡ ВЗЯТЬ В ОТРЯД'}</button>
-      <button class="btn danger" id="udSellBtn" style="margin-top:4px" ${unit.id === 'intern' ? 'disabled' : ''}>ПРОДАТЬ ЮНИТ${unit.id === 'intern' ? ' (СТАРТОВЫЙ)' : ''}</button>
+      <button class="btn danger" id="udSellBtn" style="margin-top:4px" ${unit.id === 'intern' ? 'disabled' : ''}>${T('ПРОДАТЬ ЮНИТ')}${unit.id === 'intern' ? ' ' + T('(СТАРТОВЫЙ)') : ''}</button>
       <button class="btn small" id="udCloseBtn" style="margin-top:4px">ЗАКРЫТЬ</button>
     `;
     content.querySelector('#udEquipBtn').addEventListener('click', () => {
@@ -3123,12 +3457,16 @@ const App = {
       const sel = SaveManager.selectedDifficulty === d.id;
       const card = document.createElement('div');
       card.className = 'diff-card' + (sel ? ' selected' : '');
+      card.style.borderTop = '3px solid ' + (DCOL[d.id] || '#4fc3ff');
+      const rec = d.endless ? (SaveManager.data.endlessRecord || 0) : 0;
       card.innerHTML = `
-        <div class="d-name">${d.name}</div>
-        <div class="d-row">🌊 Волн: <b>${d.endless ? '∞' : d.waves}</b></div>
-        <div class="d-row">💰 Старт: <b>${d.startMoney}</b> · 🏠 База: <b>1000 HP</b></div>
-        <div class="d-row">🛡 HP ×<b>${d.enemyHpMul}</b> · ⚡ Скор. ×<b>${d.enemySpeedMul}</b></div>
-        <div class="d-row">🪙 Победа: +<b>${d.winCoins || 350}</b> монет</div>`;
+        <div class="d-name" style="color:${DCOL[d.id] || '#cfe0ff'}">${T(d.name)}</div>
+        <div class="d-row">🌊 ${T('Волн')}: <b>${d.endless ? '∞' : d.waves}</b>${d.endless && rec > 0 ? ' (' + T('рекорд') + ': ' + rec + ')' : ''}</div>
+        <div class="d-row">💰 ${T('Старт')}: <b>${d.startMoney}</b> · 🏠 ${T('База')}: <b>1000 HP</b></div>
+        <div class="d-row">🛡 HP ×<b>${d.enemyHpMul}</b> · ⚡ ${T('Скор.')} ×<b>${d.enemySpeedMul}</b></div>
+        ${d.endless
+          ? `<div class="d-row">🪙 ${T('Награда')}: ${T('20+💰 за каждую волну (+50 за каждые 5)')}</div>`
+          : `<div class="d-row">🪙 ${T('Победа')}: +<b>${d.winCoins || 350}</b> ${T('монет')}</div>`}`;
       card.addEventListener('click', () => {
         SaveManager.selectedDifficulty = d.id;
         SaveManager.save();
@@ -3185,8 +3523,10 @@ const App = {
   },
   renderSettings() {
     const btn = document.getElementById('btnToggleSound');
-    btn.textContent = SaveManager.soundOn ? 'ВКЛ' : 'ВЫКЛ';
+    btn.textContent = SaveManager.soundOn ? T('ВКЛ') : T('ВЫКЛ');
     btn.classList.toggle('accent', SaveManager.soundOn);
+    const lb = document.getElementById('btnLang');
+    if (lb) lb.textContent = (SaveManager.data.lang === 'en') ? '🌐 English' : '🌐 Русский';
   },
   redeemCode() {
     const input = document.getElementById('codeInput');
@@ -3203,8 +3543,9 @@ const App = {
     document.getElementById('btnSpinX1').addEventListener('click', () => this.doSpin(1));
     document.getElementById('btnSpinX10').addEventListener('click', () => this.doSpin(10));
     document.getElementById('btnIndex').addEventListener('click', () => this.showIndex());
-    document.getElementById('indexClose').addEventListener('click', () =>
-      document.getElementById('indexOverlay').classList.remove('visible'));
+    const closeIndex = () => document.getElementById('indexOverlay').classList.remove('visible');
+    document.getElementById('indexClose').addEventListener('click', closeIndex);
+    document.getElementById('indexCloseX').addEventListener('click', closeIndex);
     document.getElementById('inventoryBack').addEventListener('click', () => this.showLobby());
     document.getElementById('unitSelectBack').addEventListener('click', () => this.showLobby());
     document.getElementById('unitSelectNext').addEventListener('click', () => this.showDifficultySelect());
@@ -3217,16 +3558,26 @@ const App = {
       SaveManager.soundOn = !SaveManager.soundOn;
       SaveManager.save();
       this.renderSettings();
-      UI.toast(SaveManager.soundOn ? 'Звук включён' : 'Звук выключен');
+      UI.toast(SaveManager.soundOn ? T('Звук включён') : T('Звук выключен'));
+    });
+    document.getElementById('btnLang').addEventListener('click', () => {
+      SaveManager.data.lang = (SaveManager.data.lang === 'en') ? 'ru' : 'en';
+      SaveManager.save();
+      this.renderSettings();
+      applyStaticLang();
+      this.renderGachaReels();
+      this.updateRates();
+      this.refreshMeta();
+      UI.toast(SaveManager.data.lang === 'en' ? 'Language: English' : 'Язык: русский');
     });
     document.getElementById('btnRedeemCode').addEventListener('click', () => this.redeemCode());
     document.getElementById('btnResetProgress').addEventListener('click', () => {
-      if (confirm('Сбросить весь прогресс? Это действие необратимо.')) {
+      if (confirm(T('Сбросить весь прогресс? Это действие необратимо.'))) {
         SaveManager.reset();
         this.renderGachaReels();
         this.refreshMeta();
         this.renderSettings();
-        UI.toast('Прогресс сброшен');
+        UI.toast(T('Прогресс сброшен'));
       }
     });
     document.getElementById('btnAgain').addEventListener('click', () => {
