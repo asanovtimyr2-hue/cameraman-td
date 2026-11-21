@@ -48,13 +48,16 @@
   .btn.unequip{background:#3a2a1a;color:#ffcc66;box-shadow:0 0 0 1px #7a5a2a inset,0 4px 0 #1a1206}
   .panel-title{font-size:1.8rem;font-weight:800;letter-spacing:2px;margin:0 0 6px;text-shadow:0 0 18px #4fc3ff55}
   .panel-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-  .subpanel{background:#12151f;border-radius:22px;padding:22px;box-shadow:0 0 0 2px #1e2a3a inset,0 20px 40px #00000055;width:100%}
+  .subpanel{background:linear-gradient(165deg,#161c2c 0%,#0f131d 70%);border-radius:22px;padding:22px;
+    box-shadow:0 0 0 2px #223050 inset,0 0 34px #0a3a5c1f,0 20px 44px #00000077;width:100%}
   .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;width:100%}
-  .unit-card{background:#19212e;border:1px solid #2a3a4e;border-radius:18px;padding:14px;
+  .unit-card{background:linear-gradient(170deg,#1e2738 0%,#151a26 100%);border:1px solid #2a3a4e;border-radius:18px;padding:14px;
     display:flex;flex-direction:column;gap:6px;box-shadow:0 4px 0 #0a0e14;transition:.15s;position:relative;cursor:pointer}
+  .unit-card:hover{transform:translateY(-2px);border-color:#4a6a94;
+    box-shadow:0 0 0 1px #4d6180 inset,0 6px 0 #0a0e14,0 0 20px #4fc3ff2a}
   .unit-card.locked{opacity:.55;filter:grayscale(.7)}
   .unit-card.selected{border-color:#4fc3ff;box-shadow:0 0 20px #0077ff66,0 4px 0 #0a0e14}
-  .unit-card .u-emoji{font-size:2.2rem;line-height:1}
+  .unit-card .u-emoji{font-size:2.2rem;line-height:1;display:flex;align-items:center;justify-content:center;min-height:52px}
   .unit-card .u-name{font-weight:800;font-size:1.05rem;color:#cfe0ff}
   .unit-card .u-desc{font-size:.78rem;opacity:.65;min-height:32px}
   .unit-card .u-bonus{font-size:.78rem;color:#7ee7ff}
@@ -220,6 +223,15 @@
   .stock-grid{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
   .stock-cell{background:#0e1420;border-radius:10px;padding:5px 9px;font-size:.75rem;font-weight:700;display:flex;gap:6px;align-items:center;box-shadow:0 0 0 1px #223048 inset}
   .stock-cell .sc-pct{opacity:.65;font-weight:600}
+  .coin-ico.gem{background:linear-gradient(135deg,#3a2a5c,#1f1530);
+    box-shadow:0 0 0 2px #8a66c8 inset,0 0 14px #b06bff66;color:#efdfff;font-size:.95rem}
+  .unit-avatar{display:block}
+  @keyframes winPulse{0%,100%{box-shadow:0 0 0 3px #ffd966 inset,0 0 26px #ffd96688}
+    50%{box-shadow:0 0 0 3px #ffe89a inset,0 0 44px #ffd966bb}}
+  .gacha-reel.winner{animation:winPulse 1s ease infinite}
+  .gacha-reel.spinning{box-shadow:0 0 0 2px #4fc3ff inset,0 0 16px #4fc3ff55}
+  .stock-cell{transition:.15s}
+  .stock-cell:hover{box-shadow:0 0 0 1px #4fc3ff inset,0 0 12px #4fc3ff33}
 </style>
 </head>
 <body>
@@ -248,7 +260,7 @@
     <button class="btn small back-btn" id="gachaBack">← ЛОББИ</button>
     <div class="panel-head">
       <h2 class="panel-title">🎰 ПРИЗЫВ</h2>
-      <div class="coin-badge"><span class="coin-ico">¢</span> <span id="metaCoinsGacha">0</span></div>
+      <div class="coin-badge"><span class="coin-ico gem">💎</span> <span id="metaCoinsGacha">0</span></div>
     </div>
     <div class="gacha-boxes" id="gachaBoxes"></div>
     <div class="gacha-stock" id="gachaStock"></div>
@@ -256,8 +268,8 @@
       <div class="gacha-reels" id="gachaReels"></div>
       <div class="gacha-result" id="gachaResult"></div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
-        <button class="btn gold" id="btnSpinX1" style="min-width:200px;font-size:1.05rem">ПРИЗЫВ ×1 (100 🪙)</button>
-        <button class="btn gold" id="btnSpinX10" style="min-width:220px;font-size:1.05rem">ПРИЗЫВ ×10 (900 🪙)</button>
+        <button class="btn gold" id="btnSpinX1" style="min-width:200px;font-size:1.05rem">ПРИЗЫВ ×1 (100 💎)</button>
+        <button class="btn gold" id="btnSpinX10" style="min-width:220px;font-size:1.05rem">ПРИЗЫВ ×10 (900 💎)</button>
         <button class="btn" id="btnIndex" style="min-width:150px;font-size:1.05rem">📑 ИНДЕКС</button>
       </div>
     </div>
@@ -451,7 +463,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
 const LOADOUT_SIZE = 5;
-const GAME_VERSION = 'v2.12-REWORK';
+const GAME_VERSION = 'v2.13-STYLE';
 
 const DCOL = { easy: '#4dff4d', normal: '#4fc3ff', hard: '#ffb347', insane: '#ff5555', endless: '#c86bff' };
 const I18N_EN = {
@@ -641,7 +653,7 @@ const I18N_EN = {
   "Нет юнитов в отряде! Зайди в ИНВЕНТАРЬ и собери отряд.": "No units in the squad! Open the INVENTORY to assemble one.",
   "Зайди в Инвентарь, чтобы собрать отряд": "Open the Inventory to assemble a squad",
   "🎉 НОВЫЙ ЮНИТ! ×%1 ": "🎉 NEW UNIT! ×%1 ",
-  "♻️ Дубли проданы за +%1 🎟": "♻️ Duplicates sold for +%1 🎟",
+  "♻️ Дубли проданы за +%1 💎": "♻️ Duplicates sold for +%1 💎",
   "♻️ Дубли оставлены (авто-продажа выключена)": "♻️ Duplicates kept (auto-sell is off)",
   "Код уже использован": "Code already used",
   "Неверный код": "Invalid code",
@@ -670,15 +682,15 @@ const I18N_EN = {
   "Шанс выпадения: ": "Drop chance: ",
   "💰 Продать: ": "💰 Sell for: ",
   "🧖 Снимает стан и даёт иммунитет к стану боссов": "🧖 Clears stun and grants immunity to boss stuns",
-  "ПРИЗЫВ ×1 (100 🪙)": "SUMMON ×1 (100 🪙)",
-  "ПРИЗЫВ ×10 (900 🪙)": "SUMMON ×10 (900 🪙)",
+  "ПРИЗЫВ ×1 (100 💎)": "SUMMON ×1 (100 💎)",
+  "ПРИЗЫВ ×10 (900 💎)": "SUMMON ×10 (900 💎)",
   "🔧 Доход ферм: +%1💰/волну": "🔧 Farm income: +%1💰/wave",
   "Скип волны! +%1💰": "Wave skipped! +%1💰",
     "Обычный ящик": "Common Crate",
     "Мифический сундук": "Mythic Chest",
     "СТОК — СБРОС ЧЕРЕЗ %1": "STOCK \u2014 RESETS IN %1",
-    "ПРИЗЫВ ×1 (%1 \ud83e\ude99)": "SUMMON \u00d71 (%1 \ud83d\udc8e)",
-    "ПРИЗЫВ ×10 (%1 \ud83e\ude99)": "SUMMON \u00d710 (%1 \ud83d\udc8e)",
+    "ПРИЗЫВ ×1 (%1 💎)": "SUMMON ×1 (%1 💎)",
+    "ПРИЗЫВ ×10 (%1 💎)": "SUMMON ×10 (%1 💎)",
     "УРОН": "DMG",
   "РАДИУС": "RNG",
   "ЗАРЯД": "CD"
@@ -804,7 +816,7 @@ const GACHA_BOXES = [
   { id: 'common', name: '\ud83d\udce6 \u041e\u0431\u044b\u0447\u043d\u044b\u0439 \u044f\u0449\u0438\u043a', cost1: 100, cost10: 900,
     rates: { Common: 0.55, Uncommon: 0.30, Rare: 0.13, Epic: 0.018, Legendary: 0.002 },
     stock: { Common: 2, Uncommon: 2, Rare: 2, Epic: 1, Legendary: 1 } },
-  { id: 'mythic', name: '\ud83d\udca0 \u041c\u0438\u0444\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u0441\u0443\u043d\u0434\u0443\u043a', cost1: 450, cost10: 4000,
+  { id: 'mythic', name: '\ud83d\udca0 \u041c\u0438\u0444\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u0441\u0443\u043d\u0434\u0443\u043a', cost1: 900, cost10: 4000,
     rates: { Rare: 0.45, Epic: 0.40, Legendary: 0.12, Mythic: 0.03 },
     stock: { Rare: 2, Epic: 2, Legendary: 2, Mythic: 1 } }
 ];
@@ -1457,10 +1469,14 @@ const UNIT_KIND = {
   hacker: 'tv', titanTV: 'tv',
   speaker: 'speaker', titanSpeaker: 'speaker', boomop: 'speaker'
 };
-function drawUnitFigure(ctx, unit, x, y, size) {
+function drawUnitFigure(ctx, unit, x, y, size, noEmoji) {
   const rc = RARITY_COLOR[unit.rarity] || '#ffd966';
   const kind = UNIT_KIND[unit.id] || 'tool';
   ctx.save();
+  const aura = ctx.createRadialGradient(x, y - size * 0.25, size * 0.1, x, y - size * 0.25, size * 0.95);
+  aura.addColorStop(0, rc + '38'); aura.addColorStop(1, rc + '00');
+  ctx.fillStyle = aura;
+  ctx.beginPath(); ctx.arc(x, y - size * 0.25, size * 0.95, 0, Math.PI * 2); ctx.fill();
   ctx.beginPath(); ctx.roundRect(x - size * 0.34, y - size * 0.12, size * 0.68, size * 0.36, 5);
   const tg = ctx.createLinearGradient(x, y - size * 0.12, x, y + size * 0.24);
   tg.addColorStop(0, '#39445e'); tg.addColorStop(1, '#202839');
@@ -1505,9 +1521,11 @@ function drawUnitFigure(ctx, unit, x, y, size) {
     ctx.fillStyle = '#39445e'; ctx.fill();
     ctx.strokeStyle = rc; ctx.lineWidth = 1.4; ctx.stroke();
   }
-  ctx.font = (size * 0.25).toFixed(1) + 'px sans-serif';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(unit.emoji, x + size * 0.25, y + size * 0.13);
+  if (!noEmoji) {
+    ctx.font = (size * 0.25).toFixed(1) + 'px sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(unit.emoji, x + size * 0.25, y + size * 0.25);
+  }
   ctx.restore();
 }
 
@@ -1802,6 +1820,12 @@ function drawEnemyFigure(ctx, e) {
     ctx.beginPath(); ctx.arc(x + dx * 1.15, ey, s * 0.07, 0, Math.PI * 2);
     ctx.fillStyle = '#101418'; ctx.fill();
   }
+  for (const dx of [-s * 0.25, s * 0.25]) {
+    const bx = x + dx, by = ey - s * 0.25;
+    ctx.beginPath(); ctx.moveTo(bx - s * 0.25, by);
+    ctx.lineTo(bx + s * 0.25, by - s * 0.25);
+    ctx.strokeStyle = '#20242c'; ctx.lineWidth = s * 0.07; ctx.stroke();
+  }
   ctx.beginPath(); ctx.arc(x, yy + s * 0.1, s * 0.26, 0.15 * Math.PI, 0.85 * Math.PI);
   ctx.strokeStyle = '#20242c'; ctx.lineWidth = 1.6; ctx.stroke();
   if (e.def.id === 'sci' || e.def.id === 'gSci') {
@@ -2015,8 +2039,8 @@ class Enemy {
       ctx.beginPath();
       ctx.moveTo(x - 7, yy - this.size - 6); ctx.lineTo(x - 7, yy - this.size - 13);
       ctx.lineTo(x - 3.5, yy - this.size - 8); ctx.lineTo(x, yy - this.size - 14);
-      ctx.lineTo(3.5, yy - this.size - 8); ctx.lineTo(7, yy - this.size - 13);
-      ctx.lineTo(7, yy - this.size - 6); ctx.closePath(); ctx.fill();
+      ctx.lineTo(x + 3.5, yy - this.size - 8); ctx.lineTo(x + 7, yy - this.size - 13);
+      ctx.lineTo(x + 7, yy - this.size - 6); ctx.closePath(); ctx.fill();
       const pl = 0.5 + 0.5 * Math.sin(this.time * 4);
       ctx.beginPath(); ctx.arc(x, yy, this.size + 4 + pl * 2, 0, Math.PI * 2);
       ctx.strokeStyle = `rgba(255,217,102,${0.35 + 0.3 * pl})`; ctx.lineWidth = 2; ctx.stroke();
@@ -3249,6 +3273,31 @@ const App = {
   spinning: false,
   invFilter: 'all',
   invSearch: '',
+  _unitAvatarCache: {},
+  unitAvatarHTML(unit, px, opts) {
+    px = Math.round(px || 52);
+    const ring = (opts && opts.ring) !== false;
+    try {
+      const key = unit.id + ':' + px + ':' + (ring ? 1 : 0) + ':' + gameLang();
+      if (this._unitAvatarCache[key]) return this._unitAvatarCache[key];
+      const cv = document.createElement('canvas');
+      cv.width = px; cv.height = px;
+      const ctx = cv.getContext('2d');
+      if (!ctx || !ctx.roundRect) throw new Error('no canvas2d');
+      const rc = RARITY_COLOR[unit.rarity] || '#ffd966';
+      const g = ctx.createRadialGradient(px / 2, px * 0.6, px * 0.08, px / 2, px * 0.6, px * 0.55);
+      g.addColorStop(0, rc + '55'); g.addColorStop(0.7, rc + '22'); g.addColorStop(1, rc + '00');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, px, px);
+      drawUnitFigure(ctx, unit, px * 0.5, px * 0.68, px * 0.6, true);
+      const url = cv.toDataURL();
+      const html = '<img class="unit-avatar" src="' + url + '" alt="' + unit.name + '"' +
+        ' style="height:' + px + 'px;width:' + px + 'px;' + (ring ? 'filter:drop-shadow(0 0 ' + (px * 0.09).toFixed(1) + 'px ' + rc + 'cc)' : '') + '">';
+      this._unitAvatarCache[key] = html;
+      return html;
+    } catch (err) {
+      return '<div style="font-size:' + Math.round(px * 0.55) + 'px;line-height:' + px + 'px">' + unit.emoji + '</div>';
+    }
+  },
   init() {
     SaveManager.load();
     installLangObserver();
@@ -3346,7 +3395,7 @@ const App = {
       card.className = 'unit-card' + (unlocked ? '' : ' locked');
       const st = u.stats;
       card.innerHTML = `
-        <div class="u-emoji">${unlocked ? u.emoji : '🔒'}</div>
+        <div class="u-emoji">${unlocked ? this.unitAvatarHTML(u, 54) : '<div style="font-size:2.2rem">🔒</div>'}</div>
         <div class="u-name">${unlocked ? T(u.name) : '???'} <small style="opacity:.5;color:${RARITY_COLOR[u.rarity]}">${R(u.rarity)}</small></div>
         <div class="u-desc">${unlocked ? T(u.desc) : 'Ещё не открыт'}</div>
         <div class="u-status" style="color:${unlocked ? '#7fffa0' : '#ffb3b3'}">
@@ -3361,7 +3410,7 @@ const App = {
     const gachaBox = this.gachaBox = (SaveManager.data && SaveManager.data.gachaBox) || 'common';
     const gbox = GACHA_BOXES.find(b => b.id === gachaBox) || GACHA_BOXES[0];
     const cost = count === 1 ? gbox.cost1 : gbox.cost10;
-    if (SaveManager.coins < cost) { Sound.error(); UI.toast(`Не хватает монет (нужно ${cost})`); return; }
+    if (SaveManager.coins < cost) { Sound.error(); UI.toast(`Не хватает 💎 (нужно ${cost})`); return; }
     Sound.init();
     SaveManager.coins = SaveManager.coins - cost;
     this.refreshMeta();
@@ -3410,7 +3459,7 @@ const App = {
         const u = last ? du : rndUnit();
         const cell = document.createElement('div');
         cell.className = 'cell';
-        cell.innerHTML = `<div style="font-size:2rem;line-height:1">${u.emoji}</div>` +
+        cell.innerHTML = this.unitAvatarHTML(u, 46) +
           `<div class="cell-label" style="color:${RARITY_COLOR[u.rarity]}">${last ? R(u.rarity) : ''}</div>`;
         strip.appendChild(cell);
       }
@@ -3452,7 +3501,7 @@ const App = {
     const resultEl = document.getElementById('gachaResult');
     let msg = '';
     if (newCount > 0) msg += fill(T('🎉 НОВЫЙ ЮНИТ! ×%1 '), newCount);
-    if (dupCoins > 0) msg += fill(T('♻️ Дубли проданы за +%1 🪙'), dupCoins);
+    if (dupCoins > 0) msg += fill(T('♻️ Дубли проданы за +%1 💎'), dupCoins);
     if (newCount === 0 && dupCoins === 0) msg = T('♻️ Дубли оставлены (авто-продажа выключена)');
     resultEl.textContent = msg;
     resultEl.className = 'gacha-result ' + (newCount > 0 ? 'new' : 'dup');
@@ -3529,7 +3578,7 @@ const App = {
     for (const u of stock) {
       const same = stock.filter(x => x.rarity === u.rarity).length;
       const pct = (box.rates[u.rarity] || 0) / same * 100;
-      html += '<div class="stock-cell"><span style="font-size:1.1rem">' + u.emoji + '</span>' +
+      html += '<div class="stock-cell">' + this.unitAvatarHTML(u, 26) +
         '<span style="color:' + (RARITY_COLOR[u.rarity] || '#aaa') + '">' + T(u.name) + '</span>' +
         '<span class="sc-pct">' + pct.toFixed(1) + '%</span></div>';
     }
@@ -3559,7 +3608,7 @@ const App = {
       card.className = 'unit-card';
       card.style.opacity = unlocked ? '' : '0.62';
       card.innerHTML = `
-        <div class="u-emoji">${unlocked ? u.emoji : '🔒'}</div>
+        <div class="u-emoji">${unlocked ? this.unitAvatarHTML(u, 54) : '<div style="font-size:2.2rem">🔒</div>'}</div>
         <div class="u-name">${T(u.name)} <small style="opacity:.5;color:${RARITY_COLOR[u.rarity]}">${R(u.rarity)}</small></div>
         <div class="u-desc">${unlocked ? T(u.desc) : 'Юнит ещё не открыт'}</div>
         <div class="u-bonus">${statRange(u).pureFarm ? T('💰 Доход: ') + statRange(u).cash[0] + ' → ' + statRange(u).cash[1] + T('💰/волну') : T('Урон: ') + statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1] + T(' · Радиус: ') + statRange(u).range[0] + ' → ' + statRange(u).range[1] + T(' · Заряд: ') + statRange(u).rate[0] + ' → ' + statRange(u).rate[1] + 'с'}</div>
@@ -3653,7 +3702,7 @@ const App = {
       const st = u.stats;
       const equipped = SaveManager.isEquipped(u.id);
       card.innerHTML = `
-        <div class="u-emoji">${u.emoji}</div>
+        <div class="u-emoji">${this.unitAvatarHTML(u, 54)}</div>
         <div class="u-name">${T(u.name)} <small style="opacity:.5;color:${RARITY_COLOR[u.rarity]}">${R(u.rarity)}</small></div>
         <div class="u-desc">${u.desc}</div>
         <div class="u-bonus">${statRange(u).pureFarm ? T('💰 Доход: ') + statRange(u).cash[0] + ' → ' + statRange(u).cash[1] + T('💰/волну') : T('Урон: ') + statRange(u).dmg[0] + ' → ' + statRange(u).dmg[1] + T(' · Радиус: ') + statRange(u).range[0] + ' → ' + statRange(u).range[1] + T(' · Заряд: ') + statRange(u).rate[0] + ' → ' + statRange(u).rate[1] + 'с'}</div>
@@ -3705,8 +3754,9 @@ const App = {
         const u = UNITS.find(x => x.id === id);
         if (u) {
           slot.className = 'loadout-slot filled';
+          slot.style.borderColor = RARITY_COLOR[u.rarity] || '#ffd966';
           slot.innerHTML = `
-            <div class="ls-emoji">${u.emoji}</div>
+            <div class="ls-emoji">${this.unitAvatarHTML(u, 44)}</div>
             <div class="ls-name">${u.name}</div>
             <div class="ls-remove">✖</div>`;
           slot.querySelector('.ls-remove').addEventListener('click', (e) => {
@@ -3755,7 +3805,7 @@ const App = {
     const rarityColor = RARITY_COLOR[unit.rarity];
     const equipped = SaveManager.isEquipped(unit.id);
     content.innerHTML = `
-      <div class="ud-emoji">${unit.emoji}</div>
+      <div class="ud-emoji">${this.unitAvatarHTML(unit, 84)}</div>
       <div class="ud-name">${unit.name}</div>
       <div class="ud-rarity" style="color:${rarityColor}">${R(unit.rarity)}</div>
       <div style="text-align:center;font-size:.85rem;opacity:.7">${unit.desc}</div>
