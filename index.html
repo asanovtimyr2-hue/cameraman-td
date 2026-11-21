@@ -348,6 +348,9 @@
   .gacha-reel.spinning{box-shadow:0 0 0 2px #4fc3ff inset,0 0 16px #4fc3ff55}
   .stock-cell{transition:.15s}
   .stock-cell:hover{box-shadow:0 0 0 1px #4fc3ff inset,0 0 12px #4fc3ff33}
+.event-modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;width:100%;max-width:920px}
+#eventControls{display:none;gap:6px;align-items:center}
+@media (max-width:520px){#eventControls{gap:4px}#eventControls .btn{padding:4px 7px;font-size:.68rem}.event-modes{grid-template-columns:1fr;max-width:100%}}
 </style>
 </head>
 <body>
@@ -367,11 +370,51 @@
       <button class="btn gold" id="btnGacha">🎰 ПРИЗЫВ (ГАЧА)</button>
       <button class="btn" id="btnShop">🛒 МАГАЗИН</button>
       <button class="btn" id="btnQuests">📜 КВЕСТЫ</button>
+      <button class="btn" id="btnEvent">🏖️ ИВЕНТ ДВИЖУХА</button>
       <button class="btn" id="btnCollection">🎒 ИНВЕНТАРЬ</button>
       <button class="btn" id="btnSettings">⚙ НАСТРОЙКИ</button>
     </div>
     <div class="hint">СКИБИДИ-ТУАЛЕТЫ ЛОМАЮТ СТУДИЮ · ЗАЩИТИ ЕЁ · ПРОГРЕСС СОХРАНЯЕТСЯ АВТОМАТИЧЕСКИ</div>
   </div>
+</div>
+
+<!-- ИВЕНТ ДВИЖУХА -->
+<div class="screen" id="eventScreen">
+  <div class="subpanel">
+    <button class="btn small back-btn" id="eventBack">← ЛОББИ</button>
+    <div class="panel-head">
+      <h2 class="panel-title">🏖️ ИВЕНТ ДВИЖУХА</h2>
+      <div class="coin-badge"><span class="coin-ico">¢</span> <span id="metaCoinsEvent">0</span></div>
+    </div>
+    <div class="event-modes">
+      <div class="unit-card crate-card" style="border-color:#7fa65c">
+        <div class="crate-emoji" style="text-shadow:0 0 18px #7fa65c88">🏛️</div>
+        <div class="u-name" style="color:#7fa65c">СТОЛИЦА ЗА 3 ДНЯ</div>
+        <div class="u-desc">Захвати базу врага (10000 HP) за 10 минут: спавни юнитов за монеты и качай их. Из базы лезут солдаты-скибидисты, по нашим летят шахеды.</div>
+        <div class="crate-price" style="color:#7fffa0">Награда: 🎖️ Военный Крейт</div>
+        <div class="u-actions"><button class="btn small accent" id="btnModeCapital">▶ ШТУРМОВАТЬ</button></div>
+      </div>
+      <div class="unit-card crate-card" style="border-color:#7ec8a0">
+        <div class="crate-emoji" style="text-shadow:0 0 18px #7ec8a088">🛡️</div>
+        <div class="u-name" style="color:#7ec8a0">ДАЙТЕ ДЕНЕГ — ОБОРОНА</div>
+        <div class="u-desc">Защити базу (1500 HP) 40 волн. Покупай свои шахеды (КД 40с, 300🪙), ставь ПВО (максимум 13)! На базу тоже летят шахеды.</div>
+        <div class="crate-price" style="color:#7fffa0">Награда: 📦 Малобюджетный Крейт</div>
+        <div class="u-actions"><button class="btn small accent" id="btnModeDefense">▶ ЗАЩИЩАТЬ</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="screen" id="eventFrontScreen">
+  <div class="top-panel">
+    <div class="stat money"><span class="coin-ico">¢</span><span class="value" id="frontMoney">0</span></div>
+    <div class="stat"><span>🏛️</span><span class="value" id="frontBaseHp">10000</span></div>
+    <div class="stat"><span>⏱</span><span class="value" id="frontTime">10:00</span></div>
+    <button id="frontSpeedBtn" class="btn small">⏩ ×1</button>
+    <button id="frontQuitBtn" class="btn small danger">🏠 ЛОББИ</button>
+  </div>
+  <div class="game-canvas-wrap"><canvas id="frontCanvas" width="960" height="640"></canvas></div>
+  <div class="bottom-panel" id="frontPanel"></div>
 </div>
 
 <!-- ГАЧА -->
@@ -545,6 +588,10 @@
     <div class="stat wave-info"><span>🌊</span><span class="value" id="waveDisplay">0 / 15</span></div>
     <div class="hero-badge" id="heroBadge">🎥 <span>0 юнитов</span></div>
     <div class="wave-timer" id="waveTimer" style="display:none">⏱ <span id="waveTimerVal">5</span>с · <span id="waveComp"></span></div>
+    <div id="eventControls">
+      <button id="btnShahed" class="btn small">🚀 ШАХЕД 300🪙</button>
+      <button id="btnPVO" class="btn small">🛡 ПВО (0/13)</button>
+    </div>
     <button id="startWaveBtn" class="btn accent small">▶ СЛЕДУЮЩАЯ ВОЛНА</button>
     <button id="pauseBtn" class="btn small">⏸ ПАУЗА</button>
     <button id="speedBtn" class="btn small">⏩ ×1</button>
@@ -627,7 +674,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
 const LOADOUT_SIZE = 5;
-const GAME_VERSION = 'v2.20-POTIONS-POLISH';
+const GAME_VERSION = 'v2.21-DVIZHUHA-EVENT';
 
 const DCOL = { easy: '#4dff4d', normal: '#4fc3ff', hard: '#ffb347', insane: '#ff5555', endless: '#c86bff' };
 const I18N_EN = {
@@ -965,7 +1012,34 @@ const I18N_EN = {
   "Убей 10 боссов": "Kill 10 bosses",
   "Сделай 20 улучшений": "Make 20 upgrades",
   "Заработай 8000 монет в боях": "Earn 8000 coins in battles",
-  "кристаллов": "crystals"
+  "кристаллов": "crystals",
+  "🏖️ ИВЕНТ ДВИЖУХА": "🏖️ DVIZHUHA EVENT",
+  "СТОЛИЦА ЗА 3 ДНЯ": "CAPITAL IN 3 DAYS",
+  "Захвати базу врага (10000 HP) за 10 минут: спавни юнитов за монеты и качай их. Из базы лезут солдаты-скибидисты, по нашим летят шахеды.": "Capture the enemy base (10000 HP) within 10 minutes: spawn units for coins and upgrade them. Skibidi soldiers pour out of the base, and shaheds fly at your troops.",
+  "Награда: 🎖️ Военный Крейт": "Reward: 🎖️ Military Crate",
+  "▶ ШТУРМОВАТЬ": "▶ STORM",
+  "ДАЙТЕ ДЕНЕГ — ОБОРОНА": "GIMME MONEY — DEFENSE",
+  "Защити базу (1500 HP) 40 волн. Покупай свои шахеды (КД 40с, 300🪙), ставь ПВО (максимум 13)! На базу тоже летят шахеды.": "Defend your base (1500 HP) for 40 waves. Buy your own shaheds (40s cooldown, 300🪙) and build AA guns (max 13)! Shaheds also fly at your base.",
+  "Награда: 📦 Малобюджетный Крейт": "Reward: 📦 Low-Budget Crate",
+  "▶ ЗАЩИЩАТЬ": "▶ DEFEND",
+  "⚠ Вражеский шахед летит на базу!": "⚠ Enemy shahed incoming!",
+  "ШАХЕД готов через %1с": "SHAHED ready in %1s",
+  "Не хватает 🪙 (нужно %1)": "Not enough 🪙 (need %1)",
+  "Максимум ПВО: %1": "Max AA guns: %1",
+  "🚀 ШАХЕД 300🪙": "🚀 SHAHED 300🪙",
+  "🛡 ПВО (0/13)": "🛡 AA (0/13)",
+  "Лимит юнитов (%1)": "Unit limit (%1)",
+  "⚔️ УРОН +15%": "⚔️ DMG +15%",
+  "❤️ ХП +15%": "❤️ HP +15%",
+  "👟 СКОРОСТЬ +10%": "👟 SPEED +10%",
+  "МАКС": "MAX",
+  "%1 шт": "%1 pcs",
+  "🏆 БАЗА ВРАГА ПАЛА!": "🏆 ENEMY BASE HAS FALLEN!",
+  "💀 ВРЕМЯ ВЫШЛО": "💀 TIME'S UP",
+  "🎖️ Военный Крейт получен!": "🎖️ Military Crate received!",
+  "+10 минут эффекта: %1": "+10 min of effect: %1",
+  "%1 куплен! Активируй в разделе «Вещи» 🎒": "%1 bought! Activate it in the «Items» tab 🎒",
+  "▶ АКТИВИРОВАТЬ": "▶ ACTIVATE"
 };
 function gameLang() {
   try { return (SaveManager.data && SaveManager.data.lang === 'en') ? 'en' : 'ru'; } catch (e) { return 'ru'; }
@@ -1027,29 +1101,29 @@ function installLangObserver() {
 
 const MAX_HEROES = 15;
 
-const RARITY_ORDER = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Mythic', 'Godly', 'Ultimate'];
+const RARITY_ORDER = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Special', 'Mythic', 'Godly', 'Ultimate'];
 const RARITY_RU = {
   'Common': 'Обычный', 'Uncommon': 'Необычный', 'Rare': 'Редкий',
   'Epic': 'Эпический', 'Legendary': 'Легендарный', 'Mythic': 'Мифический', 'Godly': 'Божественный',
-  'Ultimate': 'Ультимативный'
+  'Ultimate': 'Ультимативный', 'Special': 'Особенный'
 };
 const RARITY_COST = {
   'Common': 100, 'Uncommon': 175, 'Rare': 300, 'Epic': 450, 'Legendary': 700, 'Mythic': 1100, 'Godly': 1600,
-  'Ultimate': 2000
+  'Ultimate': 2000, 'Special': 800
 };
 const RARITY_DUP = {
   'Common': 25, 'Uncommon': 45, 'Rare': 90, 'Epic': 160, 'Legendary': 500, 'Mythic': 900, 'Godly': 2000,
-  'Ultimate': 4000
+  'Ultimate': 4000, 'Special': 600
 };
 const RARITY_COLOR = {
   'Common': '#aaaaaa', 'Uncommon': '#7fffa0', 'Rare': '#7ee7ff',
   'Epic': '#b06bff', 'Legendary': '#ffd966', 'Mythic': '#ff66cc', 'Godly': '#ffcf3d',
-  'Ultimate': '#ff4d5e'
+  'Ultimate': '#ff4d5e', 'Special': '#ff8a5c'
 };
 const HERO_UPGRADE_COST = [0, 120, 280, 600, 1100];
 const RARITY_UPGRADE_MULT = {
   'Common': 1.0, 'Uncommon': 1.3, 'Rare': 1.6,
-  'Epic': 2.0, 'Legendary': 2.5, 'Mythic': 3.0, 'Godly': 3.5
+  'Epic': 2.0, 'Legendary': 2.5, 'Mythic': 3.0, 'Godly': 3.5, 'Special': 2.6
 };
 const SELL_RATIO = 0.6;
 const BASE_MAX_HP = 1000;
@@ -1078,9 +1152,11 @@ const UNIT_ATK = {
   striderSpeaker: 'wave', striderCamera: 'laser', striderPlasma: 'voxel',
   tvStrider: 'wave', holoCam: 'ring', tvOverlord: 'laser',
   rookie: 'bullet', soundengineer: 'wave', shadowop: 'laser', cinegod: 'laser',
-  titanCam40: 'laser'
+  titanCam40: 'laser',
+  mobilCam: 'bullet', speakerVet: 'wave', presidentTV: 'laser', camShahed: 'voxel',
+  amerFarm: 'cash', elegantPresident: 'laser'
 };
-const UNIT_CELLS = { titanCam: [2, 1], titanTV: [2, 1], titanSpeaker: [2, 1] };
+const UNIT_CELLS = { titanCam: [2, 1], titanTV: [2, 1], titanSpeaker: [2, 1], presidentTV: [2, 1], elegantPresident: [2, 1] };
 function unitCells(id) { return UNIT_CELLS[id] || [1, 1]; }
 
 const ABILITY_RU = {
@@ -1150,7 +1226,8 @@ const UNIT_LIMITS = {
   titanCam: 2, titanSpeaker: 2, titanTV: 2,
   snipercam: 3, hacker: 3, shadowop: 3,
   striderSpeaker: 3, striderCamera: 3, striderPlasma: 2, tvStrider: 3, holoCam: 3, tvOverlord: 2,
-  cinegod: 1, titanCam40: 1
+  cinegod: 1, titanCam40: 1,
+  mobilCam: 8, speakerVet: 6, presidentTV: 2, camShahed: 4, amerFarm: 4, elegantPresident: 1
 };
 function unitLimit(id) { return UNIT_LIMITS[id] || MAX_HEROES; }
 
@@ -1235,27 +1312,27 @@ const UNITS = [
     desc: 'Взламывает систему: попадания замедляют скибиди, +8% дохода.',
     stats: { dmg: 36, range: 140, fireRate: 0.9, hp: 260 },
     passive: { dmgBonus: 0, moneyBonus: 0.08 }, ability: 'slow' },
-  { id: 'striderSpeaker', name: 'Спикер-Страйдер', emoji: '🔊', rarity: 'Common', dropChance: 0.68, shopOnly: true,
+  { id: 'striderSpeaker', name: 'Спикер-Страйдер', emoji: '🔊', rarity: 'Special', dropChance: 0.68, shopOnly: true,
     desc: 'Страйдер на паучьих ногах. Звуковые снаряды взрываются по площади.',
     stats: { dmg: 26, range: 155, fireRate: 0.85, hp: 240 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'splash', crate: 'spider' },
-  { id: 'striderCamera', name: 'Камера-Страйдер', emoji: '📷', rarity: 'Uncommon', dropChance: 0.318, shopOnly: true,
+  { id: 'striderCamera', name: 'Камера-Страйдер', emoji: '📷', rarity: 'Special', dropChance: 0.318, shopOnly: true,
     desc: 'Быстрый и точный стрелок на длинной ноге.',
     stats: { dmg: 36, range: 175, fireRate: 0.7, hp: 260 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', crate: 'spider' },
-  { id: 'striderPlasma', name: 'Плазма-Страйдер', emoji: '☄️', rarity: 'Legendary', dropChance: 0.002, shopOnly: true,
+  { id: 'striderPlasma', name: 'Плазма-Страйдер', emoji: '☄️', rarity: 'Special', dropChance: 0.002, shopOnly: true,
     desc: 'Легендарная плазменная голова: периодический взрыв по площади. Шанс 0.2%.',
     stats: { dmg: 62, range: 185, fireRate: 1.05, hp: 300 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'aoeBurst', crate: 'spider' },
-  { id: 'tvStrider', name: 'ТВ-Страйдер', emoji: '📺', rarity: 'Common', dropChance: 0.68, shopOnly: true,
+  { id: 'tvStrider', name: 'ТВ-Страйдер', emoji: '📺', rarity: 'Special', dropChance: 0.68, shopOnly: true,
     desc: 'ТВ-страйдер поддержки: попадания замедляют врагов.',
     stats: { dmg: 24, range: 160, fireRate: 0.9, hp: 230 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'slow', crate: 'holo' },
-  { id: 'holoCam', name: 'Голо-Кам', emoji: '💠', rarity: 'Epic', dropChance: 0.318, shopOnly: true,
+  { id: 'holoCam', name: 'Голо-Кам', emoji: '💠', rarity: 'Special', dropChance: 0.318, shopOnly: true,
     desc: 'Голографический страйдер: очень дальний и точный огонь.',
     stats: { dmg: 44, range: 195, fireRate: 0.85, hp: 280 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', crate: 'holo' },
-  { id: 'tvOverlord', name: 'ТВ-Оверлорд', emoji: '👑', rarity: 'Mythic', dropChance: 0.002, shopOnly: true,
+  { id: 'tvOverlord', name: 'ТВ-Оверлорд', emoji: '👑', rarity: 'Special', dropChance: 0.002, shopOnly: true,
     desc: 'Мифический оверлорд: тяжёлые залпы по площади. Шанс 0.2%.',
     stats: { dmg: 90, range: 205, fireRate: 1.15, hp: 420 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'aoeBurst', crate: 'holo' },
@@ -1278,7 +1355,31 @@ const UNITS = [
   { id: 'titanCam40', name: 'Титан-Камерамен 4.0', emoji: '🎥', rarity: 'Ultimate', dropChance: 0.00001,
     desc: 'Последняя форма титана альянса: плазменные залпы по площади и несокрушимая броня. Шанс: 0.001% в мифическом, 0.0001% в обычном ящике.',
     stats: { dmg: 650, range: 260, fireRate: 0.7, hp: 1100 },
-    passive: { dmgBonus: 0.25, moneyBonus: 0 }, ability: 'aoeBurst', aoeRadius: 110 }
+    passive: { dmgBonus: 0.25, moneyBonus: 0 }, ability: 'aoeBurst', aoeRadius: 110 },
+  { id: 'mobilCam', name: '🎖️ Мобилизованный Камерамен', emoji: '🎖️', rarity: 'Special', dropChance: 0.5,
+    desc: 'Призван по мобилизации. Основа штурмового отряда. Награда режима «СТОЛИЦА ЗА 3 ДНЯ».',
+    stats: { dmg: 30, range: 140, fireRate: 0.8, hp: 260 },
+    passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'none' },
+  { id: 'speakerVet', name: '📢 Спикер со Стажем', emoji: '📢', rarity: 'Special', dropChance: 0.3,
+    desc: 'Ветеран фронтовых бригад. Звуковые волны рвутся по площади. Награда режима «СТОЛИЦА ЗА 3 ДНЯ».',
+    stats: { dmg: 55, range: 170, fireRate: 0.75, hp: 380 },
+    passive: { dmgBonus: 0.15, moneyBonus: 0 }, ability: 'splash', splashRadius: 60 },
+  { id: 'presidentTV', name: '📺 Президент ТВ Мен Титан', emoji: '📺', rarity: 'Special', dropChance: 0.2,
+    desc: 'Главнокомандующий ТВ-альянса. Периодические взрывы по площади. Награда режима «СТОЛИЦА ЗА 3 ДНЯ».',
+    stats: { dmg: 110, range: 210, fireRate: 0.65, hp: 900 },
+    passive: { dmgBonus: 0.2, moneyBonus: 0 }, ability: 'aoeBurst', aoeRadius: 100 },
+  { id: 'camShahed', name: '🛩️ Камера-Шахед', emoji: '🛩️', rarity: 'Special', dropChance: 0.5,
+    desc: 'Малобюджетный дрон-камикадзе: дешёвый, но злой. Награда режима «ДАЙТЕ ДЕНЕГ».',
+    stats: { dmg: 85, range: 140, fireRate: 1.1, hp: 140 },
+    passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'splash', splashRadius: 55 },
+  { id: 'amerFarm', name: '🌽 Американская Ферма', emoji: '🌽', rarity: 'Special', dropChance: 0.3,
+    desc: 'Лучшая ферма в игре: приносит 400🪙 за волну и не стреляет. Награда режима «ДАЙТЕ ДЕНЕГ».',
+    stats: { dmg: 0, range: 130, fireRate: 0, hp: 300 },
+    passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash', cashPerWave: 400, pureFarm: true },
+  { id: 'elegantPresident', name: '🎩 Элегантный Президент Титан', emoji: '🎩', rarity: 'Special', dropChance: 0.2,
+    desc: 'Элита элиты: мощные периодические взрывы по площади. Награда режима «ДАЙТЕ ДЕНЕГ».',
+    stats: { dmg: 140, range: 230, fireRate: 0.6, hp: 1100 },
+    passive: { dmgBonus: 0.25, moneyBonus: 0 }, ability: 'aoeBurst', aoeRadius: 120 }
 ];
 
 function statRange(u) {
@@ -1343,6 +1444,8 @@ const DIFFICULTIES = [
   { id: 'insane', name: 'Безумный', waves: 25, startMoney: 250, enemyHpMul: 1.45, enemySpeedMul: 1.15, rewardMul: 0.85, coinMul: 2.0, winCoins: 900 },
   { id: 'endless', name: 'Бесконечный', waves: 999, startMoney: 300, enemyHpMul: 1.0, enemySpeedMul: 1.0, rewardMul: 1.0, coinMul: 1.0, winCoins: 400, endless: true }
 ];
+
+const EVENT_DIFF = { id: 'dvizhuha', name: 'ДВИЖУХА Оборона', waves: 40, startMoney: 450, enemyHpMul: 1.05, enemySpeedMul: 1.0, rewardMul: 1.1, coinMul: 1.2, winCoins: 500 };
 
 const MAPS = [
   { id: 'studio', name: 'Студия', theme: { bg: '#10131c', grid: '#1a2030' }, decor: ['🎬','🎥','🎤','💡','📼'],
@@ -1542,7 +1645,13 @@ const SHOP_CRATES = [
     units: ['striderSpeaker', 'striderCamera', 'striderPlasma'] },
   { id: 'holo', name: '📡 Голокрейт', emoji: '📡', cost: 130, color: '#7ee7ff',
     desc: 'Голографические технологии ТВ-альянса. Топ-юнит с шансом 0.2%.',
-    units: ['tvStrider', 'holoCam', 'tvOverlord'] }
+    units: ['tvStrider', 'holoCam', 'tvOverlord'] },
+  { id: 'militaryCrate', name: '🎖️ Военный Крейт', emoji: '🎖️', cost: 0, color: '#7fa65c', eventOnly: true,
+    desc: 'Награда режима «СТОЛИЦА ЗА 3 ДНЯ». Мобилизованный 50%, Спикер со Стажем 30%, Президент ТВ Мен Титан 20%.',
+    units: ['mobilCam', 'speakerVet', 'presidentTV'] },
+  { id: 'budgetCrate', name: '📦 Малобюджетный Крейт', emoji: '📦', cost: 0, color: '#7ec8a0', eventOnly: true,
+    desc: 'Награда режима «ДАЙТЕ ДЕНЕГ». Камера-Шахед 50%, Американская Ферма 30%, Элегантный Президент Титан 20%.',
+    units: ['camShahed', 'amerFarm', 'elegantPresident'] }
 ];
 
 const POTIONS = [
@@ -2036,11 +2145,19 @@ function drawUnitFigure(ctx, unit, x, y, size, noEmoji, scaleMul) {
   UF_RUN(ctx, { x: 0, y: 0 }, ufSub(ops, rc));
   ctx.restore();
 }
+UF_TABLE.mobilCam = UF_TABLE.operator;
+UF_TABLE.speakerVet = UF_TABLE.speaker;
+UF_TABLE.presidentTV = UF_TABLE.titanTV;
+UF_TABLE.camShahed = UF_TABLE.dronepilot;
+UF_TABLE.amerFarm = UF_TABLE.scientist || UF_TABLE.makeup;
+UF_TABLE.elegantPresident = UF_TABLE.titanSpeaker;
 const UF_SCALE = {
   intern: 0.92, makeup: 0.95, scientist: 0.98, streamer: 1.0, speaker: 1.02,
   operator: 1.04, steadicam: 1.06, snipercam: 1.06, hacker: 1.06, dronepilot: 1.06,
   boomop: 1.06, gaffer: 1.12, director: 1.1, soundmixer: 1.14, pyrotech: 1.1,
-  bodyguard: 1.2, engineer: 1.22, titanCam: 1.42, titanTV: 1.42, titanSpeaker: 1.42
+  bodyguard: 1.2, engineer: 1.22, titanCam: 1.42, titanTV: 1.42, titanSpeaker: 1.42,
+  mobilCam: 1.0, speakerVet: 1.15, presidentTV: 1.42, camShahed: 0.92,
+  amerFarm: 1.1, elegantPresident: 1.42
 };
 /* ============================================================
    5) ЮНИТ (ГЕРОЙ)
@@ -2797,13 +2914,22 @@ class Game {
     document.getElementById('quitToLobbyBtn').addEventListener('click', () => { this.stop(); App.showLobby(); });
   }
   start() {
-    const diff = DIFFICULTIES.find(d => d.id === SaveManager.selectedDifficulty) || DIFFICULTIES[1];
+    const evDef = !!this.pendingEventDefense;
+    const diff = evDef ? EVENT_DIFF : (DIFFICULTIES.find(d => d.id === SaveManager.selectedDifficulty) || DIFFICULTIES[1]);
     const mapDef = MAPS.find(m => m.id === SaveManager.selectedMap) || MAPS[0];
     this.difficulty = diff;
+    this.eventDefense = evDef;
     this.map = new MapRenderer(mapDef);
     this.money = diff.startMoney;
-    this.baseHp = BASE_MAX_HP;
-    this.baseMaxHp = BASE_MAX_HP;
+    this.baseHp = evDef ? 1500 : BASE_MAX_HP;
+    this.baseMaxHp = evDef ? 1500 : BASE_MAX_HP;
+    this.eventFlyers = [];
+    this.eventPvos = [];
+    this.eventShaheds = [];
+    this.eventFlyTimer = 25;
+    this.shahedCd = 0;
+    const eventControls = document.getElementById('eventControls');
+    if (eventControls) eventControls.style.display = evDef ? 'flex' : 'none';
     this.waveBanner = null;
     this._previewCache = null;
     this._previewFor = -1;
@@ -2853,6 +2979,9 @@ class Game {
     this.selectedHero = null;
     this.selectedBuild = null;
     this.waveBanner = null;
+    this.pendingEventDefense = false;
+    const ec = document.getElementById('eventControls');
+    if (ec) ec.style.display = 'none';
     if (this._raf) { cancelAnimationFrame(this._raf); this._raf = null; }
     UI.hideTooltip();
   }
@@ -3214,6 +3343,7 @@ class Game {
       }
     }
     this.waveManager.update(dt);
+    if (this.eventDefense) this.updateEventDefense(dt);
     for (let i = this.enemies.length - 1; i >= 0; i--) {
       const e = this.enemies[i];
       e.update(dt);
@@ -3298,12 +3428,104 @@ class Game {
     }
     Sound.waveClear();
   }
+  updateEventDefense(dt) {
+    this.shahedCd = Math.max(0, this.shahedCd - dt);
+    const sb = document.getElementById('btnShahed');
+    if (sb) sb.textContent = this.shahedCd > 0 ? '🚀 ' + Math.ceil(this.shahedCd) + 'с' : T('🚀 ШАХЕД 300💰');
+    this.eventFlyTimer -= dt;
+    if (this.eventFlyTimer <= 0) {
+      this.eventFlyTimer = 30 + Math.random() * 15;
+      this.eventFlyers.push({ x: CANVAS_W + 30, y: 80 + Math.random() * 480, speed: 190, hp: 60 });
+      this.toast(T('⚠️ Вражеский шахед летит на базу!'));
+    }
+    const b = this.map.waypoints[this.map.waypoints.length - 1];
+    for (let i = this.eventFlyers.length - 1; i >= 0; i--) {
+      const f = this.eventFlyers[i];
+      f.x -= f.speed * dt;
+      let destroyed = false;
+      for (const p of this.eventPvos) {
+        if (dist(f.x, f.y, p.x, p.y) <= p.range) { f.hp -= 130 * dt; if (f.hp <= 0) { destroyed = true; break; } }
+      }
+      if (!destroyed && Math.abs(f.x - b.x) < 30 && Math.abs(f.y - b.y) < 28) {
+        destroyed = true;
+        this.baseHp -= 80;
+        this.shake = 0.5;
+        this.floaters.push({ x: b.x, y: b.y - 34, text: '-80 HP', life: 1.3, maxLife: 1.3, color: '#ff6666' });
+        Sound.loseLife();
+        if (this.baseHp <= 0) { this.baseHp = 0; this.gameOver = true; this.finish(false); }
+      }
+      if (destroyed) {
+        this.explosions.push({ x: f.x, y: f.y, r: 0, maxR: 50, life: 0.45, maxLife: 0.45, rgb: '255,140,70' });
+        this.eventFlyers.splice(i, 1);
+      }
+    }
+    for (let i = this.eventShaheds.length - 1; i >= 0; i--) {
+      const s = this.eventShaheds[i];
+      let target = null, best = Infinity;
+      for (const e of this.enemies) {
+        if (e.hp <= 0 || e.reachedEnd) continue;
+        const d = dist(e.x, e.y, b.x, b.y);
+        if (d < best) { best = d; target = e; }
+      }
+      if (target) {
+        const d = dist(s.x, s.y, target.x, target.y);
+        const k = Math.min(1, (280 * dt) / (d || 1));
+        s.x += (target.x - s.x) * k; s.y += (target.y - s.y) * k;
+        if (d < 24) {
+          for (const e of this.enemies) {
+            if (e.hp > 0 && !e.reachedEnd && dist(e.x, e.y, s.x, s.y) <= 90) e.hp -= 300;
+          }
+          this.explosions.push({ x: s.x, y: s.y, r: 0, maxR: 90, life: 0.5, maxLife: 0.5, rgb: '255,200,80' });
+          this.eventShaheds.splice(i, 1);
+          this.shake = 0.6; Sound.explosion();
+        }
+      } else { this.eventShaheds.splice(i, 1); }
+    }
+  }
+  launchShahed() {
+    if (!this.eventDefense || this.gameOver || this.victory) return;
+    if (this.shahedCd > 0) { this.toast(fill(T('ШАХЕД готов через %1с'), Math.ceil(this.shahedCd))); return; }
+    if (this.money < 300) { Sound.error(); this.toast(T('Не хватает денег')); return; }
+    this.money -= 300; this.shahedCd = 40;
+    const b = this.map.waypoints[this.map.waypoints.length - 1];
+    this.eventShaheds.push({ x: b.x, y: b.y });
+    Sound.upgrade();
+    this.updateUI();
+  }
+  buildPVO() {
+    if (!this.eventDefense || this.gameOver || this.victory) return;
+    const n = this.eventPvos.length;
+    if (n >= 13) { Sound.error(); this.toast(fill(T('Максимум ПВО: %1'), 13)); return; }
+    const cost = 200 + 60 * n;
+    if (this.money < cost) { Sound.error(); this.toast(fill(T('Не хватает 💰 (нужно %1)'), cost)); return; }
+    this.money -= cost;
+    const b = this.map.waypoints[this.map.waypoints.length - 1];
+    const ang = (n / 13) * Math.PI * 2;
+    this.eventPvos.push({ x: b.x + Math.cos(ang) * 60, y: b.y + Math.sin(ang) * 60, range: 190 });
+    Sound.upgrade();
+    const pvoBtn = document.getElementById('btnPVO');
+    if (pvoBtn) pvoBtn.textContent = T('🛡 ПВО (%1/13)').replace('%1', n + 1);
+    this.updateUI();
+  }
+  renderEventDefense(ctx) {
+    for (const p of this.eventPvos) {
+      ctx.save(); ctx.globalAlpha = 0.12;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.range, 0, Math.PI * 2);
+      ctx.fillStyle = '#7ee7ff'; ctx.fill(); ctx.restore();
+      ctx.font = '22px serif'; ctx.textAlign = 'center';
+      ctx.fillText('🛡', p.x, p.y + 8);
+    }
+    ctx.font = '26px serif'; ctx.textAlign = 'center';
+    for (const f of this.eventFlyers) ctx.fillText('🚀', f.x, f.y);
+    for (const s of this.eventShaheds) ctx.fillText('🛸', s.x, s.y);
+  }
   finish(win) {
     this.running = false;
     this.countdownActive = false;
     const completed = win ? this.maxWaves : Math.max(0, this.wave - 1);
     let coins = 0;
     if (win) coins = this.difficulty.winCoins || 350;
+    if (win && this.eventDefense) SaveManager.addItem('budgetCrate', 1);
     SaveManager.addCoins(coins);
     if (win) Sound.victory(); else Sound.defeat();
     if (win) { Quests.add('wins', 1); SaveManager.addCrystals(5); }
@@ -3320,7 +3542,7 @@ class Game {
       document.getElementById('resultsTitle').className = 'title ' + (win ? 'win' : 'lose');
       document.getElementById('resWaves').textContent = `${completed} / ${this.difficulty.endless ? '∞' : this.maxWaves}`;
       document.getElementById('resKills').textContent = this.kills;
-      document.getElementById('resBase').textContent = Math.max(0, Math.round(this.baseHp)) + ' / ' + BASE_MAX_HP;
+      document.getElementById('resBase').textContent = Math.max(0, Math.round(this.baseHp)) + ' / ' + this.baseMaxHp;
       document.getElementById('resCoins').textContent = this.difficulty.endless
         ? fill(T('+%1💰 (заработано за %2 волн)'), this.runCoinsEarned || 0, Math.max(0, this.wave - 1))
         : (win ? '+' + coins : T('0 (монеты только за победу)'));
@@ -3338,6 +3560,7 @@ class Game {
     this.drawPaymentNotice(ctx);
     this.drawFarmChip(ctx);
     this.drawBase(ctx);
+    if (this.eventDefense) this.renderEventDefense(ctx);
     if (this.selectedBuild && this.mouse.onCanvas) this.drawPreview(ctx);
     for (const h of this.heroes) h.draw(ctx);
     if (this.selectedHero) {
@@ -3795,6 +4018,7 @@ const App = {
     else applyStaticLang();
     this.lobby = new Lobby();
     this.game = new Game();
+    this.frontGame = new FrontGame();
     this.bindMenu();
     this.renderGachaReels();
     this.renderAutoSellPanel();
@@ -3804,6 +4028,8 @@ const App = {
   },
   showLobby() {
     if (this.game) this.game.stop();
+    if (this.frontGame && this.frontGame.running) this.frontGame.stop();
+    if (this._rafLobby) {}
     this.lobby.start();
     UI.showScreen('lobbyScreen');
     this.refreshMeta();
@@ -3953,7 +4179,7 @@ const App = {
         '<div class="verity-drops">' + results.map((u, i) => {
           const dx = Math.round((i - (results.length - 1) / 2) * 26);
           const rot = Math.round(Math.random() * 120 - 60);
-          return '<span class="v-drop" style="--dx:' + dx + 'px;--rot:' + rot + 'deg;animation-delay:' + (1.7 + i * 0.16).toFixed(2) + 's">' + u.emoji + '</span>';
+          return '<span class="v-drop" style="--dx:' + dx + 'px;--rot:' + rot + 'deg;animation-delay:' + (1.7 + i * 0.16).toFixed(2) + 's">' + this.unitAvatarHTML(u, 44) + '</span>';
         }).join('') + '</div>';
     }
     ov.classList.remove('shaking', 'flash');
@@ -4456,10 +4682,37 @@ const App = {
     }
   },
   startRun() {
+    this.lastRunMode = 'normal';
     document.getElementById('resultsOverlay').classList.remove('visible');
     UI.showScreen('gameScreen');
     this.lobby.stop();
     this.game.start();
+  },
+  startEventDefense() {
+    this.lastRunMode = 'defense';
+    const g = this.game;
+    g.stop();
+    g.pendingEventDefense = true;
+    document.getElementById('resultsOverlay').classList.remove('visible');
+    UI.showScreen('gameScreen');
+    this.lobby.stop();
+    g.start();
+  },
+  startEventCapital() {
+    this.lastRunMode = 'capital';
+    this.lobby.stop();
+    this.frontGame.start();
+  },
+  showEventScreen() {
+    this.lobby.stop();
+    UI.showScreen('eventScreen');
+    this.refreshMeta();
+  },
+  repeatRun() {
+    document.getElementById('resultsOverlay').classList.remove('visible');
+    if (this.lastRunMode === 'capital') { this.frontGame.start(); return; }
+    if (this.lastRunMode === 'defense') { this.startEventDefense(); return; }
+    this.startRun();
   },
   showSettings() {
     this.lobby.stop();
@@ -4540,18 +4793,18 @@ const App = {
           return;
         }
         SaveManager.crystals = SaveManager.crystals - pt.cost;
-        SaveManager.data.potions[pt.id] = Math.max(Date.now(), SaveManager.data.potions[pt.id] || 0) + POTION_DURATION_MS;
+        SaveManager.addItem('potion_' + pt.id, 1);
         SaveManager.save();
         Sound.upgrade();
-        UI.toast(wasActive ? T('Эффект продлён на 10 минут!') : fill(T('%1: +10 минут эффекта!'), T(pt.name)));
+        UI.toast(fill(T('%1 куплен! Активируй в разделе «Вещи» 🎒'), T(pt.name)));
         this.refreshMeta();
         this.renderShop();
-        this.refreshPotionTimers();
       });
       card.querySelector('.u-actions').appendChild(buy);
       grid.appendChild(card);
     }
     for (const c of SHOP_CRATES) {
+      if (c.eventOnly) continue;
       const card = document.createElement('div');
       card.className = 'unit-card crate-card';
       card.style.borderColor = c.color;
@@ -4645,10 +4898,40 @@ const App = {
     if (!grid) return;
     grid.innerHTML = '';
     document.getElementById('inventoryTitle').textContent = T('📦 ВЕЩИ');
-    const any = SHOP_CRATES.some(c => SaveManager.itemCount(c.id) > 0);
+    const hasPotion = POTIONS.some(pt => SaveManager.itemCount('potion_' + pt.id) > 0);
+    const any = SHOP_CRATES.some(c => SaveManager.itemCount(c.id) > 0) || hasPotion;
     if (!any) {
       grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;opacity:.5">' + T('Крейтов нет — купи их в магазине') + '</div>';
       return;
+    }
+    for (const pt of POTIONS) {
+      const qty = SaveManager.itemCount('potion_' + pt.id);
+      if (qty <= 0) continue;
+      const cCol = pt.id === 'luck' ? '#d9b0ff' : '#ffe08a';
+      const card = document.createElement('div');
+      card.className = 'unit-card';
+      card.style.borderColor = pt.id === 'luck' ? '#8a5fbf' : '#a88a2a';
+      card.innerHTML = `
+        <div class="crate-emoji" style="text-shadow:0 0 18px ${cCol}88">${pt.emoji}</div>
+        <div class="u-name" style="color:${cCol}">${T(pt.name)} <small>×${qty}</small></div>
+        <div class="u-desc">${T(pt.desc)}</div>
+        <div class="u-actions"></div>`;
+      const useBtn = document.createElement('button');
+      useBtn.className = 'btn small accent';
+      useBtn.textContent = T('▶ АКТИВИРОВАТЬ');
+      useBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!SaveManager.takeItem('potion_' + pt.id)) return;
+        SaveManager.data.potions[pt.id] = Math.max(Date.now(), SaveManager.data.potions[pt.id] || 0) + POTION_DURATION_MS;
+        SaveManager.save();
+        Sound.upgrade();
+        UI.toast(fill(T('+10 минут эффекта: %1'), T(pt.name)));
+        this.refreshMeta();
+        this.refreshPotionTimers();
+        this.renderItems();
+      });
+      card.querySelector('.u-actions').appendChild(useBtn);
+      grid.appendChild(card);
     }
     for (const c of SHOP_CRATES) {
       const qty = SaveManager.itemCount(c.id);
@@ -4736,6 +5019,14 @@ const App = {
     }, 1000);
     document.getElementById('btnShop').addEventListener('click', () => this.showShop());
     document.getElementById('btnQuests').addEventListener('click', () => this.showQuests());
+    document.getElementById('btnEvent').addEventListener('click', () => this.showEventScreen());
+    document.getElementById('eventBack').addEventListener('click', () => this.showLobby());
+    document.getElementById('btnModeCapital').addEventListener('click', () => this.startEventCapital());
+    document.getElementById('btnModeDefense').addEventListener('click', () => this.startEventDefense());
+    document.getElementById('btnShahed').addEventListener('click', () => this.game.launchShahed());
+    document.getElementById('btnPVO').addEventListener('click', () => this.game.buildPVO());
+    document.getElementById('frontQuitBtn').addEventListener('click', () => { this.frontGame.stop(); this.showLobby(); });
+    document.getElementById('frontSpeedBtn').addEventListener('click', () => this.frontGame.toggleSpeed());
     document.getElementById('btnCollection').addEventListener('click', () => this.showInventory());
     document.getElementById('btnSettings').addEventListener('click', () => this.showSettings());
     document.getElementById('gachaBack').addEventListener('click', () => this.showLobby());
@@ -4790,10 +5081,7 @@ const App = {
         UI.toast(T('Прогресс сброшен'));
       }
     });
-    document.getElementById('btnAgain').addEventListener('click', () => {
-      document.getElementById('resultsOverlay').classList.remove('visible');
-      this.startRun();
-    });
+    document.getElementById('btnAgain').addEventListener('click', () => this.repeatRun());
     document.getElementById('btnToLobbyFromResults').addEventListener('click', () => {
       document.getElementById('resultsOverlay').classList.remove('visible');
       this.showLobby();
@@ -4820,6 +5108,324 @@ const App = {
 /* ============================================================
    13) ЗАПУСК
    ============================================================ */
+/* ============================================================
+   12.5) ИВЕНТ «ДВИЖУХА» — режим «СТОЛИЦА ЗА 3 ДНЯ» (фронт)
+   ============================================================ */
+const FRONT_LANES = [200, 320, 440];
+const FRONT_COSTS = { mobilCam: 120, speakerVet: 280, presidentTV: 600 };
+class FrontGame {
+  constructor() {
+    this.canvas = document.getElementById('frontCanvas');
+    this.ctx = null;
+    this.running = false;
+    this.speed = 1;
+    this._raf = null;
+  }
+  start() {
+    if (!this.ctx) this.ctx = this.canvas.getContext('2d');
+    document.getElementById('resultsOverlay').classList.remove('visible');
+    UI.showScreen('eventFrontScreen');
+    this.reset();
+    this.running = true;
+    this.lastTime = 0;
+    this._raf = (t) => this.loop(t);
+    requestAnimationFrame(this._raf);
+  }
+  reset() {
+    this.time = 600;
+    this.money = 500;
+    this.baseHp = 10000;
+    this.baseMaxHp = 10000;
+    this.mine = [];
+    this.enemies = [];
+    this.tracers = [];
+    this.explosions = [];
+    this.floaters = [];
+    this.spawnCount = { mobilCam: 0, speakerVet: 0, presidentTV: 0 };
+    this.upg = { dmg: 0, hp: 0, spd: 0 };
+    this.elapsed = 0;
+    this.enemyTimer = 1.5;
+    this.shahedTimer = 38;
+    this.shahedWarn = null;
+    this.kills = 0;
+    this.gameOver = false;
+    this.victory = false;
+    this.uiT = 0;
+    this.speed = 1;
+    document.getElementById('frontSpeedBtn').textContent = T('\u23e9 \u00d71');
+    this.buildPanel();
+    this.updateUI();
+  }
+  stop() {
+    this.running = false;
+    if (this._raf) { cancelAnimationFrame(this._raf); this._raf = null; }
+  }
+  toggleSpeed() {
+    this.speed = this.speed === 1 ? 2 : 1;
+    document.getElementById('frontSpeedBtn').textContent = T(this.speed === 1 ? '\u23e9 \u00d71' : '\u23e9 \u00d72');
+  }
+  unitDef(id) { return UNITS.find(u => u.id === id); }
+  unitPrice(id) { return Math.round(FRONT_COSTS[id] * Math.pow(1.15, this.spawnCount[id])); }
+  buildPanel() {
+    const panel = document.getElementById('frontPanel');
+    panel.innerHTML = '';
+    this.btnRefs = { spawn: {}, upg: {} };
+    for (const id of ['mobilCam', 'speakerVet', 'presidentTV']) {
+      const u = this.unitDef(id);
+      const btn = document.createElement('div');
+      btn.className = 'tower-btn hero-btn';
+      btn.innerHTML = `<div class="emoji">${u.emoji}</div><div class="name">${T(u.name)}</div><div class="price"></div><div class="desc"></div>`;
+      btn.addEventListener('click', () => this.spawnUnit(id));
+      this.btnRefs.spawn[id] = btn;
+      panel.appendChild(btn);
+    }
+    const ups = [['dmg', '\u2694\ufe0f УРОН +15%'], ['hp', '\u2764\ufe0f ХП +15%'], ['spd', '\U0001F45F СКОРОСТЬ +10%']];
+    for (const [id, label] of ups) {
+      const btn = document.createElement('div');
+      btn.className = 'tower-btn';
+      btn.innerHTML = `<div class="name" style="font-size:.68rem">${T(label)}</div><div class="price"></div>`;
+      btn.addEventListener('click', () => this.buyUpgrade(id));
+      this.btnRefs.upg[id] = btn;
+      panel.appendChild(btn);
+    }
+    this.refreshPanel();
+  }
+  refreshPanel() {
+    for (const id of ['mobilCam', 'speakerVet', 'presidentTV']) {
+      const btn = this.btnRefs.spawn[id];
+      if (!btn) continue;
+      btn.querySelector('.price').textContent = '\U0001FA99 ' + this.unitPrice(id);
+      btn.querySelector('.desc').textContent = fill(T('%1 шт'), this.spawnCount[id]);
+    }
+    for (const id of ['dmg', 'hp', 'spd']) {
+      const btn = this.btnRefs.upg[id];
+      if (!btn) continue;
+      if (this.upg[id] >= 5) { btn.querySelector('.price').textContent = T('МАКС'); btn.style.opacity = 0.5; }
+      else { btn.querySelector('.price').textContent = '\U0001FA99 ' + this.upgCost(id); btn.style.opacity = 1; }
+    }
+  }
+  upgCost(id) { return Math.round(150 * Math.pow(1.7, this.upg[id])); }
+  spawnUnit(id) {
+    if (this.gameOver) return;
+    if (this.mine.length >= 25) { Sound.error(); this.toastMsg(fill(T('Лимит юнитов (%1)'), 25)); return; }
+    const price = this.unitPrice(id);
+    if (this.money < price) { Sound.error(); this.toastMsg(T('Не хватает денег')); return; }
+    this.money -= price;
+    this.spawnCount[id]++;
+    const u = this.unitDef(id);
+    const lane = Math.floor(Math.random() * 3);
+    const mul = Math.pow(1.15, this.upg.hp);
+    this.mine.push({
+      id, lane, x: -30, y: FRONT_LANES[lane],
+      hp: u.stats.hp * mul, maxHp: u.stats.hp * mul,
+      dmg: u.stats.dmg * Math.pow(1.15, this.upg.dmg),
+      range: u.stats.range, rate: u.stats.fireRate || 1,
+      speed: 60 * Math.pow(1.1, this.upg.spd), cd: 0
+    });
+    Sound.upgrade();
+    this.refreshPanel();
+    this.updateUI();
+  }
+  buyUpgrade(id) {
+    if (this.gameOver || this.upg[id] >= 5) return;
+    const cost = this.upgCost(id);
+    if (this.money < cost) { Sound.error(); this.toastMsg(T('Не хватает денег')); return; }
+    this.money -= cost;
+    this.upg[id]++;
+    for (const m of this.mine) {
+      const u = this.unitDef(m.id);
+      m.dmg = u.stats.dmg * Math.pow(1.15, this.upg.dmg);
+      m.speed = 60 * Math.pow(1.1, this.upg.spd);
+      if (id === 'hp') { m.hp *= 1.15; m.maxHp *= 1.15; }
+    }
+    Sound.upgrade();
+    this.refreshPanel();
+  }
+  toastMsg(msg) { UI.toast(msg); }
+  updateUI() {
+    document.getElementById('frontMoney').textContent = Math.floor(this.money);
+    document.getElementById('frontBaseHp').textContent = Math.max(0, Math.round(this.baseHp));
+    const mm = Math.max(0, Math.floor(this.time / 60)), ss = Math.max(0, Math.floor(this.time % 60));
+    document.getElementById('frontTime').textContent = mm + ':' + String(ss).padStart(2, '0');
+  }
+  loop(ts) {
+    if (!this.running) return;
+    if (!this.lastTime) this.lastTime = ts;
+    const rawDt = Math.min((ts - this.lastTime) / 1000, 0.05);
+    this.lastTime = ts;
+    const dt = rawDt * this.speed;
+    if (!this.gameOver && !this.victory) {
+      this.update(dt);
+      this.uiT -= rawDt;
+      if (this.uiT <= 0) { this.uiT = 0.5; this.refreshPanel(); this.updateUI(); }
+    }
+    this.render();
+    this._raf = (t) => this.loop(t);
+    requestAnimationFrame(this._raf);
+  }
+  update(dt) {
+    this.time -= dt;
+    this.elapsed += dt;
+    this.money += 12 * dt;
+    if (this.time <= 0) { this.finish(false); return; }
+    this.shahedTimer -= dt;
+    if (this.shahedTimer <= 0 && !this.shahedWarn) {
+      this.shahedTimer = 35 + Math.random() * 15;
+      const target = this.mine[Math.floor(Math.random() * this.mine.length)];
+      if (target) this.shahedWarn = { x: target.x, y: target.y, t: 2 };
+    }
+    if (this.shahedWarn) {
+      const w = this.shahedWarn;
+      w.t -= dt;
+      if (w.t <= 0) {
+        for (const m of this.mine) if (dist(m.x, m.y, w.x, w.y) <= 100) m.hp -= 150;
+        this.explosions.push({ x: w.x, y: w.y, r: 0, maxR: 100, life: 0.5, maxLife: 0.5, rgb: '255,140,70' });
+        Sound.explosion();
+        this.shahedWarn = null;
+      }
+    }
+    this.enemyTimer -= dt;
+    if (this.enemyTimer <= 0) {
+      this.enemyTimer = Math.max(0.4, 1.4 - this.elapsed * 0.0015);
+      const lane = Math.floor(Math.random() * 3);
+      this.enemies.push({ lane, x: 930, y: FRONT_LANES[lane], hp: 40 + this.elapsed * 0.35, speed: 50 + this.elapsed * 0.25, cd: 0 });
+    }
+    for (let i = this.mine.length - 1; i >= 0; i--) {
+      const m = this.mine[i];
+      if (m.hp <= 0) {
+        this.explosions.push({ x: m.x, y: m.y, r: 0, maxR: 30, life: 0.4, maxLife: 0.4, rgb: '150,180,255' });
+        this.mine.splice(i, 1);
+        continue;
+      }
+      let target = null, bd = Infinity;
+      for (const e of this.enemies) {
+        if (e.lane !== m.lane) continue;
+        const d = e.x - m.x;
+        if (d >= -10 && d <= m.range && d < bd) { bd = d; target = e; }
+      }
+      m.cd -= dt;
+      if (m.cd > 0) continue;
+      if (target) {
+        m.cd = 1 / m.rate;
+        target.hp -= m.dmg;
+        this.tracers.push({ x1: m.x + 8, y1: m.y - 8, x2: target.x, y2: target.y - 8, life: 0.07, color: '#7ee7ff' });
+      } else if (m.x >= 830) {
+        m.cd = 1 / m.rate;
+        this.baseHp -= m.dmg;
+        this.money += 2;
+        this.tracers.push({ x1: m.x + 8, y1: m.y - 8, x2: 880, y2: m.y - 8, life: 0.07, color: '#ffd966' });
+        if (this.baseHp <= 0) { this.baseHp = 0; this.victory = true; this.finish(true); return; }
+      } else {
+        m.x += m.speed * dt;
+      }
+      if (m.cd < 0) m.cd = 0;
+    }
+    for (let i = this.enemies.length - 1; i >= 0; i--) {
+      const e = this.enemies[i];
+      if (e.hp <= 0) {
+        this.money += 12; this.kills++;
+        this.explosions.push({ x: e.x, y: e.y - 8, r: 0, maxR: 26, life: 0.35, maxLife: 0.35, rgb: '160,200,255' });
+        this.floaters.push({ x: e.x, y: e.y - 20, text: '+12', life: 0.9, maxLife: 0.9, color: '#7fffa0' });
+        this.enemies.splice(i, 1);
+        continue;
+      }
+      let tgt = null;
+      for (const m of this.mine) {
+        if (m.lane === e.lane && e.x - m.x >= -10 && e.x - m.x <= 40) { tgt = m; break; }
+      }
+      e.cd -= dt;
+      if (e.cd > 0) continue;
+      if (tgt) {
+        e.cd = 0.9;
+        tgt.hp -= 10 + this.elapsed * 0.02;
+        this.tracers.push({ x1: e.x - 8, y1: e.y - 8, x2: tgt.x, y2: tgt.y - 8, life: 0.07, color: '#ff8888' });
+      } else {
+        e.cd = 0;
+        e.x -= e.speed * dt;
+        if (e.x < 90) e.x = 90;
+      }
+    }
+    for (let i = this.tracers.length - 1; i >= 0; i--) { this.tracers[i].life -= dt; if (this.tracers[i].life <= 0) this.tracers.splice(i, 1); }
+    for (let i = this.explosions.length - 1; i >= 0; i--) { this.explosions[i].life -= dt; if (this.explosions[i].life <= 0) this.explosions.splice(i, 1); }
+    for (let i = this.floaters.length - 1; i >= 0; i--) { this.floaters[i].life -= dt; if (this.floaters[i].life <= 0) this.floaters.splice(i, 1); }
+  }
+  finish(win) {
+    this.running = false;
+    if (win) {
+      SaveManager.addItem('militaryCrate', 1);
+      SaveManager.addCoins(400);
+      Sound.victory();
+      UI.toast(T('\U0001F396\ufe0f Военный Крейт получен!'));
+    } else { Sound.defeat(); }
+    const t = document.getElementById('resultsTitle');
+    t.textContent = win ? T('\U0001F3C6 БАЗА ВРАГА ПАЛА!') : T('\U0001F480 ВРЕМЯ ВЫШЛО');
+    t.className = 'title ' + (win ? 'win' : 'lose');
+    document.getElementById('resWaves').textContent = this.kills || 0;
+    document.getElementById('resKills').textContent = this.kills || 0;
+    document.getElementById('resBase').textContent = win ? '0 / 10000' : Math.max(0, Math.round(this.baseHp)) + ' / 10000';
+    document.getElementById('resCoins').textContent = win ? '+400\U0001FA99' : T('0 (монеты только за победу)');
+    document.getElementById('resultsOverlay').classList.add('visible');
+    App.refreshMeta();
+  }
+  render() {
+    const ctx = this.ctx;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+    ctx.fillStyle = '#0d1016';
+    ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+    ctx.strokeStyle = '#1a2030'; ctx.lineWidth = 2; ctx.setLineDash([10, 10]);
+    for (const y of FRONT_LANES) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(CANVAS_W, y); ctx.stroke(); }
+    ctx.setLineDash([]);
+    ctx.font = '52px serif'; ctx.textAlign = 'center';
+    ctx.fillText('\U0001F3E0', 40, 330);
+    ctx.fillText('\U0001F3DB\ufe0f', 902, 320);
+    const p = clamp(this.baseHp / this.baseMaxHp, 0, 1);
+    ctx.fillStyle = '#25324a'; ctx.fillRect(840, 160, 104, 12);
+    ctx.fillStyle = p > 0.5 ? '#7fffa0' : (p > 0.25 ? '#ffd966' : '#ff6666');
+    ctx.fillRect(840, 160, Math.round(104 * p), 12);
+    ctx.strokeStyle = '#3a4560'; ctx.lineWidth = 1; ctx.strokeRect(840, 160, 104, 12);
+    if (this.shahedWarn) {
+      const w = this.shahedWarn;
+      ctx.font = '30px serif';
+      ctx.fillText('\u26a0\ufe0f', w.x, w.y - 46 + Math.sin(Date.now() / 100) * 4);
+    }
+    for (const m of this.mine) {
+      const u = this.unitDef(m.id);
+      ctx.save(); ctx.globalAlpha = 0.5;
+      ctx.fillStyle = '#000'; ctx.beginPath(); ctx.ellipse(m.x, m.y + 16, 14, 5, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      drawUnitFigure(ctx, u, m.x, m.y - 10, m.id === 'presidentTV' ? 62 : 48, false, UF_SCALE[m.id] || 1);
+      ctx.fillStyle = '#25324a'; ctx.fillRect(m.x - 16, m.y - 44, 32, 4);
+      ctx.fillStyle = '#7fffa0'; ctx.fillRect(m.x - 16, m.y - 44, Math.round(32 * clamp(m.hp / m.maxHp, 0, 1)), 4);
+    }
+    for (const e of this.enemies) {
+      ctx.save(); ctx.translate(e.x, e.y - 6); ctx.scale(0.28, 0.28);
+      UF_RUN(ctx, { x: 0, y: 0 }, ufSub(UF_TOILET.skibidi, '#a06bd0'));
+      ctx.restore();
+      const maxE = Math.max(40, 40 + this.elapsed * 0.35);
+      ctx.fillStyle = '#25324a'; ctx.fillRect(e.x - 12, e.y - 46, 24, 4);
+      ctx.fillStyle = '#ff8888'; ctx.fillRect(e.x - 12, e.y - 46, Math.round(24 * clamp(e.hp / maxE, 0, 1)), 4);
+    }
+    for (const tr of this.tracers) {
+      ctx.strokeStyle = tr.color; ctx.globalAlpha = Math.min(1, tr.life / 0.07);
+      ctx.beginPath(); ctx.moveTo(tr.x1, tr.y1); ctx.lineTo(tr.x2, tr.y2); ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+    for (const ex of this.explosions) {
+      const k = 1 - ex.life / ex.maxLife;
+      ctx.strokeStyle = 'rgba(' + ex.rgb + ',' + (1 - k).toFixed(2) + ')'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(ex.x, ex.y, ex.maxR * k, 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.font = 'bold 14px sans-serif'; ctx.textAlign = 'center';
+    for (const f of this.floaters) {
+      ctx.globalAlpha = Math.min(1, f.life / f.maxLife);
+      ctx.fillStyle = f.color;
+      ctx.fillText(f.text, f.x, f.y - (1 - f.life / f.maxLife) * 22);
+      ctx.globalAlpha = 1;
+    }
+  }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   App.init();
 });
