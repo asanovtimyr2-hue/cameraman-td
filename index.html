@@ -211,6 +211,15 @@
   .diff-card{transition:transform .15s,box-shadow .15s}
   .diff-card:hover{transform:translateY(-3px)}
   .diff-card .d-name{letter-spacing:.5px;text-shadow:0 0 14px currentColor}
+.gacha-boxes{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+  .gacha-box-tab{min-width:180px}
+  .gacha-box-tab.accent{box-shadow:0 0 0 2px #ffd96666 inset}
+  .gacha-stock{background:#141b28;border-radius:14px;padding:10px 14px;margin-top:10px;box-shadow:0 0 0 1px #26324a inset}
+  .gacha-stock .stock-head{font-weight:800;letter-spacing:.5px;color:#7ee7ff;text-align:center;font-size:.9rem}
+  .gacha-stock .stock-head b{color:#ffd966}
+  .stock-grid{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
+  .stock-cell{background:#0e1420;border-radius:10px;padding:5px 9px;font-size:.75rem;font-weight:700;display:flex;gap:6px;align-items:center;box-shadow:0 0 0 1px #223048 inset}
+  .stock-cell .sc-pct{opacity:.65;font-weight:600}
 </style>
 </head>
 <body>
@@ -241,6 +250,8 @@
       <h2 class="panel-title">🎰 ПРИЗЫВ</h2>
       <div class="coin-badge"><span class="coin-ico">¢</span> <span id="metaCoinsGacha">0</span></div>
     </div>
+    <div class="gacha-boxes" id="gachaBoxes"></div>
+    <div class="gacha-stock" id="gachaStock"></div>
     <div class="gacha-stage">
       <div class="gacha-reels" id="gachaReels"></div>
       <div class="gacha-result" id="gachaResult"></div>
@@ -440,7 +451,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
 const LOADOUT_SIZE = 5;
-const GAME_VERSION = 'v2.11-VISUAL';
+const GAME_VERSION = 'v2.12-REWORK';
 
 const DCOL = { easy: '#4dff4d', normal: '#4fc3ff', hard: '#ffb347', insane: '#ff5555', endless: '#c86bff' };
 const I18N_EN = {
@@ -661,10 +672,14 @@ const I18N_EN = {
   "🧖 Снимает стан и даёт иммунитет к стану боссов": "🧖 Clears stun and grants immunity to boss stuns",
   "ПРИЗЫВ ×1 (100 🪙)": "SUMMON ×1 (100 🪙)",
   "ПРИЗЫВ ×10 (900 🪙)": "SUMMON ×10 (900 🪙)",
-  "ВЫХОД ВРАГОВ": "ENEMY SPAWN",
   "🔧 Доход ферм: +%1💰/волну": "🔧 Farm income: +%1💰/wave",
   "Скип волны! +%1💰": "Wave skipped! +%1💰",
-  "УРОН": "DMG",
+    "Обычный ящик": "Common Crate",
+    "Мифический сундук": "Mythic Chest",
+    "СТОК — СБРОС ЧЕРЕЗ %1": "STOCK \u2014 RESETS IN %1",
+    "ПРИЗЫВ ×1 (%1 \ud83e\ude99)": "SUMMON \u00d71 (%1 \ud83d\udc8e)",
+    "ПРИЗЫВ ×10 (%1 \ud83e\ude99)": "SUMMON \u00d710 (%1 \ud83d\udc8e)",
+    "УРОН": "DMG",
   "РАДИУС": "RNG",
   "ЗАРЯД": "CD"
 };
@@ -784,6 +799,42 @@ const ABILITY_RU = {
   'stun': '🌟 Периодически оглушает врагов вокруг',
   'splash': '💥 Снаряды взрываются по площади'
 };
+
+const GACHA_BOXES = [
+  { id: 'common', name: '\ud83d\udce6 \u041e\u0431\u044b\u0447\u043d\u044b\u0439 \u044f\u0449\u0438\u043a', cost1: 100, cost10: 900,
+    rates: { Common: 0.55, Uncommon: 0.30, Rare: 0.13, Epic: 0.018, Legendary: 0.002 },
+    stock: { Common: 2, Uncommon: 2, Rare: 2, Epic: 1, Legendary: 1 } },
+  { id: 'mythic', name: '\ud83d\udca0 \u041c\u0438\u0444\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u0441\u0443\u043d\u0434\u0443\u043a', cost1: 450, cost10: 4000,
+    rates: { Rare: 0.45, Epic: 0.40, Legendary: 0.12, Mythic: 0.03 },
+    stock: { Rare: 2, Epic: 2, Legendary: 2, Mythic: 1 } }
+];
+const STOCK_PERIOD_MS = 15 * 60 * 1000;
+
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function gachaStock(boxId, bucket) {
+  const box = GACHA_BOXES.find(b => b.id === boxId) || GACHA_BOXES[0];
+  const stock = [];
+  for (const rar of Object.keys(box.stock)) {
+    const pool = UNITS.filter(u => u.rarity === rar);
+    if (!pool.length) continue;
+    const rnd = mulberry32(mapSeed(box.id + ':' + bucket + ':' + rar) ^ 0x9e3779b9);
+    const idxs = pool.map((_, i) => i);
+    const cnt = Math.min(box.stock[rar], pool.length);
+    for (let i = 0; i < cnt; i++) {
+      const j = i + Math.floor(rnd() * (idxs.length - i));
+      const tmp = idxs[i]; idxs[i] = idxs[j]; idxs[j] = tmp;
+      stock.push(pool[idxs[i]]);
+    }
+  }
+  return stock;
+}
 
 const UNITS = [
   { id: 'intern', name: 'Стажёр', emoji: '🎥', rarity: 'Common', dropChance: 0.20,
@@ -969,6 +1020,7 @@ const SaveManager = {
       endlessRecord: 0,
       codes: [],
       autoSkip: false,
+      gachaBox: 'common',
       autoSell: {
         'Common': true, 'Uncommon': true, 'Rare': false,
         'Epic': false, 'Legendary': false, 'Mythic': false
@@ -1369,9 +1421,6 @@ class MapRenderer {
     ctx.beginPath(); ctx.arc(0, 0, R * 0.5 + Math.sin(t * 6) * 1.2, 0, Math.PI * 2);
     ctx.fillStyle = core; ctx.fill();
     ctx.restore();
-    ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillStyle = 'rgba(230,150,255,0.95)';
-    ctx.fillText('⚠ ' + T('ВЫХОД ВРАГОВ'), sp.x, sp.y - R - 24);
   }
   draw(ctx) {
     if (this._bg) {
@@ -1398,6 +1447,68 @@ class MapRenderer {
     ctx.fillStyle = vg;
     ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
   }
+}
+
+/* ============================================================
+   4b) ФИГУРЫ ЮНИТОВ (2.5D, без стикеров)
+   ============================================================ */
+const UNIT_KIND = {
+  intern: 'cam', operator: 'cam', steadicam: 'cam', snipercam: 'cam', titanCam: 'cam',
+  hacker: 'tv', titanTV: 'tv',
+  speaker: 'speaker', titanSpeaker: 'speaker', boomop: 'speaker'
+};
+function drawUnitFigure(ctx, unit, x, y, size) {
+  const rc = RARITY_COLOR[unit.rarity] || '#ffd966';
+  const kind = UNIT_KIND[unit.id] || 'tool';
+  ctx.save();
+  ctx.beginPath(); ctx.roundRect(x - size * 0.34, y - size * 0.12, size * 0.68, size * 0.36, 5);
+  const tg = ctx.createLinearGradient(x, y - size * 0.12, x, y + size * 0.24);
+  tg.addColorStop(0, '#39445e'); tg.addColorStop(1, '#202839');
+  ctx.fillStyle = tg; ctx.fill();
+  ctx.strokeStyle = rc; ctx.lineWidth = 1.4; ctx.stroke();
+  ctx.fillStyle = rc;
+  ctx.beginPath(); ctx.roundRect(x - size * 0.34, y + size * 0.05, size * 0.68, size * 0.07, 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x, y - size * 0.36, size * 0.26, 0, Math.PI * 2);
+  ctx.fillStyle = '#e8c39e'; ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.fillStyle = '#182030';
+  ctx.beginPath(); ctx.roundRect(x - size * 0.2, y - size * 0.42, size * 0.4, size * 0.12, 3); ctx.fill();
+  ctx.fillStyle = 'rgba(126,231,255,0.8)';
+  ctx.beginPath(); ctx.roundRect(x - size * 0.13, y - size * 0.39, size * 0.1, size * 0.05, 2); ctx.fill();
+  if (kind === 'cam') {
+    ctx.fillStyle = '#1a2130';
+    ctx.beginPath(); ctx.roundRect(x + size * 0.02, y - size * 0.74, size * 0.4, size * 0.26, 3); ctx.fill();
+    ctx.strokeStyle = '#5a6890'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.beginPath(); ctx.arc(x + size * 0.42, y - size * 0.61, size * 0.09, 0, Math.PI * 2);
+    ctx.fillStyle = '#7ee7ff'; ctx.fill();
+    ctx.beginPath(); ctx.arc(x + size * 0.1, y - size * 0.68, size * 0.045, 0, Math.PI * 2);
+    ctx.fillStyle = '#ff5555'; ctx.fill();
+  } else if (kind === 'tv') {
+    ctx.fillStyle = '#253048';
+    ctx.beginPath(); ctx.roundRect(x - size * 0.3, y - size * 0.88, size * 0.6, size * 0.36, 4); ctx.fill();
+    ctx.strokeStyle = rc; ctx.lineWidth = 1.2; ctx.stroke();
+    ctx.fillStyle = 'rgba(126,231,255,0.28)';
+    ctx.beginPath(); ctx.roundRect(x - size * 0.24, y - size * 0.82, size * 0.48, size * 0.22, 2); ctx.fill();
+    ctx.strokeStyle = '#8a93b0';
+    ctx.beginPath(); ctx.moveTo(x - size * 0.12, y - size * 0.88); ctx.lineTo(x - size * 0.22, y - size * 1.0); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + size * 0.12, y - size * 0.88); ctx.lineTo(x + size * 0.22, y - size * 1.0); ctx.stroke();
+  } else if (kind === 'speaker') {
+    for (const d of [-1, 1]) {
+      ctx.beginPath(); ctx.arc(x + d * size * 0.36, y - size * 0.36, size * 0.13, 0, Math.PI * 2);
+      ctx.fillStyle = '#232b3d'; ctx.fill();
+      ctx.strokeStyle = rc; ctx.lineWidth = 1.4; ctx.stroke();
+      ctx.beginPath(); ctx.arc(x + d * size * 0.36, y - size * 0.36, size * 0.055, 0, Math.PI * 2);
+      ctx.fillStyle = rc + 'cc'; ctx.fill();
+    }
+  } else {
+    ctx.beginPath(); ctx.arc(x, y - size * 0.4, size * 0.29, Math.PI, 0);
+    ctx.fillStyle = '#39445e'; ctx.fill();
+    ctx.strokeStyle = rc; ctx.lineWidth = 1.4; ctx.stroke();
+  }
+  ctx.font = (size * 0.25).toFixed(1) + 'px sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(unit.emoji, x + size * 0.25, y + size * 0.13);
+  ctx.restore();
 }
 
 /* ============================================================
@@ -1650,11 +1761,8 @@ class Hero {
     ctx.fillStyle = 'rgba(255,255,255,0.18)';
     ctx.fillRect(x - size / 2, y - size / 2 + bob, size, size * 0.25);
     ctx.restore();
-    ctx.font = `${CELL * 0.52}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillStyle = 'rgba(0,0,0,0.4)';
-    ctx.fillText(this.emoji, x + 1.5, y + 3.5 + bob);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(this.emoji, x, y + 2 + bob);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    drawUnitFigure(ctx, this.unit, x, y + bob, size);
     ctx.save(); ctx.translate(x, y + bob); ctx.rotate(this.angle);
     const rec = this.shootAnim > 0 ? -7 * (this.shootAnim / 0.14) : 0;
     ctx.beginPath(); ctx.moveTo(rec, 0); ctx.lineTo(size * 0.55 + rec, 0);
@@ -1676,6 +1784,58 @@ class Hero {
 /* ============================================================
    6) СКИБИДИ (ВРАГ)
    ============================================================ */
+function drawEnemyFigure(ctx, e) {
+  const x = e.x, yy = e.y, s = e.size;
+  const bowlG = ctx.createLinearGradient(x, yy + s * 0.2, x, yy + s * 0.95);
+  bowlG.addColorStop(0, '#f2f5fa');
+  bowlG.addColorStop(1, '#c3ccd9');
+  ctx.beginPath(); ctx.ellipse(x, yy + s * 0.58, s * 0.95, s * 0.48, 0, 0, Math.PI * 2);
+  ctx.fillStyle = bowlG; ctx.fill();
+  ctx.strokeStyle = '#8a94a8'; ctx.lineWidth = 1.4; ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(x, yy + s * 0.5, s * 0.6, s * 0.2, 0, 0, Math.PI * 2);
+  ctx.fillStyle = '#aab4c4'; ctx.fill();
+  if (e.def.id === 'mini') return;
+  const ey = yy - s * 0.25;
+  for (const dx of [-s * 0.3, s * 0.3]) {
+    ctx.beginPath(); ctx.arc(x + dx, ey, s * 0.16, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff'; ctx.fill();
+    ctx.beginPath(); ctx.arc(x + dx * 1.15, ey, s * 0.07, 0, Math.PI * 2);
+    ctx.fillStyle = '#101418'; ctx.fill();
+  }
+  ctx.beginPath(); ctx.arc(x, yy + s * 0.1, s * 0.26, 0.15 * Math.PI, 0.85 * Math.PI);
+  ctx.strokeStyle = '#20242c'; ctx.lineWidth = 1.6; ctx.stroke();
+  if (e.def.id === 'sci' || e.def.id === 'gSci') {
+    ctx.strokeStyle = '#bfefff'; ctx.lineWidth = 1.8;
+    ctx.beginPath(); ctx.roundRect(x - s * 0.52, ey - s * 0.13, s * 1.04, s * 0.24, 3); ctx.stroke();
+  }
+  if (e.def.id === 'camo') {
+    ctx.fillStyle = '#1c2028';
+    ctx.beginPath(); ctx.roundRect(x - s * 0.55, ey - s * 0.3, s * 1.1, s * 0.18, 3); ctx.fill();
+  }
+  if (e.def.id === 'big') {
+    for (const d of [-1, 1]) {
+      ctx.beginPath(); ctx.arc(x + d * s * 0.8, yy + s * 0.05, s * 0.26, 0, Math.PI * 2);
+      ctx.fillStyle = '#3a3f4c'; ctx.fill();
+      ctx.beginPath(); ctx.arc(x + d * s * 0.8, yy + s * 0.05, s * 0.12, 0, Math.PI * 2);
+      ctx.fillStyle = '#151820'; ctx.fill();
+    }
+  }
+  ctx.font = 'bold ' + Math.max(7, s * 0.45).toFixed(1) + 'px sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  if (e.def.id === 'gToilet' || e.def.id === 'gSci') {
+    ctx.fillStyle = '#232a3c';
+    ctx.beginPath(); ctx.roundRect(x - s * 0.25, yy + s * 0.78, s * 0.5, s * 0.3, 3); ctx.fill();
+    ctx.fillStyle = '#ffd966';
+    ctx.fillText('G', x, yy + s * 0.93);
+  }
+  if (e.def.id === 'gMan') {
+    ctx.fillStyle = '#181c26';
+    ctx.beginPath(); ctx.roundRect(x - s * 0.25, yy + s * 0.55, s * 0.5, s * 0.5, 3); ctx.fill();
+    ctx.fillStyle = '#ff4d4d';
+    ctx.fillText('\u25c6', x, yy + s * 0.78);
+  }
+}
+
 class Enemy {
   constructor(game, def, hp, speed, reward) {
     this.game = game;
@@ -1851,7 +2011,12 @@ class Enemy {
     ctx.fillStyle = 'rgba(0,0,0,0.22)'; ctx.fill();
     if (this.def.boss) {
       ctx.font = '12px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText('👑', x, yy - this.size - 9);
+      ctx.fillStyle = '#ffd966';
+      ctx.beginPath();
+      ctx.moveTo(x - 7, yy - this.size - 6); ctx.lineTo(x - 7, yy - this.size - 13);
+      ctx.lineTo(x - 3.5, yy - this.size - 8); ctx.lineTo(x, yy - this.size - 14);
+      ctx.lineTo(3.5, yy - this.size - 8); ctx.lineTo(7, yy - this.size - 13);
+      ctx.lineTo(7, yy - this.size - 6); ctx.closePath(); ctx.fill();
       const pl = 0.5 + 0.5 * Math.sin(this.time * 4);
       ctx.beginPath(); ctx.arc(x, yy, this.size + 4 + pl * 2, 0, Math.PI * 2);
       ctx.strokeStyle = `rgba(255,217,102,${0.35 + 0.3 * pl})`; ctx.lineWidth = 2; ctx.stroke();
@@ -1864,7 +2029,7 @@ class Enemy {
       }
     }
     ctx.font = `${this.size * 1.1}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(this.def.emoji, x, yy - 1);
+    drawEnemyFigure(ctx, this);
     if (this.flashUntil > Date.now()) {
       ctx.globalAlpha = Math.min(0.6, (this.flashUntil - Date.now()) / 140 * 0.6);
       ctx.beginPath(); ctx.arc(x, yy, this.size, 0, Math.PI * 2);
@@ -1889,6 +2054,15 @@ class Enemy {
     ctx.beginPath(); ctx.roundRect(bx, by, w * p, h, 3); ctx.fill();
     ctx.fillStyle = '#ffffff'; ctx.font = 'bold 9px monospace'; ctx.textAlign = 'center';
     ctx.fillText(Math.ceil(this.hp) + '/' + Math.ceil(this.maxHp), x, by - 4 - (this.shieldMax > 0 ? 6 : 0));
+    if (this.def.name) {
+      const nmY = by - 17 - (this.shieldMax > 0 ? 6 : 0);
+      ctx.font = 'bold ' + Math.max(8.5, this.size * 0.55).toFixed(1) + 'px sans-serif';
+      const nm = T(this.def.name);
+      ctx.fillStyle = 'rgba(0,0,0,0.75)';
+      ctx.fillText(nm, x + 1, nmY + 1);
+      ctx.fillStyle = this.def.boss ? '#ffd966' : '#e8f0ff';
+      ctx.fillText(nm, x, nmY);
+    }
     if (this.slowTimer > 0) {
       ctx.beginPath(); ctx.arc(x, y, this.size + 4, 0, Math.PI * 2);
       ctx.strokeStyle = '#66ccff99'; ctx.lineWidth = 2; ctx.stroke();
@@ -2654,7 +2828,7 @@ class Game {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
     this.map.draw(ctx);
-    this.drawPaymentNotice();
+    this.drawPaymentNotice(ctx);
     this.drawFarmChip(ctx);
     this.drawBase(ctx);
     if (this.selectedBuild && this.mouse.onCanvas) this.drawPreview(ctx);
@@ -2807,7 +2981,7 @@ class Game {
     ctx.fillStyle = '#7fffa0';
     ctx.fillText(label, 24, 23);
   }
-  drawPaymentNotice() {
+  drawPaymentNotice(ctx) {
     if (!this._payMsg || performance.now() > this._payMsgUntil) { this._payMsg = null; return; }
     const label = this._payMsg;
     ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
@@ -3112,6 +3286,10 @@ const App = {
     this.renderGachaReels();
     this.renderGachaCollection();
     this.renderAutoSellPanel();
+    this.gachaBox = (SaveManager.data && SaveManager.data.gachaBox) || 'common';
+    this.renderBoxTabs();
+    this.renderGachaStock();
+    this.updateSpinButtons();
     this.updateRates();
     UI.showScreen('gachaScreen');
     this.refreshMeta();
@@ -3120,12 +3298,13 @@ const App = {
     resultEl.className = 'gacha-result';
   },
   updateRates() {
-    const total = UNITS.reduce((sum, u) => sum + u.dropChance, 0);
-    const byR = {};
-    for (const u of UNITS) byR[u.rarity] = (byR[u.rarity] || 0) + u.dropChance;
+    const box = GACHA_BOXES.find(b => b.id === this.gachaBox) || GACHA_BOXES[0];
     for (const r of RARITY_ORDER) {
       const el = document.getElementById('rate' + r);
-      if (el) el.textContent = (R(r) || r) + ' ' + ((byR[r] || 0) / total * 100).toFixed(1) + '%';
+      if (el) {
+        el.textContent = (R(r) || r) + ' ' + ((box.rates[r] || 0) * 100).toFixed(1) + '%';
+        el.style.color = RARITY_COLOR[r] || '#aaa';
+      }
     }
   },
   renderGachaReels(iconCount) {
@@ -3179,7 +3358,9 @@ const App = {
   },
   doSpin(count) {
     if (this.spinning) return;
-    const cost = count === 1 ? 100 : 900;
+    const gachaBox = this.gachaBox = (SaveManager.data && SaveManager.data.gachaBox) || 'common';
+    const gbox = GACHA_BOXES.find(b => b.id === gachaBox) || GACHA_BOXES[0];
+    const cost = count === 1 ? gbox.cost1 : gbox.cost10;
     if (SaveManager.coins < cost) { Sound.error(); UI.toast(`Не хватает монет (нужно ${cost})`); return; }
     Sound.init();
     SaveManager.coins = SaveManager.coins - cost;
@@ -3194,14 +3375,14 @@ const App = {
     resultEl.textContent = '';
     resultEl.className = 'gacha-result';
     const results = [];
-    for (let i = 0; i < count; i++) results.push(this.rollUnit());
+    for (let i = 0; i < count; i++) results.push(this.rollUnitBox(this.gachaBox));
     if (count === 10) {
       const hasRarePlus = results.some(u => ['Rare', 'Epic', 'Legendary', 'Mythic'].includes(u.rarity));
       if (!hasRarePlus) {
         const idx = Math.floor(Math.random() * results.length);
         let tries = 0;
         while (tries < 100) {
-          const u = this.rollUnit();
+          const u = this.rollUnitBox(this.gachaBox);
           if (['Rare', 'Epic', 'Legendary', 'Mythic'].includes(u.rarity)) { results[idx] = u; break; }
           tries++;
         }
@@ -3285,8 +3466,7 @@ const App = {
     const btn1 = document.getElementById('btnSpinX1');
     const btn10 = document.getElementById('btnSpinX10');
     btn1.disabled = false; btn10.disabled = false;
-    btn1.textContent = T('ПРИЗЫВ ×1 (100 🪙)');
-    btn10.textContent = T('ПРИЗЫВ ×10 (900 🪙)');
+    this.updateSpinButtons();
   },
   confetti() {
     const glyphs = ['🎉', '⭐', '✨', '🎊', '🪙'];
@@ -3306,6 +3486,62 @@ const App = {
     let r = Math.random() * total;
     for (const u of UNITS) { r -= u.dropChance; if (r <= 0) return u; }
     return UNITS[0];
+  },
+  rollUnitBox(boxId) {
+    const box = GACHA_BOXES.find(b => b.id === boxId) || GACHA_BOXES[0];
+    const stock = gachaStock(box.id, Math.floor(Date.now() / STOCK_PERIOD_MS));
+    let acc = 0, rar = Object.keys(box.rates)[0];
+    const r = Math.random();
+    for (const [k, p] of Object.entries(box.rates)) { acc += p; if (r <= acc) { rar = k; break; } }
+    const pool = stock.filter(u => u.rarity === rar);
+    const from = pool.length ? pool : UNITS.filter(u => u.rarity === rar);
+    return from[Math.floor(Math.random() * from.length)] || UNITS[0];
+  },
+  renderBoxTabs() {
+    const wrap = document.getElementById('gachaBoxes');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    for (const b of GACHA_BOXES) {
+      const btn = document.createElement('button');
+      btn.className = 'btn gacha-box-tab' + (this.gachaBox === b.id ? ' accent' : '');
+      btn.textContent = T(b.name);
+      btn.addEventListener('click', () => {
+        this.gachaBox = b.id;
+        SaveManager.data.gachaBox = b.id;
+        SaveManager.save();
+        this.renderBoxTabs();
+        this.renderGachaStock();
+        this.updateRates();
+        this.updateSpinButtons();
+      });
+      wrap.appendChild(btn);
+    }
+  },
+  renderGachaStock() {
+    const el = document.getElementById('gachaStock');
+    if (!el) return;
+    const box = GACHA_BOXES.find(b => b.id === this.gachaBox) || GACHA_BOXES[0];
+    const bucket = Math.floor(Date.now() / STOCK_PERIOD_MS);
+    const stock = gachaStock(box.id, bucket);
+    const msLeft = STOCK_PERIOD_MS - (Date.now() % STOCK_PERIOD_MS);
+    const mm = Math.floor(msLeft / 60000), ss = Math.floor(msLeft / 1000) % 60;
+    let html = '<div class="stock-head">' + fill(T('\u0421\u0422\u041e\u041a \u2014 \u0421\u0411\u0420\u041e\u0421 \u0427\u0415\u0420\u0415\u0417 %1'), mm + ':' + String(ss).padStart(2, '0')) + ' \u00b7 ' + T(box.name) + '</div><div class="stock-grid">';
+    for (const u of stock) {
+      const same = stock.filter(x => x.rarity === u.rarity).length;
+      const pct = (box.rates[u.rarity] || 0) / same * 100;
+      html += '<div class="stock-cell"><span style="font-size:1.1rem">' + u.emoji + '</span>' +
+        '<span style="color:' + (RARITY_COLOR[u.rarity] || '#aaa') + '">' + T(u.name) + '</span>' +
+        '<span class="sc-pct">' + pct.toFixed(1) + '%</span></div>';
+    }
+    html += '</div>';
+    el.innerHTML = html;
+  },
+  updateSpinButtons() {
+    const box = GACHA_BOXES.find(b => b.id === this.gachaBox) || GACHA_BOXES[0];
+    const b1 = document.getElementById('btnSpinX1');
+    const b10 = document.getElementById('btnSpinX10');
+    if (b1) b1.textContent = fill(T('\u041f\u0420\u0418\u0417\u042b\u0412 \u00d71 (%1 \ud83d\udc8e)'), box.cost1);
+    if (b10) b10.textContent = fill(T('\u041f\u0420\u0418\u0417\u042b\u0412 \u00d710 (%1 \ud83d\udc8e)'), box.cost10);
   },
   showIndex() {
     this.renderIndex();
@@ -3665,6 +3901,10 @@ const App = {
   bindMenu() {
     document.getElementById('btnPlay').addEventListener('click', () => this.showUnitSelect());
     document.getElementById('btnGacha').addEventListener('click', () => this.showGacha());
+    setInterval(() => {
+      const g = document.getElementById('gachaScreen');
+      if (g && g.classList.contains('active')) this.renderGachaStock();
+    }, 1000);
     document.getElementById('btnCollection').addEventListener('click', () => this.showInventory());
     document.getElementById('btnSettings').addEventListener('click', () => this.showSettings());
     document.getElementById('gachaBack').addEventListener('click', () => this.showLobby());
