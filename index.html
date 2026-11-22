@@ -584,7 +584,7 @@
         <button class="btn small accent" id="btnRedeemCode">OK</button>
       </div>
     </div>
-    <div class="settings-row" id="adminRow" style="display:none"><span>🛠 Админ</span><button class="btn small accent" id="btnAdmin">ОТКРЫТЬ</button></div>
+    <div class="settings-row" id="adminRow" style="display:none"><span>🛠 Служебная панель</span><button class="btn small accent" id="btnAdmin">ОТКРЫТЬ</button></div>
     <div class="settings-row"><span>🗑 Сброс прогресса</span><button class="btn small danger" id="btnResetProgress">СБРОС</button></div>
     <div class="hint">ПРОГРЕСС СОХРАНЯЕТСЯ АВТОМАТИЧЕСКИ · КАМЕРА, МОТОР!</div>
   </div>
@@ -616,9 +616,9 @@
 
 <!-- АДМИН -->
 <div class="unit-detail-overlay" id="adminOverlay">
-  <div class="subpanel" style="max-width:480px">
+  <div class="subpanel" style="max-width:560px">
     <button class="btn small back-btn" id="admClose">← ЗАКРЫТЬ</button>
-    <h2 class="panel-title">🛠 АДМИН-ПАНЕЛЬ</h2>
+    <h2 class="panel-title">🛠 СЛУЖЕБНАЯ ПАНЕЛЬ v2</h2>
     <div class="settings-row"><span>🪙 Монеты</span>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <input type="number" class="search-input" id="admCoins" style="width:150px;padding:8px" placeholder="напр. 1000000">
@@ -631,15 +631,26 @@
         <button class="btn small accent" id="admCrystalsBtn">ВЫДАТЬ</button>
       </div>
     </div>
-    <div class="settings-row"><span>🧸 Юнит</span>
+    <div class="settings-row"><span>🧸 Юниты</span>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <select id="admUnit" style="padding:8px;background:#1a2130;color:#dfe6f4;border:1px solid #3a4560;border-radius:8px"></select>
         <button class="btn small accent" id="admUnitBtn">ВЫДАТЬ</button>
         <button class="btn small" id="admAllUnitsBtn">ВСЕ ЮНИТЫ</button>
       </div>
     </div>
+    <div class="settings-row"><span>🎁 Ивент-крейты ×5</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn small accent" id="admCratesBtn">ВЫДАТЬ</button>
+      </div>
+    </div>
+    <div class="settings-row"><span>🗑 Сброс прогресса</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn small danger" id="admResetBtn">СБРОС</button>
+      </div>
+    </div>
   </div>
 </div>
+
 
 <!-- РЕЗУЛЬТАТЫ -->
 <div class="overlay" id="crateOverlay"><div id="crateBox">📦</div></div>
@@ -1062,6 +1073,9 @@ const I18N_EN = {
   "▶ ЗАЩИЩАТЬ": "▶ DEFEND",
   "⚠ Вражеский шахед летит на базу!": "⚠ Enemy shahed incoming!",
   "Полоса %1": "Lane %1",
+  "🎁 Ивент-крейты ×5 выданы": "Event crates ×5 granted",
+  "🛠 Служебная панель": "🛠 Service panel",
+  "🛠 СЛУЖЕБНАЯ ПАНЕЛЬ v2": "🛠 SERVICE PANEL v2",
   "Спавн на этой полосе": "Spawn in this lane",
   "ПВО не сработало!": "AA failed to fire!",
   "Наша база пала!": "Our base has fallen!",
@@ -1145,7 +1159,7 @@ function installLangObserver() {
     .observe(document.body, { childList: true, subtree: true, characterData: true });
 }
 
-const MAX_HEROES = 15;
+const MAX_HEROES = 18;
 
 const RARITY_ORDER = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Special', 'Mythic', 'Godly', 'Ultimate'];
 const RARITY_RU = {
@@ -1270,142 +1284,142 @@ function fmtMM(ms) {
 }
 
 const UNIT_LIMITS = {
-  intern: 8, operator: 8, steadicam: 8, makeup: 8, dronepilot: 8, rookie: 8,
-  scientist: 4, engineer: 4,
-  gaffer: 8, boomop: 6, bodyguard: 6, pyrotech: 6,
-  director: 4, speaker: 4, streamer: 4, soundmixer: 4, soundengineer: 4,
-  titanCam: 2, titanSpeaker: 2, titanTV: 2,
-  snipercam: 3, hacker: 3, shadowop: 3,
+  intern: 10, operator: 10, steadicam: 10, makeup: 10, dronepilot: 10, rookie: 10,
+  scientist: 6, engineer: 5,
+  gaffer: 10, boomop: 8, bodyguard: 8, pyrotech: 8,
+  director: 6, speaker: 6, streamer: 6, soundmixer: 5, soundengineer: 6,
+  titanCam: 3, titanSpeaker: 3, titanTV: 3,
+  snipercam: 5, hacker: 4, shadowop: 4,
   cinegod: 1, titanCam40: 1,
-  mobilCam: 8, speakerVet: 6, presidentTV: 2, camShahed: 4, amerFarm: 4, elegantPresident: 1
+  mobilCam: 10, speakerVet: 8, presidentTV: 3, camShahed: 5, amerFarm: 5, elegantPresident: 1
 };
 function unitLimit(id) { return UNIT_LIMITS[id] || MAX_HEROES; }
 
 const UNITS = [
   { id: 'intern', name: 'Стажёр', emoji: '🎥', rarity: 'Common', dropChance: 0.20,
     desc: 'Молодой стажёр студии. Первый боец против скибиди.',
-    stats: { dmg: 18, range: 115, fireRate: 1.0, hp: 150 },
+    stats: { dmg: 20, range: 125, fireRate: 1, hp: 170 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none' },
   { id: 'operator', name: 'Оператор', emoji: '📹', rarity: 'Common', dropChance: 0.14,
     desc: 'Опытный оператор камер. Надёжный и меткий.',
-    stats: { dmg: 22, range: 130, fireRate: 0.95, hp: 200 },
+    stats: { dmg: 24, range: 140, fireRate: 0.95, hp: 210 },
     passive: { dmgBonus: 0.05, moneyBonus: 0 }, ability: 'none' },
   { id: 'steadicam', name: 'Стедикамен', emoji: '📸', rarity: 'Uncommon', dropChance: 0.10,
     desc: 'Очень быстрая стрельба, разгоняет союзников.',
-    stats: { dmg: 26, range: 110, fireRate: 0.45, hp: 190 },
+    stats: { dmg: 26, range: 115, fireRate: 0.5, hp: 190 },
     passive: { dmgBonus: 0, moneyBonus: 0.05 }, ability: 'speedBoost' },
   { id: 'makeup', name: 'Гримёр', emoji: '💄', rarity: 'Uncommon', dropChance: 0.09,
     desc: 'Бодрит союзников в бою: снимает стан и даёт иммунитет к стану боссов.',
-    stats: { dmg: 16, range: 120, fireRate: 1.2, hp: 220 },
+    stats: { dmg: 18, range: 130, fireRate: 1.2, hp: 230 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'antistan' },
   { id: 'dronepilot', name: 'Пилот дрона', emoji: '🚁', rarity: 'Uncommon', dropChance: 0.07,
     desc: 'Ведёт огонь с воздуха. Большой радиус.',
-    stats: { dmg: 24, range: 175, fireRate: 0.7, hp: 170 },
+    stats: { dmg: 26, range: 200, fireRate: 0.7, hp: 175 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none' },
   { id: 'scientist', name: 'Учёный', emoji: '🔬', rarity: 'Rare', dropChance: 0.04,
     desc: 'Ферма. Приносит деньги в конце каждой волны.',
-    stats: { dmg: 0, range: 125, fireRate: 0, hp: 180 },
-    passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash',    cashPerWave: 90, pureFarm: true },
+    stats: { dmg: 0, range: 125, fireRate: 0, hp: 210 },
+    passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash',    cashPerWave: 110, pureFarm: true },
   { id: 'gaffer', name: 'Осветитель', emoji: '💡', rarity: 'Rare', dropChance: 0.05,
     desc: 'Солёные лучи замедляют скибиди.',
-    stats: { dmg: 22, range: 130, fireRate: 1.0, hp: 210 },
+    stats: { dmg: 26, range: 140, fireRate: 1, hp: 210 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'slow' },
   { id: 'boomop', name: 'Бум-оператор', emoji: '🎙️', rarity: 'Rare', dropChance: 0.03,
     desc: 'Звуковые атаки и бафф скорости союзникам.',
-    stats: { dmg: 22, range: 120, fireRate: 0.85, hp: 200 },
+    stats: { dmg: 22, range: 135, fireRate: 0.9, hp: 200 },
     passive: { dmgBonus: 0, moneyBonus: 0.07 }, ability: 'speedBoost' },
   { id: 'engineer', name: 'Инженер', emoji: '🛠️', rarity: 'Epic', dropChance: 0.03,
     desc: 'Чистая ферма. Не атакует, приносит деньги в конце каждой волны.',
-    stats: { dmg: 0, range: 130, fireRate: 0, hp: 230 },
-    passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash',    cashPerWave: 170, pureFarm: true },
+    stats: { dmg: 0, range: 130, fireRate: 0, hp: 260 },
+    passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash',    cashPerWave: 200, pureFarm: true },
   { id: 'director', name: 'Режиссёр', emoji: '🎬', rarity: 'Epic', dropChance: 0.02,
     desc: 'Командует огнём. Взрывы по площади.',
-    stats: { dmg: 33, range: 150, fireRate: 1.05, hp: 240 },
+    stats: { dmg: 38, range: 165, fireRate: 1.05, hp: 260 },
     passive: { dmgBonus: 0.10, moneyBonus: 0 }, ability: 'aoeBurst' },
   { id: 'speaker', name: 'Спикермен', emoji: '🔊', rarity: 'Epic', dropChance: 0.018,
     desc: 'Звуковые волны оглушают врагов.',
-    stats: { dmg: 30, range: 135, fireRate: 1.0, hp: 250 },
+    stats: { dmg: 34, range: 145, fireRate: 1, hp: 260 },
     passive: { dmgBonus: 0, moneyBonus: 0.05 }, ability: 'stun' },
   { id: 'streamer', name: 'Стример', emoji: '💎', rarity: 'Epic', dropChance: 0.012,
     desc: 'Стримит прямо с фронта. Знаменитость студии: +10% дохода.',
-    stats: { dmg: 28, range: 140, fireRate: 0.95, hp: 220 },
+    stats: { dmg: 32, range: 150, fireRate: 0.95, hp: 230 },
     passive: { dmgBonus: 0, moneyBonus: 0.10 }, ability: 'none' },
   { id: 'soundmixer', name: 'Саунд-миксер', emoji: '🎚️', rarity: 'Legendary', dropChance: 0.008,
     desc: 'Мощные волны: урон + длинное оглушение.',
-    stats: { dmg: 38, range: 145, fireRate: 0.95, hp: 300 },
+    stats: { dmg: 44, range: 160, fireRate: 0.95, hp: 310 },
     passive: { dmgBonus: 0.05, moneyBonus: 0.05 }, ability: 'stun', abilityPower: 2.0 },
   { id: 'titanCam', name: 'Титан Камерамен', emoji: '🗿', rarity: 'Legendary', dropChance: 0.008,
     desc: 'Колосс огневой мощи. Один в поле воин.',
-    stats: { dmg: 70, range: 160, fireRate: 0.9, hp: 420 },
+    stats: { dmg: 80, range: 180, fireRate: 0.9, hp: 480 },
     passive: { dmgBonus: 0.10, moneyBonus: 0 }, ability: 'none' },
   { id: 'titanSpeaker', name: 'Титан Спикер', emoji: '📢', rarity: 'Mythic', dropChance: 0.005,
     desc: 'Сокрушающие волны звука по всей арене.',
-    stats: { dmg: 72, range: 170, fireRate: 1.0, hp: 520 },
-    passive: { dmgBonus: 0.05, moneyBonus: 0.05 }, ability: 'aoeBurst', aoeRadius: 90 },
+    stats: { dmg: 85, range: 190, fireRate: 1, hp: 560 },
+    passive: { dmgBonus: 0.05, moneyBonus: 0.05 }, ability: 'aoeBurst', aoeRadius: 100 },
   { id: 'titanTV', name: 'Титан ТВ', emoji: '👑', rarity: 'Mythic', dropChance: 0.003,
     desc: 'Абсолютный чемпион студии: залпы по площади с разрушительным уроном.',
-    stats: { dmg: 88, range: 185, fireRate: 0.85, hp: 600 },
-    passive: { dmgBonus: 0.15, moneyBonus: 0.10 }, ability: 'aoeBurst', aoeRadius: 80 },
+    stats: { dmg: 100, range: 200, fireRate: 0.85, hp: 680 },
+    passive: { dmgBonus: 0.15, moneyBonus: 0.10 }, ability: 'aoeBurst', aoeRadius: 95 },
   { id: 'pyrotech', name: 'Пиротехник', emoji: '🎆', rarity: 'Rare', dropChance: 0.05,
     desc: 'Снаряды взрываются по площади при каждом попадании.',
-    stats: { dmg: 17, range: 120, fireRate: 1.1, hp: 200 },
-    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'splash', splashRadius: 55 },
+    stats: { dmg: 21, range: 135, fireRate: 1.1, hp: 210 },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'splash', splashRadius: 65 },
   { id: 'snipercam', name: 'Снайпер', emoji: '🎯', rarity: 'Rare', dropChance: 0.05,
     desc: 'Очень дальний и точный огонь. Одна цель — один выстрел.',
-    stats: { dmg: 58, range: 260, fireRate: 0.8, hp: 160 },
+    stats: { dmg: 75, range: 300, fireRate: 0.8, hp: 170 },
     passive: { dmgBonus: 0.05, moneyBonus: 0 }, ability: 'none' },
   { id: 'bodyguard', name: 'Телохранитель', emoji: '🛡️', rarity: 'Uncommon', dropChance: 0.07,
     desc: 'Крепкий боец передовой линии. Огромная прочность.',
-    stats: { dmg: 18, range: 95, fireRate: 1.3, hp: 520 },
+    stats: { dmg: 22, range: 110, fireRate: 1.3, hp: 650 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none' },
   { id: 'hacker', name: 'Хакер', emoji: '💻', rarity: 'Legendary', dropChance: 0.006,
     desc: 'Взламывает систему: попадания замедляют скибиди, +8% дохода.',
-    stats: { dmg: 36, range: 140, fireRate: 0.9, hp: 260 },
+    stats: { dmg: 44, range: 155, fireRate: 0.9, hp: 270 },
     passive: { dmgBonus: 0, moneyBonus: 0.08 }, ability: 'slow' },
   { id: 'rookie', name: 'Новобранец', emoji: '🎒', rarity: 'Common', dropChance: 0.20,
     desc: 'Молодой боец альянса. Дешёвый и надёжный старт против скибиди.',
-    stats: { dmg: 20, range: 125, fireRate: 1.0, hp: 180 },
+    stats: { dmg: 24, range: 135, fireRate: 1, hp: 200 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none' },
   { id: 'soundengineer', name: 'Звукорежиссёр', emoji: '🎧', rarity: 'Epic', dropChance: 0.03,
     desc: 'Звуковые волны оглушают врагов: ставит скибиди на паузу.',
-    stats: { dmg: 40, range: 170, fireRate: 0.8, hp: 260 },
+    stats: { dmg: 50, range: 185, fireRate: 0.8, hp: 270 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'stun', abilityPower: 2.2 },
   { id: 'shadowop', name: 'Теневой оператор', emoji: '🕶️', rarity: 'Legendary', dropChance: 0.012,
     desc: 'Высокий урон из тени: враги атакуют его в последнюю очередь.',
-    stats: { dmg: 85, range: 185, fireRate: 1.1, hp: 300 },
+    stats: { dmg: 95, range: 210, fireRate: 1.1, hp: 320 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'none', stealth: true },
   { id: 'cinegod', name: 'Бог Кино', emoji: '🌟', rarity: 'Godly', dropChance: 0.001,
     desc: 'Божественный покровитель кино: разрушительный фотонный залп по площади. Шанс 0.1%.',
-    stats: { dmg: 500, range: 250, fireRate: 1.9, hp: 900 },
+    stats: { dmg: 650, range: 280, fireRate: 2, hp: 1000 },
     passive: { dmgBonus: 0.15, moneyBonus: 0 }, ability: 'aoeBurst' },
   { id: 'titanCam40', name: 'Титан-Камерамен 4.0', emoji: '🎥', rarity: 'Ultimate', dropChance: 0.00001,
     desc: 'Последняя форма титана альянса: плазменные залпы по площади и несокрушимая броня. Шанс: 0.001% в мифическом, 0.0001% в обычном ящике.',
-    stats: { dmg: 650, range: 260, fireRate: 0.7, hp: 1100 },
-    passive: { dmgBonus: 0.25, moneyBonus: 0 }, ability: 'aoeBurst', aoeRadius: 110 },
+    stats: { dmg: 800, range: 300, fireRate: 0.8, hp: 1400 },
+    passive: { dmgBonus: 0.25, moneyBonus: 0 }, ability: 'aoeBurst', aoeRadius: 120 },
   { id: 'mobilCam', name: '🎖️ Мобилизованный Камерамен', emoji: '🎖️', rarity: 'Special', dropChance: 0.5,
     desc: 'Призван по мобилизации. Основа штурмового отряда. Награда режима «СТОЛИЦА ЗА 3 ДНЯ».',
-    stats: { dmg: 30, range: 140, fireRate: 0.8, hp: 260 },
+    stats: { dmg: 38, range: 155, fireRate: 0.8, hp: 300 },
     passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'none' },
   { id: 'speakerVet', name: '📢 Спикер со Стажем', emoji: '📢', rarity: 'Special', dropChance: 0.3,
     desc: 'Ветеран фронтовых бригад. Звуковые волны рвутся по площади. Награда режима «СТОЛИЦА ЗА 3 ДНЯ».',
-    stats: { dmg: 55, range: 170, fireRate: 0.75, hp: 380 },
+    stats: { dmg: 70, range: 185, fireRate: 0.75, hp: 440 },
     passive: { dmgBonus: 0.15, moneyBonus: 0 }, ability: 'splash', splashRadius: 60 },
   { id: 'presidentTV', name: '📺 Президент ТВ Мен Титан', emoji: '📺', rarity: 'Special', dropChance: 0.2,
     desc: 'Главнокомандующий ТВ-альянса. Периодические взрывы по площади. Награда режима «СТОЛИЦА ЗА 3 ДНЯ».',
-    stats: { dmg: 110, range: 210, fireRate: 0.65, hp: 900 },
-    passive: { dmgBonus: 0.2, moneyBonus: 0 }, ability: 'aoeBurst', aoeRadius: 100 },
+    stats: { dmg: 140, range: 230, fireRate: 0.65, hp: 1050 },
+    passive: { dmgBonus: 0.2, moneyBonus: 0 }, ability: 'aoeBurst', aoeRadius: 110 },
   { id: 'camShahed', name: '🛩️ Камера-Шахед', emoji: '🛩️', rarity: 'Special', dropChance: 0.5,
     desc: 'Спавнер: периодически выпускает шахедов-камикадзе на врагов. На 5-м уровне — самый крутой. Награда режима «ДАЙТЕ ДЕНЕГ».',
-    stats: { dmg: 85, range: 140, fireRate: 1.1, hp: 140 },
+    stats: { dmg: 100, range: 160, fireRate: 1.1, hp: 160 },
     passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'spawner' },
   { id: 'amerFarm', name: '🌽 Американская Ферма', emoji: '🌽', rarity: 'Special', dropChance: 0.3,
     desc: 'Лучшая ферма в игре: приносит 400🪙 за волну и не стреляет. Награда режима «ДАЙТЕ ДЕНЕГ».',
-    stats: { dmg: 0, range: 130, fireRate: 0, hp: 300 },
-    passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash', cashPerWave: 400, pureFarm: true },
+    stats: { dmg: 0, range: 130, fireRate: 0, hp: 350 },
+    passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash', cashPerWave: 480, pureFarm: true },
   { id: 'elegantPresident', name: '🎩 Элегантный Президент Титан', emoji: '🎩', rarity: 'Special', dropChance: 0.2,
     desc: 'Элита элиты: мощные периодические взрывы по площади. Награда режима «ДАЙТЕ ДЕНЕГ».',
-    stats: { dmg: 140, range: 230, fireRate: 0.6, hp: 1100 },
-    passive: { dmgBonus: 0.25, moneyBonus: 0 }, ability: 'aoeBurst', aoeRadius: 120 }
+    stats: { dmg: 180, range: 250, fireRate: 0.65, hp: 1300 },
+    passive: { dmgBonus: 0.25, moneyBonus: 0 }, ability: 'aoeBurst', aoeRadius: 130 }
 ];
 
 function statRange(u) {
@@ -1467,12 +1481,12 @@ const ENEMIES = [
 const DIFFICULTIES = [
   { id: 'easy', name: 'Легко', waves: 10, startMoney: 350, enemyHpMul: 0.8, enemySpeedMul: 0.9, rewardMul: 1.2, coinMul: 0.8, winCoins: 200 },
   { id: 'normal', name: 'Обычный', waves: 15, startMoney: 300, enemyHpMul: 1.0, enemySpeedMul: 1.0, rewardMul: 1.0, coinMul: 1.0, winCoins: 350 },
-  { id: 'hard', name: 'Сложный', waves: 20, startMoney: 250, enemyHpMul: 1.3, enemySpeedMul: 1.1, rewardMul: 0.95, coinMul: 1.5, winCoins: 600 },
-  { id: 'insane', name: 'Безумный', waves: 25, startMoney: 250, enemyHpMul: 1.45, enemySpeedMul: 1.15, rewardMul: 0.85, coinMul: 2.0, winCoins: 900 },
+  { id: 'hard', name: 'Сложный', waves: 20, startMoney: 250, enemyHpMul: 1.5, enemySpeedMul: 1.12, rewardMul: 0.95, coinMul: 1.5, winCoins: 600 },
+  { id: 'insane', name: 'Безумный', waves: 25, startMoney: 250, enemyHpMul: 1.8, enemySpeedMul: 1.2, rewardMul: 0.85, coinMul: 2.0, winCoins: 900 },
   { id: 'endless', name: 'Бесконечный', waves: 999, startMoney: 300, enemyHpMul: 1.0, enemySpeedMul: 1.0, rewardMul: 1.0, coinMul: 1.0, winCoins: 400, endless: true }
 ];
 
-const EVENT_DIFF = { id: 'dvizhuha', name: 'ДВИЖУХА Оборона', waves: 40, startMoney: 500, enemyHpMul: 1.45, enemySpeedMul: 1.12, rewardMul: 1.1, coinMul: 1.2, winCoins: 700 };
+const EVENT_DIFF = { id: 'dvizhuha', name: 'ДВИЖУХА Оборона', waves: 40, startMoney: 500, enemyHpMul: 1.55, enemySpeedMul: 1.12, rewardMul: 1.1, coinMul: 1.2, winCoins: 700 };
 
 const MAPS = [
   { id: 'studio', name: 'Студия', theme: { bg: '#10131c', grid: '#1a2030' }, decor: ['🎬','🎥','🎤','💡','📼'],
@@ -1518,7 +1532,8 @@ const PROMO_CODES = {
   '10MILLION': { coins: 10000000 }
 };
 
-const ADMIN_CODE = 'TIMUR987';
+function _kh(s, k) { let h = (0x811c9dc5 ^ k) >>> 0; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h >>> 0; }
+const _ac = { s1: 0x4a2f19c3, s2: 0x7e5d21b9, h1: 0xe3264406, h2: 0x5e559b1c };
 function dist(ax, ay, bx, by) { return Math.hypot(ax - bx, ay - by); }
 function shadeColor(hex, f) {
   const n = parseInt(hex.slice(1), 16);
@@ -1659,7 +1674,7 @@ const SaveManager = {
     code = String(code || '').trim().toUpperCase();
     if (!code) return { ok: false, msg: T('Введи код') };
     if (this.data.codes.includes(code)) return { ok: false, msg: T('Код уже использован') };
-    if (code === ADMIN_CODE) {
+    if (typeof code === 'string' && code.length >= 6 && _kh(code, _ac.s1) === _ac.h1 && _kh(code, _ac.s2) === _ac.h2) {
       this.data.admin = true;
       this.save();
       return { ok: true, msg: T('🛠 Админ-режим включён') };
@@ -2905,7 +2920,7 @@ class WaveManager {
   constructor(game) { this.game = game; this.spawnQueue = []; this.spawnTimer = 0; this.waveActive = false; }
   buildQueue(waveNum) {
     const diff = this.game.difficulty;
-    const baseHp = (18 + waveNum * 14) * diff.enemyHpMul;
+    const baseHp = (18 + waveNum * 14 + Math.pow(Math.max(0, waveNum - 12), 2) * 2.5) * diff.enemyHpMul;
     const baseSpd = (1.05 + Math.min(waveNum * 0.03, 0.7)) * diff.enemySpeedMul;
     const baseRew = 9 + waveNum * 2;
     const byId = id => ENEMIES.find(e => e.id === id);
@@ -3571,11 +3586,11 @@ class Game {
       const atBase = !alive.length || Math.random() < 0.35;
       if (atBase) {
         const bp = this.map.waypoints[this.map.waypoints.length - 1];
-        this.eventFlyers.push({ x: CANVAS_W + 30, y: 60 + Math.random() * 200, speed: 165, hp: 40, tx: bp.x, ty: bp.y - 20, atBase: true, jam: Math.random() < 0.35 });
+        this.eventFlyers.push({ x: CANVAS_W + 30, y: 60 + Math.random() * 200, speed: 165, hp: 40, tx: bp.x, ty: bp.y - 20, atBase: true, jam: Math.random() < 0.25 });
         this.toast(T('\u26a0 \u0412\u0440\u0430\u0436\u0435\u0441\u043a\u0438\u0439 \u0448\u0430\u0445\u0435\u0434 \u043b\u0435\u0442\u0438\u0442 \u043d\u0430 \u0431\u0430\u0437\u0443!'));
       } else {
         const target = alive[Math.floor(Math.random() * alive.length)];
-        this.eventFlyers.push({ x: CANVAS_W + 30, y: 60 + Math.random() * 200, speed: 165, hp: 40, tx: target.x, ty: target.y, atBase: false, jam: Math.random() < 0.35 });
+        this.eventFlyers.push({ x: CANVAS_W + 30, y: 60 + Math.random() * 200, speed: 165, hp: 40, tx: target.x, ty: target.y, atBase: false, jam: Math.random() < 0.25 });
         this.toast(T('\u26a0\ufe0f \u0428\u0430\u0445\u0435\u0434 \u043b\u0435\u0442\u0438\u0442 \u043d\u0430 \u043d\u0430\u0448\u0438 \u0432\u043e\u0439\u0441\u043a\u0430!'));
       }
     }
@@ -3660,7 +3675,7 @@ class Game {
     this.money -= cost;
     const b = this.map.waypoints[this.map.waypoints.length - 1];
     const ang = (n / 13) * Math.PI * 2;
-    this.eventPvos.push({ x: b.x + Math.cos(ang) * 60, y: b.y + Math.sin(ang) * 60, range: 190 });
+    this.eventPvos.push({ x: b.x + Math.cos(ang) * 60, y: b.y + Math.sin(ang) * 60, range: 210 });
     Sound.upgrade();
     const pvoBtn = document.getElementById('btnPVO');
     if (pvoBtn) pvoBtn.textContent = T('🛡 ПВО (%1/13)').replace('%1', n + 1);
@@ -5230,6 +5245,20 @@ const App = {
       UI.toast('Все юниты выданы');
       this.refreshMeta();
     });
+    document.getElementById('admCratesBtn').addEventListener('click', () => {
+      for (const c of ['militaryCrate', 'budgetCrate']) SaveManager.addItem(c, 5);
+      UI.toast(T('🎁 Ивент-крейты ×5 выданы'));
+      this.refreshMeta();
+    });
+    document.getElementById('admResetBtn').addEventListener('click', () => {
+      if (confirm(T('Сбросить весь прогресс? Это действие необратимо.'))) {
+        SaveManager.reset();
+        this.renderGachaReels();
+        this.refreshMeta();
+        this.renderSettings();
+        UI.toast(T('Прогресс сброшен'));
+      }
+    });
     document.getElementById('btnResetProgress').addEventListener('click', () => {
       if (confirm(T('Сбросить весь прогресс? Это действие необратимо.'))) {
         SaveManager.reset();
@@ -5270,7 +5299,7 @@ const App = {
    12.5) ИВЕНТ «ДВИЖУХА» — режим «СТОЛИЦА ЗА 3 ДНЯ» (фронт)
    ============================================================ */
 const FRONT_LANES = [200, 320, 440];
-const FRONT_BASE_COST = { Common: 80, Uncommon: 120, Rare: 180, Epic: 260, Special: 340, Legendary: 380, Mythic: 520, Godly: 700, Ultimate: 900 };
+const FRONT_BASE_COST = { Common: 80, Uncommon: 110, Rare: 160, Epic: 220, Special: 300, Legendary: 360, Mythic: 480, Godly: 640, Ultimate: 820 };
 const FRONT_BASE_X = 1210, FRONT_OUR_X = 46, FRONT_ENEMY_SPAWN_X = 1290, FRONT_REACH_X = 1120;
 function drawFrontBases(ctx, enemyHp, enemyMax, myHp, myMax) {
   ctx.save();
@@ -5381,8 +5410,8 @@ class FrontGame {
   }
   unitPrice(id) {
     const u = this.unitDef(id);
-    const base = FRONT_BASE_COST[u && u.rarity] || 160;
-    return Math.round(base * Math.pow(1.15, this.spawnCount[id] || 0));
+    const base = FRONT_BASE_COST[u && u.rarity] || 140;
+    return Math.round(base * Math.pow(1.12, this.spawnCount[id] || 0));
   }
   coinBoost() { return SaveManager.potionActive('coins') ? 2 : 1; }
   buildPanel() {
@@ -5440,7 +5469,7 @@ class FrontGame {
   }
   spawnUnit(id) {
     if (this.gameOver) return;
-    if (this.mine.length >= 25) { Sound.error(); this.toastMsg(fill(T('\u041b\u0438\u043c\u0438\u0442 \u044e\u043d\u0438\u0442\u043e\u0432 (%1)'), 25)); return; }
+    if (this.mine.length >= 28) { Sound.error(); this.toastMsg(fill(T('\u041b\u0438\u043c\u0438\u0442 \u044e\u043d\u0438\u0442\u043e\u0432 (%1)'), 28)); return; }
     const price = this.unitPrice(id);
     if (this.money < price) { Sound.error(); this.toastMsg(T('\u041d\u0435 \u0445\u0432\u0430\u0442\u0430\u0435\u0442 \u0434\u0435\u043d\u0435\u0433')); return; }
     this.money -= price;
@@ -5527,10 +5556,13 @@ class FrontGame {
     }
     this.enemyTimer -= dt;
     if (this.enemyTimer <= 0) {
-      this.enemyTimer = Math.max(0.35, 1.5 - this.elapsed * 0.002);
+      this.enemyTimer = Math.max(0.45, 1.4 - this.elapsed * 0.0025);
       const lane = Math.floor(Math.random() * 3);
-      this.enemies.push({ lane, kind: Math.floor(Math.random() * 3), x: FRONT_ENEMY_SPAWN_X, y: FRONT_LANES[lane],
-        hp: 40 + this.elapsed * 0.55, speed: 50 + this.elapsed * 0.35, cd: 0 });
+      const kind = Math.floor(Math.random() * 3);
+      const km = kind === 0 ? 1 : (kind === 1 ? 1.35 : 1.8);
+      const hp = (55 + this.elapsed * (1.6 + this.elapsed * 0.012)) * km;
+      this.enemies.push({ lane, kind, maxHp: hp, x: FRONT_ENEMY_SPAWN_X, y: FRONT_LANES[lane],
+        hp, speed: Math.min(115, 45 + this.elapsed * 0.25), cd: 0 });
       if (!this.strongMsgShown && this.elapsed > 120) {
         this.strongMsgShown = true;
         this.toastMsg(T('\u0412\u0440\u0430\u0436\u0435\u0441\u043a\u0438\u0435 \u0441\u043e\u043b\u0434\u0430\u0442\u044b \u043d\u0430\u0441\u0442\u0443\u043f\u0430\u044e\u0442 \u0441\u0438\u043b\u044c\u043d\u0435\u0435!'));
@@ -5556,32 +5588,34 @@ class FrontGame {
         continue;
       }
       let target = null, bd = Infinity;
-      for (const e of this.enemies) {
-        if (e.lane !== m.lane) continue;
-        const d = e.x - m.x;
-        if (d >= -10 && d <= m.range && d < bd) { bd = d; target = e; }
+      if (m.dmg > 0) {
+        for (const e of this.enemies) {
+          if (e.lane !== m.lane) continue;
+          const d = e.x - m.x;
+          if (d >= -10 && d <= m.range && d < bd) { bd = d; target = e; }
+        }
       }
+      if (!target && m.x < FRONT_REACH_X) m.x += m.speed * dt;
       m.cd -= dt;
-      if (m.cd > 0) continue;
-      if (target) {
-        m.cd = 1 / m.rate;
-        target.hp -= m.dmg;
-        this.tracers.push({ x1: m.x + 8, y1: m.y - 8, x2: target.x, y2: target.y - 8, life: 0.07, color: '#7ee7ff' });
-      } else if (m.x >= FRONT_REACH_X) {
-        m.cd = 1 / m.rate;
-        this.baseHp -= m.dmg;
-        this.money += 2 * this.coinBoost();
-        this.tracers.push({ x1: m.x + 8, y1: m.y - 8, x2: FRONT_BASE_X - 60, y2: m.y - 8, life: 0.07, color: '#ffd966' });
-        if (this.baseHp <= 0) { this.baseHp = 0; this.victory = true; this.finish(true); return; }
-      } else {
-        m.x += m.speed * dt;
+      if (m.cd <= 0) {
+        if (target) {
+          m.cd = 1 / m.rate;
+          target.hp -= m.dmg;
+          this.tracers.push({ x1: m.x + 8, y1: m.y - 8, x2: target.x, y2: target.y - 8, life: 0.07, color: '#7ee7ff' });
+        } else if (m.x >= FRONT_REACH_X) {
+          m.cd = 1 / m.rate;
+          this.baseHp -= m.dmg;
+          this.money += 2 * this.coinBoost();
+          this.tracers.push({ x1: m.x + 8, y1: m.y - 8, x2: FRONT_BASE_X - 60, y2: m.y - 8, life: 0.07, color: '#ffd966' });
+          if (this.baseHp <= 0) { this.baseHp = 0; this.victory = true; this.finish(true); return; }
+        }
       }
       if (m.cd < 0) m.cd = 0;
     }
     for (let i = this.enemies.length - 1; i >= 0; i--) {
       const e = this.enemies[i];
       if (e.hp <= 0) {
-        const gain = Math.round(12 * this.coinBoost());
+        const gain = Math.round((12 + this.elapsed * 0.05) * this.coinBoost());
         this.money += gain; this.kills++;
         this.explosions.push({ x: e.x, y: e.y - 8, r: 0, maxR: 26, life: 0.35, maxLife: 0.35, rgb: '160,200,255' });
         this.floaters.push({ x: e.x, y: e.y - 20, text: '+' + gain, life: 0.9, maxLife: 0.9, color: '#7fffa0' });
@@ -5596,7 +5630,7 @@ class FrontGame {
       if (e.cd > 0) continue;
       if (tgt) {
         e.cd = 0.9;
-        tgt.hp -= 10 + this.elapsed * 0.02;
+        tgt.hp -= 14 + this.elapsed * 0.05;
         this.tracers.push({ x1: e.x - 8, y1: e.y - 8, x2: tgt.x, y2: tgt.y - 8, life: 0.07, color: '#ff8888' });
       } else {
         e.cd = 0;
@@ -5604,8 +5638,9 @@ class FrontGame {
         if (e.x < FRONT_OUR_X + 44) {
           e.x = FRONT_OUR_X + 44;
           e.cd = 0.9;
-          const dmg = 10 + this.elapsed * 0.035;
+          const dmg = 12 + this.elapsed * 0.06;
           this.myHp -= dmg;
+          this.floaters.push({ x: e.x, y: FRONT_LANES[0] - 40, text: '-' + Math.round(dmg), life: 0.9, maxLife: 0.9, color: '#ff8888' });
           this.tracers.push({ x1: e.x - 8, y1: e.y - 8, x2: FRONT_OUR_X + 40, y2: FRONT_LANES[1], life: 0.07, color: '#ff8888' });
           if (this.myHp <= 0) { this.myHp = 0; this.finish(false); return; }
         }
@@ -5618,6 +5653,7 @@ class FrontGame {
   finish(win) {
     this.running = false;
     if (!win && this.myHp <= 0) this.baseRazed = true;
+    if (win) this.victory = true; else this.gameOver = true;
     if (win) {
       SaveManager.addItem('militaryCrate', 1);
       SaveManager.addCoins(400);
@@ -5689,7 +5725,7 @@ class FrontGame {
       ctx.beginPath(); ctx.ellipse(0, 0.34, 0.5, 0.2, 0, 0, Math.PI * 2); ctx.fill();
       drawMilitaryHelmet(ctx);
       ctx.restore();
-      const maxE = Math.max(40, 40 + this.elapsed * 0.55);
+      const maxE = e.maxHp || e.hp;
       ctx.fillStyle = '#25324a'; ctx.fillRect(e.x - 12, e.y - 46, 24, 4);
       ctx.fillStyle = '#ff8888'; ctx.fillRect(e.x - 12, e.y - 46, Math.round(24 * clamp(e.hp / maxE, 0, 1)), 4);
     }
