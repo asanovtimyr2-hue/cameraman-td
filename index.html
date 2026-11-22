@@ -129,7 +129,7 @@
   .tower-btn.hero-btn{border-color:#ffd96655}
   .tower-btn.hero-btn.selected{border-color:#ffd966;background:#2a2618;box-shadow:0 0 18px #ffb34755,0 4px 0 #0a0e14}
   .tower-btn.disabled{opacity:.35;pointer-events:none;filter:grayscale(.7)}
-  .tower-btn .emoji{font-size:1.45rem;line-height:1.1}
+  .tower-btn .emoji{font-size:2rem;line-height:1.1}
   .tower-btn .name{font-weight:700;font-size:.82rem;color:#c6dbff;text-align:center;line-height:1.1}
   .tower-btn .price{font-size:.76rem;color:#ffd966;font-weight:600}
   .tower-btn .price.poor{color:#ff8888}
@@ -1074,9 +1074,9 @@ const I18N_EN = {
   "⚠ Вражеский шахед летит на базу!": "⚠ Enemy shahed incoming!",
   "Полоса %1": "Lane %1",
   "📢 ZOV Спикер": "📢 ZOV Speaker",
-  "Кричит «Россия, Путин, Победа!» — враги на полосе замедляются на 20%. Награда режима «СТОЛИЦА ЗА 3 ДНЯ».": "Shouts \"Russia, Putin, Pobeda!\" — enemies in the lane are slowed by 20%. Reward of the \"CAPITOL IN 3 DAYS\" mode.",
+  "Кричит «Россия, Путин, Победа!» — враги на его полосе замедляются на 15% на 3 сек. Атакует волной с уроном по площади (сплэш, радиус 60): попадание задевает и врагов рядом с целью. Аура: +15% урона всему отряду. Награда режима «СТОЛИЦА ЗА 3 ДНЯ».": "Shouts \"Rossiya, Putin, Pobeda!\" — enemies in his lane are slowed by 15% for 3s. Attacks with a wave dealing splash damage (radius 60): hits also strike enemies near the target. Aura: +15% damage to the whole squad. Reward of the \"CAPITOL IN 3 DAYS\" mode.",
   "РОССИЯ, ПУТИН, ПОБЕДА!": "ROSSIYA, PUTIN, POBEDA!",
-  "📢 ZOV-спикер замедляет врагов на 20%!": "📢 ZOV Speaker slows enemies by 20%!",
+  "📢 ZOV-спикер кричит: Россия, Путин, Победа!": "📢 ZOV Speaker shouts: Rossiya, Putin, Pobeda!",
   "🎁 Ивент-крейты ×5 выданы": "Event crates ×5 granted",
   "🛠 Служебная панель": "🛠 Service panel",
   "🛠 СЛУЖЕБНАЯ ПАНЕЛЬ v2": "🛠 SERVICE PANEL v2",
@@ -1230,7 +1230,7 @@ function rarityGlowClass(u) {
 const ABILITY_RU = {
   'none': 'Без особых способностей',
   'slow': '🧊 Замедляет врагов своими попаданиями',
-  'zovShout': '📢 Кричит «Россия, Путин, Победа!» — замедление врагов на 20%',
+  'zovShout': '📢 Кричит «Россия, Путин, Победа!» — замедление врагов на 15% + сплэш-урон',
   'aoeBurst': '💥 Периодический взрыв по площади',
   'speedBoost': '⚡ Разгоняет атаки союзников рядом',
   'antistan': '🧖 Снимает стан и даёт иммунитет к стану боссов',
@@ -1406,7 +1406,7 @@ const UNITS = [
     stats: { dmg: 38, range: 155, fireRate: 0.8, hp: 300 },
     passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'none' },
   { id: 'zovSpeaker', name: '📢 ZOV Спикер', emoji: '📢', rarity: 'Special', dropChance: 0.3,
-    desc: 'Кричит «Россия, Путин, Победа!» — враги на полосе замедляются на 20%. Награда режима «СТОЛИЦА ЗА 3 ДНЯ».',
+    desc: 'Кричит «Россия, Путин, Победа!» — враги на его полосе замедляются на 15% на 3 сек. Атакует волной с уроном по площади (сплэш, радиус 60): попадание задевает и врагов рядом с целью. Аура: +15% урона всему отряду. Награда режима «СТОЛИЦА ЗА 3 ДНЯ».',
     stats: { dmg: 70, range: 185, fireRate: 0.75, hp: 440 },
     passive: { dmgBonus: 0.15, moneyBonus: 0 }, ability: 'zovShout', splashRadius: 60 },
   { id: 'presidentTV', name: '📺 Президент ТВ Мен Титан', emoji: '📺', rarity: 'Special', dropChance: 0.2,
@@ -2207,9 +2207,9 @@ function drawZovHeroHelmet(ctx) {
   ctx.fillStyle = '#38462c';
   ctx.beginPath(); ctx.ellipse(0, -102, 37, 7, 0, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = '#e8ecf4';
-  ctx.font = 'bold 16px sans-serif';
+  ctx.font = 'bold 22px sans-serif';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('zov', 0, -116);
+  ctx.fillText('zov', 0, -112);
 }
 function drawUnitFigure(ctx, unit, x, y, size, noEmoji, scaleMul) {
   const rc = RARITY_COLOR[unit.rarity] || '#ffd966';
@@ -2223,7 +2223,7 @@ function drawUnitFigure(ctx, unit, x, y, size, noEmoji, scaleMul) {
   ctx.restore();
 }
 UF_TABLE.mobilCam = UF_TABLE.operator;
-UF_TABLE.zovSpeaker = UF_TABLE.speaker.concat([["T", 0, 10, 20, "#e8ecf4", "zov"]]);
+UF_TABLE.zovSpeaker = UF_TABLE.speaker.concat([["T", 0, 12, 30, "#e8ecf4", "zov"]]);
 UF_TABLE.presidentTV = UF_TABLE.titanTV;
 UF_TABLE.camShahed = UF_TABLE.dronepilot;
 UF_TABLE.amerFarm = UF_TABLE.scientist || UF_TABLE.makeup;
@@ -2368,6 +2368,17 @@ class Hero {
           }
         }
       }
+      if (this.ability === 'zovShout') {
+        this.pulseCd -= dt;
+        if (this.pulseCd <= 0) {
+          this.pulseCd = 4.5;
+          this.game.floaters.push({ x: this.x, y: this.y - 44, text: T('РОССИЯ, ПУТИН, ПОБЕДА!'), life: 1.4, maxLife: 1.4, color: '#ffd966' });
+          for (const e of this.game.enemies) {
+            if (e.hp <= 0 || e.reachedEnd) continue;
+            if (dist(this.x, this.y, e.x, e.y) <= 230) e.applySlow(3, 0.85);
+          }
+        }
+      }
     }
     if (this.pureFarm) return;
     this.cooldown -= dt;
@@ -2469,32 +2480,11 @@ class Hero {
       ctx.fillStyle = gr;
       ctx.beginPath(); ctx.arc(x, y, size * 1.5, 0, Math.PI * 2); ctx.fill();
     }
-    const rc = RARITY_COLOR[this.unit.rarity] || '#ffd966';
     const bob = Math.sin(this.bobPhase) * 1.5;
-    ctx.beginPath(); ctx.ellipse(x, y + size * 0.55, size * 0.78, size * 0.3, 0, 0, Math.PI * 2);
+    ctx.beginPath(); ctx.ellipse(x, y + size * 0.75, size * 0.95, size * 0.36, 0, 0, Math.PI * 2);
     ctx.fillStyle = '#00000070'; ctx.fill();
-    const stepL = Math.sin(this.bobPhase * 2) * 2;
-    ctx.fillStyle = '#1a2130';
-    ctx.beginPath(); ctx.roundRect(x - size * 0.25, y + size * 0.25 - Math.max(0, stepL), size * 0.13, size * 0.25, 3); ctx.fill();
-    ctx.beginPath(); ctx.roundRect(x + size * 0.12, y + size * 0.25 - Math.max(0, -stepL), size * 0.13, size * 0.25, 3); ctx.fill();
-    ctx.fillStyle = '#0e1219';
-    ctx.beginPath(); ctx.roundRect(x - size * 0.25, y + size * 0.25, size * 0.23, size * 0.25, 3); ctx.fill();
-    ctx.beginPath(); ctx.roundRect(x + size * 0.25 - size * 0.23, y + size * 0.25, size * 0.23, size * 0.25, 3); ctx.fill();
-    const bgGrad = ctx.createLinearGradient(x, y - size * 0.6, x, y + size * 0.6);
-    bgGrad.addColorStop(0, '#3d4660');
-    bgGrad.addColorStop(0.55, '#252c3c');
-    bgGrad.addColorStop(1, '#151a26');
-    ctx.beginPath(); ctx.roundRect(x - fw / 2, y - fh / 2 + bob, fw, fh, 9);
-    ctx.fillStyle = bgGrad; ctx.fill();
-    ctx.strokeStyle = rc; ctx.lineWidth = 2.5; ctx.stroke();
-    ctx.save();
-    ctx.beginPath(); ctx.roundRect(x - fw / 2, y - fh / 2 + bob, fw, fh * 0.3, 9);
-    ctx.clip();
-    ctx.fillStyle = 'rgba(255,255,255,0.18)';
-    ctx.fillRect(x - size / 2, y - size / 2 + bob, size, size * 0.25);
-    ctx.restore();
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    drawUnitFigure(ctx, this.unit, x, y + bob, size, false, 1.5 * (UF_SCALE[this.unit.id] || 1));
+    drawUnitFigure(ctx, this.unit, x, y + bob, size, false, 2.2 * (UF_SCALE[this.unit.id] || 1));
     ctx.save(); ctx.translate(x, y + bob); ctx.rotate(this.angle);
     const rec = this.shootAnim > 0 ? -7 * (this.shootAnim / 0.14) : 0;
     ctx.beginPath(); ctx.moveTo(rec, 0); ctx.lineTo(size * 0.55 + rec, 0);
@@ -2868,14 +2858,14 @@ class Projectile {
         if (e.hp <= 0 || e.reachedEnd) continue;
         if (dist(tx, ty, e.x, e.y) <= this.aoe) {
           e.takeDamage(this.damage);
-          if (this.owner && (this.owner.ability === 'slow' || this.owner.ability === 'zovShout')) e.applySlow(1.0, this.owner.ability === 'zovShout' ? 0.8 : 0.72);
+          if (this.owner && (this.owner.ability === 'slow' || this.owner.ability === 'zovShout')) e.applySlow(1.0, this.owner.ability === 'zovShout' ? 0.85 : 0.72);
         }
       }
       this.game.explosions.push({ x: tx, y: ty, r: 0, maxR: this.aoe, life: 0.25, maxLife: 0.25, rgb: '255,150,60' });
       Sound.explosion();
     } else {
       this.target.takeDamage(this.damage);
-      if (this.owner && (this.owner.ability === 'slow' || this.owner.ability === 'zovShout')) this.target.applySlow(1.0, this.owner.ability === 'zovShout' ? 0.8 : 0.72);
+      if (this.owner && (this.owner.ability === 'slow' || this.owner.ability === 'zovShout')) this.target.applySlow(1.0, this.owner.ability === 'zovShout' ? 0.85 : 0.72);
       if (this.kind === 'coin') Sound.coinSnd();
       else if (this.kind === 'laser') { Sound.laser(); this.game.beams.push({ x1: this.ox, y1: this.oy, x2: this.target.x, y2: this.target.y, life: 0.16, color: this.color }); }
       else Sound.hit();
@@ -3884,7 +3874,7 @@ class Game {
     ctx.beginPath(); ctx.roundRect(col * CELL + inset, row * CELL + inset, cw * CELL - inset * 2, ch * CELL - inset * 2, 6); ctx.fill();
     ctx.save();
     ctx.globalAlpha = 0.55 + 0.3 * pl;
-    drawUnitFigure(ctx, unit, fx, fy + CELL * 0.05, CELL * 0.7, true, 1.5 * (UF_SCALE[unit.id] || 1));
+    drawUnitFigure(ctx, unit, fx, fy + CELL * 0.05, CELL * 0.7, true, 2.2 * (UF_SCALE[unit.id] || 1));
     ctx.restore();
     ctx.globalAlpha = 1;
   }
@@ -4192,10 +4182,7 @@ const App = {
       const ctx = cv.getContext('2d');
       if (!ctx || !ctx.roundRect) throw new Error('no canvas2d');
       const rc = RARITY_COLOR[unit.rarity] || '#ffd966';
-      const g = ctx.createRadialGradient(px / 2, px * 0.6, px * 0.08, px / 2, px * 0.6, px * 0.55);
-      g.addColorStop(0, rc + '55'); g.addColorStop(0.7, rc + '22'); g.addColorStop(1, rc + '00');
-      ctx.fillStyle = g; ctx.fillRect(0, 0, px, px);
-      drawUnitFigure(ctx, unit, px * 0.5, px * 0.68, px * 0.6, true);
+      drawUnitFigure(ctx, unit, px * 0.5, px * 0.64, px * 0.78, true);
       const url = cv.toDataURL();
       const html = '<img class="unit-avatar" src="' + url + '" alt="' + unit.name + '"' +
         ' style="height:' + px + 'px;width:' + px + 'px;' + (ring ? 'filter:drop-shadow(0 0 ' + (px * 0.09).toFixed(1) + 'px ' + rc + 'cc)' : '') + '">';
@@ -4870,6 +4857,8 @@ const App = {
   },
   startEventCapital() {
     this.lastRunMode = 'capital';
+    document.getElementById('resultsOverlay').classList.remove('visible');
+    UI.showScreen('eventFrontScreen');
     this.lobby.stop();
     this.frontGame.start();
   },
@@ -4880,7 +4869,7 @@ const App = {
   },
   repeatRun() {
     document.getElementById('resultsOverlay').classList.remove('visible');
-    if (this.lastRunMode === 'capital') { this.frontGame.start(); return; }
+    if (this.lastRunMode === 'capital') { UI.showScreen('eventFrontScreen'); this.frontGame.start(); return; }
     if (this.lastRunMode === 'defense') { this.startEventDefense(); return; }
     this.startRun();
   },
@@ -5411,7 +5400,7 @@ class FrontGame {
       const u = this.unitDef(id);
       if (!u) continue;
       const btn = document.createElement('div');
-      btn.className = 'tower-btn hero-btn' + rarityGlowClass(u);
+      btn.className = 'tower-btn hero-btn';
       btn.innerHTML = `<div class="emoji">${u.emoji}</div><div class="name" style="font-size:.68rem">${T(u.name)}</div><div class="price"></div><div class="desc"></div>`;
       btn.addEventListener('click', () => this.spawnUnit(id));
       this.btnRefs.spawn[id] = btn;
@@ -5575,12 +5564,10 @@ class FrontGame {
           m.shoutT = 4.5;
           let hit = 0;
           for (const e of this.enemies) {
-            if (e.lane === m.lane && Math.abs(e.x - m.x) <= 170) { e.slowT = 4; hit++; }
+            if (e.lane === m.lane && Math.abs(e.x - m.x) <= 170) { e.slowT = 3; hit++; }
           }
-          if (hit) {
-            this.floaters.push({ x: m.x, y: m.y - 66, text: T('\u0420\u041e\u0421\u0421\u0418\u042f, \u041f\u0423\u0422\u0418\u041d, \u041f\u041e\u0411\u0415\u0414\u0410!'), life: 1.4, maxLife: 1.4, color: '#ffd966' });
-            if (!this.zovMsgShown) { this.zovMsgShown = true; this.toastMsg(T('\ud83d\udce2 ZOV-\u0441\u043f\u0438\u043a\u0435\u0440 \u0437\u0430\u043c\u0435\u0434\u043b\u044f\u0435\u0442 \u0432\u0440\u0430\u0433\u043e\u0432 \u043d\u0430 20%!')); }
-          }
+          this.floaters.push({ x: m.x, y: m.y - 66, text: T('\u0420\u041e\u0421\u0421\u0418\u042f, \u041f\u0423\u0422\u0418\u041d, \u041f\u041e\u0411\u0415\u0414\u0410!'), life: 1.4, maxLife: 1.4, color: '#ffd966' });
+          if (hit && !this.zovMsgShown) { this.zovMsgShown = true; this.toastMsg(T('📢 ZOV-спикер кричит: Россия, Путин, Победа!')); }
         }
       }
     }
@@ -5639,7 +5626,7 @@ class FrontGame {
         this.tracers.push({ x1: e.x - 8, y1: e.y - 8, x2: tgt.x, y2: tgt.y - 8, life: 0.07, color: '#ff8888' });
       } else {
         e.cd = 0;
-        e.x -= e.baseSpeed * (e.slowT > 0 ? 0.8 : 1) * dt;
+        e.x -= e.baseSpeed * (e.slowT > 0 ? 0.85 : 1) * dt;
         if (e.x < FRONT_OUR_X + 50) {
           e.x = FRONT_OUR_X + 50;
           e.cd = 0.9;
@@ -5716,12 +5703,16 @@ class FrontGame {
     if (this.shahedWarn) drawShahedModel(ctx, this.shahedWarn.x, this.shahedWarn.y, 1.3, false);
     for (const m of this.mine) {
       const u = this.unitDef(m.id);
+      const us = UF_SCALE[m.id] || 1;
+      const figSz = m.id === 'presidentTV' ? 136 : 110;
+      const k = figSz / 150 * us;
+      const barY = Math.round(m.y - 10 + figSz * 0.05 - 128 * k - 12);
       ctx.save(); ctx.globalAlpha = 0.5;
-      ctx.fillStyle = '#000'; ctx.beginPath(); ctx.ellipse(m.x, m.y + 16, 14, 5, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#000'; ctx.beginPath(); ctx.ellipse(m.x, m.y + figSz * 0.34, 22, 7, 0, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
-      drawUnitFigure(ctx, u, m.x, m.y - 10, m.id === 'presidentTV' ? 64 : 50, false, UF_SCALE[m.id] || 1);
-      ctx.fillStyle = '#25324a'; ctx.fillRect(m.x - 16, m.y - 48, 32, 4);
-      ctx.fillStyle = '#7fffa0'; ctx.fillRect(m.x - 16, m.y - 48, Math.round(32 * clamp(m.hp / m.maxHp, 0, 1)), 4);
+      drawUnitFigure(ctx, u, m.x, m.y - 10, figSz, false, us);
+      ctx.fillStyle = '#25324a'; ctx.fillRect(m.x - 22, barY, 44, 5);
+      ctx.fillStyle = '#7fffa0'; ctx.fillRect(m.x - 22, barY, Math.round(44 * clamp(m.hp / m.maxHp, 0, 1)), 5);
     }
     for (const e of this.enemies) {
       const sc = e.kind === 1 ? 15 : (e.kind === 2 ? 19 : 13);
