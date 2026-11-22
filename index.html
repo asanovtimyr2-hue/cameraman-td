@@ -967,7 +967,7 @@ const I18N_EN = {
     "📋 КОЛЛЕКЦИЯ": "📋 COLLECTION",
   "Ультимативный": "Ultimate",
   "Титан-Камерамен 4.0": "Titan Cameraman 4.0",
-  "Последняя форма титана альянса: плазменные залпы по площади и несокрушимая броня. Шанс: 0.001% в мифическом, 0.0001% в обычном ящике.": "The titan\u2019s final form: area plasma salvos and indestructible armor. 0.001% in mythic, 0.0001% in common box.",
+  "Шанс: 0.001% в обычном ящике, 0.01% в мифическом.": "The titan’s final form: area plasma salvos and indestructible armor. Chance: 0.001% in the common box, 0.01% in the mythic one.",
   "Божественный покровитель кино: разрушительный фотонный залп по площади. Шанс 0.1%.": "Divine patron of cinema: devastating photon area salvo. 0.1% chance.",
   "Стримит прямо с фронта. Знаменитость студии: +10% доходаVerse.": "Streams from the front line. Studio celebrity: +10% income.",
   "Абсолютный чемпион студии: залпы по площади с разрушительным уроном.": "Absolute studio champion: devastating area-salvo bursts.",
@@ -1097,6 +1097,15 @@ const I18N_EN = {
   "❤️ ХП +15%": "❤️ HP +15%",
   "👟 СКОРОСТЬ +10%": "👟 SPEED +10%",
   "МАКС": "MAX",
+  "🎖️ ПУТИН": "🎖️ PUTIN",
+  "🏛️ ЗЕЛЕНСКИЙ": "🏛️ ZELENSKY",
+  "ДАЙ!": "GIVE!",
+  "ДУША: %1": "SOUL: %1",
+  "💵 ДАЙ! — враги оглушены на 1.5 сек": "💵 GIVE! — enemies stunned for 1.5s",
+  "Командует отрядом: призывает шахедов-камикадзе, вокруг него вращаются души. Бросает душу каждые 9 сек: РЕШИМОСТЬ — взрыв по площади и 5 сек лазеры из глаз; ТЕРПЕНИЕ — замедляет врагов на 40% на 3 сек; ХРАБРОСТЬ — поджигает врагов (урон 4 сек); ЦЕЛЬНОСТЬ — оглушает врагов на 1.5 сек; УПОРСТВО — враги получают +30% урона 5 сек; ДОБРОТА — лечит союзников на 35%; СПРАВЕДЛИВОСТЬ — бьёт всех врагов в радиусе. Аура: +20% урона отряду. Цена в «Столице»: 1000🪙.": "Commands the squad: summons kamikaze shaheds and orbits souls. Throws a soul every 9s: DETERMINATION — area blast + 5s of eye lasers; PATIENCE — 40% slow for 3s; BRAVERY — burn (4s); INTEGRITY — 1.5s stun; PERSEVERANCE — enemies take +30% damage for 5s; KINDNESS — heals allies 35%; JUSTICE — strikes all enemies in radius. Aura: +20% squad damage. Cost in CAPITOL mode: 1000🪙.",
+  "Кидает американский бюджет — взрыв по площади (сплэш, радиус 70). Кричит «ДАЙ!» каждые 6.5 сек — оглушает врагов вокруг на 1.5 сек. Аура: +25% урона всему отряду. Цена в «Столице»: 1000🪙.": "Throws the American budget — splash explosion (radius 70). Shouts \"GIVE!\" every 6.5s — stuns enemies around for 1.5s. Aura: +25% damage to the whole squad. Cost in CAPITOL mode: 1000🪙.",
+  "Награда режима «СТОЛИЦА ЗА 3 ДНЯ». Мобилизованный 50%, ZOV-спикер 30%, 🎖️ ПУТИН 20%.": "Reward of the \"CAPITOL IN 3 DAYS\" mode. Mobilized 50%, ZOV Speaker 30%, 🎖️ PUTIN 20%.",
+  "Награда режима «ДАЙТЕ ДЕНЕГ». Камера-Шахед 50%, Американская Ферма 30%, 🏛️ ЗЕЛЕНСКИЙ 20%.": "Reward of the \"GIVE ME MONEY\" mode. Camera-Shahed 50%, American Farm 30%, 🏛️ ZELENSKY 20%.",
   "%1 шт": "%1 pcs",
   "🏆 БАЗА ВРАГА ПАЛА!": "🏆 ENEMY BASE HAS FALLEN!",
   "💀 ВРЕМЯ ВЫШЛО": "💀 TIME'S UP",
@@ -1215,10 +1224,10 @@ const UNIT_ATK = {
   titanTV: 'laser', pyrotech: 'shell', snipercam: 'laser', bodyguard: 'bullet', hacker: 'voxel',
   rookie: 'bullet', soundengineer: 'wave', shadowop: 'laser', cinegod: 'laser',
   titanCam40: 'laser',
-  mobilCam: 'bullet', zovSpeaker: 'wave', presidentTV: 'laser', camShahed: 'voxel',
-  amerFarm: 'cash', elegantPresident: 'laser'
+  mobilCam: 'bullet', zovSpeaker: 'wave', putin: 'rocket', camShahed: 'voxel',
+  amerFarm: 'cash', zelensky: 'coin'
 };
-const UNIT_CELLS = { titanCam: [2, 1], titanTV: [2, 1], titanSpeaker: [2, 1], presidentTV: [2, 1], elegantPresident: [2, 1] };
+const UNIT_CELLS = { titanCam: [2, 1], titanTV: [2, 1], titanSpeaker: [2, 1], putin: [2, 1], zelensky: [2, 1] };
 function unitCells(id) { return UNIT_CELLS[id] || [1, 1]; }
 function rarityGlowClass(u) {
   if (!u) return '';
@@ -1231,6 +1240,8 @@ const ABILITY_RU = {
   'none': 'Без особых способностей',
   'slow': '🧊 Замедляет врагов своими попаданиями',
   'zovShout': '📢 Кричит «Россия, Путин, Победа!» — замедление врагов на 15% + сплэш-урон',
+  'putinCommand': '🎖️ Шахеды-камикадзе + бросает души (Решимость: взрыв + лазеры из глаз, Терпение: замедление 40%, Храбрость: поджог, Цельность: оглушение, Упорство: +30% урона, Доброта: лечение, Справедливость: удар по всем)',
+  'daiShout': '💵 Кричит «ДАЙ!» — оглушение 1.5 сек + сплэш-бюджет',
   'aoeBurst': '💥 Периодический взрыв по площади',
   'speedBoost': '⚡ Разгоняет атаки союзников рядом',
   'antistan': '🧖 Снимает стан и даёт иммунитет к стану боссов',
@@ -1242,10 +1253,10 @@ const ABILITY_RU = {
 
 const GACHA_BOXES = [
   { id: 'common', name: '📦 Обычный ящик', cost1: 100, cost10: 900,
-    rates: { Common: 0.498999, Uncommon: 0.30, Rare: 0.15, Epic: 0.04, Legendary: 0.01, Mythic: 0.0009, Godly: 0.0001, Ultimate: 0.000001 },
+    rates: { Common: 0.49089, Uncommon: 0.30, Rare: 0.15, Epic: 0.04, Legendary: 0.01, Mythic: 0.009, Godly: 0.0001, Ultimate: 0.00001 },
     stock: { Common: 1, Uncommon: 1, Rare: 1, Epic: 1, Legendary: 1, Mythic: 1, Godly: 1, Ultimate: 1 } },
   { id: 'mythic', name: '💠 Мифический сундук', cost1: 900, cost10: 8100,
-    rates: { Rare: 0.449, Epic: 0.40, Legendary: 0.12, Mythic: 0.02999, Godly: 0.001, Ultimate: 0.00001 },
+    rates: { Rare: 0.44889, Epic: 0.40, Legendary: 0.12, Mythic: 0.02999, Godly: 0.001, Ultimate: 0.0001 },
     stock: { Rare: 1, Epic: 1, Legendary: 1, Mythic: 1, Godly: 1, Ultimate: 1 } }
 ];
 const STOCK_PERIOD_MS = 15 * 60 * 1000;
@@ -1296,7 +1307,7 @@ const UNIT_LIMITS = {
   titanCam: 3, titanSpeaker: 3, titanTV: 3,
   snipercam: 5, hacker: 4, shadowop: 4,
   cinegod: 1, titanCam40: 1,
-  mobilCam: 10, zovSpeaker: 8, presidentTV: 3, camShahed: 5, amerFarm: 5, elegantPresident: 1
+  mobilCam: 10, zovSpeaker: 8, putin: 2, camShahed: 5, amerFarm: 5, zelensky: 2
 };
 function unitLimit(id) { return UNIT_LIMITS[id] || MAX_HEROES; }
 
@@ -1398,7 +1409,7 @@ const UNITS = [
     stats: { dmg: 650, range: 280, fireRate: 2, hp: 1000 },
     passive: { dmgBonus: 0.15, moneyBonus: 0 }, ability: 'aoeBurst' },
   { id: 'titanCam40', name: 'Титан-Камерамен 4.0', emoji: '🎥', rarity: 'Ultimate', dropChance: 0.00001,
-    desc: 'Последняя форма титана альянса: плазменные залпы по площади и несокрушимая броня. Шанс: 0.001% в мифическом, 0.0001% в обычном ящике.',
+    desc: 'Последняя форма титана альянса: плазменные залпы по площади и несокрушимая броня. Шанс: 0.001% в обычном ящике, 0.01% в мифическом.',
     stats: { dmg: 800, range: 300, fireRate: 0.8, hp: 1400 },
     passive: { dmgBonus: 0.25, moneyBonus: 0 }, ability: 'aoeBurst', aoeRadius: 120 },
   { id: 'mobilCam', name: '🎖️ Мобилизованный Камерамен', emoji: '🎖️', rarity: 'Special', dropChance: 0.5,
@@ -1409,22 +1420,22 @@ const UNITS = [
     desc: 'Кричит «Россия, Путин, Победа!» — враги на его полосе замедляются на 15% на 3 сек. Атакует волной с уроном по площади (сплэш, радиус 60): попадание задевает и врагов рядом с целью. Аура: +15% урона всему отряду. Награда режима «СТОЛИЦА ЗА 3 ДНЯ».',
     stats: { dmg: 70, range: 185, fireRate: 0.75, hp: 440 },
     passive: { dmgBonus: 0.15, moneyBonus: 0 }, ability: 'zovShout', splashRadius: 60 },
-  { id: 'presidentTV', name: '📺 Президент ТВ Мен Титан', emoji: '📺', rarity: 'Special', dropChance: 0.2,
-    desc: 'Главнокомандующий ТВ-альянса. Периодические взрывы по площади. Награда режима «СТОЛИЦА ЗА 3 ДНЯ».',
-    stats: { dmg: 140, range: 230, fireRate: 0.65, hp: 1050 },
-    passive: { dmgBonus: 0.2, moneyBonus: 0 }, ability: 'aoeBurst', aoeRadius: 110 },
-  { id: 'camShahed', name: '🛩️ Камера-Шахед', emoji: '🛩️', rarity: 'Special', dropChance: 0.5,
+  { id: 'putin', name: '🎖️ ПУТИН', emoji: '🎖️', rarity: 'Special', dropChance: 0.2, frontCost: 1000,
+    desc: 'Командует отрядом: призывает шахедов-камикадзе, вокруг него вращаются души. Бросает душу каждые 9 сек: РЕШИМОСТЬ — взрыв по площади и 5 сек лазеры из глаз; ТЕРПЕНИЕ — замедляет врагов на 40% на 3 сек; ХРАБРОСТЬ — поджигает врагов (урон 4 сек); ЦЕЛЬНОСТЬ — оглушает врагов на 1.5 сек; УПОРСТВО — враги получают +30% урона 5 сек; ДОБРОТА — лечит союзников на 35%; СПРАВЕДЛИВОСТЬ — бьёт всех врагов в радиусе. Аура: +20% урона отряду. Цена в «Столице»: 1000🪙.',
+    stats: { dmg: 140, range: 230, fireRate: 0.65, hp: 1100 },
+    passive: { dmgBonus: 0.2, moneyBonus: 0 }, ability: 'putinCommand', aoeRadius: 95, splashRadius: 80 },
+  { id: 'camShahed', name: '🛩️ Камера-Шахед', emoji: '🛩️', rarity: 'Special', dropChance: 0.5, frontCost: 430,
     desc: 'Спавнер: периодически выпускает шахедов-камикадзе на врагов. На 5-м уровне — самый крутой. Награда режима «ДАЙТЕ ДЕНЕГ».',
     stats: { dmg: 100, range: 160, fireRate: 1.1, hp: 160 },
     passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'spawner' },
-  { id: 'amerFarm', name: '🌽 Американская Ферма', emoji: '🌽', rarity: 'Special', dropChance: 0.3,
-    desc: 'Лучшая ферма в игре: приносит 400🪙 за волну и не стреляет. Награда режима «ДАЙТЕ ДЕНЕГ».',
+  { id: 'amerFarm', name: '🌽 Американская Ферма', emoji: '🌽', rarity: 'Special', dropChance: 0.3, frontCost: 550,
+    desc: 'Лучшая ферма в игре: приносит 250🪙 за волну, на максимальной прокачке — 1270🪙. Не стреляет. Награда режима «ДАЙТЕ ДЕНЕГ».',
     stats: { dmg: 0, range: 130, fireRate: 0, hp: 350 },
-    passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash', cashPerWave: 480, pureFarm: true },
-  { id: 'elegantPresident', name: '🎩 Элегантный Президент Титан', emoji: '🎩', rarity: 'Special', dropChance: 0.2,
-    desc: 'Элита элиты: мощные периодические взрывы по площади. Награда режима «ДАЙТЕ ДЕНЕГ».',
-    stats: { dmg: 180, range: 250, fireRate: 0.65, hp: 1300 },
-    passive: { dmgBonus: 0.25, moneyBonus: 0 }, ability: 'aoeBurst', aoeRadius: 130 }
+    passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash', cashPerWave: 250, cashGrowth: 1.5014, pureFarm: true },
+  { id: 'zelensky', name: '🏛️ ЗЕЛЕНСКИЙ', emoji: '💵', rarity: 'Special', dropChance: 0.2, frontCost: 1000,
+    desc: 'Кидает американский бюджет — взрыв по площади (сплэш, радиус 70). Кричит «ДАЙ!» каждые 6.5 сек — оглушает врагов вокруг на 1.5 сек. Аура: +25% урона всему отряду. Цена в «Столице»: 1000🪙.',
+    stats: { dmg: 180, range: 250, fireRate: 0.7, hp: 1200 },
+    passive: { dmgBonus: 0.25, moneyBonus: 0 }, ability: 'daiShout', splashRadius: 70 }
 ];
 
 function statRange(u) {
@@ -1433,7 +1444,7 @@ function statRange(u) {
     dmg: [s.dmg, Math.round(s.dmg * Math.pow(1.25, 4))],
     range: [s.range, Math.round(s.range * Math.pow(1.08, 4))],
     rate: [s.fireRate, +(s.fireRate * Math.pow(0.9, 4)).toFixed(2)],
-    cash: [u.cashPerWave || 0, Math.round((u.cashPerWave || 0) * Math.pow(1.5, 4))],
+    cash: [u.cashPerWave || 0, Math.round((u.cashPerWave || 0) * Math.pow(u.cashGrowth || 1.5, 4))],
     pureFarm: !!u.pureFarm,
     dps: [s.fireRate > 0 ? Math.round(s.dmg / s.fireRate) : 0, s.fireRate > 0 ? Math.round(s.dmg * Math.pow(1.25, 4) / (s.fireRate * Math.pow(0.9, 4))) : 0]
   };
@@ -1447,8 +1458,8 @@ function unitTagData(u) {
   if (atkMap[atk]) tags.push({ k: 'atk-' + atk, label: T(atkMap[atk]) });
   if (u.pureFarm || u.ability === 'cash') tags.push({ k: 'farm', label: T('Ферма') });
   if (u.ability === 'aoeBurst') tags.push({ k: 'aoe', label: T('AOE') });
-  if (u.ability === 'splash' || u.ability === 'zovShout') tags.push({ k: 'splash', label: T('Splash') });
-  if (u.ability === 'spawner') tags.push({ k: 'splash', label: T('Спавнер') });
+  if (u.ability === 'splash' || u.ability === 'zovShout' || u.ability === 'daiShout') tags.push({ k: 'splash', label: T('Splash') });
+  if (u.ability === 'spawner' || u.ability === 'putinCommand') tags.push({ k: 'splash', label: T('Спавнер') });
   if (u.ability === 'slow' || u.ability === 'zovShout') tags.push({ k: 'slow', label: T('Замедление') });
   if (u.ability === 'stun') tags.push({ k: 'stun', label: T('Стан') });
   if (u.ability === 'speedBoost') tags.push({ k: 'boost', label: T('Бафф скорости') });
@@ -1586,9 +1597,10 @@ const SaveManager = {
       if (!Array.isArray(this.data.unlockedUnits) || this.data.unlockedUnits.length === 0)
         this.data.unlockedUnits = ['intern'];
       const validIds = new Set(UNITS.map(u => u.id));
-      this.data.unlockedUnits = this.data.unlockedUnits.map(id => id === 'speakerVet' ? 'zovSpeaker' : id);
+      const MIG = { speakerVet: 'zovSpeaker', presidentTV: 'putin', elegantPresident: 'zelensky' };
+      this.data.unlockedUnits = this.data.unlockedUnits.map(id => MIG[id] || id);
       this.data.unlockedUnits = this.data.unlockedUnits.filter(id => validIds.has(id));
-      this.data.loadout = (this.data.loadout || []).map(id => id === 'speakerVet' ? 'zovSpeaker' : id);
+      this.data.loadout = (this.data.loadout || []).map(id => MIG[id] || id);
       if (!this.data.unlockedUnits.includes('intern')) this.data.unlockedUnits.push('intern');
       if (!Array.isArray(this.data.loadout)) this.data.loadout = ['intern'];
       this.data.loadout = this.data.loadout.filter(id => this.data.unlockedUnits.includes(id));
@@ -1704,11 +1716,11 @@ const SaveManager = {
 
 const SHOP_CRATES = [
   { id: 'militaryCrate', name: '🎖️ Военный Крейт', emoji: '🎖️', cost: 0, color: '#7fa65c', eventOnly: true,
-    desc: 'Награда режима «СТОЛИЦА ЗА 3 ДНЯ». Мобилизованный 50%, ZOV-спикер 30%, Президент ТВ Мен Титан 20%.',
-    units: ['mobilCam', 'zovSpeaker', 'presidentTV'] },
+    desc: 'Награда режима «СТОЛИЦА ЗА 3 ДНЯ». Мобилизованный 50%, ZOV-спикер 30%, 🎖️ ПУТИН 20%.',
+    units: ['mobilCam', 'zovSpeaker', 'putin'] },
   { id: 'budgetCrate', name: '📦 Малобюджетный Крейт', emoji: '📦', cost: 0, color: '#7ec8a0', eventOnly: true,
-    desc: 'Награда режима «ДАЙТЕ ДЕНЕГ». Камера-Шахед 50%, Американская Ферма 30%, Элегантный Президент Титан 20%.',
-    units: ['camShahed', 'amerFarm', 'elegantPresident'] }
+    desc: 'Награда режима «ДАЙТЕ ДЕНЕГ». Камера-Шахед 50%, Американская Ферма 30%, 🏛️ ЗЕЛЕНСКИЙ 20%.',
+    units: ['camShahed', 'amerFarm', 'zelensky'] }
 ];
 
 const POTIONS = [
@@ -2224,17 +2236,52 @@ function drawUnitFigure(ctx, unit, x, y, size, noEmoji, scaleMul) {
 }
 UF_TABLE.mobilCam = UF_TABLE.operator;
 UF_TABLE.zovSpeaker = UF_TABLE.speaker.concat([["T", 0, 12, 30, "#e8ecf4", "zov"]]);
-UF_TABLE.presidentTV = UF_TABLE.titanTV;
+UF_TABLE.putin = [
+["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],
+["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],
+["R",-34,-40,68,72,10,"#232c40"],["R",-34,-40,68,30,10,"#2e3a54"],
+["R",-44,-34,10,32,4,"#232c40"],["R",34,-34,10,32,4,"#232c40"],
+["C",-39,2,5,"#e8c8a8"],["C",39,2,5,"#e8c8a8"],
+["P",-7,-40,7,-40,7,-6,-7,-6,"#f4f7fb"],
+["P",-3,-38,3,-38,4,-14,0,-4,-4,-14,"#b8282c"],
+["R",14,-30,4,3,1,"#c22f2f"],
+["R",-34,-12,68,6,2,"RC"],
+["R",-6,-50,12,10,3,"#e8c8a8"],
+["E",0,-76,17,21,"#e8c8a8"],
+["E",0,-92,16,8,"#6b543a"],
+["A",0,-76,17,3.24,6.0,"#6b543a",9],
+["C",-17,-76,2.5,"#d8b898"],["C",17,-76,2.5,"#d8b898"],
+["C",-6.5,-78,2.2,"#20242c"],["C",6.5,-78,2.2,"#20242c"],
+["L",-10,-84,-3,-85,"#5a4630",2],["L",3,-85,10,-84,"#5a4630",2],
+["L",0,-78,-1,-70,"#c8a078",2],
+["L",-4.5,-65,4.5,-65,"#a0725a",2.5]];
+UF_TABLE.zelensky = [
+["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],
+["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],
+["R",-34,-40,68,72,10,"#5c6b3f"],["R",-34,-40,68,30,10,"#6e7d4e"],
+["P",-7,-40,7,-40,0,-24,"#4a552f"],
+["R",-44,-34,10,32,4,"#6e7d4e"],["R",34,-34,10,32,4,"#6e7d4e"],
+["C",-39,2,5,"#e0b890"],["C",39,2,5,"#e0b890"],
+["R",-34,-12,68,6,2,"RC"],
+["R",-6,-50,12,10,3,"#e0b890"],
+["E",0,-76,17,21,"#e0b890"],
+["E",0,-92,16,7,"#2c2620"],
+["A",0,-76,17,3.24,6.0,"#2c2620",9],
+["A",0,-70,14,0.45,2.7,"#3a322c",6],
+["C",-17,-76,2.5,"#c8a880"],["C",17,-76,2.5,"#c8a880"],
+["C",-6.5,-78,2.4,"#ffffff"],["C",6.5,-78,2.4,"#ffffff"],
+["C",-6,-77.5,1.3,"#20242c"],["C",7,-77.5,1.3,"#20242c"],
+["L",-10,-84,-3,-85,"#2c2620",2.5],["L",3,-85,10,-84,"#2c2620",2.5],
+["A",0,-67,6.5,0.35,2.79,"#8a4a3a",2.6]];
 UF_TABLE.camShahed = UF_TABLE.dronepilot;
 UF_TABLE.amerFarm = UF_TABLE.scientist || UF_TABLE.makeup;
-UF_TABLE.elegantPresident = UF_TABLE.titanSpeaker;
 const UF_SCALE = {
   intern: 0.92, makeup: 0.95, scientist: 0.98, streamer: 1.0, speaker: 1.02,
   operator: 1.04, steadicam: 1.06, snipercam: 1.06, hacker: 1.06, dronepilot: 1.06,
   boomop: 1.06, gaffer: 1.12, director: 1.1, soundmixer: 1.14, pyrotech: 1.1,
   bodyguard: 1.2, engineer: 1.22, titanCam: 1.42, titanTV: 1.42, titanSpeaker: 1.42,
-  mobilCam: 1.0, zovSpeaker: 1.15, presidentTV: 1.42, camShahed: 0.92,
-  amerFarm: 1.1, elegantPresident: 1.42
+  mobilCam: 1.0, zovSpeaker: 1.15, putin: 1.35, camShahed: 0.92,
+  amerFarm: 1.1, zelensky: 1.35
 };
 /* ============================================================
    5) ЮНИТ (ГЕРОЙ)
@@ -2253,6 +2300,7 @@ class Hero {
     this.cooldown = 0;
     this.abilityCd = 0;
     this.pulseCd = 0;
+    this.soulIdx = 0; this.soulAngle = 0; this.eyeLaserT = 0; this.eyeLaserCd = 0;
     this.angle = -Math.PI / 2;
     this.targetMode = 'first';
     this.shootAnim = 0;
@@ -2271,8 +2319,8 @@ class Hero {
     this.isHero = true;
     this.ability = unit.ability;
     this.abilityMaxCd = unit.ability === 'speedBoost' ? 12 : (unit.ability === 'aoeBurst' ? 15 :
-      (unit.ability === 'stun' ? 10 : (unit.ability === 'antistan' ? 12 : (unit.ability === 'spawner' ? 13 : 999))));
-    this.aoe = (unit.ability === 'splash' || unit.ability === 'zovShout') ? (unit.splashRadius || 50) : 0;
+      (unit.ability === 'stun' ? 10 : (unit.ability === 'antistan' ? 12 : (unit.ability === 'spawner' ? 13 : (unit.ability === 'putinCommand' ? 9 : 999)))));
+    this.aoe = (unit.ability === 'splash' || unit.ability === 'zovShout' || unit.ability === 'daiShout' || unit.ability === 'putinCommand') ? (unit.splashRadius || 50) : 0;
     this.burstRadius = (unit.ability === 'aoeBurst') ? (unit.aoeRadius || 45) : 0;
     this.stunPower = unit.abilityPower || 1.4;
     this.moneyBonus = unit.passive.moneyBonus || 0;
@@ -2298,7 +2346,7 @@ class Hero {
     this.maxHp = newMax;
     this.hp = Math.min(newMax, Math.max(1, newMax * ratio));
     this.upgradeCost = Math.round((HERO_UPGRADE_COST[this.level] || 0) * (RARITY_UPGRADE_MULT[this.unit.rarity] || 1) / 10) * 10;
-    this.cashPerWave = this.baseCash ? Math.round(this.baseCash * Math.pow(1.5, this.level - 1)) : 0;
+    this.cashPerWave = this.baseCash ? Math.round(this.baseCash * Math.pow(this.unit.cashGrowth || 1.5, this.level - 1)) : 0;
     this.sellValue = Math.floor(this.spent * SELL_RATIO);
   }
   statValues(level) {
@@ -2379,6 +2427,39 @@ class Hero {
           }
         }
       }
+      if (this.ability === 'daiShout') {
+        this.pulseCd -= dt;
+        if (this.pulseCd <= 0) {
+          this.pulseCd = 6.5;
+          this.game.floaters.push({ x: this.x, y: this.y - 44, text: T('ДАЙ!'), life: 1.3, maxLife: 1.3, color: '#7fffa0' });
+          this.game.explosions.push({ x: this.x, y: this.y, r: 0, maxR: 230, life: 0.4, maxLife: 0.4, rgb: '127,255,160' });
+          for (const e of this.game.enemies) {
+            if (e.hp <= 0 || e.reachedEnd) continue;
+            if (dist(this.x, this.y, e.x, e.y) <= 230) e.applyStun(1.5);
+          }
+          Sound.explosion();
+        }
+      }
+      if (this.ability === 'putinCommand') {
+        this.soulAngle += dt * 2.2;
+        if (this.eyeLaserT > 0) {
+          this.eyeLaserT -= dt;
+          this.eyeLaserCd -= dt;
+          if (this.eyeLaserCd <= 0) {
+            this.eyeLaserCd = 0.35;
+            let tgt = null, bd = 1e9;
+            for (const e of this.game.enemies) {
+              if (e.hp <= 0 || e.reachedEnd) continue;
+              const d = dist(this.x, this.y, e.x, e.y);
+              if (d <= this.range + 60 && d < bd) { bd = d; tgt = e; }
+            }
+            if (tgt) {
+              this.game.beams.push({ x1: this.x, y1: this.y - 60, x2: tgt.x, y2: tgt.y, life: 0.12, color: '#ff4444' });
+              tgt.takeDamage(this.damage * 0.6);
+            }
+          }
+        }
+      }
     }
     if (this.pureFarm) return;
     this.cooldown -= dt;
@@ -2429,6 +2510,31 @@ class Hero {
         });
       }
       Sound.shoot('rocket');
+    } else if (this.ability === 'putinCommand') {
+      const dmg = Math.round(this.damage * 0.5 * Math.pow(1.25, this.level - 1));
+      this.game.airDrones.push({ x: this.x - 10, y: this.y - 24, dmg, spd: 200, t: Math.random() * 6.28, life: 10 });
+      Sound.shoot('rocket');
+      const soul = PUTIN_SOULS[this.soulIdx % PUTIN_SOULS.length];
+      this.soulIdx++;
+      const R = 170, pos = { x: this.x, y: this.y };
+      this.game.explosions.push({ x: pos.x, y: pos.y, r: 0, maxR: R, life: 0.45, maxLife: 0.45, rgb: hexToRgbStr(soul.color) });
+      this.game.floaters.push({ x: pos.x, y: pos.y - 50, text: fill(T('ДУША: %1'), soul.name), life: 1.2, maxLife: 1.2, color: soul.color });
+      for (const e of this.game.enemies) {
+        if (e.hp <= 0 || e.reachedEnd) continue;
+        if (dist(this.x, this.y, e.x, e.y) > R) continue;
+        if (soul.k === 'determination') { e.takeDamage(this.damage * 2); this.eyeLaserT = 5; }
+        else if (soul.k === 'patience') e.applySlow(3, 0.6);
+        else if (soul.k === 'bravery') { e.burnT = 4; e.burnDps = this.damage * 0.3; e.burnTick = 0.5; }
+        else if (soul.k === 'integrity') e.applyStun(1.5);
+        else if (soul.k === 'perseverance') e.vulnT = 5;
+        else if (soul.k === 'justice') e.takeDamage(this.damage * 1.2);
+      }
+      if (soul.k === 'kindness') {
+        for (const t of this.game.heroes) {
+          if (t.heroDead) continue;
+          if (dist(this.x, this.y, t.x, t.y) <= R) { t.hp = Math.min(t.maxHp, t.hp + t.maxHp * 0.35); }
+        }
+      }
     } else if (this.ability === 'stun') {
       for (const e of this.game.enemies) {
         if (e.hp <= 0 || e.reachedEnd) continue;
@@ -2485,6 +2591,7 @@ class Hero {
     ctx.fillStyle = '#00000070'; ctx.fill();
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     drawUnitFigure(ctx, this.unit, x, y + bob, size, false, 2.2 * (UF_SCALE[this.unit.id] || 1));
+    if (this.ability === 'putinCommand') drawSoulsOrbit(ctx, x, y + bob, size * 0.95, size * 0.13, this.soulAngle);
     ctx.save(); ctx.translate(x, y + bob); ctx.rotate(this.angle);
     const rec = this.shootAnim > 0 ? -7 * (this.shootAnim / 0.14) : 0;
     ctx.beginPath(); ctx.moveTo(rec, 0); ctx.lineTo(size * 0.55 + rec, 0);
@@ -2514,6 +2621,34 @@ function drawMilitaryHelmet(ctx) {
   ctx.beginPath(); ctx.arc(0, -0.9, 0.34, Math.PI, Math.PI * 2); ctx.closePath(); ctx.fill();
   ctx.fillStyle = '#38462c';
   ctx.beginPath(); ctx.ellipse(0, -0.9, 0.42, 0.08, 0, 0, Math.PI * 2); ctx.fill();
+}
+const PUTIN_SOULS = [
+  { k: 'determination', name: 'РЕШИМОСТЬ', color: '#ff2b2b' },
+  { k: 'patience', name: 'ТЕРПЕНИЕ', color: '#41d6ff' },
+  { k: 'bravery', name: 'ХРАБРОСТЬ', color: '#ff9a2b' },
+  { k: 'integrity', name: 'ЦЕЛЬНОСТЬ', color: '#2b6bff' },
+  { k: 'perseverance', name: 'УПОРСТВО', color: '#b02bff' },
+  { k: 'kindness', name: 'ДОБРОТА', color: '#3dff6e' },
+  { k: 'justice', name: 'СПРАВЕДЛИВОСТЬ', color: '#ffe93d' }
+];
+function drawSoulHeart(ctx, x, y, s, color) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s / 10, s / 10);
+  ctx.fillStyle = color; ctx.globalAlpha = 0.95;
+  ctx.beginPath();
+  ctx.moveTo(0, 4.5); ctx.bezierCurveTo(-7.5, -1.5, -4.5, -8, 0, -3.5); ctx.bezierCurveTo(4.5, -8, 7.5, -1.5, 0, 4.5);
+  ctx.closePath(); ctx.fill();
+  ctx.globalAlpha = 1;
+  ctx.restore();
+}
+function drawSoulsOrbit(ctx, x, y, r, s, angle) {
+  for (let i = 0; i < PUTIN_SOULS.length; i++) {
+    const a = (angle || 0) + i * Math.PI * 2 / PUTIN_SOULS.length;
+    drawSoulHeart(ctx, x + Math.cos(a) * r, y + Math.sin(a) * r * 0.5 - s, s, PUTIN_SOULS[i].color);
+  }
+}
+function hexToRgbStr(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  return ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255);
 }
 function drawShahedModel(ctx, x, y, scale, ally) {
   const body = ally ? '#5c7a4a' : '#64684f';
@@ -2582,7 +2717,7 @@ class Enemy {
     this.x = pts[0].x; this.y = pts[0].y;
     this.angle = 0;
     this.size = def.boss ? 16 : (def.id === 'mini' ? 9 : 12);
-    this.regen = def.regen || 0;
+    this.regen = def.regen || 0; this.burnT = 0; this.burnDps = 0; this.burnTick = 0; this.vulnT = 0;
     this.shieldMax = def.shield || 0;
     this.shield = this.shieldMax;
     this.shieldRegen = def.shieldRegen || 0;
@@ -2594,7 +2729,7 @@ class Enemy {
   }
   takeDamage(d) {
     this.flashUntil = Date.now() + 140;
-    let dmg = d * (1 - this.armorPct);
+    let dmg = d * (this.vulnT > 0 ? 1.3 : 1) * (1 - this.armorPct);
     if (this.shield > 0) {
       const absorbed = Math.min(this.shield, dmg);
       this.shield -= absorbed;
@@ -2616,6 +2751,11 @@ class Enemy {
     if (this.slowTimer > 0) {
       this.slowTimer -= dt;
       if (this.slowTimer <= 0) { this.slowFactor = 1; this.speed = this.baseSpeed; }
+    }
+    if (this.vulnT > 0) this.vulnT -= dt;
+    if (this.burnT > 0) {
+      this.burnT -= dt; this.burnTick -= dt;
+      if (this.burnTick <= 0) { this.burnTick = 0.5; this.takeDamage(this.burnDps * 0.5); }
     }
     if (this.regen > 0 && this.hp > 0 && this.hp < this.maxHp) this.hp = Math.min(this.maxHp, this.hp + this.regen * dt);
     this.time += dt;
@@ -3969,6 +4109,16 @@ class Game {
       ctx.fillStyle = 'rgba(170,170,185,' + (0.2 + 0.2 * sm).toFixed(2) + ')';
       ctx.beginPath(); ctx.arc(6, -50 - sm * 11, 4 + sm * 2.5, 0, Math.PI * 2); ctx.fill();
     }
+    const cg = ctx.createRadialGradient(0, -66, 6, 0, -66, 58);
+    cg.addColorStop(0, 'rgba(255,224,102,0.4)');
+    cg.addColorStop(1, 'rgba(255,224,102,0)');
+    ctx.fillStyle = cg;
+    ctx.beginPath(); ctx.arc(0, -66, 58, 0, Math.PI * 2); ctx.fill();
+    ctx.save(); ctx.translate(0, -70); ctx.scale(0.62, 0.62);
+    UF_RUN(ctx, { x: 0, y: 0 }, UF_TABLE.putin);
+    ctx.restore();
+    ctx.strokeStyle = 'rgba(255,224,102,0.8)'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.ellipse(0, -118, 18, 5, Math.sin(t * 1.5) * 0.25, 0, Math.PI * 2); ctx.stroke();
     ctx.restore();
     const w = 54, h = 6, bx = b.x - w / 2, by = b.y - 64;
     ctx.fillStyle = '#2a1a1a';
@@ -5156,7 +5306,7 @@ const App = {
     if (dupCount > 0) msg += fill(T('⭐ Дубликат (уже открыт): ×%1'), dupCount);
     content.innerHTML = `
       <div class="ud-name">${T(crate.name)}</div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;width:100%">${cells}</div>
+      <div class="crate-grid">${cells}</div>
       ${msg ? '<div class="ud-ability" style="color:' + (newCount ? '#7fffa0' : '#ffd966') + '">' + msg + '</div>' : ''}
       <button class="btn small" id="crateCloseBtn" style="margin-top:6px">${T('ЗАБРАТЬ')}</button>`;
     content.querySelector('#crateCloseBtn').addEventListener('click', () => {
@@ -5369,7 +5519,7 @@ class FrontGame {
     this.baseHp = 10000; this.baseMaxHp = 10000;
     this.myHp = 10000; this.myMaxHp = 10000;
     this.mine = []; this.enemies = []; this.tracers = []; this.explosions = []; this.floaters = [];
-    this.spawnCount = {}; this.upg = { dmg: 0, hp: 0, spd: 0 };
+    this.spawnCount = {}; this.upg = { dmg: 0, hp: 0, spd: 0 }; this.allyDrones = [];
     this.enemyTimer = 1.2; this.shahedTimer = 22; this.shahedWarn = null;
     this.selectedLane = 0; this.unitIds = this.frontLoadout();
     this.kills = 0; this.gameOver = false; this.victory = false; this.baseRazed = false;
@@ -5388,7 +5538,7 @@ class FrontGame {
   }
   unitPrice(id) {
     const u = this.unitDef(id);
-    const base = FRONT_BASE_COST[u && u.rarity] || 140;
+    const base = (u && u.frontCost) || FRONT_BASE_COST[u && u.rarity] || 140;
     return Math.round(base * Math.pow(1.12, this.spawnCount[id] || 0));
   }
   coinBoost() { return SaveManager.potionActive('coins') ? 2 : 1; }
@@ -5430,7 +5580,7 @@ class FrontGame {
       const btn = this.btnRefs.spawn[id];
       if (!btn) continue;
       btn.querySelector('.price').textContent = '\ud83e\ude99 ' + this.unitPrice(id);
-      btn.querySelector('.desc').textContent = fill(T('%1 \u0448\u0442'), this.spawnCount[id]);
+      btn.querySelector('.desc').textContent = fill(T('%1 \u0448\u0442'), this.spawnCount[id] || 0);
     }
     for (const id of ['dmg', 'hp', 'spd']) {
       const btn = this.btnRefs.upg[id];
@@ -5570,6 +5720,56 @@ class FrontGame {
           if (hit && !this.zovMsgShown) { this.zovMsgShown = true; this.toastMsg(T('📢 ZOV-спикер кричит: Россия, Путин, Победа!')); }
         }
       }
+            if (u && u.ability === 'daiShout') {
+        m.shoutT = (m.shoutT || 3) - dt;
+        if (m.shoutT <= 0) {
+          m.shoutT = 6.5;
+          for (const e of this.enemies) {
+            if (e.lane === m.lane && Math.abs(e.x - m.x) <= 170) e.stunT = 1.5;
+          }
+          this.floaters.push({ x: m.x, y: m.y - 66, text: T('ДАЙ!'), life: 1.3, maxLife: 1.3, color: '#7fffa0' });
+          this.explosions.push({ x: m.x, y: m.y - 10, r: 0, maxR: 90, life: 0.4, maxLife: 0.4, rgb: '127,255,160' });
+          if (!this.daiMsgShown) { this.daiMsgShown = true; this.toastMsg(T('💵 ДАЙ! — враги оглушены на 1.5 сек')); }
+        }
+      }
+      if (u && u.ability === 'putinCommand') {
+        m.soulA = (m.soulA || 0) + dt * 2.2;
+        if (m.eyeT > 0) {
+          m.eyeT -= dt; m.eyeCd = (m.eyeCd || 0) - dt;
+          if (m.eyeCd <= 0) {
+            m.eyeCd = 0.35;
+            let tgt2 = null;
+            for (const e of this.enemies) { if (e.lane === m.lane && e.x > m.x && e.hp > 0 && (!tgt2 || e.x < tgt2.x)) tgt2 = e; }
+            if (tgt2) { tgt2.hp -= m.dmg * 0.5; this.tracers.push({ x1: m.x, y1: m.y - 44, x2: tgt2.x, y2: tgt2.y - 8, life: 0.1, color: '#ff4444' }); }
+          }
+        }
+        m.soulT = (m.soulT || 4) - dt;
+        if (m.soulT <= 0) {
+          m.soulT = 7;
+          const soul = PUTIN_SOULS[Math.floor(Math.random() * PUTIN_SOULS.length)];
+          let n = 0;
+          for (const e of this.enemies) {
+            if (e.lane !== m.lane || e.x < m.x || e.x - m.x > 210) continue;
+            n++;
+            if (soul.k === 'determination') { e.hp -= m.dmg * 1.8; m.eyeT = 5; }
+            else if (soul.k === 'patience') { e.slowT = 3; e.slowF = 0.6; }
+            else if (soul.k === 'bravery') { e.burnT = 4; e.burnDps = m.dmg * 0.25; e.burnTick = 0.5; }
+            else if (soul.k === 'integrity') e.stunT = 1.5;
+            else if (soul.k === 'perseverance') e.vulnT = 5;
+            else if (soul.k === 'justice') e.hp -= m.dmg * 1.2;
+          }
+          if (soul.k === 'kindness') {
+            for (const m2 of this.mine) m2.hp = Math.min(m2.maxHp, m2.hp + m2.maxHp * 0.3);
+          }
+          if (n) this.explosions.push({ x: m.x + 140, y: m.y, r: 0, maxR: 80, life: 0.4, maxLife: 0.4, rgb: hexToRgbStr(soul.color) });
+          this.floaters.push({ x: m.x, y: m.y - 78, text: fill(T('ДУША: %1'), soul.name), life: 1.3, maxLife: 1.3, color: soul.color });
+        }
+        m.sumT = (m.sumT || 5) - dt;
+        if (m.sumT <= 0) {
+          m.sumT = 9;
+          this.allyDrones.push({ x: m.x + 10, y: m.y - 40, lane: m.lane, dmg: m.dmg * 1.5, life: 8 });
+        }
+      }
     }
     for (let i = this.mine.length - 1; i >= 0; i--) {
       const m = this.mine[i];
@@ -5591,7 +5791,13 @@ class FrontGame {
       if (m.cd <= 0) {
         if (target) {
           m.cd = m.rate;
-          target.hp -= m.dmg;
+          target.hp -= m.dmg * (target.vulnT > 0 ? 1.3 : 1);
+          if (m.id === 'zelensky') {
+            for (const e2 of this.enemies) {
+              if (e2 !== target && e2.lane === m.lane && Math.abs(e2.x - target.x) <= 70) e2.hp -= m.dmg * 0.7;
+            }
+            this.explosions.push({ x: target.x, y: target.y - 8, r: 0, maxR: 70, life: 0.3, maxLife: 0.3, rgb: '127,255,160' });
+          }
           this.tracers.push({ x1: m.x + 8, y1: m.y - 8, x2: target.x, y2: target.y - 8, life: 0.07, color: '#7ee7ff' });
         } else if (m.x >= FRONT_REACH_X && m.dmg > 0) {
           m.cd = m.rate;
@@ -5606,6 +5812,7 @@ class FrontGame {
     for (let i = this.enemies.length - 1; i >= 0; i--) {
       const e = this.enemies[i];
       if (e.slowT > 0) e.slowT -= dt;
+      if (e.burnT > 0) { e.burnT -= dt; e.burnTick = (e.burnTick || 0) - dt; if (e.burnTick <= 0) { e.burnTick = 0.5; e.hp -= e.burnDps * 0.5; } }
       if (e.hp <= 0) {
         const gain = Math.round((12 + this.elapsed * 0.05) * this.coinBoost() * (e.kind === 1 ? 1.5 : e.kind === 2 ? 2.2 : 1));
         this.money += gain; this.kills++;
@@ -5620,13 +5827,14 @@ class FrontGame {
       }
       e.cd -= dt;
       if (e.cd > 0) continue;
+      if (e.stunT > 0) { e.stunT -= dt; continue; }
       if (tgt) {
         e.cd = 0.9;
         tgt.hp -= (12 + this.elapsed * 0.05) * (e.kind === 1 ? 1.4 : e.kind === 2 ? 1.9 : 1);
         this.tracers.push({ x1: e.x - 8, y1: e.y - 8, x2: tgt.x, y2: tgt.y - 8, life: 0.07, color: '#ff8888' });
       } else {
         e.cd = 0;
-        e.x -= e.baseSpeed * (e.slowT > 0 ? 0.85 : 1) * dt;
+        e.x -= e.baseSpeed * (e.slowT > 0 ? (e.slowF || 0.85) : 1) * dt;
         if (e.x < FRONT_OUR_X + 50) {
           e.x = FRONT_OUR_X + 50;
           e.cd = 0.9;
@@ -5636,6 +5844,28 @@ class FrontGame {
           this.tracers.push({ x1: e.x - 8, y1: e.y - 8, x2: FRONT_OUR_X + 40, y2: FRONT_LANES[1], life: 0.07, color: '#ff8888' });
           if (this.myHp <= 0) { this.myHp = 0; this.finish(false); return; }
         }
+      }
+    }
+    for (let i = (this.allyDrones || []).length - 1; i >= 0; i--) {
+      const d = this.allyDrones[i];
+      d.x += 200 * dt; d.life -= dt;
+      let boom = d.life <= 0;
+      for (const e of this.enemies) {
+        if (e.lane === d.lane && Math.abs(e.x - d.x) < 34) { boom = true; break; }
+      }
+      if (!boom && d.x >= FRONT_REACH_X) {
+        boom = true;
+        this.baseHp -= d.dmg;
+        this.tracers.push({ x1: d.x, y1: d.y, x2: FRONT_BASE_X - 60, y2: d.y, life: 0.1, color: '#7ee7ff' });
+        if (this.baseHp <= 0) { this.baseHp = 0; this.finish(true); return; }
+      }
+      if (boom) {
+        for (const e of this.enemies) {
+          if (e.lane === d.lane && Math.abs(e.x - d.x) <= 60) e.hp -= d.dmg;
+        }
+        this.explosions.push({ x: d.x, y: d.y, r: 0, maxR: 60, life: 0.4, maxLife: 0.4, rgb: '255,150,60' });
+        Sound.explosion();
+        this.allyDrones.splice(i, 1);
       }
     }
     for (let i = this.tracers.length - 1; i >= 0; i--) { this.tracers[i].life -= dt; if (this.tracers[i].life <= 0) this.tracers.splice(i, 1); }
@@ -5704,13 +5934,14 @@ class FrontGame {
     for (const m of this.mine) {
       const u = this.unitDef(m.id);
       const us = UF_SCALE[m.id] || 1;
-      const figSz = m.id === 'presidentTV' ? 136 : 110;
+      const figSz = (m.id === 'putin' || m.id === 'zelensky') ? 136 : 110;
       const k = figSz / 150 * us;
       const barY = Math.round(m.y - 10 + figSz * 0.05 - 128 * k - 12);
       ctx.save(); ctx.globalAlpha = 0.5;
       ctx.fillStyle = '#000'; ctx.beginPath(); ctx.ellipse(m.x, m.y + figSz * 0.34, 22, 7, 0, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
       drawUnitFigure(ctx, u, m.x, m.y - 10, figSz, false, us);
+      if (m.id === 'putin') drawSoulsOrbit(ctx, m.x, m.y - 10, 48, 11, m.soulA || 0);
       ctx.fillStyle = '#25324a'; ctx.fillRect(m.x - 22, barY, 44, 5);
       ctx.fillStyle = '#7fffa0'; ctx.fillRect(m.x - 22, barY, Math.round(44 * clamp(m.hp / m.maxHp, 0, 1)), 5);
     }
@@ -5730,6 +5961,7 @@ class FrontGame {
       ctx.fillStyle = '#25324a'; ctx.fillRect(e.x - 15, e.y - sc * 3.6 - 6, 30, 4);
       ctx.fillStyle = '#ff8888'; ctx.fillRect(e.x - 15, e.y - sc * 3.6 - 6, Math.round(30 * clamp(e.hp / e.maxHp, 0, 1)), 4);
     }
+    for (const d of (this.allyDrones || [])) drawShahedModel(ctx, d.x, d.y, 1.1, true);
     for (const tr of this.tracers) {
       ctx.strokeStyle = tr.color; ctx.globalAlpha = Math.min(1, tr.life / 0.07);
       ctx.beginPath(); ctx.moveTo(tr.x1, tr.y1); ctx.lineTo(tr.x2, tr.y2); ctx.stroke();
