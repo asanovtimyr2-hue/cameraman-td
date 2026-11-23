@@ -754,12 +754,12 @@ const I18N_EN = {
   "Всенаправленный желеныш: стреляет желейным лазером — 105 урона, замедление 25%, кд 0.6 сек. Цена в «Столице»: 250🪙.": "Jelly marksman: fires a jelly laser — 105 damage, 25% slow, cd 0.6s. Capital price: 250.",
   "Желе-колосс: бьёт большим желейным мечом раз в 3 сек — 450 урона + замедление 35%. Его телевизоры бьют AOE: 100 урона, радиус 85, кд 0.6 сек. Цена в «Столице»: 2000🪙.": "Jelly colossus: swings a big jelly sword every 3s — 450 damage + 35% slow. His TVs fire AOE: 100 damage, radius 85, cd 0.6s. Capital price: 2000.",
   "🎪 Цирк Ужасов": "🎪 CIRCUS OF HORRORS",
-  "Клоун Джокер 69.9%, Фокусник Мираж 30%, Директор Цирка Титан 0.1%. Из цирка ужасов.": "CLOWN JOKER 69.9%, MIRAGE MAGICIAN 30%, RINGMASTER CIRCUS TITAN 0.1%. From the circus of horrors.",
-  "🤡 Клоун Джокер": "🤡 CLOWN JOKER",
+  "Джокер Спикер Мен 69.9%, Фокусник Мираж Камера Мен 30%, Директор Цирка Спикер Мен Титан 0.1%. Из цирка ужасов.": "JOKER SPEAKER MAN 69.9%, MIRAGE MAGICIAN CAMERA MAN 30%, CIRCUS RINGMASTER SPEAKER TITAN 0.1%. From the circus of horrors.",
+  "🤡 Джокер Спикер Мен": "🤡 JOKER SPEAKER MAN",
   "Жонглёр огнём: его огненные булавы поджигают врага — урон огнём 35% от урона атаки в секунду на 3 сек, кд атаки 0.7 сек. Цена в «Столице»: 479🪙.": "Fire juggler: his flaming pins set enemies ablaze — burn damage of 35% of the attack per second for 3s, attack cd 0.7s. Capital price: 479.",
-  "🎩 Фокусник Мираж": "🎩 MIRAGE MAGICIAN",
+  "🎩 Фокусник Мираж Камера Мен": "🎩 MIRAGE MAGICIAN CAMERA MAN",
   "Гипнотизёр: раз в 8 сек показывает гипно-фокус — оглушает врагов вокруг на 1.5 сек и оставляет «печать удивления» (+30% урона по меченным) на 4 сек. Цена в «Столице»: 1200🪙.": "Hypnotist: every 8s performs a hypno trick — stuns nearby enemies for 1.5s and leaves an astonishment mark (+30% damage to marked) for 4s. Capital price: 1200.",
-  "🎪 Директор Цирка Титан": "🎪 RINGMASTER CIRCUS TITAN",
+  "🎪 Директор Цирка Спикер Мен Титан": "🎪 CIRCUS RINGMASTER SPEAKER TITAN",
   "Хозяин арены: раз в 9 сек даёт цирковой залп из пушки — конфетти-взрыв (урон ×2.2 по площади) и оглушение 0.8 сек, а во 2-м режиме ещё и отбрасывает врагов назад на 70. Цена в «Столице»: 2400🪙.": "Master of the arena: every 9s fires the circus cannon — a confetti blast (2.2x area damage) and a 0.8s stun; in mode 2 it also knocks enemies back by 70. Capital price: 2400.",
   "🔥 Поджигает врагов своими попаданиями (урон огнём)": "🔥 Sets enemies on fire with its hits (burn damage)",
   "🎩 Гипно-фокус: оглушение врагов на 1.5 сек + печать удивления (+30% урона)": "🎩 Hypno trick: 1.5s stun + astonishment mark (+30% damage)",
@@ -1490,15 +1490,15 @@ const UNITS = [
     desc: 'Желе-колосс: бьёт большим желейным мечом раз в 3 сек — 450 урона + замедление 35%. Его телевизоры бьют AOE: 100 урона, радиус 85, кд 0.6 сек. Цена в «Столице»: 2000🪙.',
     stats: { dmg: 100, range: 185, fireRate: 0.6, hp: 1400 },
     passive: { dmgBonus: 0.2, moneyBonus: 0 }, tvAttack: true, swordSwing: true, rateFloor: 0.6, ability: 'jellyThrow', splashRadius: 85, jellyRadius: 130, jellyDmg: 450, jellySlow: 0.35, jellySlowT: 2, jellyCd: 3 },
-  { id: 'clownJoker', name: '🤡 Клоун Джокер', emoji: '🤡', rarity: 'Special', dropChance: 0.699, frontCost: 479, rateFloor: 0.6,
+  { id: 'clownJoker', name: '🤡 Джокер Спикер Мен', emoji: '🤡', rarity: 'Special', dropChance: 0.699, frontCost: 479, rateFloor: 0.6,
     desc: 'Жонглёр огнём: его огненные булавы поджигают врага — урон огнём 35% от урона атаки в секунду на 3 сек, кд атаки 0.7 сек. Цена в «Столице»: 479🪙.',
     stats: { dmg: 62, range: 170, fireRate: 0.7, hp: 380 },
     passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'burn', burnOnHit: 0.35 },
-  { id: 'mirageMagician', name: '🎩 Фокусник Мираж', emoji: '🎩', rarity: 'Special', dropChance: 0.3, frontCost: 1200,
+  { id: 'mirageMagician', name: '🎩 Фокусник Мираж Камера Мен', emoji: '🎩', rarity: 'Special', dropChance: 0.3, frontCost: 1200,
     desc: 'Гипнотизёр: раз в 8 сек показывает гипно-фокус — оглушает врагов вокруг на 1.5 сек и оставляет «печать удивления» (+30% урона по меченным) на 4 сек. Цена в «Столице»: 1200🪙.',
     stats: { dmg: 100, range: 205, fireRate: 0.85, hp: 450 },
     passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'hypno' },
-  { id: 'circusRingmaster', name: '🎪 Директор Цирка Титан', emoji: '🎪', rarity: 'Special', dropChance: 0.001, frontCost: 2400, upCostMul: 1.6,
+  { id: 'circusRingmaster', name: '🎪 Директор Цирка Спикер Мен Титан', emoji: '🎪', rarity: 'Special', dropChance: 0.001, frontCost: 2400, upCostMul: 1.6,
     desc: 'Хозяин арены: раз в 9 сек даёт цирковой залп из пушки — конфетти-взрыв (урон ×2.2 по площади) и оглушение 0.8 сек, а во 2-м режиме ещё и отбрасывает врагов назад на 70. Цена в «Столице»: 2400🪙.',
     stats: { dmg: 130, range: 200, fireRate: 0.8, hp: 1500 },
     passive: { dmgBonus: 0.2, moneyBonus: 0 }, ability: 'cannonShot' }
@@ -1621,6 +1621,7 @@ const PROMO_CODES = {
 
 function _kh(s, k) { let h = (0x811c9dc5 ^ k) >>> 0; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h >>> 0; }
 const _ac = { s1: 0x51ed270b, s2: 0x2ff6d9c4, h1: 0x652f3055, h2: 0xe3a636e8 };
+const _kc = { s1: 0x4a6f9d21, s2: 0x77b52f04, s3: 0x2c4e1a8b, s4: 0xd13f95a7, h1: 0xe5c3ab2d, h2: 0xdcc68eb8, h3: 0x3767b7fe, h4: 0x86a727aa };
 function dist(ax, ay, bx, by) { return Math.hypot(ax - bx, ay - by); }
 function shadeColor(hex, f) {
   const n = parseInt(hex.slice(1), 16);
@@ -1770,6 +1771,16 @@ const SaveManager = {
       this.save();
       return { ok: true, msg: T('🛠 Админ-режим включён') };
     }
+    if (typeof code === 'string' && code.length >= 6 && _kh(code, _kc.s1) === _kc.h1 && _kh(code, _kc.s2) === _kc.h2) {
+      this.data.codes.push(code); this.save();
+      this.addItem('budgetCrate', 35);
+      return { ok: true, msg: fill(T('Код активирован: %1'), '+35 📦') };
+    }
+    if (typeof code === 'string' && code.length >= 6 && _kh(code, _kc.s3) === _kc.h3 && _kh(code, _kc.s4) === _kc.h4) {
+      this.data.codes.push(code); this.save();
+      this.addItem('militaryCrate', 35);
+      return { ok: true, msg: fill(T('Код активирован: %1'), '+35 🎖️') };
+    }
     const amount = PROMO_CODES[code];
     if (!amount) return { ok: false, msg: T('Неверный код') };
     this.data.codes.push(code);
@@ -1795,7 +1806,7 @@ const SHOP_CRATES = [
     desc: 'Желейный ТВ Мен 69.9%, Желейный Камера Дрон 39.1%, Желе Титан ТВ Мен 0.1%. Из желейного мира.',
     units: ['jellyTV', 'jellyDrone', 'jellyTitan'] },
   { id: 'circusCrate', name: '🎪 Цирк Ужасов', emoji: '🎪', cost: 1500, color: '#ff9ade',
-    desc: 'Клоун Джокер 69.9%, Фокусник Мираж 30%, Директор Цирка Титан 0.1%. Из цирка ужасов.',
+    desc: 'Джокер Спикер Мен 69.9%, Фокусник Мираж Камера Мен 30%, Директор Цирка Спикер Мен Титан 0.1%. Из цирка ужасов.',
     units: ['clownJoker', 'mirageMagician', 'circusRingmaster'] }
 ];
 
@@ -2406,16 +2417,21 @@ UF_TABLE.clownJoker = [
   ["R", -12, 18, 9, 20, 4, "#8a2be2"], ["R", 3, 18, 9, 20, 4, "#8a2be2"],
   ["R", -15, 36, 14, 8, 3, "#e8443a"], ["R", 1, 36, 14, 8, 3, "#e8443a"],
   ["R", -19, -16, 38, 36, 8, "#b03a8c"],
-  ["C", -19, -14, 3, "#ffd966"], ["C", 19, -14, 3, "#ffd966"],
+  ["C", -13, -6, 2.2, "#ffd966"], ["C", 13, -6, 2.2, "#7dff9e"], ["C", 0, 6, 2.2, "#ff8ad8"],
   ["L", -19, -6, -33, 4, "#b03a8c", 5], ["L", 19, -6, 33, 4, "#b03a8c", 5],
   ["E", -33, 6, 5, 7, "#ffd966"], ["E", 33, 6, 5, 7, "#ffd966"],
   ["C", -33, -3, 1.8, "#ff8ad8"], ["C", 33, -3, 1.8, "#ff8ad8"],
-  ["C", 0, -16, 9, "#ffe9a8"],
-  ["C", 0, -30, 11, "#f4f7fb"],
-  ["E", -12, -40, 6, 8, "#ff7a1a"], ["E", 12, -40, 6, 8, "#ff7a1a"], ["C", 0, -41, 3, "#ff7a1a"],
-  ["C", -4, -32, 1.3, "#20242c"], ["C", 4, -32, 1.3, "#20242c"],
-  ["C", 0, -28, 2.6, "#ff4444"],
-  ["A", 0, -30, 6, 0.35, 2.79, "#c8375a", 2.2]
+  ["C", 0, -18, 9, "#ffe9a8"],
+  ["R", -9, -30, 18, 14, 4, "#1a2130"],
+  ["R", -26, -84, 52, 54, 6, "#232b3d"],
+  ["S", -26, -84, 52, 54, 6, "#39445e", 2],
+  ["RG", -23, -81, 46, 10, 4, "rgba(255,255,255,0.12)", "rgba(255,255,255,0.03)"],
+  ["C", -14, -76, 7, "#0d1118"], ["C", -14, -76, 3, "#ff8ad8"],
+  ["C", 14, -76, 7, "#0d1118"], ["C", 14, -76, 3, "#ff8ad8"],
+  ["C", 0, -52, 16, "#0d1118"], ["C", 0, -52, 10, "#39445e"], ["C", 0, -52, 4.5, "#ff5555"],
+  ["AE", 0, -52, 19, 19, "RCaa", 2],
+  ["E", -12, -88, 5, 7, "#ff7a1a"], ["E", 12, -88, 5, 7, "#ff7a1a"], ["C", 0, -90, 4, "#ff7a1a"],
+  ["C", -10, -88, 2, "#7dff9e"], ["C", 10, -88, 2, "#7dff9e"], ["C", 0, -93, 2.2, "#ffd966"]
 ];
 UF_TABLE.mirageMagician = [
   ["R", -11, 20, 9, 22, 4, "#0d1118"], ["R", 2, 20, 9, 22, 4, "#0d1118"],
@@ -2425,12 +2441,17 @@ UF_TABLE.mirageMagician = [
   ["R", -5, -13, 10, 4, 2, "#c8375a"],
   ["L", -19, -4, -33, 2, "#1c2333", 5], ["L", 19, -4, 33, 2, "#1c2333", 5],
   ["R", -38, -3, 8, 6, 1, "#f4f7fb"], ["R", 30, -3, 8, 6, 1, "#c8375a"],
-  ["C", 0, -30, 10, "#e8c8a8"],
-  ["C", -4, -33, 1.3, "#20242c"], ["C", 4, -33, 1.3, "#20242c"],
-  ["R", -5, -27, 10, 2.5, 1.2, "#20242c"],
-  ["R", -13, -42, 26, 4, 2, "#0d1118"],
-  ["R", -9, -56, 18, 15, 2, "#0d1118"],
-  ["R", -9, -46, 18, 4, 1, "#c8375a"]
+  ["C", 0, -16, 9, "#ffe9a8"],
+  ["R", -9, -30, 18, 14, 4, "#1a2130"],
+  ["R", -15, -76, 30, 46, 6, "#1a2130"],
+  ["RG", -13, -72, 26, 8, 3, "rgba(255,255,255,0.15)", "rgba(255,255,255,0.03)"],
+  ["A", 5, -55, 12, 0, 6.2832, "#0e1219", 3],
+  ["C", 5, -55, 12, "#0d1118"], ["C", 5, -55, 8, "#7ee7ff"], ["C", 7, -55, 3.6, "#0d1118"], ["C", 6.8, -58, 2, "rgba(255,255,255,0.8)"],
+  ["C", -5, -70, 3, "#ff5555"],
+  ["E", -11, -79, 5, 7, "#8a2be2"], ["E", 11, -79, 5, 7, "#8a2be2"], ["C", 0, -84, 4, "#8a2be2"],
+  ["R", -13, -88, 26, 4, 2, "#0d1118"],
+  ["R", -9, -100, 18, 13, 2, "#0d1118"],
+  ["R", -9, -93, 18, 4, 1, "#c8375a"]
 ];
 UF_TABLE.circusRingmaster = [
   ["R", -20, 26, 14, 30, 6, "#141a26"], ["R", 6, 26, 14, 30, 6, "#141a26"],
@@ -2438,21 +2459,25 @@ UF_TABLE.circusRingmaster = [
   ["R", -40, -44, 80, 78, 12, "#8a1f2d"],
   ["R", -40, -44, 80, 32, 12, "#a52a3a"],
   ["R", -52, -38, 12, 36, 5, "#8a1f2d"], ["R", 40, -38, 12, 36, 5, "#8a1f2d"],
-  ["C", -58, 2, 6, "#e8c8a8"], ["C", 58, 2, 6, "#e8c8a8"],
+  ["C", -58, 2, 6, "#ffe9a8"], ["C", 58, 2, 6, "#ffe9a8"],
+  ["L", 46, -16, 68, -54, "#7a3a2e", 4], ["C", 68, -56, 4, "#ffd966"],
   ["R", -40, 10, 80, 6, 3, "#ffd966"],
-  ["C", 0, -20, 3, "#ffd966"], ["C", 0, -4, 3, "#ffd966"],
-  ["C", 0, -58, 8, "#e8c8a8"],
-  ["E", 0, -84, 18, 24, "#e8c8a8"],
-  ["C", -7, -88, 2.6, "#20242c"], ["C", 7, -88, 2.6, "#20242c"],
-  ["L", -11, -94, -3, -96, "#4a3826", 2], ["L", 3, -96, 11, -94, "#4a3826", 2],
-  ["A", 0, -80, 7, 0.35, 2.79, "#7a3a2e", 2.4],
-  ["R", -19, -108, 38, 6, 3, "#0d1118"],
-  ["R", -13, -128, 26, 21, 3, "#0d1118"],
-  ["R", -13, -114, 26, 5, 2, "#ffd966"],
-  ["L", 46, -16, 68, -54, "#7a3a2e", 4],
-  ["C", 68, -56, 4, "#ffd966"]
+  ["C", -13, -34, 3, "#ffd966"], ["C", 13, -34, 3, "#7dff9e"], ["C", 0, -14, 3, "#ff8ad8"], ["C", 0, -4, 3, "#ffd966"],
+  ["R", -10, -60, 20, 18, 5, "#1a2130"],
+  ["C", -34, -52, 8, "#ff7a1a"], ["C", 34, -52, 8, "#ff7a1a"],
+  ["R", -34, -132, 68, 72, 8, "#232b3d"],
+  ["S", -34, -132, 68, 72, 8, "#39445e", 2.5],
+  ["RG", -30, -128, 60, 13, 5, "rgba(255,255,255,0.12)", "rgba(255,255,255,0.03)"],
+  ["C", 0, -96, 22, "#0d1118"], ["C", 0, -96, 14, "#39445e"], ["C", 0, -96, 6, "#ff5555"],
+  ["AE", 0, -96, 26, 26, "RCaa", 2.5],
+  ["C", -19, -120, 9, "#0d1118"], ["C", -19, -120, 4, "#ffd966"],
+  ["C", 19, -120, 9, "#0d1118"], ["C", 19, -120, 4, "#ffd966"],
+  ["C", -26, -136, 9, "#8a2be2"], ["C", 26, -136, 9, "#8a2be2"], ["C", 0, -138, 10, "#8a2be2"],
+  ["R", -24, -146, 48, 6, 3, "#0d1118"],
+  ["R", -16, -168, 32, 24, 3, "#0d1118"],
+  ["R", -16, -156, 32, 6, 2, "#ffd966"]
 ];
-UF_TABLE.amerFarm = UF_TABLE.scientist || UF_TABLE.makeup;
+UF_TABLE.amerFarm = UF_TABLE.scientist || UF_TABLE.makeup;UF_TABLE.amerFarm = UF_TABLE.scientist || UF_TABLE.makeup;
 const UF_SCALE = {
   intern: 0.92, makeup: 0.95, scientist: 0.98, streamer: 1.0, speaker: 1.02,
   operator: 1.04, steadicam: 1.06, snipercam: 1.06, hacker: 1.06, dronepilot: 1.06,
@@ -3207,6 +3232,14 @@ class Enemy {
     }
     ctx.font = `${this.size * 1.1}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     drawEnemyFigure(ctx, this);
+    if (this.burnT > 0) {
+      const fa = 0.5 + 0.5 * Math.sin(this.time * 14);
+      ctx.fillStyle = 'rgba(255,140,60,' + (0.55 + 0.3 * fa).toFixed(3) + ')';
+      for (let i = 0; i < 3; i++) {
+        const fa2 = (this.time * 5 + i * 2.1) % 6.2832;
+        ctx.beginPath(); ctx.arc(x + Math.cos(fa2) * this.size * 0.5, yy - this.size - 4 - Math.abs(Math.sin(fa2)) * 5, 3 + fa * 1.5, 0, Math.PI * 2); ctx.fill();
+      }
+    }
     if (this.flashUntil > Date.now()) {
       ctx.globalAlpha = Math.min(0.6, (this.flashUntil - Date.now()) / 140 * 0.6);
       ctx.beginPath(); ctx.arc(x, yy, this.size, 0, Math.PI * 2);
@@ -3311,7 +3344,7 @@ class Projectile {
     } else {
       this.target.takeDamage(this.damage);
       if (this.owner && (this.owner.ability === 'slow' || this.owner.ability === 'zovShout')) this.target.applySlow(1.0, this.owner.ability === 'zovShout' ? 0.85 : (this.owner.unit && this.owner.unit.slowOnHit ? 1 - this.owner.unit.slowOnHit : 0.72));
-      if (this.owner && this.owner.ability === 'burn') { this.target.burnT = 3; this.target.burnDps = this.owner.damage * (this.owner.unit.burnOnHit || 0.35); this.target.burnTick = 0.5; }
+      if (this.owner && this.owner.ability === 'burn') { this.target.burnT = 3; this.target.burnDps = this.owner.damage * (this.owner.unit.burnOnHit || 0.35); this.target.burnTick = 0.5; } this.game.explosions.push({ x: this.target.x, y: this.target.y, r: 0, maxR: 30, life: 0.3, maxLife: 0.3, rgb: '255,140,60' });
       if (this.kind === 'coin') Sound.coinSnd();
       else if (this.kind === 'laser') { Sound.laser(); this.game.beams.push({ x1: this.ox, y1: this.oy, x2: this.target.x, y2: this.target.y, life: 0.16, color: this.color }); }
       else Sound.hit();
@@ -6316,6 +6349,7 @@ class FrontGame {
           const su = this.unitDef(m.id);
           if (su && su.ability === 'slow') { target.slowT = 2.5; if (su.slowOnHit) target.slowF = 1 - su.slowOnHit; }
           if (su && su.ability === 'burn') { target.burnT = 3; target.burnDps = m.dmg * (su.burnOnHit || 0.35); target.burnTick = 0.5; }
+          if (su && su.ability === 'burn') this.explosions.push({ x: target.x, y: target.y - 8, r: 0, maxR: 30, life: 0.3, maxLife: 0.3, rgb: '255,140,60' });
           if (su && su.tvAttack) m.tvGlowT = 0.18;
           if (su && su.splashRadius) {
             for (const e2 of this.enemies) {
