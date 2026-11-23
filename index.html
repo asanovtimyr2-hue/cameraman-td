@@ -93,25 +93,6 @@
 .crate-pool{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:8px 0 4px}
 .crate-pool .sc-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.72rem}
 .crate-price{font-weight:800;color:#7ee7ff;font-size:1.05rem}
-.shop-panel{position:relative;width:100%;max-width:1000px;background:linear-gradient(170deg,#2a5bd7e6,#173a9bee);border:3px solid #ffffffd9;border-radius:26px;padding:18px 20px 22px;box-shadow:0 14px 44px #000a, inset 0 0 0 3px #6fa2ff44}
-.shop-close{position:absolute;top:-14px;right:-14px;width:44px;height:44px;border-radius:14px;border:3px solid #fff;background:linear-gradient(180deg,#ff5a5a,#c81e1e);color:#fff;font-size:1.25rem;font-weight:800;cursor:pointer;box-shadow:0 6px 16px #0009;z-index:2}
-.shop-close:hover{filter:brightness(1.12)}
-.shop-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.shop-title{margin:0;font-size:2rem;font-weight:900;letter-spacing:2px;color:#fff;text-shadow:0 3px 0 #00000055,0 0 26px #bfe0ff88}
-.shop-currency{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#0e2c6e,#1b4bb5);border:3px solid #ffffffd9;border-radius:16px;padding:8px 16px;font-weight:900;font-size:1.1rem;color:#ffe08a;box-shadow:0 6px 16px #0007}
-.shop-note{text-align:center;opacity:.9;color:#eaf3ff;font-size:.9rem;margin:6px 0 10px}
-.shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;width:100%}
-.shop-card{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;background:linear-gradient(170deg,#ffffff24,#ffffff10);border:3px solid #ffffffd9;border-radius:20px;padding:14px 12px;box-shadow:0 8px 20px #0006, inset 0 0 18px #0000002e}
-.shop-card .crate-emoji{font-size:3rem;filter:drop-shadow(0 4px 10px #0008)}
-.shop-card .u-name{font-weight:900;font-size:1.05rem;text-shadow:0 2px 6px #000a;text-align:center}
-.shop-card .u-desc{color:#eaf3ff;font-size:.82rem;opacity:.92;text-align:center}
-.shop-card .crate-pool{margin:4px 0}
-.shop-price{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#0e2c6e,#1b4bb5);border:2px solid #ffffffcc;border-radius:14px;padding:6px 14px;font-weight:900;color:#ffe08a;box-shadow:0 4px 10px #0006}
-.shop-buy{width:100%;background:linear-gradient(180deg,#4bd14b,#2ca52c);border:3px solid #ffffffd9;border-radius:16px;color:#fff;font-weight:900;font-size:1rem;letter-spacing:1px;padding:11px 14px;cursor:pointer;box-shadow:0 6px 0 #1d7a1d,0 8px 18px #0007;transition:transform .08s ease,filter .12s ease}
-.shop-buy:hover{filter:brightness(1.1)}
-.shop-buy:active{transform:translateY(3px);box-shadow:0 3px 0 #1d7a1d}
-.shop-buy.alt{background:linear-gradient(180deg,#ffd54d,#e8a51e);box-shadow:0 6px 0 #a56f0a,0 8px 18px #0007;color:#3d2b00}
-@media (max-width:640px){.shop-panel{padding:14px 12px 18px;border-radius:18px}.shop-title{font-size:1.4rem}.shop-currency{padding:6px 12px;font-size:.95rem}.shop-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px}.shop-close{width:38px;height:38px;top:-12px;right:-10px}.shop-buy{padding:9px 10px;font-size:.9rem;box-shadow:0 4px 0 #1d7a1d,0 6px 12px #0007}.shop-buy.alt{box-shadow:0 4px 0 #a56f0a,0 6px 12px #0007}}
 .q-card{background:#141a26;border:1px solid #2a3a4e;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
 .q-card.q-done{border-color:#4dff8888}
 .q-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
@@ -415,11 +396,11 @@
     </div>
     <div class="event-modes">
       <div class="unit-card crate-card" style="border-color:#7fa65c">
-        <div class="crate-emoji" style="text-shadow:0 0 18px #7fa65c88">🏛️</div>
-        <div class="u-name" style="color:#7fa65c">СТОЛИЦА ЗА 3 ДНЯ</div>
-        <div class="u-desc">Захвати базу врага (10000 HP) за 10 минут: спавни юнитов из своего отряда и выбирай полосу атаки. Вражеские солдаты становятся сильнее со временем, на нашу базу и войска летят шахеды.</div>
-        <div class="crate-price" style="color:#7fffa0">Награда: 🎖️ Военный Крейт</div>
-        <div class="u-actions"><button class="btn small accent" id="btnModeCapital">▶ ШТУРМОВАТЬ</button></div>
+        <div class="crate-emoji" style="text-shadow:0 0 18px #7fa65c88">🐦</div>
+        <div class="u-name" style="color:#7fa65c">СПАСИ МАМУ ПТИЦУ</div>
+        <div class="u-desc">Мел Строй в беде: интерпол захватил 3 базы и маму птицу! Враги идут 70 волнами и становятся всё сильнее, а за каждую волну мы сносим базам Интерпола по 100 HP. За первую победу — 🪑 Скуф Мел Строя и 2 📦 Мелстрой Крейта, за 10 побед — Мелстрой Прайм!</div>
+        <div class="crate-price" style="color:#7fffa0">Награда: 📦 Мелстрой Крейт + 500🪙</div>
+        <div class="u-actions"><button class="btn small accent" id="btnModeCapital">▶ СПАСАТЬ</button></div>
       </div>
       <div class="unit-card crate-card" style="border-color:#7ec8a0">
         <div class="crate-emoji" style="text-shadow:0 0 18px #7ec8a088">🛡️</div>
@@ -508,14 +489,14 @@
 
 <!-- МАГАЗИН -->
 <div class="screen" id="shopScreen">
-  <div class="shop-panel">
-    <button class="shop-close" id="shopBack" title="Закрыть">✕</button>
-    <div class="shop-head">
-      <h2 class="shop-title">🛒 МАГАЗИН</h2>
-      <div class="shop-currency">💎 <span id="metaCrystalsShop">0</span></div>
+  <div class="subpanel">
+    <button class="btn small back-btn" id="shopBack">← ЛОББИ</button>
+    <div class="panel-head">
+      <h2 class="panel-title">🛒 МАГАЗИН КРЕЙТОВ</h2>
+      <div class="coin-badge"><span>💎</span> <span id="metaCrystalsShop">0</span></div>
     </div>
-    <div class="shop-note">Купленные крейты складываются в «Вещи» инвентаря — там их можно открыть</div>
-    <div class="shop-grid" id="shopGrid"></div>
+    <div style="text-align:center;opacity:.7;margin:8px 0 4px;font-size:.9rem">Купленные крейты складываются в «Вещи» инвентаря — там их можно открыть</div>
+    <div class="cards-grid" id="shopGrid" style="margin-top:10px"></div>
   </div>
 </div>
 
@@ -596,6 +577,7 @@
     <button class="btn small back-btn" id="settingsBack">← ЛОББИ</button>
     <h2 class="panel-title">НАСТРОЙКИ</h2>
     <div class="settings-row"><span>🔊 Звук</span><button class="btn small" id="btnToggleSound">ВКЛ</button></div>
+    <div class="settings-row"><span>🎵 Музыка</span><button class="btn small" id="btnToggleMusic">ВКЛ</button></div>
     <div class="settings-row"><span>🌐 Язык</span><button class="btn small" id="btnLang">🌐 Русский</button></div>
     <div class="settings-row"><span>🎁 Промокод</span>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -1093,7 +1075,9 @@ const I18N_EN = {
   "🛒 МАГАЗИН": "🛒 SHOP",
   "📜 КВЕСТЫ": "📜 QUESTS",
   "🛒 МАГАЗИН КРЕЙТОВ": "🛒 CRATE SHOP",
-  "🛒 МАГАЗИН": "🛒 SHOP",
+  "🎵 Музыка": "🎵 Music",
+  "Музыка включена": "Music on",
+  "Музыка выключена": "Music off",
   "Победи в бою": "Win a battle",
   "Пройди 5 волн": "Clear 5 waves",
   "Убей 100 скибиди": "Kill 100 skibidi",
@@ -1143,8 +1127,8 @@ const I18N_EN = {
   "❤️ ХП +15%": "❤️ HP +15%",
   "👟 СКОРОСТЬ +10%": "👟 SPEED +10%",
   "МАКС": "MAX",
-  "🎖️ ПРЕЗИДЕНТ РОССИИ": "🎖️ PRESIDENT OF RUSSIA",
-    "🏛️ ПРЕЗИДЕНТ УКРАИНЫ": "🏛️ PRESIDENT OF UKRAINE",
+  "🃏 Пал Лаича": "🃏 Pal Laicha",
+    "💰 Зелень": "💰 Zeleny",
   "💥 ВЗРЫВ!": "💥 BOOM!",
   "🛩️ ШАХЕД ВЫЛЕТЕЛ!": "🛩️ SHAHED LAUNCHED!",
   "⚡ РАЗГОН!": "⚡ SPEED UP!",
@@ -1153,15 +1137,39 @@ const I18N_EN = {
   "💵 ДАЙ! — враги оглушены на 1.5 сек": "💵 GIVE! — enemies stunned for 1.5s",
   "Командует отрядом: призывает шахедов-камикадзе, вокруг него вращаются души. Бросает душу каждые 6 сек: РЕШИМОСТЬ — взрыв по площади и 5 сек лазеры из глаз; ТЕРПЕНИЕ — замедляет врагов на 40% на 3 сек; ХРАБРОСТЬ — поджигает врагов (урон 4 сек); ЦЕЛЬНОСТЬ — оглушает врагов на 1.5 сек; УПОРСТВО — враги получают +30% урона 5 сек; ДОБРОТА — летит к союзнику, лечит на 35% и снимает стан; СПРАВЕДЛИВОСТЬ — бьёт всех врагов в радиусе. Аура: +20% урона отряду. Цена в «Столице»: 1750🪙.": "Commands the squad: summons kamikaze shaheds and orbits souls. Throws a soul every 9s: DETERMINATION — area blast + 5s of eye lasers; PATIENCE — 40% slow for 3s; BRAVERY — burn (4s); INTEGRITY — 1.5s stun; PERSEVERANCE — enemies take +30% damage for 5s; KINDNESS — flies to an ally, heals them 35% and removes stun; JUSTICE — strikes all enemies in radius. Aura: +20% squad damage. Cost in CAPITOL mode: 1750🪙.",
   "Кидает американский бюджет — взрыв по площади (сплэш, радиус 70). Кричит «ДАЙ!» каждые 6.5 сек — оглушает врагов вокруг на 1.5 сек. Аура: +25% урона всему отряду. Цена в «Столице»: 1750🪙.": "Throws the American budget — splash explosion (radius 70). Shouts \"GIVE!\" every 6.5s — stuns enemies around for 1.5s. Aura: +25% damage to the whole squad. Cost in CAPITOL mode: 1750🪙.",
-  "Награда режима «СТОЛИЦА ЗА 3 ДНЯ». Мобилизованный 50%, ZOV-спикер 49%, 🎖️ ПРЕЗИДЕНТ РОССИИ 1%.": "Reward of the \"CAPITOL IN 3 DAYS\" mode. Mobilized 50%, ZOV Speaker 49%, 🎖️ PRESIDENT OF RUSSIA 1%.",
-  "Награда режима «ДАЙТЕ ДЕНЕГ». Камера-Шахед 50%, Американская Ферма 49%, 🏛️ ПРЕЗИДЕНТ УКРАИНЫ 1%.": "Reward of the \"GIVE ME MONEY\" mode. Camera-Shahed 50%, American Farm 49%, 🏛️ PRESIDENT OF UKRAINE 1%.",
+  "Награда режима «СТОЛИЦА ЗА 3 ДНЯ». Мобилизованный 50%, ZOV-спикер 49%, 🃏 Пал Лаича 1%.": "Reward of the \"CAPITOL IN 3 DAYS\" mode. Mobilized 50%, ZOV Speaker 49%, 🃏 Pal Laicha 1%.",
+  "Награда режима «ДАЙТЕ ДЕНЕГ». Камера-Шахед 50%, Американская Ферма 49%, 💰 Зелень 1%.": "Reward of the \"GIVE ME MONEY\" mode. Camera-Shahed 50%, American Farm 49%, 💰 Zeleny 1%.",
   "%1 шт": "%1 pcs",
   "🏆 БАЗА ВРАГА ПАЛА!": "🏆 ENEMY BASE HAS FALLEN!",
   "💀 ВРЕМЯ ВЫШЛО": "💀 TIME'S UP",
   "🎖️ Военный Крейт получен!": "🎖️ Military Crate received!",
   "+10 минут эффекта: %1": "+10 min of effect: %1",
   "%1 куплен! Активируй в разделе «Вещи» 🎒": "%1 bought! Activate it in the «Items» tab 🎒",
-  "▶ АКТИВИРОВАТЬ": "▶ ACTIVATE"
+  "▶ АКТИВИРОВАТЬ": "▶ ACTIVATE",
+  "▶ СПАСАТЬ": "▶ SAVE HER",
+  "Волна": "Wave",
+  "Волна": "Wave",
+  "НОВАЯ БАЗА ИНТЕРПОЛА! Волна %1": "NEW INTERPOL BASE! Wave %1",
+  "МАМА ПТИЦА": "MOM BIRD",
+  "БАЗА ИНТЕРПОЛА (фаза %1)": "INTERPOL BASE (phase %1)",
+  "🐦 МАМА ПТИЦА СПАСЕНА!": "🐦 MOM BIRD IS SAVED!",
+  "📦 Мелстрой Крейт получен!": "📦 Melstroi Crate received!",
+  "🐦 Скуф Мел Строя спасён!": "🐦 Skuf Mel Stroy rescued!",
+  "🔒 Мелстрой Прайм скоро появится в Мелстрой Крейте!": "🔒 Melstroi Prime is coming to the Melstroi Crate next!",
+  "🫃 ПУЗО-ДАВКА!": "🫃 BELLY SLAM!",
+  "3/3 баз Интерпола": "3/3 INTERPOL bases",
+  "🐦 Птенец Мел Строя": "🐦 Mel Stroy Chick",
+  "🍕 Нарезчик Мел Строя": "🍕 Mel Stroy Slicer",
+  "🐣 Большой Птенец": "🐣 Big Chick",
+  "💸 Ярый Фанат Мел Строя": "💸 Mel Stroy Superfan",
+  "🪑 Скуф Мел Строя": "🪑 Skuf Mel Stroy",
+  "📦 Мелстрой Крейт": "📦 Melstroi Crate",
+  "Птенец мел строя: кидается во врагов тик-токами про нарезки (модель, не текст). На максимальной прокачке: урон 200, КД 0.7 сек.": "Mel Stroy chick: throws mel-stroy tik-toks at enemies (a real model, not text). Max level: 200 damage, 0.7s cooldown.",
+  "Кидается 2 видами нарезок (модели): замедляющая — сплэш и замедление врагов на 35%, поджигающая — поджог и +21% урона. На максимальной прокачке: 95 (замедляющая) / 115 (поджигающая) урона, КД 1 сек.": "Throws 2 kinds of slices (models): slowing one — splash and 35% slow; burning one — burn and +21% damage. Max level: 95 (slowing) / 115 (burning) damage, 1s cooldown.",
+  "Прыгает на врагов и давит их — урон по площади (сплэш, радиус 70). На максимальной прокачке: урон 345, КД 0.7 сек.": "Jumps on enemies and crushes them — area damage (splash, radius 70). Max level: 345 damage, 0.7s cooldown.",
+  "Кидается большими донатами (модели): 250К → 250 урона, 500К → 500, 1М → 1000, а 2М — сплэш и 1250 урона (это на максимальной прокачке). КД 1.2 сек.": "Throws big donations (models): 250K → 250 damage, 500K → 500, 1M → 1000, and 2M — splash for 1250 damage (at max level). 1.2s cooldown.",
+  "Награда за первую победу в «Спаси маму птицу». Огромный юнит 2×2 клетки давит врагов пузом — урон ×2.2 по площади + замедление 30% на 1.5 сек. На максимальной прокачке: урон 450, КД 0.4 сек.": "Reward for the first win in \"SAVE MOM BIRD\". A huge 2×2-cell unit crushes enemies with his belly — ×2.2 area damage + 30% slow for 1.5s. Max level: 450 damage, 0.4s cooldown.",
+  "Птенец Мел Строя 35%, Нарезчик Мел Строя 25%, Большой Птенец 25%, Ярый Фанат Мел Строя 14.9%. 🪑 Скуф Мел Строя — за первую победу в ивенте «Спаси маму птицу». Мелстрой Прайм — скоро.": "Mel Stroy Chick 35%, Mel Stroy Slicer 25%, Big Chick 25%, Mel Stroy Superfan 14.9%. 🪑 Skuf Mel Stroy — for the first win in the \"SAVE MOM BIRD\" event. Melstroi Prime — coming soon."
 };
 function gameLang() {
   try { return (SaveManager.data && SaveManager.data.lang === 'en') ? 'en' : 'ru'; } catch (e) { return 'ru'; }
@@ -1276,9 +1284,10 @@ const UNIT_ATK = {
   mobilCam: 'bullet', zovSpeaker: 'wave', putin: 'rocket', camShahed: 'voxel',
   amerFarm: 'cash', zelensky: 'coin',
   jellyTV: 'wave', jellyDrone: 'laser', jellyTitan: 'wave',
-  clownJoker: 'shell', mirageMagician: 'voxel', circusRingmaster: 'shell'
+  clownJoker: 'shell', mirageMagician: 'voxel', circusRingmaster: 'shell',
+  melChick: 'tiktok', melSlicer: 'slice', melBigChick: 'shell', melFan: 'donat', melSkuf: 'wave'
 };
-const UNIT_CELLS = { titanCam: [2, 1], titanTV: [2, 1], titanSpeaker: [2, 1], putin: [2, 1], zelensky: [2, 1], jellyTitan: [2, 1], circusRingmaster: [2, 1] };
+const UNIT_CELLS = { titanCam: [2, 1], titanTV: [2, 1], titanSpeaker: [2, 1], putin: [2, 1], zelensky: [2, 1], jellyTitan: [2, 1], circusRingmaster: [2, 1], melSkuf: [2, 2] };
 function unitCells(id) { return UNIT_CELLS[id] || [1, 1]; }
 function rarityGlowClass(u) {
   if (!u) return '';
@@ -1307,7 +1316,11 @@ const ABILITY_RU = {
   'jellyThrow': '🍮 Кидает липкое желе: урон по площади + замедление врагов',
   'burn': '🔥 Поджигает врагов своими попаданиями (урон огнём)',
   'hypno': '🎩 Гипно-фокус: оглушение врагов на 1.5 сек + печать удивления (+30% урона)',
-  'cannonShot': '🎪 Цирковая пушка: конфетти-залп (урон ×2.2 по площади) + оглушение, отбрасывает врагов'
+  'cannonShot': '🎪 Цирковая пушка: конфетти-залп (урон ×2.2 по площади) + оглушение, отбрасывает врагов',
+  'tiktokThrow': '📱 Кидается тик-токами про нарезки (модель, не текст)',
+  'sliceThrow': '🍕 Два вида нарезок: замедляющая (сплэш, замедление 35%) и поджигающая (+21% урона, поджог)',
+  'donatThrow': '💸 Донаты 250К/500К/1М/2М: урон ×1/×2/×4/×5, 1М и 2М бьют по площади',
+  'bellySlam': '🫃 Пузо-давка: урон ×2.2 по площади + замедление 30% на 1.5 сек'
 };
 
 const GACHA_BOXES = [
@@ -1368,7 +1381,8 @@ const UNIT_LIMITS = {
   cinegod: 1, titanCam40: 1,
   mobilCam: 10, zovSpeaker: 6, putin: 1, camShahed: 4, amerFarm: 4, zelensky: 1,
   jellyTV: 8, jellyDrone: 4, jellyTitan: 2,
-  clownJoker: 8, mirageMagician: 4, circusRingmaster: 1
+  clownJoker: 8, mirageMagician: 4, circusRingmaster: 1,
+  melChick: 6, melSlicer: 4, melBigChick: 3, melFan: 2, melSkuf: 1
 };
 function unitLimit(id) { return UNIT_LIMITS[id] || MAX_HEROES; }
 function unitBuildPrice(u) { return (u && u.frontCost != null ? u.frontCost : (RARITY_COST[u.rarity] || 100)); }
@@ -1482,7 +1496,7 @@ const UNITS = [
     desc: 'Кричит «Россия, Путин, Победа!» — враги на его полосе замедляются на 15% на 3 сек. Атакует волной с уроном по площади (сплэш, радиус 60): попадание задевает и врагов рядом с целью. Аура: +15% урона всему отряду. Награда режима «СТОЛИЦА ЗА 3 ДНЯ».',
     stats: { dmg: 80, range: 185, fireRate: 0.75, hp: 480 },
     passive: { dmgBonus: 0.15, moneyBonus: 0 }, ability: 'zovShout', splashRadius: 60 },
-  { id: 'putin', name: '🎖️ ПРЕЗИДЕНТ РОССИИ', emoji: '🎖️', rarity: 'Special', dropChance: 0.01, frontCost: 1750, rateFloor: 0.85, upCostMul: 1.6,
+  { id: 'putin', name: '🃏 Пал Лаича', emoji: '🎖️', rarity: 'Special', dropChance: 0.01, frontCost: 1750, rateFloor: 0.85, upCostMul: 1.6,
     desc: 'Командует отрядом: призывает шахедов-камикадзе, вокруг него вращаются души. Бросает душу каждые 6 сек: РЕШИМОСТЬ — взрыв по площади и 5 сек лазеры из глаз; ТЕРПЕНИЕ — замедляет врагов на 40% на 3 сек; ХРАБРОСТЬ — поджигает врагов (урон 4 сек); ЦЕЛЬНОСТЬ — оглушает врагов на 1.5 сек; УПОРСТВО — враги получают +30% урона 5 сек; ДОБРОТА — летит к союзнику, лечит на 35% и снимает стан; СПРАВЕДЛИВОСТЬ — бьёт всех врагов в радиусе. Аура: +20% урона отряду. Цена в «Столице»: 1750🪙.',
     stats: { dmg: 140, range: 230, fireRate: 0.85, hp: 1100 },
     passive: { dmgBonus: 0.2, moneyBonus: 0 }, ability: 'putinCommand', aoeRadius: 95, splashRadius: 80 },
@@ -1494,7 +1508,7 @@ const UNITS = [
     desc: 'Лучшая ферма в игре: приносит 250🪙 за волну, на максимальной прокачке — 1270🪙. Не стреляет. Награда режима «ДАЙТЕ ДЕНЕГ».',
     stats: { dmg: 0, range: 130, fireRate: 0, hp: 350 },
     passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash', cashPerWave: 250, cashGrowth: 1.5014, pureFarm: true },
-  { id: 'zelensky', name: '🏛️ ПРЕЗИДЕНТ УКРАИНЫ', emoji: '💵', rarity: 'Special', dropChance: 0.01, frontCost: 1750, rateFloor: 0.75, upCostMul: 1.6,
+  { id: 'zelensky', name: '💰 Зелень', emoji: '💵', rarity: 'Special', dropChance: 0.01, frontCost: 1750, rateFloor: 0.75, upCostMul: 1.6,
     desc: 'Кидает американский бюджет — взрыв по площади (сплэш, радиус 70). Кричит «ДАЙ!» каждые 6.5 сек — оглушает врагов вокруг на 1.5 сек. Аура: +25% урона всему отряду. Цена в «Столице»: 1750🪙.',
     stats: { dmg: 180, range: 250, fireRate: 0.75, hp: 1200 },
     passive: { dmgBonus: 0.25, moneyBonus: 0 }, ability: 'daiShout', splashRadius: 70 },
@@ -1521,7 +1535,27 @@ const UNITS = [
   { id: 'circusRingmaster', name: '🎪 Директор Цирка Спикер Мен Титан', emoji: '🎪', rarity: 'Special', dropChance: 0.001, frontCost: 2400, upCostMul: 1.6,
     desc: 'Хозяин арены: раз в 9 сек даёт цирковой залп из пушки — конфетти-взрыв (урон ×2.2 по площади) и оглушение 0.8 сек, а во 2-м режиме ещё и отбрасывает врагов назад на 70. Цена в «Столице»: 2400🪙.',
     stats: { dmg: 130, range: 200, fireRate: 0.8, hp: 1500 },
-    passive: { dmgBonus: 0.2, moneyBonus: 0 }, ability: 'cannonShot' }
+    passive: { dmgBonus: 0.2, moneyBonus: 0 }, ability: 'cannonShot' },
+  { id: 'melChick', name: '🐦 Птенец Мел Строя', emoji: '🐦', rarity: 'Special', dropChance: 0.35, frontCost: 300, rateFloor: 0.7,
+    desc: 'Птенец мел строя: кидается во врагов тик-токами про нарезки (модель, не текст). На максимальной прокачке: урон 200, КД 0.7 сек.',
+    stats: { dmg: 82, range: 175, fireRate: 1.07, hp: 300 },
+    passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'tiktokThrow' },
+  { id: 'melSlicer', name: '🍕 Нарезчик Мел Строя', emoji: '🍕', rarity: 'Special', dropChance: 0.25, frontCost: 479, rateFloor: 1.0,
+    desc: 'Кидается 2 видами нарезок (модели): замедляющая — сплэш и замедление врагов на 35%, поджигающая — поджог и +21% урона. На максимальной прокачке: 95 (замедляющая) / 115 (поджигающая) урона, КД 1 сек.',
+    stats: { dmg: 39, range: 180, fireRate: 1.52, hp: 320 },
+    passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'sliceThrow', splashRadius: 60 },
+  { id: 'melBigChick', name: '🐣 Большой Птенец', emoji: '🐣', rarity: 'Special', dropChance: 0.25, frontCost: 550, rateFloor: 0.7,
+    desc: 'Прыгает на врагов и давит их — урон по площади (сплэш, радиус 70). На максимальной прокачке: урон 345, КД 0.7 сек.',
+    stats: { dmg: 141, range: 150, fireRate: 1.07, hp: 700 },
+    passive: { dmgBonus: 0.15, moneyBonus: 0 }, ability: 'splash', splashRadius: 70 },
+  { id: 'melFan', name: '💸 Ярый Фанат Мел Строя', emoji: '💸', rarity: 'Special', dropChance: 0.149, frontCost: 800, rateFloor: 1.2,
+    desc: 'Кидается большими донатами (модели): 250К → 250 урона, 500К → 500, 1М → 1000, а 2М — сплэш и 1250 урона (это на максимальной прокачке). КД 1.2 сек.',
+    stats: { dmg: 102, range: 200, fireRate: 1.83, hp: 280 },
+    passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'donatThrow' },
+  { id: 'melSkuf', name: '🪑 Скуф Мел Строя', emoji: '🪑', rarity: 'Special', dropChance: 0.001, frontCost: 3000, rateFloor: 0.4, upCostMul: 1.6,
+    desc: 'Награда за первую победу в «Спаси маму птицу». Огромный юнит 2×2 клетки давит врагов пузом — урон ×2.2 по площади + замедление 30% на 1.5 сек. На максимальной прокачке: урон 450, КД 0.4 сек.',
+    stats: { dmg: 184, range: 130, fireRate: 0.61, hp: 1600 },
+    passive: { dmgBonus: 0.2, moneyBonus: 0 }, ability: 'bellySlam', splashRadius: 60 }
 ];
 
 function statRange(u) {
@@ -1538,7 +1572,7 @@ function statRange(u) {
 
 function unitTagData(u) {
   const atkMap = { bullet: 'Пули', ring: 'Кольцо', rocket: 'Ракеты', coin: 'Монеты',
-    wave: 'Волна', shell: 'Снаряды', laser: 'Лазер', voxel: 'Воксель' };
+    wave: 'Волна', shell: 'Снаряды', laser: 'Лазер', voxel: 'Воксель', tiktok: 'Тик-Ток', slice: 'Нарезка', donat: 'Донат' };
   const atk = UNIT_ATK[u.id];
   const tags = [];
   if (atkMap[atk]) tags.push({ k: 'atk-' + atk, label: T(atkMap[atk]) });
@@ -1548,6 +1582,9 @@ function unitTagData(u) {
   if (u.ability === 'spawner' || u.ability === 'putinCommand') tags.push({ k: 'splash', label: T('Спавнер') });
   if (u.ability === 'slow' || u.ability === 'zovShout') tags.push({ k: 'slow', label: T('Замедление') });
   if (u.ability === 'jellyThrow') { tags.push({ k: 'splash', label: T('Splash') }); tags.push({ k: 'slow', label: T('Замедление') }); }
+  if (u.ability === 'sliceThrow') { tags.push({ k: 'slow', label: T('Замедление') }); tags.push({ k: 'burn', label: T('Поджог') }); }
+  if (u.ability === 'donatThrow') tags.push({ k: 'splash', label: T('Донаты') });
+  if (u.ability === 'bellySlam') { tags.push({ k: 'splash', label: T('Splash') }); tags.push({ k: 'slow', label: T('Замедление') }); }
   if (u.ability === 'burn') tags.push({ k: 'burn', label: T('Поджог') });
   if (u.ability === 'hypno' || u.ability === 'cannonShot') tags.push({ k: 'stun', label: T('Стан') });
   if (u.ability === 'cannonShot') tags.push({ k: 'splash', label: T('Splash') });
@@ -1596,27 +1633,27 @@ const DIFFICULTIES = [
 const EVENT_DIFF = { id: 'dvizhuha', name: 'ДВИЖУХА Оборона', waves: 40, startMoney: 500, enemyHpMul: 1.55, enemySpeedMul: 1.12, rewardMul: 1.1, coinMul: 1.2, winCoins: 700 };
 
 const MAPS = [
-  { id: 'studio', name: 'Студия', theme: { bg: '#10131c', grid: '#1a2030' }, decor: ['🎬','🎥','🎤','💡','📼'],
+  { id: 'studio', name: 'Студия', theme: { bg: '#10131c', grid: '#1a2030' }, decor: ['🎬','🎥','🎤','💡','🎪'],
     scenery: 'studio',
-    waypoints: [[0,3],[7,3],[7,9],[15,9],[15,16],[23,16],[23,5],[29,5]] },
-  { id: 'zigzag', name: 'Зигзаг', theme: { bg: '#14101c', grid: '#221a30' }, decor: ['📼','🎞️','🎮','🎧'],
+    waypoints: [[0,2],[9,2],[9,8],[3,8],[3,14],[14,14],[14,6],[21,6],[21,13],[29,13]] },
+  { id: 'zigzag', name: 'Зигзаг', theme: { bg: '#14101c', grid: '#221a30' }, decor: ['🎮','🎧','📼','🎞️'],
     scenery: 'night',
-    waypoints: [[0,2],[5,2],[5,8],[10,8],[10,2],[15,2],[15,8],[20,8],[20,2],[25,2],[25,8],[29,8]] },
+    waypoints: [[0,3],[4,3],[4,10],[9,10],[9,3],[14,3],[14,10],[19,10],[19,3],[24,3],[24,10],[29,10]] },
   { id: 'spiral', name: 'Спираль', theme: { bg: '#0c161c', grid: '#16242c' }, decor: ['⚙️','🔧','🧪','📡'],
     scenery: 'night',
     waypoints: [[0,2],[27,2],[27,17],[3,17],[3,6],[23,6],[23,13],[8,13],[8,10],[18,10]] },
   { id: 'fork', name: 'Развилка', theme: { bg: '#141414', grid: '#26262a' }, decor: ['📦','🚧','🔧','🛢️'],
     scenery: 'studio',
     waypoints: [[0,5],[9,5],[9,12],[17,12],[17,5],[24,5],[24,15],[29,15]] },
-  { id: 'desert', name: 'Пустыня', theme: { bg: '#181410', grid: '#26201a' }, decor: ['🌵','🏜️','🦴','🏺'],
+  { id: 'desert', name: 'Пустыня', theme: { bg: '#181410', grid: '#26201a' }, decor: ['🏜️','🌵','🦴','🐫'],
     scenery: 'desert',
-    waypoints: [[0,10],[6,10],[6,4],[14,4],[14,15],[22,15],[22,8],[29,8]] },
+    waypoints: [[0,8],[5,8],[5,15],[12,15],[12,4],[19,4],[19,12],[24,12],[24,8],[29,8]] },
   { id: 'sewer', name: 'Канализация', theme: { bg: '#0d1a10', grid: '#1a2c1e' }, decor: ['🚽','🛠️','💧','🪣'],
     scenery: 'sewer',
     waypoints: [[0,17],[8,17],[8,10],[3,10],[3,3],[13,3],[13,11],[20,11],[20,3],[29,3]] },
-  { id: 'city', name: 'Город', theme: { bg: '#101018', grid: '#1e1e2c' }, decor: ['🏢','🚕','🗼','🚦'],
+  { id: 'city', name: 'Город', theme: { bg: '#101018', grid: '#1e1e2c' }, decor: ['🏙️','🚕','🗼','🚦'],
     scenery: 'city',
-    waypoints: [[0,0],[12,0],[12,7],[5,7],[5,13],[18,13],[18,6],[26,6],[26,17],[29,17]] },
+    waypoints: [[0,1],[8,1],[8,9],[2,9],[2,16],[12,16],[12,8],[20,8],[20,16],[29,16]] },
   { id: 'front', name: 'Фронт', theme: { bg: '#253015', grid: '#333f1c' }, decor: ['🔥','🏚️','💥'], scenery: 'front', eventMap: true,
     waypoints: [[0,4],[6,4],[6,9],[12,9],[12,14],[19,14],[19,6],[25,6],[25,12],[29,12]] }
 ];
@@ -1666,6 +1703,7 @@ const SaveManager = {
       selectedMap: 'studio',
       lang: 'ru',
       soundOn: true,
+      musicOn: true,
       endlessRecord: 0,
       codes: [],
       autoSkip: false,
@@ -1674,6 +1712,9 @@ const SaveManager = {
       items: {},
       potions: { luck: 0, coins: 0 },
       quests: null,
+      melWins: 0,
+      melSkufUnlocked: false,
+      melPrimeReady: false,
       autoSell: {
         'Common': true, 'Uncommon': true, 'Rare': false,
         'Epic': false, 'Legendary': false, 'Mythic': false, 'Godly': false
@@ -1705,17 +1746,23 @@ const SaveManager = {
       if (typeof this.data.potions.luck !== 'number') this.data.potions.luck = 0;
       if (typeof this.data.potions.coins !== 'number') this.data.potions.coins = 0;
       if (this.data.quests !== null && (typeof this.data.quests !== 'object' || Array.isArray(this.data.quests))) this.data.quests = null;
+      if (typeof this.data.melWins !== 'number') this.data.melWins = 0;
+      if (typeof this.data.melSkufUnlocked !== 'boolean') this.data.melSkufUnlocked = false;
+      if (typeof this.data.melPrimeReady !== 'boolean') this.data.melPrimeReady = false;
     } catch (e) { this.data = this.defaults(); }
     this.soundOn = !!this.data.soundOn;
+    this.musicOn = this.data.musicOn !== false;
     return this.data;
   },
   save() {
     this.data.soundOn = this.soundOn;
+    this.data.musicOn = this.musicOn;
     try { localStorage.setItem(this.KEY, JSON.stringify(this.data)); } catch (e) {}
   },
   reset() {
     this.data = this.defaults();
     this.soundOn = true;
+    this.musicOn = true;
     this.save();
   },
   get coins() { return this.data.coins; },
@@ -1817,17 +1864,20 @@ const SaveManager = {
 
 const SHOP_CRATES = [
   { id: 'militaryCrate', name: '🎖️ Военный Крейт', emoji: '🎖️', cost: 0, color: '#7fa65c', eventOnly: true,
-    desc: 'Награда режима «СТОЛИЦА ЗА 3 ДНЯ». Мобилизованный 50%, ZOV-спикер 49%, 🎖️ ПРЕЗИДЕНТ РОССИИ 1%.',
+    desc: 'Награда режима «СТОЛИЦА ЗА 3 ДНЯ». Мобилизованный 50%, ZOV-спикер 49%, 🃏 Пал Лаича 1%.',
     units: ['mobilCam', 'zovSpeaker', 'putin'] },
   { id: 'budgetCrate', name: '📦 Малобюджетный Крейт', emoji: '📦', cost: 0, color: '#7ec8a0', eventOnly: true,
-    desc: 'Награда режима «ДАЙТЕ ДЕНЕГ». Камера-Шахед 50%, Американская Ферма 49%, 🏛️ ПРЕЗИДЕНТ УКРАИНЫ 1%.',
+    desc: 'Награда режима «ДАЙТЕ ДЕНЕГ». Камера-Шахед 50%, Американская Ферма 49%, 💰 Зелень 1%.',
     units: ['camShahed', 'amerFarm', 'zelensky'] },
   { id: 'jellyCrate', name: '🍮 Желейный Крейт', emoji: '🍮', cost: 1500, color: '#7dff9e',
     desc: 'Желейный ТВ Мен 69.9%, Желейный Камера Дрон 39.1%, Желе Титан ТВ Мен 0.1%. Из желейного мира.',
     units: ['jellyTV', 'jellyDrone', 'jellyTitan'] },
   { id: 'circusCrate', name: '🎪 Цирк Ужасов', emoji: '🎪', cost: 1500, color: '#ff9ade',
     desc: 'Джокер Спикер Мен 69.9%, Фокусник Мираж Камера Мен 30%, Директор Цирка Спикер Мен Титан 0.1%. Из цирка ужасов.',
-    units: ['clownJoker', 'mirageMagician', 'circusRingmaster'] }
+    units: ['clownJoker', 'mirageMagician', 'circusRingmaster'] },
+  { id: 'melCrate', name: '📦 Мелстрой Крейт', emoji: '📦', cost: 2000, color: '#ffd966',
+    desc: 'Птенец Мел Строя 35%, Нарезчик Мел Строя 25%, Большой Птенец 25%, Ярый Фанат Мел Строя 14.9%. 🪑 Скуф Мел Строя — за первую победу в ивенте «Спаси маму птицу». Мелстрой Прайм — скоро.',
+    units: ['melChick', 'melSlicer', 'melBigChick', 'melFan'] }
 ];
 
 const POTIONS = [
@@ -1948,6 +1998,11 @@ class SoundManager {
       try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
     }
     if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+    if (this.ctx) {
+      try {
+        if (typeof Music !== 'undefined') { Music.init(); if (SaveManager.musicOn) Music.start(); }
+      } catch (e) {}
+    }
   }
   get enabled() { return SaveManager.soundOn; }
   _beep(freq, dur, type, vol, delay) {
@@ -2030,6 +2085,100 @@ class SoundManager {
   loseLife() { this._beep(150, 0.25, 'sawtooth', 0.06); }
 }
 const Sound = new SoundManager();
+
+class MusicManager {
+  constructor() { this.ctx = null; this.timer = null; this.step = 0; this.next = 0; this._out = null; }
+  init() {
+    if (!this.ctx) {
+      try {
+        this.ctx = (typeof Sound !== 'undefined' && Sound.ctx) ? Sound.ctx : new (window.AudioContext || window.webkitAudioContext)();
+      } catch (e) {}
+    }
+    if (this.ctx && this.ctx.state === 'suspended') { try { this.ctx.resume(); } catch (e) {} }
+  }
+  get enabled() { return SaveManager.musicOn; }
+  _connect() {
+    if (!this._out && this.ctx.createGain) {
+      try {
+        this._out = this.ctx.createGain();
+        this._out.gain.value = 1;
+        this._out.connect(this.ctx.destination);
+      } catch (e) { this._out = null; }
+    }
+  }
+  _note(freq, t, dur, type, vol) {
+    const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+    o.type = type || 'triangle';
+    o.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol || 0.04, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(this._out);
+    o.start(t); o.stop(t + dur + 0.03);
+  }
+  _kick(t) {
+    const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(120, t);
+    o.frequency.exponentialRampToValueAtTime(38, t + 0.12);
+    g.gain.setValueAtTime(0.11, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
+    o.connect(g); g.connect(this._out);
+    o.start(t); o.stop(t + 0.17);
+  }
+  _hat(t) {
+    const sr = this.ctx.sampleRate || 44100;
+    const len = Math.max(1, Math.floor(sr * 0.05));
+    const buf = this.ctx.createBuffer(1, len, sr);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf;
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(0.03, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+    src.connect(g); g.connect(this._out);
+    src.start(t);
+  }
+  start() {
+    if (!this.enabled || this.timer) return;
+    this.init();
+    this._connect();
+    if (!this.ctx || !this._out) return;
+    this.step = 0;
+    this.next = this.ctx.currentTime + 0.08;
+    this.timer = setInterval(() => this._tick(), 90);
+  }
+  stop() {
+    if (this.timer) { clearInterval(this.timer); this.timer = null; }
+  }
+  _tick() {
+    if (!this.enabled || !this.ctx || !this._out || !this.ctx.createOscillator) { this.stop(); return; }
+    try {
+      const stepDur = 0.15;
+      while (this.next < this.ctx.currentTime + 0.3) {
+        this._schedule(this.step % 64, this.next);
+        this.step++;
+        this.next += stepDur;
+      }
+    } catch (e) { this.stop(); }
+  }
+  _schedule(s, t) {
+    const roots = [110, 87.31, 130.81, 98];
+    const chords = [[1, 1.189, 1.498], [1, 1.26, 1.5], [1, 1.189, 1.498], [1, 1.26, 1.5]];
+    const ci = (s >> 4) & 3;
+    const r = roots[ci], ch = chords[ci];
+    if (s % 8 === 0) this._note(r / 2, t, 0.34, 'sawtooth', 0.035);
+    if (s % 8 === 4) this._note(r / 2 * 1.5, t, 0.26, 'sawtooth', 0.028);
+    if (s % 4 === 0) this._kick(t);
+    if (s % 8 === 4) this._hat(t);
+    const ratios = [1, ch[1], ch[2], 2];
+    const arp = [0, 1, 2, 1, 0, 1, 2, 3][s % 8];
+    this._note(r * 2 * ratios[arp], t, 0.12, 'triangle', 0.024);
+    if (s % 16 === 12) this._note(r * 3, t, 0.2, 'triangle', 0.02);
+  }
+}
+const Music = new MusicManager();
 
 /* ============================================================
    4) КАРТА
@@ -2498,6 +2647,47 @@ UF_TABLE.circusRingmaster = [
   ["R", -16, -156, 32, 6, 2, "#ffd966"]
 ];
 UF_TABLE.amerFarm = UF_TABLE.scientist || UF_TABLE.makeup;UF_TABLE.amerFarm = UF_TABLE.scientist || UF_TABLE.makeup;
+UF_TABLE.melChick = [["L",-10,40,-14,54,"#ff9f4d",3],["L",10,40,14,54,"#ff9f4d",3],
+  ["E",0,-8,28,30,"#ffe36e"],["GE",0,4,20,16,"#fff7d0","#ffe36e"],
+  ["C",0,-46,20,"#ffe36e"],
+  ["C",-4,-68,5,"#ff9f4d"],["C",4,-70,5,"#ff9f4d"],
+  ["P",0,-44,12,-40,0,-36,"#ff9f4d"],
+  ["C",-8,-50,3,"#0d1118"],["C",8,-50,3,"#0d1118"],["C",-7,-51,1,"#ffffff"],["C",9,-51,1,"#ffffff"],
+  ["C",-14,-42,2.5,"#ffab7a"],["C",14,-42,2.5,"#ffab7a"],
+  ["E",-28,-14,8,14,"#ffcf4d"],["E",28,-14,8,14,"#ffcf4d"],
+  ["R",20,-16,12,16,3,"#232b3d"],["R",21.5,-14.5,9,11,1.5,"#7ec8ff"],["T",26,-9,6,"#2537a8","♪"]];
+UF_TABLE.melSlicer = [["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],
+  ["R",-30,-40,60,64,12,"#d84f2a"],["RG",-26,-30,52,40,8,"#f08a3c","#d86a2c"],
+  ["L",-16,-38,-10,-10,"#f8e0b0",3],["L",16,-38,10,-10,"#f8e0b0",3],
+  ["C",0,-64,18,"#ffcf4d"],["AE",0,-64,18,18,"#e8a84c",4],
+  ["C",-7,-68,3,"#d84f2a"],["C",6,-60,3,"#d84f2a"],["C",0,-72,2.5,"#d84f2a"],
+  ["C",-8,-69,1.2,"#0d1118"],["C",7,-61,1.2,"#0d1118"],
+  ["R",-15,-92,30,14,4,"#f4f4f4"],["GE",0,-98,17,11,"#ffffff","#e8e8e8"],
+  ["L",30,-26,48,-44,"#c0c8d8",4],["R",26,-22,10,6,2,"#39445e"]];
+
+UF_TABLE.melBigChick = [["L",-16,34,-24,54,"#ff9f4d",5],["L",16,34,24,54,"#ff9f4d",5],
+  ["E",0,-4,38,36,"#ffc63e"],["E",-36,-20,12,20,"#e8a82c"],["E",36,-20,12,20,"#e8a82c"],
+  ["C",0,-52,26,"#ffd93e"],
+  ["C",-5,-80,6,"#ff9f4d"],["C",5,-82,6,"#ff9f4d"],
+  ["P",0,-46,16,-40,0,-34,"#ff9f4d"],
+  ["C",-10,-58,4,"#0d1118"],["C",10,-58,4,"#0d1118"],["C",-11,-59,1.4,"#ffffff"],["C",11,-59,1.4,"#ffffff"],
+  ["L",-18,-66,-6,-62,"#0d1118",2.5],["L",18,-66,6,-62,"#0d1118",2.5],
+  ["C",-16,-46,3,"#ffab7a"],["C",16,-46,3,"#ffab7a"]];
+UF_TABLE.melFan = [["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],["R",-21,44,19,10,4,"#0e1219"],["R",2,44,19,10,4,"#0e1219"],
+  ["R",-30,-40,60,64,12,"#39445e"],["R",-30,-40,60,30,12,"#4e5b78"],
+  ["S",-30,-40,60,64,12,"rgba(8,12,18,0.55)",3],
+  ["R",-15,-96,30,46,6,"#1a2130"],["R",-13,-92,26,34,4,"#0d1118"],["C",0,-76,7,"#7ec8ff"],["C",0,-76,3,"#0d1118"],
+  ["R",-20,-52,40,10,4,"#7d5fd8"],["R",-24,-46,10,22,4,"#6a48c8"],["R",14,-46,10,22,4,"#6a48c8"],
+  ["L",32,-20,50,-32,"#444d66",3],["R",42,-48,22,16,3,"#7dff9e"],["T",53,-40,8,"#1e5c30","$"],
+  ["L",-32,-20,-48,-36,"#444d66",3],["R",-58,-52,22,16,2,"#ffd93e"],["T",-47,-44,7,"#e0483e","!"]];
+UF_TABLE.melSkuf = [["R",-20,26,14,26,5,"#2c3040"],["R",6,26,14,26,5,"#2c3040"],
+  ["R",-26,48,20,10,4,"#0e1219"],["R",6,48,20,10,4,"#0e1219"],
+  ["E",0,-24,40,38,"#3d4c6e"],["GE",0,2,30,22,"#56688f","#3d4c6e"],
+  ["R",-30,6,60,26,8,"#5a4632"],["R",-30,2,60,8,3,"#232b3d"],
+  ["C",0,-78,20,"#e8b88a"],["E",0,-92,18,11,"#e8b88a"],
+  ["E",0,-64,12,7,"#7a5c3e"],["E",0,-60,9,4,"#8a6a4a"],
+  ["C",-8,-80,2.5,"#0d1118"],["C",8,-80,2.5,"#0d1118"],["C",-7,-81,1,"#ffffff"],["C",9,-81,1,"#ffffff"],
+  ["R",-6,-30,14,18,3,"#232b3d"],["R",-4.5,-27,11,12,2,"#7ec8ff"]];
 const UF_SCALE = {
   intern: 0.92, makeup: 0.95, scientist: 0.98, streamer: 1.0, speaker: 1.02,
   operator: 1.04, steadicam: 1.06, snipercam: 1.06, hacker: 1.06, dronepilot: 1.06,
@@ -2506,7 +2696,8 @@ const UF_SCALE = {
   mobilCam: 1.0, zovSpeaker: 1.15, putin: 1.35, camShahed: 0.92,
   amerFarm: 1.1, zelensky: 1.35,
   jellyTV: 1.1, jellyDrone: 1.0, jellyTitan: 1.42,
-  clownJoker: 1.02, mirageMagician: 1.08, circusRingmaster: 1.42
+  clownJoker: 1.02, mirageMagician: 1.08, circusRingmaster: 1.42,
+  melChick: 1.0, melSlicer: 1.05, melBigChick: 1.3, melFan: 1.0, melSkuf: 1.42
 };
 /* ============================================================
    5) ЮНИТ (ГЕРОЙ)
@@ -2529,7 +2720,7 @@ class Hero {
     this.angle = -Math.PI / 2;
     this.targetMode = 'first';
     this.shootAnim = 0;
-    this.tvGlowT = 0; this.slashT = 0; this.slashR = 0; this.sumT = 6;
+    this.tvGlowT = 0; this.slashT = 0; this.slashR = 0; this.slamT = 0; this.sumT = 6;
     this.stunTimer = 0;
     this.antistanUntil = 0;
     this.atkKind = UNIT_ATK[this.unitId] || 'bullet';
@@ -2545,8 +2736,8 @@ class Hero {
     this.isHero = true;
     this.ability = unit.ability;
     this.abilityMaxCd = unit.ability === 'speedBoost' ? 12 : (unit.ability === 'aoeBurst' ? 15 :
-      (unit.ability === 'stun' ? 10 : (unit.ability === 'antistan' ? 12 : (unit.ability === 'spawner' ? 13 : (unit.ability === 'putinCommand' ? 6 : (unit.ability === 'jellyThrow' ? (unit.jellyCd || 3) : (unit.ability === 'hypno' ? 8 : (unit.ability === 'cannonShot' ? 9 : 999))))))));
-    this.aoe = (unit.ability === 'splash' || unit.ability === 'zovShout' || unit.ability === 'daiShout' || unit.ability === 'putinCommand' || unit.ability === 'jellyThrow') ? (unit.splashRadius || 50) : 0;
+      (unit.ability === 'stun' ? 10 : (unit.ability === 'antistan' ? 12 : (unit.ability === 'spawner' ? 13 : (unit.ability === 'putinCommand' ? 6 : (unit.ability === 'jellyThrow' ? (unit.jellyCd || 3) : (unit.ability === 'hypno' ? 8 : (unit.ability === 'cannonShot' ? 9 : (unit.ability === 'bellySlam' ? 2.5 : 999)))))))));
+    this.aoe = (unit.ability === 'splash' || unit.ability === 'zovShout' || unit.ability === 'daiShout' || unit.ability === 'putinCommand' || unit.ability === 'jellyThrow' || unit.ability === 'bellySlam') ? (unit.splashRadius || 50) : 0;
     this.burstRadius = (unit.ability === 'aoeBurst') ? (unit.aoeRadius || 45) : 0;
     this.stunPower = unit.abilityPower || 1.4;
     this.moneyBonus = unit.passive.moneyBonus || 0;
@@ -2621,6 +2812,7 @@ class Hero {
     if (this.shootAnim > 0) this.shootAnim -= dt;
     if (this.tvGlowT > 0) this.tvGlowT -= dt;
     if (this.slashT > 0) this.slashT -= dt;
+    if (this.slamT > 0) this.slamT -= dt;
     for (let i = this._boostTargets.length - 1; i >= 0; i--) {
       const item = this._boostTargets[i];
       item.timer -= dt;
@@ -2702,6 +2894,23 @@ class Hero {
           }
         }
       }
+      if (this.ability === 'bellySlam') {
+        this.pulseCd -= dt;
+        if (this.pulseCd <= 0) {
+          this.pulseCd = 2.5;
+          this.slamT = 0.5;
+          let sn = 0;
+          for (const e of this.game.enemies) {
+            if (e.hp <= 0 || e.reachedEnd) continue;
+            if (dist(this.x, this.y, e.x, e.y) <= this.aoe + 30) { e.takeDamage(this.damage * 2.2); e.applySlow(1.5, 0.7); sn++; }
+          }
+          if (sn) {
+            this.game.explosions.push({ x: this.x, y: this.y, r: 0, maxR: this.aoe + 30, life: 0.4, maxLife: 0.4, rgb: '255,217,160' });
+            this.game.floaters.push({ x: this.x, y: this.y - 56, text: T('🫃 ПУЗО-ДАВКА!'), life: 1.2, maxLife: 1.2, color: '#ffd9a0' });
+            Sound.explosion();
+          }
+        }
+      }
       if (this.ability === 'putinCommand') {
         this.soulAngle += dt * 2.2;
         this.sumT -= dt;
@@ -2761,8 +2970,21 @@ class Hero {
       this.cooldown = this.fireRate;
       Sound.shoot(this.atkKind);
     } else {
+      let pdmg = this.damage, prr = this.aoe;
+      if (this.unit.ability === 'sliceThrow') {
+        this.sliceFire = Math.random() < 0.5;
+        if (this.sliceFire) pdmg = this.damage * 1.21;
+        prr = this.unit.splashRadius || 60;
+      }
+      if (this.unit.ability === 'donatThrow') {
+        const tiers = [1, 2, 4, 5];
+        this.donatTier = tiers[Math.floor(Math.random() * tiers.length)];
+        pdmg = this.damage * this.donatTier;
+        prr = this.donatTier >= 5 ? 90 : (this.donatTier >= 4 ? 70 : 0);
+      }
+      this.kindOverride = (this.unit.ability === 'sliceThrow') ? 'slice' : ((this.unit.ability === 'donatThrow') ? 'donat' : null);
       this.shootAnim = 0.14;
-      this.game.projectiles.push(new Projectile(this.game, this.x, this.y, target, this.damage, this.aoe, this));
+      this.game.projectiles.push(new Projectile(this.game, this.x, this.y, target, pdmg, prr, this));
       this.cooldown = this.fireRate;
       Sound.shoot(this.atkKind);
     }
@@ -2939,6 +3161,12 @@ class Hero {
       ctx.beginPath(); ctx.arc(x, y + bob, 60 * kk2, sw - 0.9, sw);
       ctx.strokeStyle = 'rgba(255,255,255,' + (0.85 * (1 - sp)).toFixed(3) + ')'; ctx.lineWidth = 3.5; ctx.stroke();
       ctx.restore();
+    }
+    if (this.unit.ability === 'bellySlam' && this.slamT > 0) {
+      const kk3 = size / 150 * 2.2 * (UF_SCALE[this.unit.id] || 1);
+      const ba = Math.max(0, this.slamT / 0.5);
+      ctx.fillStyle = 'rgba(255,217,160,' + (0.4 * ba).toFixed(3) + ')';
+      ctx.beginPath(); ctx.arc(x, y + bob, (this.aoe + 30) * kk3 * 0.22 * (1.5 - ba * 0.5), 0, Math.PI * 2); ctx.fill();
     }
     ctx.save(); ctx.translate(x, y + bob); ctx.rotate(this.angle);
     const rec = this.shootAnim > 0 ? -7 * (this.shootAnim / 0.14) : 0;
@@ -3317,7 +3545,8 @@ class Projectile {
     this.damage = damage;
     this.aoe = aoe || 0;
     this.owner = owner || null;
-    this.kind = owner ? owner.atkKind : 'bullet';
+    this.kind = (owner && owner.kindOverride) ? owner.kindOverride : (owner ? owner.atkKind : 'bullet');
+    this.sliceFire = !!(owner && owner.sliceFire);
     this.alive = true;
     this.trail = [];
     this.angle = 0;
@@ -3329,7 +3558,10 @@ class Projectile {
       coin: { speed: 320, r: 5, color: '#ffd93e' },
       rocket: { speed: 280, r: 5.5, color: '#ff8844' },
       wave: { speed: 420, r: 7, color: '#b06bff' },
-      voxel: { speed: 340, r: 5, color: '#57ff9a' }
+      voxel: { speed: 340, r: 5, color: '#57ff9a' },
+      tiktok: { speed: 360, r: 5, color: '#7ec8ff' },
+      slice: { speed: 420, r: 6, color: '#ffb347' },
+      donat: { speed: 300, r: 6.5, color: '#7dff9e' }
     };
     const c = cfg[this.kind] || cfg.bullet;
     this.speed = c.speed; this.radius = c.r; this.color = c.color;
@@ -3357,6 +3589,8 @@ class Projectile {
           e.takeDamage(this.damage);
           if (this.owner && (this.owner.ability === 'slow' || this.owner.ability === 'zovShout')) e.applySlow(1.0, this.owner.ability === 'zovShout' ? 0.85 : (this.owner.unit && this.owner.unit.slowOnHit ? 1 - this.owner.unit.slowOnHit : 0.72));
           if (this.owner && this.owner.ability === 'burn') { e.burnT = 3; e.burnDps = this.owner.damage * (this.owner.unit.burnOnHit || 0.35); e.burnTick = 0.5; }
+          if (this.owner && this.owner.sliceFire) { e.burnT = 2.5; e.burnDps = this.damage * 0.25; e.burnTick = 0.5; }
+          if (this.owner && this.owner.unit.ability === 'sliceThrow' && !this.owner.sliceFire) e.applySlow(2.5, 0.65);
         }
       }
       this.game.explosions.push({ x: tx, y: ty, r: 0, maxR: this.aoe, life: 0.25, maxLife: 0.25, rgb: '255,150,60' });
@@ -3364,7 +3598,10 @@ class Projectile {
     } else {
       this.target.takeDamage(this.damage);
       if (this.owner && (this.owner.ability === 'slow' || this.owner.ability === 'zovShout')) this.target.applySlow(1.0, this.owner.ability === 'zovShout' ? 0.85 : (this.owner.unit && this.owner.unit.slowOnHit ? 1 - this.owner.unit.slowOnHit : 0.72));
-      if (this.owner && this.owner.ability === 'burn') { this.target.burnT = 3; this.target.burnDps = this.owner.damage * (this.owner.unit.burnOnHit || 0.35); this.target.burnTick = 0.5; } this.game.explosions.push({ x: this.target.x, y: this.target.y, r: 0, maxR: 30, life: 0.3, maxLife: 0.3, rgb: '255,140,60' });
+      if (this.owner && this.owner.ability === 'burn') { this.target.burnT = 3; this.target.burnDps = this.owner.damage * (this.owner.unit.burnOnHit || 0.35); this.target.burnTick = 0.5; }
+      if (this.owner && this.owner.sliceFire) { this.target.burnT = 2.5; this.target.burnDps = this.damage * 0.25; this.target.burnTick = 0.5; }
+      if (this.owner && this.owner.unit.ability === 'sliceThrow' && !this.owner.sliceFire) this.target.applySlow(2.5, 0.65);
+      this.game.explosions.push({ x: this.target.x, y: this.target.y, r: 0, maxR: 30, life: 0.3, maxLife: 0.3, rgb: '255,140,60' });
       if (this.kind === 'coin') Sound.coinSnd();
       else if (this.kind === 'laser') { Sound.laser(); this.game.beams.push({ x1: this.ox, y1: this.oy, x2: this.target.x, y2: this.target.y, life: 0.16, color: this.color }); }
       else Sound.hit();
@@ -3406,6 +3643,22 @@ class Projectile {
       ctx.translate(this.x, this.y); ctx.rotate(this.angle + 0.7);
       ctx.fillStyle = this.color; ctx.fillRect(-this.radius, -this.radius, this.radius * 2, this.radius * 2);
       ctx.strokeStyle = '#ffffffbb'; ctx.lineWidth = 1; ctx.strokeRect(-this.radius, -this.radius, this.radius * 2, this.radius * 2);
+    } else if (this.kind === 'tiktok') {
+      ctx.translate(this.x, this.y); ctx.rotate(this.angle);
+      ctx.fillStyle = '#232b3d'; ctx.beginPath(); ctx.roundRect(-6, -10, 12, 20, 2); ctx.fill();
+      ctx.fillStyle = this.color; ctx.fillRect(-4.5, -8, 9, 14);
+      ctx.fillStyle = '#2537a8'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('♪', 0, 1);
+    } else if (this.kind === 'slice') {
+      ctx.translate(this.x, this.y); ctx.rotate(this.angle);
+      ctx.beginPath(); ctx.moveTo(-8, -5); ctx.lineTo(9, 0); ctx.lineTo(-8, 5); ctx.closePath();
+      ctx.fillStyle = this.sliceFire ? '#ff6b4d' : '#ffb347'; ctx.fill();
+      ctx.fillStyle = '#ffe9b0'; ctx.beginPath(); ctx.arc(-4, 0, 2.2, 0, Math.PI * 2); ctx.fill();
+    } else if (this.kind === 'donat') {
+      ctx.translate(this.x, this.y); ctx.rotate(this.angle);
+      ctx.fillStyle = '#7dff9e'; ctx.beginPath(); ctx.roundRect(-9, -5, 18, 10, 2); ctx.fill();
+      ctx.fillStyle = '#1e5c30'; ctx.font = 'bold 8px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('$', 0, 0.5);
     } else if (this.kind === 'rocket') {
       ctx.translate(this.x, this.y); ctx.rotate(this.angle);
       ctx.fillStyle = this.color;
@@ -5481,7 +5734,7 @@ const App = {
     document.getElementById('resultsOverlay').classList.remove('visible');
     UI.showScreen('eventFrontScreen');
     this.lobby.stop();
-    this.frontGame.start();
+    this.frontGame.start(true);
   },
   showEventScreen() {
     this.lobby.stop();
@@ -5490,7 +5743,7 @@ const App = {
   },
   repeatRun() {
     document.getElementById('resultsOverlay').classList.remove('visible');
-    if (this.lastRunMode === 'capital') { UI.showScreen('eventFrontScreen'); this.frontGame.start(); return; }
+    if (this.lastRunMode === 'capital') { UI.showScreen('eventFrontScreen'); this.frontGame.start(true); return; }
     if (this.lastRunMode === 'defense') { this.startEventDefense(); return; }
     this.startRun();
   },
@@ -5503,6 +5756,11 @@ const App = {
     const btn = document.getElementById('btnToggleSound');
     btn.textContent = SaveManager.soundOn ? T('ВКЛ') : T('ВЫКЛ');
     btn.classList.toggle('accent', SaveManager.soundOn);
+    const mbtn = document.getElementById('btnToggleMusic');
+    if (mbtn) {
+      mbtn.textContent = SaveManager.musicOn ? T('ВКЛ') : T('ВЫКЛ');
+      mbtn.classList.toggle('accent', SaveManager.musicOn);
+    }
     const lb = document.getElementById('btnLang');
     if (lb) lb.textContent = (SaveManager.data.lang === 'en') ? '🌐 English' : '🌐 Русский';
     const admRow = document.getElementById('adminRow');
@@ -5556,16 +5814,16 @@ const App = {
     for (const pt of POTIONS) {
       const cCol = pt.id === 'luck' ? '#d9b0ff' : '#ffe08a';
       const card = document.createElement('div');
-      card.className = 'shop-card';
+      card.className = 'unit-card';
       card.style.borderColor = pt.id === 'luck' ? '#8a5fbf' : '#a88a2a';
       card.innerHTML = `
         <div class="crate-emoji" style="text-shadow:0 0 18px ${cCol}88">${pt.emoji}</div>
         <div class="u-name" style="color:${cCol}">${T(pt.name)}</div>
         <div class="u-desc">${T(pt.desc)}</div>
-        <div class="shop-price"><span id="potionTimer-${pt.id}" style="color:#7fffa0;font-weight:800"></span>💎 ${pt.cost}</div>
+        <div class="crate-price"><span id="potionTimer-${pt.id}" style="color:#7fffa0;font-weight:800"></span>💎 ${pt.cost}</div>
         <div class="u-actions"></div>`;
       const buy = document.createElement('button');
-      buy.className = 'shop-buy' + (SaveManager.potionActive(pt.id) ? ' alt' : '');
+      buy.className = 'btn small ' + (SaveManager.potionActive(pt.id) ? 'accent' : 'gold');
       const wasActive = SaveManager.potionActive(pt.id);
       buy.textContent = T(wasActive ? '🔁 ПРОДЛИТЬ (+10 МИН)' : '💊 КУПИТЬ ЗЕЛЬЕ');
       buy.addEventListener('click', () => {
@@ -5588,17 +5846,17 @@ const App = {
     for (const c of SHOP_CRATES) {
       if (c.eventOnly) continue;
       const card = document.createElement('div');
-      card.className = 'shop-card crate-card';
+      card.className = 'unit-card crate-card';
       card.style.borderColor = c.color;
       card.innerHTML = `
         <div class="crate-emoji" style="text-shadow:0 0 18px ${c.color}88">${c.emoji}</div>
         <div class="u-name" style="color:${c.color}">${T(c.name)}</div>
         <div class="u-desc">${T(c.desc)}</div>
         <div class="crate-pool">${this.cratePoolHTML(c)}</div>
-        <div class="shop-price">💎 ${c.cost}</div>
+        <div class="crate-price">💎 ${c.cost}</div>
         <div class="u-actions"></div>`;
       const buy = document.createElement('button');
-      buy.className = 'shop-buy';
+      buy.className = 'btn small gold';
       buy.textContent = T('КУПИТЬ КРЕЙТ');
       buy.addEventListener('click', () => {
         if (SaveManager.crystals < c.cost) {
@@ -5843,6 +6101,13 @@ const App = {
       this.renderSettings();
       UI.toast(SaveManager.soundOn ? T('Звук включён') : T('Звук выключен'));
     });
+    document.getElementById('btnToggleMusic').addEventListener('click', () => {
+      SaveManager.musicOn = !SaveManager.musicOn;
+      SaveManager.save();
+      try { if (SaveManager.musicOn) { Music.init(); Music.start(); } else { Music.stop(); } } catch (e) {}
+      this.renderSettings();
+      UI.toast(SaveManager.musicOn ? T('Музыка включена') : T('Музыка выключена'));
+    });
     document.getElementById('btnLang').addEventListener('click', () => {
       SaveManager.data.lang = (SaveManager.data.lang === 'en') ? 'ru' : 'en';
       SaveManager.save();
@@ -5937,6 +6202,64 @@ const FRONT_LANES = [190, 320, 450];
 const FRONT_BASE_COST = { Common: 80, Uncommon: 110, Rare: 160, Epic: 220, Special: 300, Legendary: 360, Mythic: 480, Godly: 640, Ultimate: 820 };
 const FRONT_OUR_X = 60, FRONT_BASE_X = 1200, FRONT_ENEMY_SPAWN_X = 1330, FRONT_REACH_X = 1108;
 
+const MEL_WAVE_TIME = 8, MEL_TOTAL_WAVES = 70;
+const MEL_PHASES = [
+  { waves: 15, baseHp: 1500, dmgPerWave: 100, hpMul: 1.0, spdMul: 1.0 },
+  { waves: 20, baseHp: 2000, dmgPerWave: 100, hpMul: 1.7, spdMul: 1.15 },
+  { waves: 35, baseHp: 3500, dmgPerWave: 100, hpMul: 2.8, spdMul: 1.35 }
+];
+
+function drawFrontBirdBase(ctx) {
+  ctx.save();
+  ctx.translate(FRONT_OUR_X, 320);
+  ctx.fillStyle = '#6b5232';
+  ctx.beginPath(); ctx.ellipse(0, 26, 48, 20, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#8a6c40';
+  ctx.beginPath(); ctx.ellipse(0, 20, 40, 15, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#f5f0e6';
+  ctx.beginPath(); ctx.ellipse(0, -6, 34, 30, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(0, -34, 16, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#ff9f4d';
+  ctx.beginPath(); ctx.moveTo(14, -34); ctx.lineTo(30, -30); ctx.lineTo(14, -26); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#1a1a1a';
+  ctx.beginPath(); ctx.arc(-6, -38, 3.2, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(6, -38, 3.2, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 1.6;
+  ctx.beginPath(); ctx.arc(0, -29, 5, Math.PI * 0.25, Math.PI * 0.75); ctx.stroke();
+  ctx.fillStyle = 'rgba(126,231,255,0.35)';
+  ctx.beginPath(); ctx.ellipse(-24, 2, 9, 14, 0.3, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(24, 2, 9, 14, -0.3, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#fdf6da';
+  ctx.beginPath(); ctx.ellipse(-22, 42, 7, 12, 0.4, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(22, 42, 7, 12, -0.4, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+function drawFrontInterpolBase(ctx, phase) {
+  ctx.save();
+  ctx.translate(FRONT_BASE_X, 320);
+  const wallC = ['#3a4152', '#332b45', '#2c2738'][phase] || '#3a4152';
+  const topC = ['#4e5870', '#463d5e', '#3d3550'][phase] || '#4e5870';
+  ctx.fillStyle = wallC;
+  ctx.beginPath(); ctx.roundRect(-64, -96, 128, 196, 8); ctx.fill();
+  ctx.fillStyle = topC; ctx.fillRect(-72, -112, 144, 20);
+  ctx.fillStyle = '#1c2029';
+  for (let i = -4; i <= 4; i++) ctx.fillRect(i * 16 - 4, -130, 8, 18);
+  ctx.fillStyle = '#161a24'; ctx.fillRect(-16, 26, 32, 74);
+  ctx.fillStyle = 'rgba(255,207,122,0.18)';
+  for (let i = -2; i <= 2; i++) ctx.fillRect(i * 24 - 6, -70, 12, 18);
+  ctx.fillStyle = '#25406e';
+  ctx.fillRect(-3, -188, 6, 76);
+  ctx.beginPath(); ctx.moveTo(3, -188); ctx.lineTo(44, -174); ctx.lineTo(3, -160); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#2537a8';
+  ctx.beginPath(); ctx.arc(0, -76, 20, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(0, -76, 20, 0, Math.PI * 2); ctx.stroke();
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 14px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('IP', 0, -76);
+  ctx.restore();
+}
+
 function drawFrontBases(ctx, enemyHp, enemyMax, myHp, myMax) {
   ctx.save();
   ctx.translate(FRONT_OUR_X, 320);
@@ -5982,9 +6305,9 @@ class FrontGame {
     this.ctx = this.canvas.getContext('2d');
     this.running = false; this._raf = null; this.lastTime = 0; this.uiT = 0;
   }
-  start() { this.reset(); this.running = true; this.lastTime = 0; this._raf = (t) => this.loop(t); requestAnimationFrame(this._raf); }
+  start(mel) { this.reset(mel); this.running = true; this.lastTime = 0; this._raf = (t) => this.loop(t); requestAnimationFrame(this._raf); }
   stop() { this.running = false; if (this._raf) { cancelAnimationFrame(this._raf); this._raf = null; } }
-  reset() {
+  reset(mel) {
     this.time = FRONT_MATCH_TIME; this.elapsed = 0;
     this.money = 500;
     this.baseHp = 10000; this.baseMaxHp = 10000;
@@ -5995,6 +6318,14 @@ class FrontGame {
     this.selectedLane = 0; this.unitIds = this.frontLoadout();
     this.kills = 0; this.gameOver = false; this.victory = false; this.baseRazed = false;
     this.speed = 1; this.strongMsgShown = false; this.zovMsgShown = false;
+    this.mel = !!mel; this.melWave = 0; this.melPhase = 0; this.waveT = MEL_WAVE_TIME;
+    this.melHpGrow = 1.0; this.melDmgGrow = 1.0;
+    if (this.mel) {
+      this.baseHp = MEL_PHASES[0].baseHp; this.baseMaxHp = MEL_PHASES[0].baseHp;
+      this.time = MEL_WAVE_TIME * MEL_TOTAL_WAVES;
+      this.myHp = 6000; this.myMaxHp = 6000;
+      this.toastMsg(fill(T('🐦 СПАСИ МАМУ ПТИЦУ! Волна 1 из ' + MEL_TOTAL_WAVES)));
+    }
     document.getElementById('frontSpeedBtn').textContent = T('\u23e9 \u00d71');
     this.buildPanel(); this.updateUI();
   }
@@ -6068,7 +6399,9 @@ class FrontGame {
   }
   spawnUnit(id) {
     if (this.gameOver) return;
-    if (this.mine.length >= 28) { Sound.error(); this.toastMsg(fill(T('\u041b\u0438\u043c\u0438\u0442 \u044e\u043d\u0438\u0442\u043e\u0432 (%1)'), 28)); return; }
+    if (this.mine.length >= 28) { Sound.error(); this.toastMsg(fill(T('Лимит юнитов (%1)'), 28)); return; }
+    const limC = unitLimit(id);
+    if ((this.spawnCount[id] || 0) >= limC) { Sound.error(); this.toastMsg(fill(T('Лимит юнитов (%1)'), limC)); return; }
     const price = this.unitPrice(id);
     if (this.money < price) { Sound.error(); this.toastMsg(T('\u041d\u0435 \u0445\u0432\u0430\u0442\u0430\u0435\u0442 \u0434\u0435\u043d\u0435\u0433')); return; }
     this.money -= price;
@@ -6107,8 +6440,12 @@ class FrontGame {
     document.getElementById('frontBaseHp').textContent = Math.max(0, Math.round(this.baseHp));
     const ourEl = document.getElementById('frontOurHp');
     if (ourEl) ourEl.textContent = Math.max(0, Math.round(this.myHp));
-    const mm = Math.max(0, Math.floor(this.time / 60)), ss = Math.max(0, Math.floor(this.time % 60));
-    document.getElementById('frontTime').textContent = mm + ':' + String(ss).padStart(2, '0');
+    if (this.mel) {
+      document.getElementById('frontTime').textContent = T('Волна') + ' ' + Math.min((this.melWave || 0) + 1, MEL_TOTAL_WAVES) + '/' + MEL_TOTAL_WAVES;
+    } else {
+      const mm = Math.max(0, Math.floor(this.time / 60)), ss = Math.max(0, Math.floor(this.time % 60));
+      document.getElementById('frontTime').textContent = mm + ':' + String(ss).padStart(2, '0');
+    }
   }
   loop(ts) {
     if (!this.running) return;
@@ -6131,6 +6468,28 @@ class FrontGame {
     this.elapsed += dt;
     this.money += 12 * dt * this.coinBoost();
     if (this.time <= 0) { this.finish(false); return; }
+    if (this.mel) {
+      this.waveT -= dt;
+      if (this.waveT <= 0) {
+        this.waveT += MEL_WAVE_TIME;
+        this.melWave++;
+        const melPh = MEL_PHASES[this.melPhase];
+        this.baseHp -= melPh.dmgPerWave;
+        this.melHpGrow += 0.03; this.melDmgGrow += 0.025;
+        if (this.melPhase < MEL_PHASES.length - 1) {
+          const wDone = MEL_PHASES.slice(0, this.melPhase + 1).reduce((s, p) => s + p.waves, 0);
+          if (this.melWave >= wDone) {
+            this.melPhase++;
+            this.baseHp = MEL_PHASES[this.melPhase].baseHp;
+            this.baseMaxHp = MEL_PHASES[this.melPhase].baseHp;
+            this.explosions.push({ x: FRONT_BASE_X, y: 320, r: 0, maxR: 160, life: 0.8, maxLife: 0.8, rgb: '255,120,120' });
+            this.toastMsg(fill(T('НОВАЯ БАЗА ИНТЕРПОЛА! Волна %1'), this.melWave));
+          }
+        }
+        this.floaters.push({ x: FRONT_BASE_X - 60, y: 250, text: '-' + melPh.dmgPerWave, life: 1, maxLife: 1, color: '#ffd966' });
+        if (this.melPhase === MEL_PHASES.length - 1 && this.melWave >= MEL_TOTAL_WAVES) { this.baseHp = 0; this.finish(true); return; }
+      }
+    }
     this.shahedTimer -= dt;
     if (this.shahedTimer <= 0 && !this.shahedWarn) {
       this.shahedTimer = 22 + Math.random() * 16;
@@ -6160,9 +6519,10 @@ class FrontGame {
       const kind = Math.floor(Math.random() * 3);
       const km = kind === 1 ? 1.6 : (kind === 2 ? 2.7 : 1);
       const kspd = kind === 2 ? 0.75 : 1;
-      const hp = (50 + 2.2 * this.elapsed + 0.011 * this.elapsed * this.elapsed) * km;
+      const melPhM = this.mel ? MEL_PHASES[this.melPhase] : null;
+      const hp = (50 + 2.2 * this.elapsed + 0.011 * this.elapsed * this.elapsed) * km * (melPhM ? melPhM.hpMul * this.melHpGrow : 1);
       this.enemies.push({ lane, kind, maxHp: hp, x: FRONT_ENEMY_SPAWN_X, y: FRONT_LANES[lane],
-        hp, baseSpeed: Math.min(125, 46 + this.elapsed * 0.45) * kspd, slowT: 0, cd: 0 });
+        hp, baseSpeed: Math.min(125, 46 + this.elapsed * 0.45) * kspd * (melPhM ? melPhM.spdMul : 1), slowT: 0, cd: 0, dmgK: this.mel ? this.melDmgGrow : 1 });
       if (!this.strongMsgShown && this.elapsed > 90) {
         this.strongMsgShown = true;
         this.toastMsg(T('\u0412\u0440\u0430\u0436\u0435\u0441\u043a\u0438\u0435 \u0441\u043e\u043b\u0434\u0430\u0442\u044b \u043d\u0430\u0441\u0442\u0443\u043f\u0430\u044e\u0442 \u0441\u0438\u043b\u044c\u043d\u0435\u0435!'));
@@ -6301,6 +6661,21 @@ class FrontGame {
           }
         }
       }
+      if (u && u.ability === 'bellySlam') {
+        m.slamC = (m.slamC || 2) - dt;
+        if (m.slamC <= 0) {
+          m.slamC = 2.5;
+          m.slamT = 0.5;
+          let sn = 0;
+          for (const e of this.enemies) {
+            if (e.lane !== m.lane || e.x < m.x || e.x - m.x > (u.splashRadius || 60) + 40) continue;
+            e.hp -= m.dmg * 2.2 * (e.vulnT > 0 ? 1.3 : 1);
+            e.slowT = 1.5; e.slowF = 0.7;
+            sn++;
+          }
+          if (sn) this.floaters.push({ x: m.x, y: m.y - 70, text: T('🫃 ПУЗО-ДАВКА!'), life: 1.2, maxLife: 1.2, color: '#ffd9a0' });
+        }
+      }
       if (u && u.ability === 'putinCommand') {
         m.soulA = (m.soulA || 0) + dt * 2.2;
         if (m.eyeT > 0) {
@@ -6357,10 +6732,12 @@ class FrontGame {
           if (d >= -10 && d <= tr && d < bd) { bd = d; target = e; }
         }
       }
-      if (!target && m.x < FRONT_REACH_X) m.x += m.speed * (m.buffT > 0 ? 1.25 : 1) * dt;
+      const stopX = this.mel ? 260 : FRONT_REACH_X;
+      if (!target && m.x < stopX) m.x += m.speed * (m.buffT > 0 ? 1.25 : 1) * dt;
       if (m.buffT > 0) m.buffT -= dt;
       if (m.tvGlowT > 0) m.tvGlowT -= dt;
       if (m.slashT > 0) m.slashT -= dt;
+      if (m.slamT > 0) m.slamT -= dt;
       m.cd -= dt;
       if (m.cd <= 0) {
         if (target) {
@@ -6369,6 +6746,27 @@ class FrontGame {
           const su = this.unitDef(m.id);
           if (su && su.ability === 'slow') { target.slowT = 2.5; if (su.slowOnHit) target.slowF = 1 - su.slowOnHit; }
           if (su && su.ability === 'burn') { target.burnT = 3; target.burnDps = m.dmg * (su.burnOnHit || 0.35); target.burnTick = 0.5; }
+          if (su && su.ability === 'sliceThrow') {
+            m.sliceFire = Math.random() < 0.5;
+            if (m.sliceFire) { target.burnT = 2.5; target.burnDps = m.dmg * 1.21 * 0.25; target.burnTick = 0.5; }
+            else {
+              target.slowT = 2.5; target.slowF = 0.65;
+              for (const e2 of this.enemies) {
+                if (e2 !== target && e2.lane === target.lane && Math.abs(e2.x - target.x) <= (su.splashRadius || 60)) { e2.slowT = 2.5; e2.slowF = 0.65; }
+              }
+            }
+          }
+          if (su && su.ability === 'donatThrow') {
+            const tiers = [1, 2, 4, 5];
+            const tier = tiers[Math.floor(Math.random() * tiers.length)];
+            target.hp -= m.dmg * (tier - 1) * (target.vulnT > 0 ? 1.3 : 1);
+            if (tier >= 4) {
+              for (const e2 of this.enemies) {
+                if (e2 !== target && e2.lane === target.lane && Math.abs(e2.x - target.x) <= 80) e2.hp -= m.dmg * (tier - 1) * (e2.vulnT > 0 ? 1.3 : 1);
+              }
+            }
+            this.floaters.push({ x: target.x, y: target.y - 42, text: T(['250К', '500К', '1М', '2М'][tier === 2 ? 1 : tier === 4 ? 2 : tier === 5 ? 3 : 0]), life: 0.9, maxLife: 0.9, color: '#7dff9e' });
+          }
           if (su && su.ability === 'burn') this.explosions.push({ x: target.x, y: target.y - 8, r: 0, maxR: 30, life: 0.3, maxLife: 0.3, rgb: '255,140,60' });
           if (su && su.tvAttack) m.tvGlowT = 0.18;
           if (su && su.splashRadius) {
@@ -6378,7 +6776,7 @@ class FrontGame {
             this.explosions.push({ x: target.x, y: target.y - 8, r: 0, maxR: su.splashRadius, life: 0.3, maxLife: 0.3, rgb: su.ability === 'daiShout' ? '127,255,160' : '160,200,255' });
           }
           this.tracers.push({ x1: m.x + 8, y1: m.y - 8, x2: target.x, y2: target.y - 8, life: 0.07, color: '#7ee7ff' });
-        } else if (m.x >= FRONT_REACH_X && m.dmg > 0) {
+        } else if (!this.mel && m.x >= FRONT_REACH_X && m.dmg > 0) {
           m.cd = m.rate;
           this.baseHp -= m.dmg;
           this.money += 2 * this.coinBoost();
@@ -6449,7 +6847,7 @@ class FrontGame {
       if (e.stunT > 0) { e.stunT -= dt; continue; }
       if (tgt) {
         e.cd = 0.9;
-        tgt.hp -= (12 + this.elapsed * 0.05) * (e.kind === 1 ? 1.4 : e.kind === 2 ? 1.9 : 1);
+        tgt.hp -= (12 + this.elapsed * 0.05) * (e.dmgK || 1) * (e.kind === 1 ? 1.4 : e.kind === 2 ? 1.9 : 1);
         this.tracers.push({ x1: e.x - 8, y1: e.y - 8, x2: tgt.x, y2: tgt.y - 8, life: 0.07, color: '#ff8888' });
       } else {
         e.cd = 0;
@@ -6457,7 +6855,7 @@ class FrontGame {
         if (e.x < FRONT_OUR_X + 50) {
           e.x = FRONT_OUR_X + 50;
           e.cd = 0.9;
-          const dmg = (12 + this.elapsed * 0.06) * (e.kind === 1 ? 1.4 : e.kind === 2 ? 1.9 : 1);
+          const dmg = (12 + this.elapsed * 0.06) * (e.dmgK || 1) * (e.kind === 1 ? 1.4 : e.kind === 2 ? 1.9 : 1);
           this.myHp -= dmg;
           this.floaters.push({ x: e.x, y: FRONT_LANES[0] - 40, text: '-' + Math.round(dmg), life: 0.9, maxLife: 0.9, color: '#ff8888' });
           this.tracers.push({ x1: e.x - 8, y1: e.y - 8, x2: FRONT_OUR_X + 40, y2: FRONT_LANES[1], life: 0.07, color: '#ff8888' });
@@ -6472,7 +6870,7 @@ class FrontGame {
       for (const e of this.enemies) {
         if (e.lane === d.lane && Math.abs(e.x - d.x) < 34) { boom = true; break; }
       }
-      if (!boom && d.x >= FRONT_REACH_X) {
+      if (!boom && !this.mel && d.x >= FRONT_REACH_X) {
         boom = true;
         this.baseHp -= d.dmg;
         this.tracers.push({ x1: d.x, y1: d.y, x2: FRONT_BASE_X - 60, y2: d.y, life: 0.1, color: '#7ee7ff' });
@@ -6496,18 +6894,37 @@ class FrontGame {
     if (!win && this.myHp <= 0) this.baseRazed = true;
     if (win) this.victory = true; else this.gameOver = true;
     if (win) {
-      SaveManager.addItem('militaryCrate', 1);
-      SaveManager.addCoins(400);
-      Sound.victory();
-      UI.toast(T('\ud83c\udf96\ufe0f \u0412\u043e\u0435\u043d\u043d\u044b\u0439 \u041a\u0440\u0435\u0439\u0442 \u043f\u043e\u043b\u0443\u0447\u0435\u043d!'));
+      if (this.mel) {
+        const firstMel = !SaveManager.data.melWins;
+        SaveManager.data.melWins = (SaveManager.data.melWins || 0) + 1;
+        SaveManager.save();
+        if (firstMel) {
+          if (SaveManager.unlock('melSkuf')) SaveManager.data.melSkufUnlocked = true;
+          SaveManager.addItem('melCrate', 2);
+          SaveManager.save();
+        }
+        SaveManager.addCoins(500);
+        if (SaveManager.data.melWins % 10 === 0 && !SaveManager.data.melPrimeReady) {
+          SaveManager.data.melPrimeReady = true;
+          SaveManager.save();
+          UI.toast(T('🔒 Мелстрой Прайм скоро появится в Мелстрой Крейте!'));
+        }
+        Sound.victory();
+        UI.toast(T('📦 Мелстрой Крейт получен!') + (firstMel ? ' ' + T('🐦 Скуф Мел Строя спасён!') : ''));
+      } else {
+        SaveManager.addItem('militaryCrate', 1);
+        SaveManager.addCoins(400);
+        Sound.victory();
+        UI.toast(T('🎖️ Военный Крейт получен!'));
+      }
     } else { Sound.defeat(); }
     const t = document.getElementById('resultsTitle');
-    t.textContent = win ? T('\ud83c\udfc6 \u0411\u0410\u0417\u0410 \u0412\u0420\u0410\u0413\u0410 \u041f\u0410\u041b\u0410!') : (this.baseRazed ? T('\ud83d\udc80 \u041d\u0410\u0428\u0410 \u0411\u0410\u0417\u0410 \u041f\u0410\u041b\u0410!') : T('\ud83d\udc80 \u0412\u0420\u0415\u041c\u042f \u0412\u042b\u0428\u041b\u041e'));
+    t.textContent = win ? (this.mel ? T('🐦 МАМА ПТИЦА СПАСЕНА!') : T('🏆 БАЗА ВРАГА ПАЛА!')) : (this.baseRazed ? T('💀 НАША БАЗА ПАЛА!') : T('💀 ВРЕМЯ ВЫШЛО'));
     t.className = 'title ' + (win ? 'win' : 'lose');
-    document.getElementById('resWaves').textContent = this.kills || 0;
+    document.getElementById('resWaves').textContent = this.mel ? (this.melWave + '/' + MEL_TOTAL_WAVES) : (this.kills || 0);
     document.getElementById('resKills').textContent = this.kills || 0;
-    document.getElementById('resBase').textContent = win ? '0 / 10000' : Math.max(0, Math.round(this.baseHp)) + ' / 10000';
-    document.getElementById('resCoins').textContent = win ? '+400🪙' : T('0 (\u043c\u043e\u043d\u0435\u0442\u044b \u0442\u043e\u043b\u044c\u043a\u043e \u0437\u0430 \u043f\u043e\u0431\u0435\u0434\u0443)');
+    document.getElementById('resBase').textContent = this.mel ? T('3/3 баз Интерпола') : (win ? '0 / 10000' : Math.max(0, Math.round(this.baseHp)) + ' / 10000');
+    document.getElementById('resCoins').textContent = (win && this.mel) ? '+500🪙' : (win ? '+400🪙' : T('0 (монеты только за победу)'));
     document.getElementById('resultsOverlay').classList.add('visible');
     App.refreshMeta();
   }
@@ -6545,15 +6962,21 @@ class FrontGame {
       ctx.beginPath(); ctx.ellipse(150 + i * 17, FRONT_LANES[0] - 36 + (i % 2) * 9, 9, 6, 0, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.ellipse(150 + i * 17, FRONT_LANES[2] + 36 - (i % 2) * 9, 9, 6, 0, 0, Math.PI * 2); ctx.fill();
     }
-    drawFrontBases(ctx, this.baseHp, this.baseMaxHp, this.myHp, this.myMaxHp);
+    if (this.mel) { drawFrontBirdBase(ctx); drawFrontInterpolBase(ctx, this.melPhase); }
+    else drawFrontBases(ctx, this.baseHp, this.baseMaxHp, this.myHp, this.myMaxHp);
     ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
-    ctx.fillStyle = '#d8e4c0'; ctx.fillText(T('\u041d\u0410\u0428\u0410 \u0411\u0410\u0417\u0410'), FRONT_OUR_X, 176);
-    ctx.fillStyle = '#f2cab8'; ctx.fillText(T('\u0421\u0422\u041e\u041b\u0418\u0426\u0410 \u0412\u0420\u0410\u0413\u0410'), FRONT_BASE_X, 176);
+    if (this.mel) {
+      ctx.fillStyle = '#ffe0b0'; ctx.fillText(T('МАМА ПТИЦА'), FRONT_OUR_X, 176);
+      ctx.fillStyle = '#f2cab8'; ctx.fillText(fill(T('БАЗА ИНТЕРПОЛА (фаза %1)'), ['I', 'II', 'III'][this.melPhase]), FRONT_BASE_X, 176);
+    } else {
+      ctx.fillStyle = '#d8e4c0'; ctx.fillText(T('НАША БАЗА'), FRONT_OUR_X, 176);
+      ctx.fillStyle = '#f2cab8'; ctx.fillText(T('СТОЛИЦА ВРАГА'), FRONT_BASE_X, 176);
+    }
     if (this.shahedWarn) drawShahedModel(ctx, this.shahedWarn.x, this.shahedWarn.y, 1.3, false);
     for (const m of this.mine) {
       const u = this.unitDef(m.id);
       const us = UF_SCALE[m.id] || 1;
-      const figSz = (m.id === 'putin' || m.id === 'zelensky') ? 136 : 110;
+      const figSz = (m.id === 'putin' || m.id === 'zelensky' || m.id === 'melSkuf') ? 136 : 110;
       const k = figSz / 150 * us;
       const barY = Math.round(m.y - 10 + figSz * 0.05 - 128 * k - 12);
       ctx.save(); ctx.globalAlpha = 0.5;
@@ -6581,6 +7004,11 @@ class FrontGame {
         ctx.strokeStyle = 'rgba(255,255,255,' + (0.85 * (1 - sp)).toFixed(3) + ')'; ctx.lineWidth = 3; ctx.stroke();
         ctx.restore();
       }
+      if (u.ability === 'bellySlam' && m.slamT > 0) {
+        const ba = Math.max(0, m.slamT / 0.5);
+        ctx.fillStyle = 'rgba(255,217,160,' + (0.35 * ba).toFixed(3) + ')';
+        ctx.beginPath(); ctx.arc(m.x, m.y - 10, 78 * (1.45 - ba * 0.45), 0, Math.PI * 2); ctx.fill();
+      }
       if (m.id === 'putin') drawSoulsOrbit(ctx, m.x, m.y - 12, 64, 16, m.soulA || 0);
       ctx.fillStyle = '#25324a'; ctx.fillRect(m.x - 22, barY, 44, 5);
       ctx.fillStyle = '#7fffa0'; ctx.fillRect(m.x - 22, barY, Math.round(44 * clamp(m.hp / m.maxHp, 0, 1)), 5);
@@ -6592,6 +7020,12 @@ class FrontGame {
       ctx.fillStyle = e.kind === 0 ? 'rgba(122,138,90,0.9)' : (e.kind === 1 ? 'rgba(138,112,72,0.9)' : 'rgba(90,106,122,0.9)');
       ctx.beginPath(); ctx.ellipse(0, 0.34, 0.5, 0.2, 0, 0, Math.PI * 2); ctx.fill();
       drawMilitaryHelmet(ctx);
+      if (this.mel) {
+        ctx.fillStyle = 'rgba(37,55,168,0.4)';
+        ctx.beginPath(); ctx.ellipse(0, 0.15, 0.34, 0.3, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#ffd93e';
+        ctx.fillRect(-0.28, -1.35, 0.56, 0.2);
+      }
       ctx.restore();
       if (e.slowT > 0) {
         ctx.save(); ctx.fillStyle = 'rgba(126,231,255,0.28)';
