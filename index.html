@@ -2433,6 +2433,7 @@ class Hero {
     const lvlMul = Math.pow(1.25, this.level - 1);
     this.damage = this.baseDamage * lvlMul;
     this.range = this.baseRange * Math.pow(1.08, this.level - 1);
+    if (this.unit.tvAttack) this.aoe = (this.unit.splashRadius || 50) * Math.pow(1.08, this.level - 1);
     this.fireRate = Math.max(this.baseFireRate * Math.pow(0.9, this.level - 1), this.unit.rateFloor || 0);
     const newMax = this._maxHpAt(this.level);
     const ratio = this.maxHp > 0 ? this.hp / this.maxHp : 1;
@@ -4109,7 +4110,7 @@ class Game {
     for (const h of this.heroes) h.draw(ctx);
     if (this.selectedHero) {
       const t = this.selectedHero;
-      const hr = t.unit.tvAttack ? (t.unit.splashRadius || t.range) : t.range;
+      const hr = t.unit.tvAttack && t.aoe ? t.aoe : t.range;
       ctx.beginPath(); ctx.arc(t.x, t.y, hr, 0, Math.PI * 2);
       ctx.fillStyle = COLORS.heroRange; ctx.fill();
       ctx.setLineDash([12, 9]); ctx.lineDashOffset = -(Date.now() / 1000) * 24;
