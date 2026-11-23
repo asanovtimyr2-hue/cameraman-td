@@ -750,9 +750,9 @@ const I18N_EN = {
   "🍮 Кидает липкое желе: урон по площади + замедление врагов": "🍮 Throws sticky jelly: area damage + slows enemies",
   "⚔️ Бьёт желейным мечом: урон по площади + замедление врагов": "⚔️ Swings a jelly sword: area damage + slows enemies",
   "Желейный ТВ Мен 69.9%, Желейный Камера Дрон 39.1%, Желе Титан ТВ Мен 0.1%. Из желейного мира.": "JELLY TV MAN 69.9%, JELLY CAMERA DRONE 39.1%, JELLY TV TITAN 0.1%. From the jelly world.",
-  "Желейный нападающий: кидает липкое желе — 35 урона по площади и замедление 10% на 2 сек (кд 3 сек). Из своего телевизора бьёт AOE-лучом: 70 урона, радиус 70, кд 0.6 сек. Цена в «Столице»: 479🪙.": "Jelly attacker: throws sticky jelly — 35 area damage and 10% slow for 2s (cd 3s). Fires an AOE beam from his TV: 70 damage, radius 70, cd 0.6s. Capital price: 479.",
+  "Желейный нападающий: кидает липкое желе — 35 урона по площади и замедление 10% на 2 сек (кд 3 сек). Из своего телевизора бьёт AOE-импульсом: 70 урона, радиус 65, кд 0.6 сек. Цена в «Столице»: 479🪙.": "Jelly attacker: throws sticky jelly — 35 area damage and 10% slow for 2s (cd 3s). Fires an AOE blast from his TV: 70 damage, radius 65, cd 0.6s. Capital price: 479.",
   "Всенаправленный желеныш: стреляет желейным лазером — 105 урона, замедление 25%, кд 0.6 сек. Цена в «Столице»: 250🪙.": "Jelly marksman: fires a jelly laser — 105 damage, 25% slow, cd 0.6s. Capital price: 250.",
-  "Желе-колосс: бьёт большим желейным мечом раз в 3 сек — 450 урона + замедление 35%. Его телевизоры бьют AOE: 100 урона, радиус 90, кд 0.6 сек. Цена в «Столице»: 2000🪙.": "Jelly colossus: swings a big jelly sword every 3s — 450 damage + 35% slow. His TVs fire AOE: 100 damage, radius 90, cd 0.6s. Capital price: 2000.",
+  "Желе-колосс: бьёт большим желейным мечом раз в 3 сек — 450 урона + замедление 35%. Его телевизоры бьют AOE: 100 урона, радиус 85, кд 0.6 сек. Цена в «Столице»: 2000🪙.": "Jelly colossus: swings a big jelly sword every 3s — 450 damage + 35% slow. His TVs fire AOE: 100 damage, radius 85, cd 0.6s. Capital price: 2000.",
   "Стажёр": "Intern",
   "Новобранец": "Rookie",
   "Молодой боец альянса. Дешёвый и надёжный старт против скибиди.": "Young alliance fighter. A cheap and reliable start against skibidis.",
@@ -1460,17 +1460,17 @@ const UNITS = [
     stats: { dmg: 180, range: 250, fireRate: 0.75, hp: 1200 },
     passive: { dmgBonus: 0.25, moneyBonus: 0 }, ability: 'daiShout', splashRadius: 70 },
   { id: 'jellyTV', name: '🟢 Желейный ТВ Мен', emoji: '📺', rarity: 'Special', dropChance: 0.699, frontCost: 479,
-    desc: 'Желейный нападающий: кидает липкое желе — 35 урона по площади и замедление 10% на 2 сек (кд 3 сек). Из своего телевизора бьёт AOE-лучом: 70 урона, радиус 70, кд 0.6 сек. Цена в «Столице»: 479🪙.',
-    stats: { dmg: 70, range: 175, fireRate: 0.6, hp: 480 },
-    passive: { dmgBonus: 0.1, moneyBonus: 0 }, tvAttack: true, rateFloor: 0.6, ability: 'jellyThrow', splashRadius: 70, jellyRadius: 95, jellyDmg: 35, jellySlow: 0.1, jellySlowT: 2, jellyCd: 3 },
+    desc: 'Желейный нападающий: кидает липкое желе — 35 урона по площади и замедление 10% на 2 сек (кд 3 сек). Из своего телевизора бьёт AOE-импульсом: 70 урона, радиус 65, кд 0.6 сек. Цена в «Столице»: 479🪙.',
+    stats: { dmg: 70, range: 160, fireRate: 0.6, hp: 480 },
+    passive: { dmgBonus: 0.1, moneyBonus: 0 }, tvAttack: true, rateFloor: 0.6, ability: 'jellyThrow', splashRadius: 65, jellyRadius: 85, jellyDmg: 35, jellySlow: 0.1, jellySlowT: 2, jellyCd: 3 },
   { id: 'jellyDrone', name: '🟢 Желейный Камера Дрон', emoji: '🛸', rarity: 'Special', dropChance: 0.391, frontCost: 250,
     desc: 'Всенаправленный желеныш: стреляет желейным лазером — 105 урона, замедление 25%, кд 0.6 сек. Цена в «Столице»: 250🪙.',
-    stats: { dmg: 105, range: 210, fireRate: 0.6, hp: 220 },
+    stats: { dmg: 105, range: 190, fireRate: 0.6, hp: 220 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, rateFloor: 0.6, ability: 'slow', slowOnHit: 0.25 },
   { id: 'jellyTitan', name: '👑 Желе Титан ТВ Мен', emoji: '📺', rarity: 'Special', dropChance: 0.001, frontCost: 2000,
-    desc: 'Желе-колосс: бьёт большим желейным мечом раз в 3 сек — 450 урона + замедление 35%. Его телевизоры бьют AOE: 100 урона, радиус 90, кд 0.6 сек. Цена в «Столице»: 2000🪙.',
-    stats: { dmg: 100, range: 200, fireRate: 0.6, hp: 1400 },
-    passive: { dmgBonus: 0.2, moneyBonus: 0 }, tvAttack: true, swordSwing: true, rateFloor: 0.6, ability: 'jellyThrow', splashRadius: 90, jellyRadius: 150, jellyDmg: 450, jellySlow: 0.35, jellySlowT: 2, jellyCd: 3 }
+    desc: 'Желе-колосс: бьёт большим желейным мечом раз в 3 сек — 450 урона + замедление 35%. Его телевизоры бьют AOE: 100 урона, радиус 85, кд 0.6 сек. Цена в «Столице»: 2000🪙.',
+    stats: { dmg: 100, range: 185, fireRate: 0.6, hp: 1400 },
+    passive: { dmgBonus: 0.2, moneyBonus: 0 }, tvAttack: true, swordSwing: true, rateFloor: 0.6, ability: 'jellyThrow', splashRadius: 85, jellyRadius: 130, jellyDmg: 450, jellySlow: 0.35, jellySlowT: 2, jellyCd: 3 }
 ];
 
 function statRange(u) {
@@ -2572,7 +2572,7 @@ class Hero {
     for (const e of this.game.enemies) {
       if (e.hp <= 0 || e.reachedEnd) continue;
       const d = dist(this.x, this.y, e.x, e.y);
-      if (d > this.range) continue;
+      if (d > (this.unit.tvAttack ? this.aoe : this.range)) continue;
       const progress = e.waypointIndex * 1000 - d;
       let score;
       if (this.targetMode === 'last') score = -progress;
@@ -2583,11 +2583,22 @@ class Hero {
     }
     if (!target) return;
     this.angle = Math.atan2(target.y - this.y, target.x - this.x);
-    this.shootAnim = 0.14;
-    if (this.unit.tvAttack) this.tvGlowT = 0.18;
-    this.game.projectiles.push(new Projectile(this.game, this.x, this.y, target, this.damage, this.aoe, this));
-    this.cooldown = this.fireRate;
-    Sound.shoot(this.atkKind);
+    if (this.unit.tvAttack) {
+      this.tvGlowT = 0.18;
+      const ar = this.aoe || (this.unit.splashRadius || 70);
+      for (const e of this.game.enemies) {
+        if (e.hp <= 0 || e.reachedEnd) continue;
+        if (dist(this.x, this.y, e.x, e.y) <= ar) e.takeDamage(this.damage);
+      }
+      this.game.explosions.push({ x: this.x, y: this.y, r: 0, maxR: ar, life: 0.25, maxLife: 0.25, rgb: '176,255,208' });
+      this.cooldown = this.fireRate;
+      Sound.shoot(this.atkKind);
+    } else {
+      this.shootAnim = 0.14;
+      this.game.projectiles.push(new Projectile(this.game, this.x, this.y, target, this.damage, this.aoe, this));
+      this.cooldown = this.fireRate;
+      Sound.shoot(this.atkKind);
+    }
   }
   applySoul(soul, ix, iy) {
     const R = 130;
@@ -2668,7 +2679,6 @@ class Hero {
         }
       }
       if (jn) {
-        if (this.unit.tvAttack) this.tvGlowT = 0.18;
         if (this.unit.swordSwing) {
           this.slashT = 0.35;
           this.slashR = jr * 0.8;
@@ -4099,7 +4109,8 @@ class Game {
     for (const h of this.heroes) h.draw(ctx);
     if (this.selectedHero) {
       const t = this.selectedHero;
-      ctx.beginPath(); ctx.arc(t.x, t.y, t.range, 0, Math.PI * 2);
+      const hr = t.unit.tvAttack ? (t.unit.splashRadius || t.range) : t.range;
+      ctx.beginPath(); ctx.arc(t.x, t.y, hr, 0, Math.PI * 2);
       ctx.fillStyle = COLORS.heroRange; ctx.fill();
       ctx.setLineDash([12, 9]); ctx.lineDashOffset = -(Date.now() / 1000) * 24;
       ctx.strokeStyle = COLORS.heroRangeBorder; ctx.lineWidth = 2; ctx.stroke();
@@ -4225,7 +4236,8 @@ class Game {
     }
     let valid = !blocked && !this.placementInvalid();
     const pl = 0.5 + 0.5 * Math.sin(Date.now() / 220);
-    ctx.beginPath(); ctx.arc(fx, fy, unit.stats.range, 0, Math.PI * 2);
+    const pr2 = unit.tvAttack && unit.splashRadius ? unit.splashRadius : unit.stats.range;
+    ctx.beginPath(); ctx.arc(fx, fy, pr2, 0, Math.PI * 2);
     ctx.fillStyle = valid ? `rgba(255,217,102,${0.08 + 0.05 * pl})` : 'rgba(255,80,80,0.10)'; ctx.fill();
     ctx.strokeStyle = valid ? `rgba(255,217,102,${0.45 + 0.3 * pl})` : 'rgba(255,80,80,0.65)';
     ctx.lineWidth = 2; ctx.stroke();
@@ -6067,7 +6079,6 @@ class FrontGame {
             e.slowF = 1 - (u.jellySlow || 0.1);
           }
           if (jn) {
-            if (u.tvAttack) m.tvGlowT = 0.18;
             if (u.swordSwing) {
               m.slashT = 0.35;
               m.slashR = (u.jellyRadius || 90) * 0.8;
@@ -6128,10 +6139,12 @@ class FrontGame {
       }
       let target = null, bd = Infinity;
       if (m.dmg > 0) {
+        const mu = this.unitDef(m.id);
+        const tr = mu && mu.tvAttack ? (mu.splashRadius || m.range) : m.range;
         for (const e of this.enemies) {
           if (e.lane !== m.lane) continue;
           const d = e.x - m.x;
-          if (d >= -10 && d <= m.range && d < bd) { bd = d; target = e; }
+          if (d >= -10 && d <= tr && d < bd) { bd = d; target = e; }
         }
       }
       if (!target && m.x < FRONT_REACH_X) m.x += m.speed * (m.buffT > 0 ? 1.25 : 1) * dt;
