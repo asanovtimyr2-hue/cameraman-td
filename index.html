@@ -2434,6 +2434,7 @@ class Hero {
     this.damage = this.baseDamage * lvlMul;
     this.range = this.baseRange * Math.pow(1.08, this.level - 1);
     if (this.unit.tvAttack) this.aoe = (this.unit.splashRadius || 50) * Math.pow(1.08, this.level - 1);
+    this.jr = this.unit.jellyRadius ? this.unit.jellyRadius * Math.pow(1.08, this.level - 1) : 0;
     this.fireRate = Math.max(this.baseFireRate * Math.pow(0.9, this.level - 1), this.unit.rateFloor || 0);
     const newMax = this._maxHpAt(this.level);
     const ratio = this.maxHp > 0 ? this.hp / this.maxHp : 1;
@@ -2668,7 +2669,7 @@ class Hero {
         else this.game.explosions.push({ x: this.x, y: this.y, r: 0, maxR: 60, life: 0.4, maxLife: 0.4, rgb: hexToRgbStr(soul.color) });
       }
     } else if (this.ability === 'jellyThrow') {
-      const jr = this.unit.jellyRadius || 90;
+      const jr = this.jr || this.unit.jellyRadius || 90;
       const jd = Math.round((this.unit.jellyDmg || 35) * Math.pow(1.25, this.level - 1));
       let jn = 0;
       for (const e of this.game.enemies) {
@@ -4117,7 +4118,7 @@ class Game {
       ctx.strokeStyle = COLORS.heroRangeBorder; ctx.lineWidth = 2; ctx.stroke();
       ctx.setLineDash([]);
       if (t.unit.jellyRadius) {
-        ctx.beginPath(); ctx.arc(t.x, t.y, t.unit.jellyRadius, 0, Math.PI * 2);
+        ctx.beginPath(); ctx.arc(t.x, t.y, t.jr || t.unit.jellyRadius, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(190,80,255,0.10)'; ctx.fill();
         ctx.setLineDash([10, 8]); ctx.lineDashOffset = (Date.now() / 1000) * 20;
         ctx.strokeStyle = 'rgba(190,80,255,0.65)'; ctx.lineWidth = 2; ctx.stroke();
