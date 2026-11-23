@@ -745,11 +745,12 @@ const I18N_EN = {
   "🟢 Желейный Камера Дрон": "🟢 JELLY CAMERA DRONE",
   "👑 Желе Титан ТВ Мен": "👑 JELLY TV TITAN",
   "🍮 ЛИПКОЕ ЖЕЛЕ!": "🍮 STICKY JELLY!",
+  "⚔️ ЖЕЛЕЙНЫЙ МЕЧ!": "⚔️ JELLY SWORD!",
   "🍮 Желейный Крейт": "🍮 JELLY CRATE",
   "🍮 Кидает липкое желе: урон по площади + замедление врагов": "🍮 Throws sticky jelly: area damage + slows enemies",
   "Желейный ТВ Мен 69.9%, Желейный Камера Дрон 39.1%, Желе Титан ТВ Мен 0.1%. Из желейного мира.": "JELLY TV MAN 69.9%, JELLY CAMERA DRONE 39.1%, JELLY TV TITAN 0.1%. From the jelly world.",
-  "Желейный нападающий: кидает липкое желе — 35 урона по площади и замедление 10% на 2 сек (кд 3 сек). Из своего телевизора бьёт AOE-лучом: 70 урона, радиус 70, кд 0.5 сек. Цена в «Столице»: 479🪙.": "Jelly attacker: throws sticky jelly — 35 area damage and 10% slow for 2s (cd 3s). Fires an AOE beam from his TV: 70 damage, radius 70, cd 0.5s. Capital price: 479.",
-  "Всенаправленный желеныш: стреляет желейным лазером — 105 урона, замедление 25%, кд 0.42 сек. Цена в «Столице»: 250🪙.": "Jelly marksman: fires a jelly laser — 105 damage, 25% slow, cd 0.42s. Capital price: 250.",
+  "Желейный нападающий: кидает липкое желе — 35 урона по площади и замедление 10% на 2 сек (кд 3 сек). Из своего телевизора бьёт AOE-лучом: 70 урона, радиус 70, кд 0.6 сек. Цена в «Столице»: 479🪙.": "Jelly attacker: throws sticky jelly — 35 area damage and 10% slow for 2s (cd 3s). Fires an AOE beam from his TV: 70 damage, radius 70, cd 0.6s. Capital price: 479.",
+  "Всенаправленный желеныш: стреляет желейным лазером — 105 урона, замедление 25%, кд 0.6 сек. Цена в «Столице»: 250🪙.": "Jelly marksman: fires a jelly laser — 105 damage, 25% slow, cd 0.6s. Capital price: 250.",
   "Желе-колосс: бьёт большим желейным мечом раз в 3 сек — 450 урона + замедление 35%. Его телевизоры бьют AOE: 100 урона, радиус 90, кд 0.6 сек. Цена в «Столице»: 2000🪙.": "Jelly colossus: swings a big jelly sword every 3s — 450 damage + 35% slow. His TVs fire AOE: 100 damage, radius 90, cd 0.6s. Capital price: 2000.",
   "Стажёр": "Intern",
   "Новобранец": "Rookie",
@@ -1454,17 +1455,17 @@ const UNITS = [
     stats: { dmg: 180, range: 250, fireRate: 0.75, hp: 1200 },
     passive: { dmgBonus: 0.25, moneyBonus: 0 }, ability: 'daiShout', splashRadius: 70 },
   { id: 'jellyTV', name: '🟢 Желейный ТВ Мен', emoji: '📺', rarity: 'Special', dropChance: 0.699, frontCost: 479,
-    desc: 'Желейный нападающий: кидает липкое желе — 35 урона по площади и замедление 10% на 2 сек (кд 3 сек). Из своего телевизора бьёт AOE-лучом: 70 урона, радиус 70, кд 0.5 сек. Цена в «Столице»: 479🪙.',
-    stats: { dmg: 70, range: 175, fireRate: 0.5, hp: 480 },
-    passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'jellyThrow', splashRadius: 70, jellyRadius: 95, jellyDmg: 35, jellySlow: 0.1, jellySlowT: 2, jellyCd: 3 },
+    desc: 'Желейный нападающий: кидает липкое желе — 35 урона по площади и замедление 10% на 2 сек (кд 3 сек). Из своего телевизора бьёт AOE-лучом: 70 урона, радиус 70, кд 0.6 сек. Цена в «Столице»: 479🪙.',
+    stats: { dmg: 70, range: 175, fireRate: 0.6, hp: 480 },
+    passive: { dmgBonus: 0.1, moneyBonus: 0 }, tvAttack: true, ability: 'jellyThrow', splashRadius: 70, jellyRadius: 95, jellyDmg: 35, jellySlow: 0.1, jellySlowT: 2, jellyCd: 3 },
   { id: 'jellyDrone', name: '🟢 Желейный Камера Дрон', emoji: '🛸', rarity: 'Special', dropChance: 0.391, frontCost: 250,
-    desc: 'Всенаправленный желеныш: стреляет желейным лазером — 105 урона, замедление 25%, кд 0.42 сек. Цена в «Столице»: 250🪙.',
-    stats: { dmg: 105, range: 210, fireRate: 0.42, hp: 220 },
+    desc: 'Всенаправленный желеныш: стреляет желейным лазером — 105 урона, замедление 25%, кд 0.6 сек. Цена в «Столице»: 250🪙.',
+    stats: { dmg: 105, range: 210, fireRate: 0.6, hp: 220 },
     passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'slow', slowOnHit: 0.25 },
   { id: 'jellyTitan', name: '👑 Желе Титан ТВ Мен', emoji: '📺', rarity: 'Special', dropChance: 0.001, frontCost: 2000,
     desc: 'Желе-колосс: бьёт большим желейным мечом раз в 3 сек — 450 урона + замедление 35%. Его телевизоры бьют AOE: 100 урона, радиус 90, кд 0.6 сек. Цена в «Столице»: 2000🪙.',
     stats: { dmg: 100, range: 200, fireRate: 0.6, hp: 1400 },
-    passive: { dmgBonus: 0.2, moneyBonus: 0 }, ability: 'jellyThrow', splashRadius: 90, jellyRadius: 150, jellyDmg: 450, jellySlow: 0.35, jellySlowT: 2, jellyCd: 3 }
+    passive: { dmgBonus: 0.2, moneyBonus: 0 }, tvAttack: true, swordSwing: true, ability: 'jellyThrow', splashRadius: 90, jellyRadius: 150, jellyDmg: 450, jellySlow: 0.35, jellySlowT: 2, jellyCd: 3 }
 ];
 
 function statRange(u) {
@@ -2390,6 +2391,7 @@ class Hero {
     this.angle = -Math.PI / 2;
     this.targetMode = 'first';
     this.shootAnim = 0;
+    this.tvGlowT = 0; this.slashT = 0; this.sumT = 6;
     this.stunTimer = 0;
     this.antistanUntil = 0;
     this.atkKind = UNIT_ATK[this.unitId] || 'bullet';
@@ -2477,6 +2479,8 @@ class Hero {
     if (this.stunTimer > 0) { this.stunTimer -= dt; return; }
     this.bobPhase += dt * 4;
     if (this.shootAnim > 0) this.shootAnim -= dt;
+    if (this.tvGlowT > 0) this.tvGlowT -= dt;
+    if (this.slashT > 0) this.slashT -= dt;
     for (let i = this._boostTargets.length - 1; i >= 0; i--) {
       const item = this._boostTargets[i];
       item.timer -= dt;
@@ -2528,6 +2532,13 @@ class Hero {
       }
       if (this.ability === 'putinCommand') {
         this.soulAngle += dt * 2.2;
+        this.sumT -= dt;
+        if (this.sumT <= 0) {
+          this.sumT = 12;
+          const dmg = Math.round(this.damage * 0.5 * Math.pow(1.25, this.level - 1));
+          this.game.airDrones.push({ x: this.x - 10, y: this.y - 24, dmg, spd: 200, t: Math.random() * 6.28, life: 10 });
+          Sound.shoot('rocket');
+        }
         if (this.eyeLaserT > 0) {
           this.eyeLaserT -= dt;
           this.eyeLaserCd -= dt;
@@ -2568,9 +2579,24 @@ class Hero {
     if (!target) return;
     this.angle = Math.atan2(target.y - this.y, target.x - this.x);
     this.shootAnim = 0.14;
+    if (this.unit.tvAttack) this.tvGlowT = 0.3;
     this.game.projectiles.push(new Projectile(this.game, this.x, this.y, target, this.damage, this.aoe, this));
     this.cooldown = this.fireRate;
     Sound.shoot(this.atkKind);
+  }
+  applySoul(soul, ix, iy) {
+    const R = 130;
+    this.game.explosions.push({ x: ix, y: iy, r: 0, maxR: R, life: 0.45, maxLife: 0.45, rgb: hexToRgbStr(soul.color) });
+    for (const e of this.game.enemies) {
+      if (e.hp <= 0 || e.reachedEnd) continue;
+      if (dist(ix, iy, e.x, e.y) > R) continue;
+      if (soul.k === 'determination') { e.takeDamage(this.damage * 2); this.eyeLaserT = 5; }
+      else if (soul.k === 'patience') e.applySlow(3, 0.6);
+      else if (soul.k === 'bravery') { e.burnT = 4; e.burnDps = this.damage * 0.3; e.burnTick = 0.5; }
+      else if (soul.k === 'integrity') e.applyStun(1.5);
+      else if (soul.k === 'perseverance') e.vulnT = 5;
+      else if (soul.k === 'justice') e.takeDamage(this.damage * 1.2);
+    }
   }
   fireAbility() {
     if (this.ability === 'speedBoost') {
@@ -2599,36 +2625,34 @@ class Hero {
       }
       Sound.shoot('rocket');
     } else if (this.ability === 'putinCommand') {
-      const dmg = Math.round(this.damage * 0.5 * Math.pow(1.25, this.level - 1));
-      this.game.airDrones.push({ x: this.x - 10, y: this.y - 24, dmg, spd: 200, t: Math.random() * 6.28, life: 10 });
-      Sound.shoot('rocket');
       const soul = PUTIN_SOULS[this.soulIdx % PUTIN_SOULS.length];
       this.soulIdx++;
-      const R = 170, pos = { x: this.x, y: this.y };
-      this.game.explosions.push({ x: pos.x, y: pos.y, r: 0, maxR: R, life: 0.45, maxLife: 0.45, rgb: hexToRgbStr(soul.color) });
-      this.game.floaters.push({ x: pos.x, y: pos.y - 50, text: fill(T('ДУША: %1'), soul.name), life: 2.5, maxLife: 2.5, color: soul.color });
-      for (const e of this.game.enemies) {
-        if (e.hp <= 0 || e.reachedEnd) continue;
-        if (dist(this.x, this.y, e.x, e.y) > R) continue;
-        if (soul.k === 'determination') { e.takeDamage(this.damage * 2); this.eyeLaserT = 5; }
-        else if (soul.k === 'patience') e.applySlow(3, 0.6);
-        else if (soul.k === 'bravery') { e.burnT = 4; e.burnDps = this.damage * 0.3; e.burnTick = 0.5; }
-        else if (soul.k === 'integrity') e.applyStun(1.5);
-        else if (soul.k === 'perseverance') e.vulnT = 5;
-        else if (soul.k === 'justice') e.takeDamage(this.damage * 1.2);
-      }
+      this.game.floaters.push({ x: this.x, y: this.y - 50, text: fill(T('ДУША: %1'), soul.name), life: 2.5, maxLife: 2.5, color: soul.color });
       if (soul.k === 'kindness') {
         let tgtH = null, bs = 1e9;
         for (const t of this.game.heroes) {
           if (t.heroDead) continue;
           const dd = dist(this.x, this.y, t.x, t.y);
-          if (dd > R + 80) continue;
+          if (dd > 250) continue;
           const sc = (t.hp / t.maxHp) * 1000 + dd;
           if (sc < bs) { bs = sc; tgtH = t; }
         }
         if (tgtH) this.game.soulFlyers.push({ x: this.x, y: this.y - 44, t: tgtH, color: soul.color, life: 5 });
+      } else {
+        let tgt = null, bs2 = -1e9;
+        for (const e of this.game.enemies) {
+          if (e.hp <= 0 || e.reachedEnd) continue;
+          const dd = dist(this.x, this.y, e.x, e.y);
+          if (dd > 260) continue;
+          const pr = (e.waypointIndex || 0) * 1000 - dd;
+          if (pr > bs2) { bs2 = pr; tgt = e; }
+        }
+        if (tgt) this.game.soulBolts.push({ x: this.x, y: this.y - 50, tgt, hero: this, soul, spd: 420, life: 3 });
+        else this.game.explosions.push({ x: this.x, y: this.y, r: 0, maxR: 60, life: 0.4, maxLife: 0.4, rgb: hexToRgbStr(soul.color) });
       }
     } else if (this.ability === 'jellyThrow') {
+      if (this.unit.tvAttack) this.tvGlowT = 0.3;
+      if (this.unit.swordSwing) this.slashT = 0.35;
       const jr = this.unit.jellyRadius || 90;
       const jd = Math.round((this.unit.jellyDmg || 35) * Math.pow(1.25, this.level - 1));
       let jn = 0;
@@ -2642,7 +2666,7 @@ class Hero {
       }
       if (jn) {
         this.game.explosions.push({ x: this.x, y: this.y, r: 0, maxR: jr, life: 0.4, maxLife: 0.4, rgb: '155,255,170' });
-        this.game.floaters.push({ x: this.x, y: this.y - 50, text: T('🍮 ЛИПКОЕ ЖЕЛЕ!'), life: 1.2, maxLife: 1.2, color: '#7dff9e' });
+        this.game.floaters.push({ x: this.x, y: this.y - 50, text: T(this.unit.swordSwing ? '⚔️ ЖЕЛЕЙНЫЙ МЕЧ!' : '🍮 ЛИПКОЕ ЖЕЛЕ!'), life: 1.2, maxLife: 1.2, color: '#7dff9e' });
         Sound.explosion();
       }
     } else if (this.ability === 'stun') {
@@ -2702,6 +2726,31 @@ class Hero {
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     drawUnitFigure(ctx, this.unit, x, y + bob, size, false, 2.2 * (UF_SCALE[this.unit.id] || 1));
     if (this.ability === 'putinCommand') drawSoulsOrbit(ctx, x, y + bob, size * 1.35, size * 0.25, this.soulAngle);
+    if (this.unit.tvAttack && this.tvGlowT > 0) {
+      const kk = size / 150 * 2.2 * (UF_SCALE[this.unit.id] || 1);
+      const tvY = this.unit.id === 'jellyTitan' ? -81 : -43;
+      const gy = y + bob + size * 0.05 + tvY * kk;
+      const ga = Math.max(0, this.tvGlowT / 0.3);
+      const gr2 = ctx.createRadialGradient(x, gy, 2, x, gy, 48 * kk);
+      gr2.addColorStop(0, 'rgba(176,255,208,' + (0.85 * ga).toFixed(3) + ')');
+      gr2.addColorStop(0.5, 'rgba(125,255,158,' + (0.4 * ga).toFixed(3) + ')');
+      gr2.addColorStop(1, 'rgba(125,255,158,0)');
+      ctx.fillStyle = gr2;
+      ctx.beginPath(); ctx.arc(x, gy, 48 * kk, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = 'rgba(176,255,208,' + (0.7 * ga).toFixed(3) + ')'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(x, gy, 14 * kk, 0, Math.PI * 2); ctx.stroke();
+    }
+    if (this.unit.swordSwing && this.slashT > 0) {
+      const kk2 = size / 150 * 2.2 * (UF_SCALE[this.unit.id] || 1);
+      const sp = 1 - this.slashT / 0.35;
+      const sw = -1.3 + sp * 2.4;
+      ctx.save(); ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.arc(x, y + bob, 60 * kk2, sw - 0.9, sw);
+      ctx.strokeStyle = 'rgba(176,255,208,' + (0.75 * (1 - sp)).toFixed(3) + ')'; ctx.lineWidth = 10; ctx.stroke();
+      ctx.beginPath(); ctx.arc(x, y + bob, 60 * kk2, sw - 0.9, sw);
+      ctx.strokeStyle = 'rgba(255,255,255,' + (0.85 * (1 - sp)).toFixed(3) + ')'; ctx.lineWidth = 3.5; ctx.stroke();
+      ctx.restore();
+    }
     ctx.save(); ctx.translate(x, y + bob); ctx.rotate(this.angle);
     const rec = this.shootAnim > 0 ? -7 * (this.shootAnim / 0.14) : 0;
     ctx.beginPath(); ctx.moveTo(rec, 0); ctx.lineTo(size * 0.55 + rec, 0);
@@ -3271,6 +3320,7 @@ class Game {
     this.floaters = [];
     this.beams = [];
     this.soulFlyers = [];
+    this.soulBolts = [];
     this.waveTime = 0;
     this._uiThrottle = 0;
     this.shake = 0;
@@ -3322,6 +3372,7 @@ class Game {
     this.grid = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
     this.beams = [];
     this.soulFlyers = [];
+    this.soulBolts = [];
     this.waveTime = 0;
     this.shake = 0;
     this.waveManager = new WaveManager(this);
@@ -3784,6 +3835,7 @@ class Game {
     }
     this.updateAirDrones(dt);
     this.updateSoulFlyers(dt);
+    this.updateSoulBolts(dt);
   }
   updateAirDrones(dt) {
     for (let i = this.airDrones.length - 1; i >= 0; i--) {
@@ -3826,6 +3878,23 @@ class Game {
         f.t.stunTimer = 0;
         this.explosions.push({ x: f.t.x, y: ty, r: 0, maxR: 40, life: 0.4, maxLife: 0.4, rgb: '61,255,110' });
         this.soulFlyers.splice(i, 1);
+      }
+    }
+  }
+  updateSoulBolts(dt) {
+    for (let i = this.soulBolts.length - 1; i >= 0; i--) {
+      const b = this.soulBolts[i];
+      b.life -= dt;
+      if (b.life <= 0 || !b.tgt || b.tgt.hp <= 0 || b.tgt.reachedEnd) {
+        const alt = this.enemies.find(e => e.hp > 0 && !e.reachedEnd && dist(b.x, b.y, e.x, e.y) <= 340);
+        if (alt && b.life > 0) { b.tgt = alt; } else { this.soulBolts.splice(i, 1); continue; }
+      }
+      const tx = b.tgt.x, ty = b.tgt.y - 24;
+      const kk = Math.min(1, (b.spd * dt) / (dist(b.x, b.y, tx, ty) || 1));
+      b.x += (tx - b.x) * kk; b.y += (ty - b.y) * kk;
+      if (dist(b.x, b.y, tx, ty) < 20) {
+        b.hero.applySoul(b.soul, b.x, b.y);
+        this.soulBolts.splice(i, 1);
       }
     }
   }
@@ -4023,6 +4092,13 @@ class Game {
       ctx.setLineDash([12, 9]); ctx.lineDashOffset = -(Date.now() / 1000) * 24;
       ctx.strokeStyle = COLORS.heroRangeBorder; ctx.lineWidth = 2; ctx.stroke();
       ctx.setLineDash([]);
+      if (t.unit.jellyRadius) {
+        ctx.beginPath(); ctx.arc(t.x, t.y, t.unit.jellyRadius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(190,80,255,0.10)'; ctx.fill();
+        ctx.setLineDash([10, 8]); ctx.lineDashOffset = (Date.now() / 1000) * 20;
+        ctx.strokeStyle = 'rgba(190,80,255,0.65)'; ctx.lineWidth = 2; ctx.stroke();
+        ctx.setLineDash([]);
+      }
       const prc = RARITY_COLOR[t.unit.rarity] || '#ffd966';
       const pulse = 0.5 + 0.5 * Math.sin(Date.now() / 240);
       ctx.beginPath(); ctx.arc(t.x, t.y, CELL * 0.52 * Math.max(t.cw || 1, t.ch || 1) + pulse * 3, 0, Math.PI * 2);
@@ -4073,6 +4149,7 @@ class Game {
       ctx.globalAlpha = 1;
     }
     for (const f of this.soulFlyers) drawSoulHeart(ctx, f.x, f.y, 11, f.color);
+    for (const b of (this.soulBolts || [])) drawSoulHeart(ctx, b.x, b.y, 12, b.soul.color);
     for (const ex of this.explosions) {
       const alpha = Math.max(0, ex.life / ex.maxLife);
       const ec = ex.rgb || '255,170,51';
@@ -4140,6 +4217,14 @@ class Game {
     ctx.fillStyle = valid ? `rgba(255,217,102,${0.08 + 0.05 * pl})` : 'rgba(255,80,80,0.10)'; ctx.fill();
     ctx.strokeStyle = valid ? `rgba(255,217,102,${0.45 + 0.3 * pl})` : 'rgba(255,80,80,0.65)';
     ctx.lineWidth = 2; ctx.stroke();
+    if (unit.jellyRadius) {
+      ctx.beginPath(); ctx.arc(fx, fy, unit.jellyRadius, 0, Math.PI * 2);
+      ctx.fillStyle = valid ? `rgba(190,80,255,${0.08 + 0.05 * pl})` : 'rgba(190,80,255,0.10)'; ctx.fill();
+      ctx.setLineDash([10, 8]);
+      ctx.strokeStyle = valid ? `rgba(190,80,255,${0.45 + 0.3 * pl})` : 'rgba(190,80,255,0.65)';
+      ctx.lineWidth = 2; ctx.stroke();
+      ctx.setLineDash([]);
+    }
     const inset = 2 + 3 * pl;
     ctx.fillStyle = valid ? `rgba(255,217,102,${0.15 + 0.2 * pl})` : 'rgba(255,80,80,0.25)';
     ctx.beginPath(); ctx.roundRect(col * CELL + inset, row * CELL + inset, cw * CELL - inset * 2, ch * CELL - inset * 2, 6); ctx.fill();
@@ -5704,7 +5789,7 @@ class FrontGame {
     this.baseHp = 10000; this.baseMaxHp = 10000;
     this.myHp = 10000; this.myMaxHp = 10000;
     this.mine = []; this.enemies = []; this.tracers = []; this.explosions = []; this.floaters = [];
-    this.spawnCount = {}; this.upg = { dmg: 0, hp: 0, spd: 0 }; this.allyDrones = []; this.soulFlyers = [];
+    this.spawnCount = {}; this.upg = { dmg: 0, hp: 0, spd: 0 }; this.allyDrones = []; this.soulFlyers = []; this.soulBolts = [];
     this.enemyTimer = 1.2; this.shahedTimer = 22; this.shahedWarn = null;
     this.selectedLane = 0; this.unitIds = this.frontLoadout();
     this.kills = 0; this.gameOver = false; this.victory = false; this.baseRazed = false;
@@ -5961,6 +6046,8 @@ class FrontGame {
         m.jellyC = (m.jellyC || (u.jellyCd || 3)) - dt;
         if (m.jellyC <= 0) {
           m.jellyC = u.jellyCd || 3;
+          if (u.tvAttack) m.tvGlowT = 0.3;
+          if (u.swordSwing) m.slashT = 0.35;
           let jn = 0;
           for (const e of this.enemies) {
             if (e.lane !== m.lane || e.x < m.x || e.x - m.x > (u.jellyRadius || 90)) continue;
@@ -5971,7 +6058,7 @@ class FrontGame {
           }
           if (jn) {
             this.explosions.push({ x: m.x + 100, y: m.y, r: 0, maxR: u.jellyRadius || 90, life: 0.4, maxLife: 0.4, rgb: '155,255,170' });
-            this.floaters.push({ x: m.x, y: m.y - 60, text: T('🍮 ЛИПКОЕ ЖЕЛЕ!'), life: 1, maxLife: 1, color: '#7dff9e' });
+            this.floaters.push({ x: m.x, y: m.y - 60, text: T(u.swordSwing ? '⚔️ ЖЕЛЕЙНЫЙ МЕЧ!' : '🍮 ЛИПКОЕ ЖЕЛЕ!'), life: 1, maxLife: 1, color: '#7dff9e' });
           }
         }
       }
@@ -5990,31 +6077,26 @@ class FrontGame {
         if (m.soulT <= 0) {
           m.soulT = 5;
           const soul = PUTIN_SOULS[(m.soulIdx || 0) % PUTIN_SOULS.length]; m.soulIdx = ((m.soulIdx || 0) + 1) % PUTIN_SOULS.length;
-          let n = 0;
-          for (const e of this.enemies) {
-            if (e.lane !== m.lane || e.x < m.x || e.x - m.x > 210) continue;
-            n++;
-            if (soul.k === 'determination') { e.hp -= m.dmg * 1.8; m.eyeT = 5; }
-            else if (soul.k === 'patience') { e.slowT = 3; e.slowF = 0.6; }
-            else if (soul.k === 'bravery') { e.burnT = 4; e.burnDps = m.dmg * 0.25; e.burnTick = 0.5; }
-            else if (soul.k === 'integrity') e.stunT = 1.5;
-            else if (soul.k === 'perseverance') e.vulnT = 5;
-            else if (soul.k === 'justice') e.hp -= m.dmg * 1.2;
-          }
+          this.floaters.push({ x: m.x, y: m.y - 78, text: fill(T('ДУША: %1'), soul.name), life: 2.5, maxLife: 2.5, color: soul.color });
           if (soul.k === 'kindness') {
             let tm = null, bs2 = 1e9;
             for (const m2 of this.mine) {
               const sc2 = (m2.hp / m2.maxHp) * 1000 + Math.abs(m2.x - m.x);
               if (sc2 < bs2) { bs2 = sc2; tm = m2; }
             }
-            if (tm) this.soulFlyers.push({ x: m.x + 140, y: m.y, t: tm, color: soul.color, life: 5 });
+            if (tm) this.soulFlyers.push({ x: m.x, y: m.y - 60, t: tm, color: soul.color, life: 5 });
+          } else {
+            let tgt = null;
+            for (const e of this.enemies) {
+              if (e.lane !== m.lane || e.x < m.x || e.x - m.x > 210 || e.hp <= 0) continue;
+              if (!tgt || e.x < tgt.x) tgt = e;
+            }
+            if (tgt) this.soulBolts.push({ x: m.x, y: m.y - 60, tgt, m, soul, spd: 420, life: 3 });
           }
-          if (n) this.explosions.push({ x: m.x + 140, y: m.y, r: 0, maxR: 80, life: 0.4, maxLife: 0.4, rgb: hexToRgbStr(soul.color) });
-          this.floaters.push({ x: m.x, y: m.y - 78, text: fill(T('ДУША: %1'), soul.name), life: 2.5, maxLife: 2.5, color: soul.color });
         }
-        m.sumT = (m.sumT || 5) - dt;
+        m.sumT = (m.sumT || 12) - dt;
         if (m.sumT <= 0) {
-          m.sumT = 9;
+          m.sumT = 12;
           this.allyDrones.push({ x: m.x + 10, y: m.y - 40, lane: m.lane, dmg: m.dmg * 1.5, life: 8 });
         }
       }
@@ -6036,6 +6118,8 @@ class FrontGame {
       }
       if (!target && m.x < FRONT_REACH_X) m.x += m.speed * (m.buffT > 0 ? 1.25 : 1) * dt;
       if (m.buffT > 0) m.buffT -= dt;
+      if (m.tvGlowT > 0) m.tvGlowT -= dt;
+      if (m.slashT > 0) m.slashT -= dt;
       m.cd -= dt;
       if (m.cd <= 0) {
         if (target) {
@@ -6043,6 +6127,7 @@ class FrontGame {
           target.hp -= m.dmg * (target.vulnT > 0 ? 1.3 : 1);
           const su = this.unitDef(m.id);
           if (su && su.ability === 'slow') { target.slowT = 2.5; if (su.slowOnHit) target.slowF = 1 - su.slowOnHit; }
+          if (su && su.tvAttack) m.tvGlowT = 0.3;
           if (su && su.splashRadius) {
             for (const e2 of this.enemies) {
               if (e2 !== target && e2.lane === m.lane && Math.abs(e2.x - target.x) <= su.splashRadius) e2.hp -= m.dmg * 0.7 * (e2.vulnT > 0 ? 1.3 : 1);
@@ -6072,6 +6157,32 @@ class FrontGame {
         f.t.stunT = 0; f.t.stunTimer = 0;
         this.explosions.push({ x: f.t.x, y: ty, r: 0, maxR: 40, life: 0.4, maxLife: 0.4, rgb: '61,255,110' });
         this.soulFlyers.splice(i, 1);
+      }
+    }
+    for (let i = (this.soulBolts || []).length - 1; i >= 0; i--) {
+      const b = this.soulBolts[i];
+      b.life -= dt;
+      if (b.life <= 0 || !b.tgt || b.tgt.hp <= 0) {
+        const alt = this.enemies.find(e => e.lane === b.m.lane && e.hp > 0 && e.x >= b.m.x && e.x - b.m.x <= 210);
+        if (alt && b.life > 0) { b.tgt = alt; } else { this.soulBolts.splice(i, 1); continue; }
+      }
+      const ty2 = b.tgt.y - 30;
+      const kk = Math.min(1, (b.spd * dt) / (dist(b.x, b.y, b.tgt.x, ty2) || 1));
+      b.x += (b.tgt.x - b.x) * kk; b.y += (ty2 - b.y) * kk;
+      if (dist(b.x, b.y, b.tgt.x, ty2) < 24) {
+        let n = 0;
+        for (const e of this.enemies) {
+          if (e.lane !== b.m.lane || e.x < b.m.x || e.x - b.m.x > 210 || e.hp <= 0) continue;
+          n++;
+          if (b.soul.k === 'determination') { e.hp -= b.m.dmg * 1.8; b.m.eyeT = 5; }
+          else if (b.soul.k === 'patience') { e.slowT = 3; e.slowF = 0.6; }
+          else if (b.soul.k === 'bravery') { e.burnT = 4; e.burnDps = b.m.dmg * 0.25; e.burnTick = 0.5; }
+          else if (b.soul.k === 'integrity') e.stunT = 1.5;
+          else if (b.soul.k === 'perseverance') e.vulnT = 5;
+          else if (b.soul.k === 'justice') e.hp -= b.m.dmg * 1.2;
+        }
+        if (n) this.explosions.push({ x: b.tgt.x, y: b.tgt.y, r: 0, maxR: 80, life: 0.4, maxLife: 0.4, rgb: hexToRgbStr(b.soul.color) });
+        this.soulBolts.splice(i, 1);
       }
     }
     for (let i = this.enemies.length - 1; i >= 0; i--) {
@@ -6206,6 +6317,26 @@ class FrontGame {
       ctx.fillStyle = '#000'; ctx.beginPath(); ctx.ellipse(m.x, m.y + figSz * 0.34, 22, 7, 0, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
       drawUnitFigure(ctx, u, m.x, m.y - 10, figSz, false, us);
+      if (u.tvAttack && m.tvGlowT > 0) {
+        const gy = m.y - 10 + figSz * 0.05 + (m.id === 'jellyTitan' ? -81 : -43) * k;
+        const ga = Math.max(0, m.tvGlowT / 0.3);
+        const gr2 = ctx.createRadialGradient(m.x, gy, 2, m.x, gy, 48 * k);
+        gr2.addColorStop(0, 'rgba(176,255,208,' + (0.85 * ga).toFixed(3) + ')');
+        gr2.addColorStop(0.5, 'rgba(125,255,158,' + (0.4 * ga).toFixed(3) + ')');
+        gr2.addColorStop(1, 'rgba(125,255,158,0)');
+        ctx.fillStyle = gr2;
+        ctx.beginPath(); ctx.arc(m.x, gy, 48 * k, 0, Math.PI * 2); ctx.fill();
+      }
+      if (u.swordSwing && m.slashT > 0) {
+        const sp = 1 - m.slashT / 0.35;
+        const sw = -1.3 + sp * 2.4;
+        ctx.save(); ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.arc(m.x, m.y - 10, 60 * k, sw - 0.9, sw);
+        ctx.strokeStyle = 'rgba(176,255,208,' + (0.75 * (1 - sp)).toFixed(3) + ')'; ctx.lineWidth = 9; ctx.stroke();
+        ctx.beginPath(); ctx.arc(m.x, m.y - 10, 60 * k, sw - 0.9, sw);
+        ctx.strokeStyle = 'rgba(255,255,255,' + (0.85 * (1 - sp)).toFixed(3) + ')'; ctx.lineWidth = 3; ctx.stroke();
+        ctx.restore();
+      }
       if (m.id === 'putin') drawSoulsOrbit(ctx, m.x, m.y - 12, 64, 16, m.soulA || 0);
       ctx.fillStyle = '#25324a'; ctx.fillRect(m.x - 22, barY, 44, 5);
       ctx.fillStyle = '#7fffa0'; ctx.fillRect(m.x - 22, barY, Math.round(44 * clamp(m.hp / m.maxHp, 0, 1)), 5);
@@ -6228,6 +6359,7 @@ class FrontGame {
     }
     for (const d of (this.allyDrones || [])) drawShahedModel(ctx, d.x, d.y, 1.1, true);
     for (const f of (this.soulFlyers || [])) drawSoulHeart(ctx, f.x, f.y, 9, f.color);
+    for (const b of (this.soulBolts || [])) drawSoulHeart(ctx, b.x, b.y, 10, b.soul.color);
     for (const tr of this.tracers) {
       ctx.strokeStyle = tr.color; ctx.globalAlpha = Math.min(1, tr.life / 0.07);
       ctx.beginPath(); ctx.moveTo(tr.x1, tr.y1); ctx.lineTo(tr.x2, tr.y2); ctx.stroke();
