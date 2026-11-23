@@ -93,6 +93,29 @@
 .crate-pool{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:8px 0 4px}
 .crate-pool .sc-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.72rem}
 .crate-price{font-weight:800;color:#7ee7ff;font-size:1.05rem}
+.shop-panel{position:relative;width:100%;max-width:1000px;background:linear-gradient(170deg,#2a5bd7e6,#173a9bee);border:3px solid #ffffffd9;border-radius:26px;padding:18px 20px 22px;box-shadow:0 14px 44px #000a, inset 0 0 0 3px #6fa2ff44}
+.shop-close{position:absolute;top:-14px;right:-14px;width:44px;height:44px;border-radius:14px;border:3px solid #fff;background:linear-gradient(180deg,#ff5a5a,#c81e1e);color:#fff;font-size:1.25rem;font-weight:800;cursor:pointer;box-shadow:0 6px 16px #0009;z-index:2}
+.shop-close:hover{filter:brightness(1.12)}
+.shop-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.shop-title{margin:0;font-size:2rem;font-weight:900;letter-spacing:2px;color:#fff;text-shadow:0 3px 0 #00000055,0 0 26px #bfe0ff88}
+.shop-currency{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#0e2c6e,#1b4bb5);border:3px solid #ffffffd9;border-radius:16px;padding:8px 16px;font-weight:900;font-size:1.1rem;color:#ffe08a;box-shadow:0 6px 16px #0007}
+.shop-tabs{display:flex;gap:10px;margin:14px 0 4px;flex-wrap:wrap}
+.shop-tab{background:linear-gradient(180deg,#4e83ff,#2854c4);border:3px solid #ffffffd0;border-radius:16px;color:#fff;font-weight:900;font-size:1rem;letter-spacing:1px;padding:10px 22px;cursor:pointer;box-shadow:0 6px 0 #1a3c96,0 8px 18px #0007;transition:transform .08s ease,filter .12s ease}
+.shop-tab:hover{transform:translateY(-1px);filter:brightness(1.08)}
+.shop-tab.active{background:linear-gradient(180deg,#9fdcff,#5fb4f5);border-color:#fff;color:#123368;box-shadow:0 6px 0 #3b87bd,0 8px 18px #0007}
+.shop-note{text-align:center;opacity:.9;color:#eaf3ff;font-size:.9rem;margin:6px 0 10px}
+.shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;width:100%}
+.shop-card{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;background:linear-gradient(170deg,#ffffff24,#ffffff10);border:3px solid #ffffffd9;border-radius:20px;padding:14px 12px;box-shadow:0 8px 20px #0006, inset 0 0 18px #0000002e}
+.shop-card .crate-emoji{font-size:3rem;filter:drop-shadow(0 4px 10px #0008)}
+.shop-card .u-name{font-weight:900;font-size:1.05rem;text-shadow:0 2px 6px #000a;text-align:center}
+.shop-card .u-desc{color:#eaf3ff;font-size:.82rem;opacity:.92;text-align:center}
+.shop-card .crate-pool{margin:4px 0}
+.shop-price{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#0e2c6e,#1b4bb5);border:2px solid #ffffffcc;border-radius:14px;padding:6px 14px;font-weight:900;color:#ffe08a;box-shadow:0 4px 10px #0006}
+.shop-buy{width:100%;background:linear-gradient(180deg,#4bd14b,#2ca52c);border:3px solid #ffffffd9;border-radius:16px;color:#fff;font-weight:900;font-size:1rem;letter-spacing:1px;padding:11px 14px;cursor:pointer;box-shadow:0 6px 0 #1d7a1d,0 8px 18px #0007;transition:transform .08s ease,filter .12s ease}
+.shop-buy:hover{filter:brightness(1.1)}
+.shop-buy:active{transform:translateY(3px);box-shadow:0 3px 0 #1d7a1d}
+.shop-buy.alt{background:linear-gradient(180deg,#ffd54d,#e8a51e);box-shadow:0 6px 0 #a56f0a,0 8px 18px #0007;color:#3d2b00}
+@media (max-width:640px){.shop-panel{padding:14px 12px 18px;border-radius:18px}.shop-title{font-size:1.4rem}.shop-currency{padding:6px 12px;font-size:.95rem}.shop-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px}.shop-tab{padding:8px 14px;font-size:.85rem;box-shadow:0 4px 0 #1a3c96,0 6px 12px #0007}.shop-close{width:38px;height:38px;top:-12px;right:-10px}.shop-buy{padding:9px 10px;font-size:.9rem;box-shadow:0 4px 0 #1d7a1d,0 6px 12px #0007}.shop-buy.alt{box-shadow:0 4px 0 #a56f0a,0 6px 12px #0007}}
 .q-card{background:#141a26;border:1px solid #2a3a4e;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
 .q-card.q-done{border-color:#4dff8888}
 .q-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
@@ -489,14 +512,18 @@
 
 <!-- МАГАЗИН -->
 <div class="screen" id="shopScreen">
-  <div class="subpanel">
-    <button class="btn small back-btn" id="shopBack">← ЛОББИ</button>
-    <div class="panel-head">
-      <h2 class="panel-title">🛒 МАГАЗИН КРЕЙТОВ</h2>
-      <div class="coin-badge"><span>💎</span> <span id="metaCrystalsShop">0</span></div>
+  <div class="shop-panel">
+    <button class="shop-close" id="shopBack" title="Закрыть">✕</button>
+    <div class="shop-head">
+      <h2 class="shop-title">🛒 МАГАЗИН</h2>
+      <div class="shop-currency">💎 <span id="metaCrystalsShop">0</span></div>
     </div>
-    <div style="text-align:center;opacity:.7;margin:8px 0 4px;font-size:.9rem">Купленные крейты складываются в «Вещи» инвентаря — там их можно открыть</div>
-    <div class="cards-grid" id="shopGrid" style="margin-top:10px"></div>
+    <div class="shop-tabs">
+      <button class="shop-tab active" data-shop-tab="potions">🧪 ЗЕЛЬЯ</button>
+      <button class="shop-tab" data-shop-tab="crates">🎁 КРЕЙТЫ</button>
+    </div>
+    <div class="shop-note">Купленные крейты складываются в «Вещи» инвентаря — там их можно открыть</div>
+    <div class="shop-grid" id="shopGrid"></div>
   </div>
 </div>
 
@@ -1074,6 +1101,9 @@ const I18N_EN = {
   "🛒 МАГАЗИН": "🛒 SHOP",
   "📜 КВЕСТЫ": "📜 QUESTS",
   "🛒 МАГАЗИН КРЕЙТОВ": "🛒 CRATE SHOP",
+  "🛒 МАГАЗИН": "🛒 SHOP",
+  "🧪 ЗЕЛЬЯ": "🧪 POTIONS",
+  "🎁 КРЕЙТЫ": "🎁 CRATES",
   "Победи в бою": "Win a battle",
   "Пройди 5 волн": "Clear 5 waves",
   "Убей 100 скибиди": "Kill 100 skibidi",
@@ -5533,19 +5563,19 @@ const App = {
     const grid = document.getElementById('shopGrid');
     if (!grid) return;
     grid.innerHTML = '';
-    for (const pt of POTIONS) {
+    for (const pt of (this.shopTab || 'potions') === 'crates' ? [] : POTIONS) {
       const cCol = pt.id === 'luck' ? '#d9b0ff' : '#ffe08a';
       const card = document.createElement('div');
-      card.className = 'unit-card';
+      card.className = 'shop-card';
       card.style.borderColor = pt.id === 'luck' ? '#8a5fbf' : '#a88a2a';
       card.innerHTML = `
         <div class="crate-emoji" style="text-shadow:0 0 18px ${cCol}88">${pt.emoji}</div>
         <div class="u-name" style="color:${cCol}">${T(pt.name)}</div>
         <div class="u-desc">${T(pt.desc)}</div>
-        <div class="crate-price"><span id="potionTimer-${pt.id}" style="color:#7fffa0;font-weight:800"></span>💎 ${pt.cost}</div>
+        <div class="shop-price"><span id="potionTimer-${pt.id}" style="color:#7fffa0;font-weight:800"></span>💎 ${pt.cost}</div>
         <div class="u-actions"></div>`;
       const buy = document.createElement('button');
-      buy.className = 'btn small ' + (SaveManager.potionActive(pt.id) ? 'accent' : 'gold');
+      buy.className = 'shop-buy' + (SaveManager.potionActive(pt.id) ? ' alt' : '');
       const wasActive = SaveManager.potionActive(pt.id);
       buy.textContent = T(wasActive ? '🔁 ПРОДЛИТЬ (+10 МИН)' : '💊 КУПИТЬ ЗЕЛЬЕ');
       buy.addEventListener('click', () => {
@@ -5565,20 +5595,20 @@ const App = {
       card.querySelector('.u-actions').appendChild(buy);
       grid.appendChild(card);
     }
-    for (const c of SHOP_CRATES) {
+    for (const c of (this.shopTab || 'potions') === 'crates' ? SHOP_CRATES : []) {
       if (c.eventOnly) continue;
       const card = document.createElement('div');
-      card.className = 'unit-card crate-card';
+      card.className = 'shop-card crate-card';
       card.style.borderColor = c.color;
       card.innerHTML = `
         <div class="crate-emoji" style="text-shadow:0 0 18px ${c.color}88">${c.emoji}</div>
         <div class="u-name" style="color:${c.color}">${T(c.name)}</div>
         <div class="u-desc">${T(c.desc)}</div>
         <div class="crate-pool">${this.cratePoolHTML(c)}</div>
-        <div class="crate-price">💎 ${c.cost}</div>
+        <div class="shop-price">💎 ${c.cost}</div>
         <div class="u-actions"></div>`;
       const buy = document.createElement('button');
-      buy.className = 'btn small gold';
+      buy.className = 'shop-buy';
       buy.textContent = T('КУПИТЬ КРЕЙТ');
       buy.addEventListener('click', () => {
         if (SaveManager.crystals < c.cost) {
@@ -5809,6 +5839,12 @@ const App = {
     document.getElementById('indexCloseX').addEventListener('click', closeIndex);
     document.getElementById('inventoryBack').addEventListener('click', () => this.showLobby());
     document.getElementById('shopBack').addEventListener('click', () => this.showLobby());
+    for (const tb of document.querySelectorAll('.shop-tab')) tb.addEventListener('click', () => {
+      if (this.shopTab === tb.dataset.shopTab) return;
+      this.shopTab = tb.dataset.shopTab;
+      for (const b of document.querySelectorAll('.shop-tab')) b.classList.toggle('active', b === tb);
+      this.renderShop();
+    });
     document.getElementById('questsBack').addEventListener('click', () => this.showLobby());
     document.getElementById('unitSelectBack').addEventListener('click', () => this.showLobby());
     document.getElementById('unitSelectNext').addEventListener('click', () => this.showDifficultySelect());
