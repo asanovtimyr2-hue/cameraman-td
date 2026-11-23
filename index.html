@@ -753,6 +753,20 @@ const I18N_EN = {
   "Желейный нападающий: кидает липкое желе — 35 урона по площади и замедление 10% на 2 сек (кд 3 сек). Из своего телевизора бьёт AOE-импульсом: 70 урона, радиус 65, кд 0.6 сек. Цена в «Столице»: 479🪙.": "Jelly attacker: throws sticky jelly — 35 area damage and 10% slow for 2s (cd 3s). Fires an AOE blast from his TV: 70 damage, radius 65, cd 0.6s. Capital price: 479.",
   "Всенаправленный желеныш: стреляет желейным лазером — 105 урона, замедление 25%, кд 0.6 сек. Цена в «Столице»: 250🪙.": "Jelly marksman: fires a jelly laser — 105 damage, 25% slow, cd 0.6s. Capital price: 250.",
   "Желе-колосс: бьёт большим желейным мечом раз в 3 сек — 450 урона + замедление 35%. Его телевизоры бьют AOE: 100 урона, радиус 85, кд 0.6 сек. Цена в «Столице»: 2000🪙.": "Jelly colossus: swings a big jelly sword every 3s — 450 damage + 35% slow. His TVs fire AOE: 100 damage, radius 85, cd 0.6s. Capital price: 2000.",
+  "🎪 Цирк Ужасов": "🎪 CIRCUS OF HORRORS",
+  "Клоун Джокер 69.9%, Фокусник Мираж 30%, Директор Цирка Титан 0.1%. Из цирка ужасов.": "CLOWN JOKER 69.9%, MIRAGE MAGICIAN 30%, RINGMASTER CIRCUS TITAN 0.1%. From the circus of horrors.",
+  "🤡 Клоун Джокер": "🤡 CLOWN JOKER",
+  "Жонглёр огнём: его огненные булавы поджигают врага — урон огнём 35% от урона атаки в секунду на 3 сек, кд атаки 0.7 сек. Цена в «Столице»: 479🪙.": "Fire juggler: his flaming pins set enemies ablaze — burn damage of 35% of the attack per second for 3s, attack cd 0.7s. Capital price: 479.",
+  "🎩 Фокусник Мираж": "🎩 MIRAGE MAGICIAN",
+  "Гипнотизёр: раз в 8 сек показывает гипно-фокус — оглушает врагов вокруг на 1.5 сек и оставляет «печать удивления» (+30% урона по меченным) на 4 сек. Цена в «Столице»: 1200🪙.": "Hypnotist: every 8s performs a hypno trick — stuns nearby enemies for 1.5s and leaves an astonishment mark (+30% damage to marked) for 4s. Capital price: 1200.",
+  "🎪 Директор Цирка Титан": "🎪 RINGMASTER CIRCUS TITAN",
+  "Хозяин арены: раз в 9 сек даёт цирковой залп из пушки — конфетти-взрыв (урон ×2.2 по площади) и оглушение 0.8 сек, а во 2-м режиме ещё и отбрасывает врагов назад на 70. Цена в «Столице»: 2400🪙.": "Master of the arena: every 9s fires the circus cannon — a confetti blast (2.2x area damage) and a 0.8s stun; in mode 2 it also knocks enemies back by 70. Capital price: 2400.",
+  "🔥 Поджигает врагов своими попаданиями (урон огнём)": "🔥 Sets enemies on fire with its hits (burn damage)",
+  "🎩 Гипно-фокус: оглушение врагов на 1.5 сек + печать удивления (+30% урона)": "🎩 Hypno trick: 1.5s stun + astonishment mark (+30% damage)",
+  "🎪 Цирковая пушка: конфетти-залп (урон ×2.2 по площади) + оглушение, отбрасывает врагов": "🎪 Circus cannon: confetti salvo (2.2x area damage) + stun, knocks enemies back",
+  "Поджог": "Burn",
+  "🎩 ГИПНОЗ!": "🎩 HYPNOSIS!",
+  "🎪 КОНФЕТТИ-ЗАЛП!": "🎪 CONFETTI SALVO!",
   "Стажёр": "Intern",
   "Новобранец": "Rookie",
   "Молодой боец альянса. Дешёвый и надёжный старт против скибиди.": "Young alliance fighter. A cheap and reliable start against skibidis.",
@@ -1241,9 +1255,10 @@ const UNIT_ATK = {
   titanCam40: 'laser',
   mobilCam: 'bullet', zovSpeaker: 'wave', putin: 'rocket', camShahed: 'voxel',
   amerFarm: 'cash', zelensky: 'coin',
-  jellyTV: 'wave', jellyDrone: 'laser', jellyTitan: 'wave'
+  jellyTV: 'wave', jellyDrone: 'laser', jellyTitan: 'wave',
+  clownJoker: 'shell', mirageMagician: 'voxel', circusRingmaster: 'shell'
 };
-const UNIT_CELLS = { titanCam: [2, 1], titanTV: [2, 1], titanSpeaker: [2, 1], putin: [2, 1], zelensky: [2, 1], jellyTitan: [2, 1] };
+const UNIT_CELLS = { titanCam: [2, 1], titanTV: [2, 1], titanSpeaker: [2, 1], putin: [2, 1], zelensky: [2, 1], jellyTitan: [2, 1], circusRingmaster: [2, 1] };
 function unitCells(id) { return UNIT_CELLS[id] || [1, 1]; }
 function rarityGlowClass(u) {
   if (!u) return '';
@@ -1269,7 +1284,10 @@ const ABILITY_RU = {
   'stun': '🌟 Периодически оглушает врагов вокруг',
   'splash': '💥 Снаряды взрываются по площади',
   'spawner': '🚀 Спавнит шахедов-камикадзе (самый крутой на 5-м уровне)',
-  'jellyThrow': '🍮 Кидает липкое желе: урон по площади + замедление врагов'
+  'jellyThrow': '🍮 Кидает липкое желе: урон по площади + замедление врагов',
+  'burn': '🔥 Поджигает врагов своими попаданиями (урон огнём)',
+  'hypno': '🎩 Гипно-фокус: оглушение врагов на 1.5 сек + печать удивления (+30% урона)',
+  'cannonShot': '🎪 Цирковая пушка: конфетти-залп (урон ×2.2 по площади) + оглушение, отбрасывает врагов'
 };
 
 const GACHA_BOXES = [
@@ -1329,7 +1347,8 @@ const UNIT_LIMITS = {
   snipercam: 5, hacker: 3, shadowop: 3,
   cinegod: 1, titanCam40: 1,
   mobilCam: 10, zovSpeaker: 6, putin: 1, camShahed: 4, amerFarm: 4, zelensky: 1,
-  jellyTV: 8, jellyDrone: 4, jellyTitan: 2
+  jellyTV: 8, jellyDrone: 4, jellyTitan: 2,
+  clownJoker: 8, mirageMagician: 4, circusRingmaster: 1
 };
 function unitLimit(id) { return UNIT_LIMITS[id] || MAX_HEROES; }
 function unitBuildPrice(u) { return (u && u.frontCost != null ? u.frontCost : (RARITY_COST[u.rarity] || 100)); }
@@ -1470,7 +1489,19 @@ const UNITS = [
   { id: 'jellyTitan', name: '👑 Желе Титан ТВ Мен', emoji: '📺', rarity: 'Special', dropChance: 0.001, frontCost: 2000,
     desc: 'Желе-колосс: бьёт большим желейным мечом раз в 3 сек — 450 урона + замедление 35%. Его телевизоры бьют AOE: 100 урона, радиус 85, кд 0.6 сек. Цена в «Столице»: 2000🪙.',
     stats: { dmg: 100, range: 185, fireRate: 0.6, hp: 1400 },
-    passive: { dmgBonus: 0.2, moneyBonus: 0 }, tvAttack: true, swordSwing: true, rateFloor: 0.6, ability: 'jellyThrow', splashRadius: 85, jellyRadius: 130, jellyDmg: 450, jellySlow: 0.35, jellySlowT: 2, jellyCd: 3 }
+    passive: { dmgBonus: 0.2, moneyBonus: 0 }, tvAttack: true, swordSwing: true, rateFloor: 0.6, ability: 'jellyThrow', splashRadius: 85, jellyRadius: 130, jellyDmg: 450, jellySlow: 0.35, jellySlowT: 2, jellyCd: 3 },
+  { id: 'clownJoker', name: '🤡 Клоун Джокер', emoji: '🤡', rarity: 'Special', dropChance: 0.699, frontCost: 479, rateFloor: 0.6,
+    desc: 'Жонглёр огнём: его огненные булавы поджигают врага — урон огнём 35% от урона атаки в секунду на 3 сек, кд атаки 0.7 сек. Цена в «Столице»: 479🪙.',
+    stats: { dmg: 62, range: 170, fireRate: 0.7, hp: 380 },
+    passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'burn', burnOnHit: 0.35 },
+  { id: 'mirageMagician', name: '🎩 Фокусник Мираж', emoji: '🎩', rarity: 'Special', dropChance: 0.3, frontCost: 1200,
+    desc: 'Гипнотизёр: раз в 8 сек показывает гипно-фокус — оглушает врагов вокруг на 1.5 сек и оставляет «печать удивления» (+30% урона по меченным) на 4 сек. Цена в «Столице»: 1200🪙.',
+    stats: { dmg: 100, range: 205, fireRate: 0.85, hp: 450 },
+    passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'hypno' },
+  { id: 'circusRingmaster', name: '🎪 Директор Цирка Титан', emoji: '🎪', rarity: 'Special', dropChance: 0.001, frontCost: 2400, upCostMul: 1.6,
+    desc: 'Хозяин арены: раз в 9 сек даёт цирковой залп из пушки — конфетти-взрыв (урон ×2.2 по площади) и оглушение 0.8 сек, а во 2-м режиме ещё и отбрасывает врагов назад на 70. Цена в «Столице»: 2400🪙.',
+    stats: { dmg: 130, range: 200, fireRate: 0.8, hp: 1500 },
+    passive: { dmgBonus: 0.2, moneyBonus: 0 }, ability: 'cannonShot' }
 ];
 
 function statRange(u) {
@@ -1497,6 +1528,9 @@ function unitTagData(u) {
   if (u.ability === 'spawner' || u.ability === 'putinCommand') tags.push({ k: 'splash', label: T('Спавнер') });
   if (u.ability === 'slow' || u.ability === 'zovShout') tags.push({ k: 'slow', label: T('Замедление') });
   if (u.ability === 'jellyThrow') { tags.push({ k: 'splash', label: T('Splash') }); tags.push({ k: 'slow', label: T('Замедление') }); }
+  if (u.ability === 'burn') tags.push({ k: 'burn', label: T('Поджог') });
+  if (u.ability === 'hypno' || u.ability === 'cannonShot') tags.push({ k: 'stun', label: T('Стан') });
+  if (u.ability === 'cannonShot') tags.push({ k: 'splash', label: T('Splash') });
   if (u.ability === 'stun') tags.push({ k: 'stun', label: T('Стан') });
   if (u.ability === 'speedBoost') tags.push({ k: 'boost', label: T('Бафф скорости') });
   if (u.ability === 'antistan') tags.push({ k: 'antistan', label: T('Анти-стан') });
@@ -1759,7 +1793,10 @@ const SHOP_CRATES = [
     units: ['camShahed', 'amerFarm', 'zelensky'] },
   { id: 'jellyCrate', name: '🍮 Желейный Крейт', emoji: '🍮', cost: 1500, color: '#7dff9e',
     desc: 'Желейный ТВ Мен 69.9%, Желейный Камера Дрон 39.1%, Желе Титан ТВ Мен 0.1%. Из желейного мира.',
-    units: ['jellyTV', 'jellyDrone', 'jellyTitan'] }
+    units: ['jellyTV', 'jellyDrone', 'jellyTitan'] },
+  { id: 'circusCrate', name: '🎪 Цирк Ужасов', emoji: '🎪', cost: 1500, color: '#ff9ade',
+    desc: 'Клоун Джокер 69.9%, Фокусник Мираж 30%, Директор Цирка Титан 0.1%. Из цирка ужасов.',
+    units: ['clownJoker', 'mirageMagician', 'circusRingmaster'] }
 ];
 
 const POTIONS = [
@@ -2365,6 +2402,56 @@ UF_TABLE.jellyTitan = [
   ["C", -13, -86, 1.7, "#eafff2"], ["C", 15, -86, 1.7, "#eafff2"]
 ];
 
+UF_TABLE.clownJoker = [
+  ["R", -12, 18, 9, 20, 4, "#8a2be2"], ["R", 3, 18, 9, 20, 4, "#8a2be2"],
+  ["R", -15, 36, 14, 8, 3, "#e8443a"], ["R", 1, 36, 14, 8, 3, "#e8443a"],
+  ["R", -19, -16, 38, 36, 8, "#b03a8c"],
+  ["C", -19, -14, 3, "#ffd966"], ["C", 19, -14, 3, "#ffd966"],
+  ["L", -19, -6, -33, 4, "#b03a8c", 5], ["L", 19, -6, 33, 4, "#b03a8c", 5],
+  ["E", -33, 6, 5, 7, "#ffd966"], ["E", 33, 6, 5, 7, "#ffd966"],
+  ["C", -33, -3, 1.8, "#ff8ad8"], ["C", 33, -3, 1.8, "#ff8ad8"],
+  ["C", 0, -16, 9, "#ffe9a8"],
+  ["C", 0, -30, 11, "#f4f7fb"],
+  ["E", -12, -40, 6, 8, "#ff7a1a"], ["E", 12, -40, 6, 8, "#ff7a1a"], ["C", 0, -41, 3, "#ff7a1a"],
+  ["C", -4, -32, 1.3, "#20242c"], ["C", 4, -32, 1.3, "#20242c"],
+  ["C", 0, -28, 2.6, "#ff4444"],
+  ["A", 0, -30, 6, 0.35, 2.79, "#c8375a", 2.2]
+];
+UF_TABLE.mirageMagician = [
+  ["R", -11, 20, 9, 22, 4, "#0d1118"], ["R", 2, 20, 9, 22, 4, "#0d1118"],
+  ["R", -14, 40, 13, 8, 3, "#0d1118"], ["R", 1, 40, 13, 8, 3, "#0d1118"],
+  ["R", -19, -14, 38, 36, 8, "#1c2333"],
+  ["R", -6, -14, 12, 20, 3, "#f4f7fb"],
+  ["R", -5, -13, 10, 4, 2, "#c8375a"],
+  ["L", -19, -4, -33, 2, "#1c2333", 5], ["L", 19, -4, 33, 2, "#1c2333", 5],
+  ["R", -38, -3, 8, 6, 1, "#f4f7fb"], ["R", 30, -3, 8, 6, 1, "#c8375a"],
+  ["C", 0, -30, 10, "#e8c8a8"],
+  ["C", -4, -33, 1.3, "#20242c"], ["C", 4, -33, 1.3, "#20242c"],
+  ["R", -5, -27, 10, 2.5, 1.2, "#20242c"],
+  ["R", -13, -42, 26, 4, 2, "#0d1118"],
+  ["R", -9, -56, 18, 15, 2, "#0d1118"],
+  ["R", -9, -46, 18, 4, 1, "#c8375a"]
+];
+UF_TABLE.circusRingmaster = [
+  ["R", -20, 26, 14, 30, 6, "#141a26"], ["R", 6, 26, 14, 30, 6, "#141a26"],
+  ["R", -25, 54, 21, 11, 4, "#0e1219"], ["R", 4, 54, 21, 11, 4, "#0e1219"],
+  ["R", -40, -44, 80, 78, 12, "#8a1f2d"],
+  ["R", -40, -44, 80, 32, 12, "#a52a3a"],
+  ["R", -52, -38, 12, 36, 5, "#8a1f2d"], ["R", 40, -38, 12, 36, 5, "#8a1f2d"],
+  ["C", -58, 2, 6, "#e8c8a8"], ["C", 58, 2, 6, "#e8c8a8"],
+  ["R", -40, 10, 80, 6, 3, "#ffd966"],
+  ["C", 0, -20, 3, "#ffd966"], ["C", 0, -4, 3, "#ffd966"],
+  ["C", 0, -58, 8, "#e8c8a8"],
+  ["E", 0, -84, 18, 24, "#e8c8a8"],
+  ["C", -7, -88, 2.6, "#20242c"], ["C", 7, -88, 2.6, "#20242c"],
+  ["L", -11, -94, -3, -96, "#4a3826", 2], ["L", 3, -96, 11, -94, "#4a3826", 2],
+  ["A", 0, -80, 7, 0.35, 2.79, "#7a3a2e", 2.4],
+  ["R", -19, -108, 38, 6, 3, "#0d1118"],
+  ["R", -13, -128, 26, 21, 3, "#0d1118"],
+  ["R", -13, -114, 26, 5, 2, "#ffd966"],
+  ["L", 46, -16, 68, -54, "#7a3a2e", 4],
+  ["C", 68, -56, 4, "#ffd966"]
+];
 UF_TABLE.amerFarm = UF_TABLE.scientist || UF_TABLE.makeup;
 const UF_SCALE = {
   intern: 0.92, makeup: 0.95, scientist: 0.98, streamer: 1.0, speaker: 1.02,
@@ -2373,7 +2460,8 @@ const UF_SCALE = {
   bodyguard: 1.2, engineer: 1.22, titanCam: 1.42, titanTV: 1.42, titanSpeaker: 1.42,
   mobilCam: 1.0, zovSpeaker: 1.15, putin: 1.35, camShahed: 0.92,
   amerFarm: 1.1, zelensky: 1.35,
-  jellyTV: 1.1, jellyDrone: 1.0, jellyTitan: 1.42
+  jellyTV: 1.1, jellyDrone: 1.0, jellyTitan: 1.42,
+  clownJoker: 1.02, mirageMagician: 1.08, circusRingmaster: 1.42
 };
 /* ============================================================
    5) ЮНИТ (ГЕРОЙ)
@@ -2412,7 +2500,7 @@ class Hero {
     this.isHero = true;
     this.ability = unit.ability;
     this.abilityMaxCd = unit.ability === 'speedBoost' ? 12 : (unit.ability === 'aoeBurst' ? 15 :
-      (unit.ability === 'stun' ? 10 : (unit.ability === 'antistan' ? 12 : (unit.ability === 'spawner' ? 13 : (unit.ability === 'putinCommand' ? 6 : (unit.ability === 'jellyThrow' ? (unit.jellyCd || 3) : 999))))));
+      (unit.ability === 'stun' ? 10 : (unit.ability === 'antistan' ? 12 : (unit.ability === 'spawner' ? 13 : (unit.ability === 'putinCommand' ? 6 : (unit.ability === 'jellyThrow' ? (unit.jellyCd || 3) : (unit.ability === 'hypno' ? 8 : (unit.ability === 'cannonShot' ? 9 : 999))))))));
     this.aoe = (unit.ability === 'splash' || unit.ability === 'zovShout' || unit.ability === 'daiShout' || unit.ability === 'putinCommand' || unit.ability === 'jellyThrow') ? (unit.splashRadius || 50) : 0;
     this.burstRadius = (unit.ability === 'aoeBurst') ? (unit.aoeRadius || 45) : 0;
     this.stunPower = unit.abilityPower || 1.4;
@@ -2535,6 +2623,38 @@ class Hero {
             if (dist(this.x, this.y, e.x, e.y) <= 230) e.applyStun(1.5);
           }
           Sound.explosion();
+        }
+      }
+      if (this.ability === 'hypno') {
+        this.hypCd = (this.hypCd || 4) - dt;
+        if (this.hypCd <= 0) {
+          this.hypCd = 8;
+          let hn = 0;
+          for (const e of this.game.enemies) {
+            if (e.hp <= 0 || e.reachedEnd) continue;
+            if (dist(this.x, this.y, e.x, e.y) <= this.range) { e.applyStun(1.5); e.vulnT = 4; hn++; }
+          }
+          if (hn) {
+            this.game.explosions.push({ x: this.x, y: this.y, r: 0, maxR: this.range, life: 0.4, maxLife: 0.4, rgb: '216,138,255', ring: true });
+            this.game.floaters.push({ x: this.x, y: this.y - 50, text: T('🎩 ГИПНОЗ!'), life: 1.3, maxLife: 1.3, color: '#d8aaff' });
+            Sound.explosion();
+          }
+        }
+      }
+      if (this.ability === 'cannonShot') {
+        this.canCd = (this.canCd || 6) - dt;
+        if (this.canCd <= 0) {
+          this.canCd = 9;
+          let cn = 0;
+          for (const e of this.game.enemies) {
+            if (e.hp <= 0 || e.reachedEnd) continue;
+            if (dist(this.x, this.y, e.x, e.y) <= this.range) { e.takeDamage(this.damage * 2.2); e.applyStun(0.8); cn++; }
+          }
+          if (cn) {
+            this.game.explosions.push({ x: this.x, y: this.y, r: 0, maxR: this.range, life: 0.5, maxLife: 0.5, rgb: '255,138,216' });
+            this.game.floaters.push({ x: this.x, y: this.y - 56, text: T('🎪 КОНФЕТТИ-ЗАЛП!'), life: 1.3, maxLife: 1.3, color: '#ff9ade' });
+            Sound.explosion();
+          }
         }
       }
       if (this.ability === 'putinCommand') {
@@ -3183,6 +3303,7 @@ class Projectile {
         if (dist(tx, ty, e.x, e.y) <= this.aoe) {
           e.takeDamage(this.damage);
           if (this.owner && (this.owner.ability === 'slow' || this.owner.ability === 'zovShout')) e.applySlow(1.0, this.owner.ability === 'zovShout' ? 0.85 : (this.owner.unit && this.owner.unit.slowOnHit ? 1 - this.owner.unit.slowOnHit : 0.72));
+          if (this.owner && this.owner.ability === 'burn') { e.burnT = 3; e.burnDps = this.owner.damage * (this.owner.unit.burnOnHit || 0.35); e.burnTick = 0.5; }
         }
       }
       this.game.explosions.push({ x: tx, y: ty, r: 0, maxR: this.aoe, life: 0.25, maxLife: 0.25, rgb: '255,150,60' });
@@ -3190,6 +3311,7 @@ class Projectile {
     } else {
       this.target.takeDamage(this.damage);
       if (this.owner && (this.owner.ability === 'slow' || this.owner.ability === 'zovShout')) this.target.applySlow(1.0, this.owner.ability === 'zovShout' ? 0.85 : (this.owner.unit && this.owner.unit.slowOnHit ? 1 - this.owner.unit.slowOnHit : 0.72));
+      if (this.owner && this.owner.ability === 'burn') { this.target.burnT = 3; this.target.burnDps = this.owner.damage * (this.owner.unit.burnOnHit || 0.35); this.target.burnTick = 0.5; }
       if (this.kind === 'coin') Sound.coinSnd();
       else if (this.kind === 'laser') { Sound.laser(); this.game.beams.push({ x1: this.ox, y1: this.oy, x2: this.target.x, y2: this.target.y, life: 0.16, color: this.color }); }
       else Sound.hit();
@@ -6093,6 +6215,39 @@ class FrontGame {
           }
         }
       }
+      if (u && u.ability === 'hypno') {
+        m.hypC = (m.hypC || 4) - dt;
+        if (m.hypC <= 0) {
+          m.hypC = 8;
+          let hn = 0;
+          for (const e of this.enemies) {
+            if (e.lane !== m.lane || e.x < m.x || e.x - m.x > m.range) continue;
+            e.stunT = 1.5; e.vulnT = 4; hn++;
+          }
+          if (hn) {
+            this.explosions.push({ x: m.x, y: m.y - 10, r: 0, maxR: m.range, life: 0.4, maxLife: 0.4, rgb: '216,138,255', ring: true });
+            this.floaters.push({ x: m.x, y: m.y - 60, text: T('🎩 ГИПНОЗ!'), life: 1, maxLife: 1, color: '#d8aaff' });
+          }
+        }
+      }
+      if (u && u.ability === 'cannonShot') {
+        m.canC = (m.canC || 6) - dt;
+        if (m.canC <= 0) {
+          m.canC = 9;
+          let cn = 0;
+          for (const e of this.enemies) {
+            if (e.lane !== m.lane || e.x < m.x || e.x - m.x > m.range) continue;
+            e.hp -= m.dmg * 2.2 * (e.vulnT > 0 ? 1.3 : 1);
+            e.stunT = 0.8;
+            e.x = Math.max(m.x + 15, e.x - 70);
+            cn++;
+          }
+          if (cn) {
+            this.explosions.push({ x: m.x, y: m.y - 10, r: 0, maxR: m.range, life: 0.5, maxLife: 0.5, rgb: '255,138,216' });
+            this.floaters.push({ x: m.x, y: m.y - 60, text: T('🎪 КОНФЕТТИ-ЗАЛП!'), life: 1, maxLife: 1, color: '#ff9ade' });
+          }
+        }
+      }
       if (u && u.ability === 'putinCommand') {
         m.soulA = (m.soulA || 0) + dt * 2.2;
         if (m.eyeT > 0) {
@@ -6160,6 +6315,7 @@ class FrontGame {
           target.hp -= m.dmg * (target.vulnT > 0 ? 1.3 : 1);
           const su = this.unitDef(m.id);
           if (su && su.ability === 'slow') { target.slowT = 2.5; if (su.slowOnHit) target.slowF = 1 - su.slowOnHit; }
+          if (su && su.ability === 'burn') { target.burnT = 3; target.burnDps = m.dmg * (su.burnOnHit || 0.35); target.burnTick = 0.5; }
           if (su && su.tvAttack) m.tvGlowT = 0.18;
           if (su && su.splashRadius) {
             for (const e2 of this.enemies) {
