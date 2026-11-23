@@ -577,6 +577,7 @@
     <button class="btn small back-btn" id="settingsBack">← ЛОББИ</button>
     <h2 class="panel-title">НАСТРОЙКИ</h2>
     <div class="settings-row"><span>🔊 Звук</span><button class="btn small" id="btnToggleSound">ВКЛ</button></div>
+    <div class="settings-row"><span>🎵 Музыка</span><button class="btn small" id="btnToggleMusic">ВКЛ</button></div>
     <div class="settings-row"><span>🌐 Язык</span><button class="btn small" id="btnLang">🌐 Русский</button></div>
     <div class="settings-row"><span>🎁 Промокод</span>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -1074,6 +1075,9 @@ const I18N_EN = {
   "🛒 МАГАЗИН": "🛒 SHOP",
   "📜 КВЕСТЫ": "📜 QUESTS",
   "🛒 МАГАЗИН КРЕЙТОВ": "🛒 CRATE SHOP",
+  "🎵 Музыка": "🎵 Music",
+  "Музыка включена": "Music on",
+  "Музыка выключена": "Music off",
   "Победи в бою": "Win a battle",
   "Пройди 5 волн": "Clear 5 waves",
   "Убей 100 скибиди": "Kill 100 skibidi",
@@ -1576,27 +1580,27 @@ const DIFFICULTIES = [
 const EVENT_DIFF = { id: 'dvizhuha', name: 'ДВИЖУХА Оборона', waves: 40, startMoney: 500, enemyHpMul: 1.55, enemySpeedMul: 1.12, rewardMul: 1.1, coinMul: 1.2, winCoins: 700 };
 
 const MAPS = [
-  { id: 'studio', name: 'Студия', theme: { bg: '#10131c', grid: '#1a2030' }, decor: ['🎬','🎥','🎤','💡','📼'],
+  { id: 'studio', name: 'Студия', theme: { bg: '#10131c', grid: '#1a2030' }, decor: ['🎬','🎥','🎤','💡','🎪'],
     scenery: 'studio',
-    waypoints: [[0,3],[7,3],[7,9],[15,9],[15,16],[23,16],[23,5],[29,5]] },
-  { id: 'zigzag', name: 'Зигзаг', theme: { bg: '#14101c', grid: '#221a30' }, decor: ['📼','🎞️','🎮','🎧'],
+    waypoints: [[0,2],[9,2],[9,8],[3,8],[3,14],[14,14],[14,6],[21,6],[21,13],[29,13]] },
+  { id: 'zigzag', name: 'Зигзаг', theme: { bg: '#14101c', grid: '#221a30' }, decor: ['🎮','🎧','📼','🎞️'],
     scenery: 'night',
-    waypoints: [[0,2],[5,2],[5,8],[10,8],[10,2],[15,2],[15,8],[20,8],[20,2],[25,2],[25,8],[29,8]] },
+    waypoints: [[0,3],[4,3],[4,10],[9,10],[9,3],[14,3],[14,10],[19,10],[19,3],[24,3],[24,10],[29,10]] },
   { id: 'spiral', name: 'Спираль', theme: { bg: '#0c161c', grid: '#16242c' }, decor: ['⚙️','🔧','🧪','📡'],
     scenery: 'night',
     waypoints: [[0,2],[27,2],[27,17],[3,17],[3,6],[23,6],[23,13],[8,13],[8,10],[18,10]] },
   { id: 'fork', name: 'Развилка', theme: { bg: '#141414', grid: '#26262a' }, decor: ['📦','🚧','🔧','🛢️'],
     scenery: 'studio',
     waypoints: [[0,5],[9,5],[9,12],[17,12],[17,5],[24,5],[24,15],[29,15]] },
-  { id: 'desert', name: 'Пустыня', theme: { bg: '#181410', grid: '#26201a' }, decor: ['🌵','🏜️','🦴','🏺'],
+  { id: 'desert', name: 'Пустыня', theme: { bg: '#181410', grid: '#26201a' }, decor: ['🏜️','🌵','🦴','🐫'],
     scenery: 'desert',
-    waypoints: [[0,10],[6,10],[6,4],[14,4],[14,15],[22,15],[22,8],[29,8]] },
+    waypoints: [[0,8],[5,8],[5,15],[12,15],[12,4],[19,4],[19,12],[24,12],[24,8],[29,8]] },
   { id: 'sewer', name: 'Канализация', theme: { bg: '#0d1a10', grid: '#1a2c1e' }, decor: ['🚽','🛠️','💧','🪣'],
     scenery: 'sewer',
     waypoints: [[0,17],[8,17],[8,10],[3,10],[3,3],[13,3],[13,11],[20,11],[20,3],[29,3]] },
-  { id: 'city', name: 'Город', theme: { bg: '#101018', grid: '#1e1e2c' }, decor: ['🏢','🚕','🗼','🚦'],
+  { id: 'city', name: 'Город', theme: { bg: '#101018', grid: '#1e1e2c' }, decor: ['🏙️','🚕','🗼','🚦'],
     scenery: 'city',
-    waypoints: [[0,0],[12,0],[12,7],[5,7],[5,13],[18,13],[18,6],[26,6],[26,17],[29,17]] },
+    waypoints: [[0,1],[8,1],[8,9],[2,9],[2,16],[12,16],[12,8],[20,8],[20,16],[29,16]] },
   { id: 'front', name: 'Фронт', theme: { bg: '#253015', grid: '#333f1c' }, decor: ['🔥','🏚️','💥'], scenery: 'front', eventMap: true,
     waypoints: [[0,4],[6,4],[6,9],[12,9],[12,14],[19,14],[19,6],[25,6],[25,12],[29,12]] }
 ];
@@ -1646,6 +1650,7 @@ const SaveManager = {
       selectedMap: 'studio',
       lang: 'ru',
       soundOn: true,
+      musicOn: true,
       endlessRecord: 0,
       codes: [],
       autoSkip: false,
@@ -1687,15 +1692,18 @@ const SaveManager = {
       if (this.data.quests !== null && (typeof this.data.quests !== 'object' || Array.isArray(this.data.quests))) this.data.quests = null;
     } catch (e) { this.data = this.defaults(); }
     this.soundOn = !!this.data.soundOn;
+    this.musicOn = this.data.musicOn !== false;
     return this.data;
   },
   save() {
     this.data.soundOn = this.soundOn;
+    this.data.musicOn = this.musicOn;
     try { localStorage.setItem(this.KEY, JSON.stringify(this.data)); } catch (e) {}
   },
   reset() {
     this.data = this.defaults();
     this.soundOn = true;
+    this.musicOn = true;
     this.save();
   },
   get coins() { return this.data.coins; },
@@ -1928,6 +1936,11 @@ class SoundManager {
       try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
     }
     if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+    if (this.ctx) {
+      try {
+        if (typeof Music !== 'undefined') { Music.init(); if (SaveManager.musicOn) Music.start(); }
+      } catch (e) {}
+    }
   }
   get enabled() { return SaveManager.soundOn; }
   _beep(freq, dur, type, vol, delay) {
@@ -2010,6 +2023,100 @@ class SoundManager {
   loseLife() { this._beep(150, 0.25, 'sawtooth', 0.06); }
 }
 const Sound = new SoundManager();
+
+class MusicManager {
+  constructor() { this.ctx = null; this.timer = null; this.step = 0; this.next = 0; this._out = null; }
+  init() {
+    if (!this.ctx) {
+      try {
+        this.ctx = (typeof Sound !== 'undefined' && Sound.ctx) ? Sound.ctx : new (window.AudioContext || window.webkitAudioContext)();
+      } catch (e) {}
+    }
+    if (this.ctx && this.ctx.state === 'suspended') { try { this.ctx.resume(); } catch (e) {} }
+  }
+  get enabled() { return SaveManager.musicOn; }
+  _connect() {
+    if (!this._out && this.ctx.createGain) {
+      try {
+        this._out = this.ctx.createGain();
+        this._out.gain.value = 1;
+        this._out.connect(this.ctx.destination);
+      } catch (e) { this._out = null; }
+    }
+  }
+  _note(freq, t, dur, type, vol) {
+    const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+    o.type = type || 'triangle';
+    o.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol || 0.04, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(this._out);
+    o.start(t); o.stop(t + dur + 0.03);
+  }
+  _kick(t) {
+    const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(120, t);
+    o.frequency.exponentialRampToValueAtTime(38, t + 0.12);
+    g.gain.setValueAtTime(0.11, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
+    o.connect(g); g.connect(this._out);
+    o.start(t); o.stop(t + 0.17);
+  }
+  _hat(t) {
+    const sr = this.ctx.sampleRate || 44100;
+    const len = Math.max(1, Math.floor(sr * 0.05));
+    const buf = this.ctx.createBuffer(1, len, sr);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf;
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(0.03, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+    src.connect(g); g.connect(this._out);
+    src.start(t);
+  }
+  start() {
+    if (!this.enabled || this.timer) return;
+    this.init();
+    this._connect();
+    if (!this.ctx || !this._out) return;
+    this.step = 0;
+    this.next = this.ctx.currentTime + 0.08;
+    this.timer = setInterval(() => this._tick(), 90);
+  }
+  stop() {
+    if (this.timer) { clearInterval(this.timer); this.timer = null; }
+  }
+  _tick() {
+    if (!this.enabled || !this.ctx || !this._out || !this.ctx.createOscillator) { this.stop(); return; }
+    try {
+      const stepDur = 0.15;
+      while (this.next < this.ctx.currentTime + 0.3) {
+        this._schedule(this.step % 64, this.next);
+        this.step++;
+        this.next += stepDur;
+      }
+    } catch (e) { this.stop(); }
+  }
+  _schedule(s, t) {
+    const roots = [110, 87.31, 130.81, 98];
+    const chords = [[1, 1.189, 1.498], [1, 1.26, 1.5], [1, 1.189, 1.498], [1, 1.26, 1.5]];
+    const ci = (s >> 4) & 3;
+    const r = roots[ci], ch = chords[ci];
+    if (s % 8 === 0) this._note(r / 2, t, 0.34, 'sawtooth', 0.035);
+    if (s % 8 === 4) this._note(r / 2 * 1.5, t, 0.26, 'sawtooth', 0.028);
+    if (s % 4 === 0) this._kick(t);
+    if (s % 8 === 4) this._hat(t);
+    const ratios = [1, ch[1], ch[2], 2];
+    const arp = [0, 1, 2, 1, 0, 1, 2, 3][s % 8];
+    this._note(r * 2 * ratios[arp], t, 0.12, 'triangle', 0.024);
+    if (s % 16 === 12) this._note(r * 3, t, 0.2, 'triangle', 0.02);
+  }
+}
+const Music = new MusicManager();
 
 /* ============================================================
    4) КАРТА
@@ -5483,6 +5590,11 @@ const App = {
     const btn = document.getElementById('btnToggleSound');
     btn.textContent = SaveManager.soundOn ? T('ВКЛ') : T('ВЫКЛ');
     btn.classList.toggle('accent', SaveManager.soundOn);
+    const mbtn = document.getElementById('btnToggleMusic');
+    if (mbtn) {
+      mbtn.textContent = SaveManager.musicOn ? T('ВКЛ') : T('ВЫКЛ');
+      mbtn.classList.toggle('accent', SaveManager.musicOn);
+    }
     const lb = document.getElementById('btnLang');
     if (lb) lb.textContent = (SaveManager.data.lang === 'en') ? '🌐 English' : '🌐 Русский';
     const admRow = document.getElementById('adminRow');
@@ -5822,6 +5934,13 @@ const App = {
       SaveManager.save();
       this.renderSettings();
       UI.toast(SaveManager.soundOn ? T('Звук включён') : T('Звук выключен'));
+    });
+    document.getElementById('btnToggleMusic').addEventListener('click', () => {
+      SaveManager.musicOn = !SaveManager.musicOn;
+      SaveManager.save();
+      try { if (SaveManager.musicOn) { Music.init(); Music.start(); } else { Music.stop(); } } catch (e) {}
+      this.renderSettings();
+      UI.toast(SaveManager.musicOn ? T('Музыка включена') : T('Музыка выключена'));
     });
     document.getElementById('btnLang').addEventListener('click', () => {
       SaveManager.data.lang = (SaveManager.data.lang === 'en') ? 'ru' : 'en';
