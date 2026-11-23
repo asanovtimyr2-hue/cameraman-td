@@ -748,6 +748,7 @@ const I18N_EN = {
   "⚔️ ЖЕЛЕЙНЫЙ МЕЧ!": "⚔️ JELLY SWORD!",
   "🍮 Желейный Крейт": "🍮 JELLY CRATE",
   "🍮 Кидает липкое желе: урон по площади + замедление врагов": "🍮 Throws sticky jelly: area damage + slows enemies",
+  "⚔️ Бьёт желейным мечом: урон по площади + замедление врагов": "⚔️ Swings a jelly sword: area damage + slows enemies",
   "Желейный ТВ Мен 69.9%, Желейный Камера Дрон 39.1%, Желе Титан ТВ Мен 0.1%. Из желейного мира.": "JELLY TV MAN 69.9%, JELLY CAMERA DRONE 39.1%, JELLY TV TITAN 0.1%. From the jelly world.",
   "Желейный нападающий: кидает липкое желе — 35 урона по площади и замедление 10% на 2 сек (кд 3 сек). Из своего телевизора бьёт AOE-лучом: 70 урона, радиус 70, кд 0.6 сек. Цена в «Столице»: 479🪙.": "Jelly attacker: throws sticky jelly — 35 area damage and 10% slow for 2s (cd 3s). Fires an AOE beam from his TV: 70 damage, radius 70, cd 0.6s. Capital price: 479.",
   "Всенаправленный желеныш: стреляет желейным лазером — 105 урона, замедление 25%, кд 0.6 сек. Цена в «Столице»: 250🪙.": "Jelly marksman: fires a jelly laser — 105 damage, 25% slow, cd 0.6s. Capital price: 250.",
@@ -1251,6 +1252,10 @@ function rarityGlowClass(u) {
   return '';
 }
 
+function abilityText(u) {
+  if (u && u.ability === 'jellyThrow' && (u.swordSwing || (u.unit && u.unit.swordSwing))) return '⚔️ Бьёт желейным мечом: урон по площади + замедление врагов';
+  return ABILITY_RU[u && u.ability] || '';
+}
 const ABILITY_RU = {
   'none': 'Без особых способностей',
   'slow': '🧊 Замедляет врагов своими попаданиями',
@@ -1457,15 +1462,15 @@ const UNITS = [
   { id: 'jellyTV', name: '🟢 Желейный ТВ Мен', emoji: '📺', rarity: 'Special', dropChance: 0.699, frontCost: 479,
     desc: 'Желейный нападающий: кидает липкое желе — 35 урона по площади и замедление 10% на 2 сек (кд 3 сек). Из своего телевизора бьёт AOE-лучом: 70 урона, радиус 70, кд 0.6 сек. Цена в «Столице»: 479🪙.',
     stats: { dmg: 70, range: 175, fireRate: 0.6, hp: 480 },
-    passive: { dmgBonus: 0.1, moneyBonus: 0 }, tvAttack: true, ability: 'jellyThrow', splashRadius: 70, jellyRadius: 95, jellyDmg: 35, jellySlow: 0.1, jellySlowT: 2, jellyCd: 3 },
+    passive: { dmgBonus: 0.1, moneyBonus: 0 }, tvAttack: true, rateFloor: 0.6, ability: 'jellyThrow', splashRadius: 70, jellyRadius: 95, jellyDmg: 35, jellySlow: 0.1, jellySlowT: 2, jellyCd: 3 },
   { id: 'jellyDrone', name: '🟢 Желейный Камера Дрон', emoji: '🛸', rarity: 'Special', dropChance: 0.391, frontCost: 250,
     desc: 'Всенаправленный желеныш: стреляет желейным лазером — 105 урона, замедление 25%, кд 0.6 сек. Цена в «Столице»: 250🪙.',
     stats: { dmg: 105, range: 210, fireRate: 0.6, hp: 220 },
-    passive: { dmgBonus: 0, moneyBonus: 0 }, ability: 'slow', slowOnHit: 0.25 },
+    passive: { dmgBonus: 0, moneyBonus: 0 }, rateFloor: 0.6, ability: 'slow', slowOnHit: 0.25 },
   { id: 'jellyTitan', name: '👑 Желе Титан ТВ Мен', emoji: '📺', rarity: 'Special', dropChance: 0.001, frontCost: 2000,
     desc: 'Желе-колосс: бьёт большим желейным мечом раз в 3 сек — 450 урона + замедление 35%. Его телевизоры бьют AOE: 100 урона, радиус 90, кд 0.6 сек. Цена в «Столице»: 2000🪙.',
     stats: { dmg: 100, range: 200, fireRate: 0.6, hp: 1400 },
-    passive: { dmgBonus: 0.2, moneyBonus: 0 }, tvAttack: true, swordSwing: true, ability: 'jellyThrow', splashRadius: 90, jellyRadius: 150, jellyDmg: 450, jellySlow: 0.35, jellySlowT: 2, jellyCd: 3 }
+    passive: { dmgBonus: 0.2, moneyBonus: 0 }, tvAttack: true, swordSwing: true, rateFloor: 0.6, ability: 'jellyThrow', splashRadius: 90, jellyRadius: 150, jellyDmg: 450, jellySlow: 0.35, jellySlowT: 2, jellyCd: 3 }
 ];
 
 function statRange(u) {
@@ -2391,7 +2396,7 @@ class Hero {
     this.angle = -Math.PI / 2;
     this.targetMode = 'first';
     this.shootAnim = 0;
-    this.tvGlowT = 0; this.slashT = 0; this.sumT = 6;
+    this.tvGlowT = 0; this.slashT = 0; this.slashR = 0; this.sumT = 6;
     this.stunTimer = 0;
     this.antistanUntil = 0;
     this.atkKind = UNIT_ATK[this.unitId] || 'bullet';
@@ -2579,7 +2584,7 @@ class Hero {
     if (!target) return;
     this.angle = Math.atan2(target.y - this.y, target.x - this.x);
     this.shootAnim = 0.14;
-    if (this.unit.tvAttack) this.tvGlowT = 0.3;
+    if (this.unit.tvAttack) this.tvGlowT = 0.18;
     this.game.projectiles.push(new Projectile(this.game, this.x, this.y, target, this.damage, this.aoe, this));
     this.cooldown = this.fireRate;
     Sound.shoot(this.atkKind);
@@ -2651,8 +2656,6 @@ class Hero {
         else this.game.explosions.push({ x: this.x, y: this.y, r: 0, maxR: 60, life: 0.4, maxLife: 0.4, rgb: hexToRgbStr(soul.color) });
       }
     } else if (this.ability === 'jellyThrow') {
-      if (this.unit.tvAttack) this.tvGlowT = 0.3;
-      if (this.unit.swordSwing) this.slashT = 0.35;
       const jr = this.unit.jellyRadius || 90;
       const jd = Math.round((this.unit.jellyDmg || 35) * Math.pow(1.25, this.level - 1));
       let jn = 0;
@@ -2665,8 +2668,16 @@ class Hero {
         }
       }
       if (jn) {
-        this.game.explosions.push({ x: this.x, y: this.y, r: 0, maxR: jr, life: 0.4, maxLife: 0.4, rgb: '155,255,170' });
-        this.game.floaters.push({ x: this.x, y: this.y - 50, text: T(this.unit.swordSwing ? '⚔️ ЖЕЛЕЙНЫЙ МЕЧ!' : '🍮 ЛИПКОЕ ЖЕЛЕ!'), life: 1.2, maxLife: 1.2, color: '#7dff9e' });
+        if (this.unit.tvAttack) this.tvGlowT = 0.18;
+        if (this.unit.swordSwing) {
+          this.slashT = 0.35;
+          this.slashR = jr * 0.8;
+          this.game.explosions.push({ x: this.x, y: this.y, r: 0, maxR: jr * 0.8, life: 0.25, maxLife: 0.25, rgb: '215,232,255' });
+          this.game.floaters.push({ x: this.x, y: this.y - 50, text: T('⚔️ ЖЕЛЕЙНЫЙ МЕЧ!'), life: 1.2, maxLife: 1.2, color: '#bfe0ff' });
+        } else {
+          this.game.explosions.push({ x: this.x, y: this.y, r: 0, maxR: jr, life: 0.4, maxLife: 0.4, rgb: '155,255,170' });
+          this.game.floaters.push({ x: this.x, y: this.y - 50, text: T('🍮 ЛИПКОЕ ЖЕЛЕ!'), life: 1.2, maxLife: 1.2, color: '#7dff9e' });
+        }
         Sound.explosion();
       }
     } else if (this.ability === 'stun') {
@@ -2730,7 +2741,7 @@ class Hero {
       const kk = size / 150 * 2.2 * (UF_SCALE[this.unit.id] || 1);
       const tvY = this.unit.id === 'jellyTitan' ? -81 : -43;
       const gy = y + bob + size * 0.05 + tvY * kk;
-      const ga = Math.max(0, this.tvGlowT / 0.3);
+      const ga = Math.max(0, this.tvGlowT / 0.18);
       const gr2 = ctx.createRadialGradient(x, gy, 2, x, gy, 48 * kk);
       gr2.addColorStop(0, 'rgba(176,255,208,' + (0.85 * ga).toFixed(3) + ')');
       gr2.addColorStop(0.5, 'rgba(125,255,158,' + (0.4 * ga).toFixed(3) + ')');
@@ -2744,9 +2755,10 @@ class Hero {
       const kk2 = size / 150 * 2.2 * (UF_SCALE[this.unit.id] || 1);
       const sp = 1 - this.slashT / 0.35;
       const sw = -1.3 + sp * 2.4;
+      const sr = this.slashR || 60 * kk2;
       ctx.save(); ctx.lineCap = 'round';
-      ctx.beginPath(); ctx.arc(x, y + bob, 60 * kk2, sw - 0.9, sw);
-      ctx.strokeStyle = 'rgba(176,255,208,' + (0.75 * (1 - sp)).toFixed(3) + ')'; ctx.lineWidth = 10; ctx.stroke();
+      ctx.beginPath(); ctx.arc(x, y + bob, sr, sw - 0.9, sw);
+      ctx.strokeStyle = 'rgba(160,200,255,' + (0.75 * (1 - sp)).toFixed(3) + ')'; ctx.lineWidth = 10; ctx.stroke();
       ctx.beginPath(); ctx.arc(x, y + bob, 60 * kk2, sw - 0.9, sw);
       ctx.strokeStyle = 'rgba(255,255,255,' + (0.85 * (1 - sp)).toFixed(3) + ')'; ctx.lineWidth = 3.5; ctx.stroke();
       ctx.restore();
@@ -4538,7 +4550,7 @@ const UI = {
       <div class="tt-title">${unit.emoji} ${T(unit.name)}</div>
       <div class="tt-rarity" style="color:${color}">${R(unit.rarity) || unit.rarity}</div>
       ${unit.ability && unit.ability !== 'none' ? `<div class="tt-row"><span class="k">${T('Способность')}</span></div>` +
-        `<div style="color:#ffd966;font-size:.75rem;margin-top:2px">${ABILITY_RU[unit.ability] || ''}</div>` : ''}
+        `<div style="color:#ffd966;font-size:.75rem;margin-top:2px">${abilityText(unit)}</div>` : ''}
       ${unit.pureFarm ? `<div class="tt-row"><span class="k">${T('💸 Доход')}</span><span class="v">+${unit.cashPerWave}💰${T('/волну')}</span></div>`
         : `<div class="tt-row"><span class="k">${T('Урон')}</span><span class="v">${st.dmg}</span></div>
       <div class="tt-row"><span class="k">DPS</span><span class="v">${statRange(unit).dps[0]}</span></div>
@@ -4553,7 +4565,7 @@ const UI = {
     tt.innerHTML = `
       <div class="tt-title">${hero.emoji} ${T(hero.name)} <span style="font-size:.75rem;opacity:.6">${T('Ур.')}${hero.level}</span></div>
       <div class="tt-rarity" style="color:${color}">${R(hero.unit.rarity) || hero.unit.rarity}</div>
-      ${hero.ability && hero.ability !== 'none' ? `<div style="color:#ffd966;font-size:.75rem;margin-top:2px">${ABILITY_RU[hero.ability] || ''}</div>` : ''}
+      ${hero.ability && hero.ability !== 'none' ? `<div style="color:#ffd966;font-size:.75rem;margin-top:2px">${abilityText(hero)}</div>` : ''}
       ${hero.pureFarm ? `<div class="tt-row"><span class="k">${T('💸 Доход')}</span><span class="v">+${hero.cashPerWave}💰${T('/волну')}</span></div>`
         : `<div class="tt-row"><span class="k">${T('Урон')}</span><span class="v">${Math.round(hero.damage)}</span></div>
       <div class="tt-row"><span class="k">DPS</span><span class="v">${Math.round(hero.damage / Math.max(0.01, hero.fireRate))}</span></div>
@@ -4962,7 +4974,7 @@ const App = {
         const ab = document.createElement('div');
         ab.className = 'u-bonus';
         ab.style.color = '#ffd966';
-        ab.textContent = ABILITY_RU[u.ability] || '';
+        ab.textContent = abilityText(u);
         card.appendChild(ab);
       }
       card.addEventListener('click', () => {
@@ -4987,7 +4999,7 @@ const App = {
         <div class="ud-stat"><div class="label">${T('Радиус')}</div><div class="val">${statRange(u).range[0]} → ${statRange(u).range[1]}</div></div>
         <div class="ud-stat"><div class="label">Перезарядка</div><div class="val">${statRange(u).rate[0]} → ${statRange(u).rate[1]}с</div></div>
       </div>
-      ${u.ability && u.ability !== 'none' ? `<div class="ud-ability">${ABILITY_RU[u.ability] || ''}${u.cashPerWave ? T(' (+') + statRange(u).cash[0] + T(' → +') + statRange(u).cash[1] + T('💰/волну)') : ''}</div>` : ''}
+      ${u.ability && u.ability !== 'none' ? `<div class="ud-ability">${abilityText(u)}${u.cashPerWave ? T(' (+') + statRange(u).cash[0] + T(' → +') + statRange(u).cash[1] + T('💰/волну)') : ''}</div>` : ''}
       ${unitTagsHTML(u)}
       <button class="btn small" id="udCloseBtn" style="margin-top:6px">ЗАКРЫТЬ</button>`;
     content.querySelector('#udCloseBtn').addEventListener('click', () => overlay.classList.remove('visible'));
@@ -5150,7 +5162,7 @@ const App = {
       <div class="ud-name">${unit.name}</div>
       <div class="ud-rarity" style="color:${rarityColor}">${R(unit.rarity)}</div>
       <div style="text-align:center;font-size:.85rem;opacity:.7">${unit.desc}</div>
-      ${unit.ability && unit.ability !== 'none' ? `<div class="ud-ability">${ABILITY_RU[unit.ability]}${unit.cashPerWave ? ' (+' + unit.cashPerWave + '💰/волна)' : ''}</div>` : ''}
+      ${unit.ability && unit.ability !== 'none' ? `<div class="ud-ability">${abilityText(unit)}${unit.cashPerWave ? ' (+' + unit.cashPerWave + '💰/волна)' : ''}</div>` : ''}
       <div class="ud-stats">
         <div class="ud-stat"><div class="label">${unit.pureFarm ? T('💸 Доход') : T('Урон')}</div><div class="val">${unit.pureFarm ? '+' + statRange(unit).cash[0] + T(' → +') + statRange(unit).cash[1] + '💰' : statRange(unit).dmg[0] + ' → ' + statRange(unit).dmg[1]}</div></div>
         <div class="ud-stat"><div class="label">DPS</div><div class="val">${statRange(unit).dps[0]} → ${statRange(unit).dps[1]}</div></div>
@@ -6046,8 +6058,6 @@ class FrontGame {
         m.jellyC = (m.jellyC || (u.jellyCd || 3)) - dt;
         if (m.jellyC <= 0) {
           m.jellyC = u.jellyCd || 3;
-          if (u.tvAttack) m.tvGlowT = 0.3;
-          if (u.swordSwing) m.slashT = 0.35;
           let jn = 0;
           for (const e of this.enemies) {
             if (e.lane !== m.lane || e.x < m.x || e.x - m.x > (u.jellyRadius || 90)) continue;
@@ -6057,8 +6067,16 @@ class FrontGame {
             e.slowF = 1 - (u.jellySlow || 0.1);
           }
           if (jn) {
-            this.explosions.push({ x: m.x + 100, y: m.y, r: 0, maxR: u.jellyRadius || 90, life: 0.4, maxLife: 0.4, rgb: '155,255,170' });
-            this.floaters.push({ x: m.x, y: m.y - 60, text: T(u.swordSwing ? '⚔️ ЖЕЛЕЙНЫЙ МЕЧ!' : '🍮 ЛИПКОЕ ЖЕЛЕ!'), life: 1, maxLife: 1, color: '#7dff9e' });
+            if (u.tvAttack) m.tvGlowT = 0.18;
+            if (u.swordSwing) {
+              m.slashT = 0.35;
+              m.slashR = (u.jellyRadius || 90) * 0.8;
+              this.explosions.push({ x: m.x, y: m.y - 10, r: 0, maxR: (u.jellyRadius || 90) * 0.8, life: 0.25, maxLife: 0.25, rgb: '215,232,255' });
+              this.floaters.push({ x: m.x, y: m.y - 60, text: T('⚔️ ЖЕЛЕЙНЫЙ МЕЧ!'), life: 1, maxLife: 1, color: '#bfe0ff' });
+            } else {
+              this.explosions.push({ x: m.x + 100, y: m.y, r: 0, maxR: u.jellyRadius || 90, life: 0.4, maxLife: 0.4, rgb: '155,255,170' });
+              this.floaters.push({ x: m.x, y: m.y - 60, text: T('🍮 ЛИПКОЕ ЖЕЛЕ!'), life: 1, maxLife: 1, color: '#7dff9e' });
+            }
           }
         }
       }
@@ -6127,7 +6145,7 @@ class FrontGame {
           target.hp -= m.dmg * (target.vulnT > 0 ? 1.3 : 1);
           const su = this.unitDef(m.id);
           if (su && su.ability === 'slow') { target.slowT = 2.5; if (su.slowOnHit) target.slowF = 1 - su.slowOnHit; }
-          if (su && su.tvAttack) m.tvGlowT = 0.3;
+          if (su && su.tvAttack) m.tvGlowT = 0.18;
           if (su && su.splashRadius) {
             for (const e2 of this.enemies) {
               if (e2 !== target && e2.lane === m.lane && Math.abs(e2.x - target.x) <= su.splashRadius) e2.hp -= m.dmg * 0.7 * (e2.vulnT > 0 ? 1.3 : 1);
@@ -6319,7 +6337,7 @@ class FrontGame {
       drawUnitFigure(ctx, u, m.x, m.y - 10, figSz, false, us);
       if (u.tvAttack && m.tvGlowT > 0) {
         const gy = m.y - 10 + figSz * 0.05 + (m.id === 'jellyTitan' ? -81 : -43) * k;
-        const ga = Math.max(0, m.tvGlowT / 0.3);
+        const ga = Math.max(0, m.tvGlowT / 0.18);
         const gr2 = ctx.createRadialGradient(m.x, gy, 2, m.x, gy, 48 * k);
         gr2.addColorStop(0, 'rgba(176,255,208,' + (0.85 * ga).toFixed(3) + ')');
         gr2.addColorStop(0.5, 'rgba(125,255,158,' + (0.4 * ga).toFixed(3) + ')');
@@ -6330,9 +6348,10 @@ class FrontGame {
       if (u.swordSwing && m.slashT > 0) {
         const sp = 1 - m.slashT / 0.35;
         const sw = -1.3 + sp * 2.4;
+        const sr = m.slashR || 60 * k;
         ctx.save(); ctx.lineCap = 'round';
-        ctx.beginPath(); ctx.arc(m.x, m.y - 10, 60 * k, sw - 0.9, sw);
-        ctx.strokeStyle = 'rgba(176,255,208,' + (0.75 * (1 - sp)).toFixed(3) + ')'; ctx.lineWidth = 9; ctx.stroke();
+        ctx.beginPath(); ctx.arc(m.x, m.y - 10, sr, sw - 0.9, sw);
+        ctx.strokeStyle = 'rgba(160,200,255,' + (0.75 * (1 - sp)).toFixed(3) + ')'; ctx.lineWidth = 9; ctx.stroke();
         ctx.beginPath(); ctx.arc(m.x, m.y - 10, 60 * k, sw - 0.9, sw);
         ctx.strokeStyle = 'rgba(255,255,255,' + (0.85 * (1 - sp)).toFixed(3) + ')'; ctx.lineWidth = 3; ctx.stroke();
         ctx.restore();
