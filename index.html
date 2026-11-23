@@ -356,9 +356,6 @@
   .gacha-reel.spinning{box-shadow:0 0 0 2px #4fc3ff inset,0 0 16px #4fc3ff55}
   .stock-cell{transition:.15s}
   .stock-cell:hover{box-shadow:0 0 0 1px #4fc3ff inset,0 0 12px #4fc3ff33}
-.event-modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;width:100%;max-width:920px}
-#eventControls{display:none;gap:6px;align-items:center}
-@media (max-width:520px){#eventControls{gap:4px}#eventControls .btn{padding:4px 7px;font-size:.68rem}.event-modes{grid-template-columns:1fr;max-width:100%}}
 </style>
 </head>
 <body>
@@ -378,38 +375,11 @@
       <button class="btn gold" id="btnGacha">🎰 ПРИЗЫВ (ГАЧА)</button>
       <button class="btn" id="btnShop">🛒 МАГАЗИН</button>
       <button class="btn" id="btnQuests">📜 КВЕСТЫ</button>
-      <button class="btn" id="btnEvent">🏖️ ИВЕНТ ДВИЖУХА</button>
+      <button class="btn" id="btnEvent">🚼 СПАСИ МЕЛЛСТРОЯ</button>
       <button class="btn" id="btnCollection">🎒 ИНВЕНТАРЬ</button>
       <button class="btn" id="btnSettings">⚙ НАСТРОЙКИ</button>
     </div>
     <div class="hint">СКИБИДИ-ТУАЛЕТЫ ЛОМАЮТ СТУДИЮ · ЗАЩИТИ ЕЁ · ПРОГРЕСС СОХРАНЯЕТСЯ АВТОМАТИЧЕСКИ</div>
-  </div>
-</div>
-
-<!-- ИВЕНТ ДВИЖУХА -->
-<div class="screen" id="eventScreen">
-  <div class="subpanel">
-    <button class="btn small back-btn" id="eventBack">← ЛОББИ</button>
-    <div class="panel-head">
-      <h2 class="panel-title">🏖️ ИВЕНТ ДВИЖУХА</h2>
-      <div class="coin-badge"><span class="coin-ico">¢</span> <span id="metaCoinsEvent">0</span></div>
-    </div>
-    <div class="event-modes">
-      <div class="unit-card crate-card" style="border-color:#7fa65c">
-        <div class="crate-emoji" style="text-shadow:0 0 18px #7fa65c88">🐦</div>
-        <div class="u-name" style="color:#7fa65c">СПАСИ МАМУ ПТИЦУ</div>
-        <div class="u-desc">Мел Строй в беде: интерпол захватил 3 базы и маму птицу! Враги идут 70 волнами и становятся всё сильнее, а за каждую волну мы сносим базам Интерпола по 100 HP. За первую победу — 🪑 Скуф Мел Строя и 2 📦 Мелстрой Крейта, за 10 побед — Мелстрой Прайм!</div>
-        <div class="crate-price" style="color:#7fffa0">Награда: 📦 Мелстрой Крейт + 500🪙</div>
-        <div class="u-actions"><button class="btn small accent" id="btnModeCapital">▶ СПАСАТЬ</button></div>
-      </div>
-      <div class="unit-card crate-card" style="border-color:#7ec8a0">
-        <div class="crate-emoji" style="text-shadow:0 0 18px #7ec8a088">🛡️</div>
-        <div class="u-name" style="color:#7ec8a0">ДАЙТЕ ДЕНЕГ — ОБОРОНА</div>
-        <div class="u-desc">Защити базу (1500 HP) 40 волн. Покупай свои шахеды (КД 40с, 300🪙), ставь ПВО (максимум 13)! Вражеские шахеды летят чаще — на войска (оглушают юнитов) и на базу, а ПВО с шансом 35% может не сработать.</div>
-        <div class="crate-price" style="color:#7fffa0">Награда: 📦 Малобюджетный Крейт</div>
-        <div class="u-actions"><button class="btn small accent" id="btnModeDefense">▶ ЗАЩИЩАТЬ</button></div>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -496,6 +466,7 @@
       <div class="coin-badge"><span>💎</span> <span id="metaCrystalsShop">0</span></div>
     </div>
     <div style="text-align:center;opacity:.7;margin:8px 0 4px;font-size:.9rem">Купленные крейты складываются в «Вещи» инвентаря — там их можно открыть</div>
+    <div style="display:flex;gap:8px;justify-content:center;margin:10px 0 2px"><button class="btn small accent" id="shopTabCrates">📦 КРЕЙТЫ</button><button class="btn small" id="shopTabPotions">🧪 ЗЕЛЬЯ</button></div>
     <div class="cards-grid" id="shopGrid" style="margin-top:10px"></div>
   </div>
 </div>
@@ -599,10 +570,6 @@
     <div class="stat wave-info"><span>🌊</span><span class="value" id="waveDisplay">0 / 15</span></div>
     <div class="hero-badge" id="heroBadge">🎥 <span>0 юнитов</span></div>
     <div class="wave-timer" id="waveTimer" style="display:none">⏱ <span id="waveTimerVal">5</span>с · <span id="waveComp"></span></div>
-    <div id="eventControls">
-      <button id="btnShahed" class="btn small">🚀 ШАХЕД 300🪙</button>
-      <button id="btnPVO" class="btn small">🛡 ПВО (0/13)</button>
-    </div>
     <button id="startWaveBtn" class="btn accent small">▶ СЛЕДУЮЩАЯ ВОЛНА</button>
     <button id="pauseBtn" class="btn small">⏸ ПАУЗА</button>
     <button id="speedBtn" class="btn small">⏩ ×1</button>
@@ -1092,36 +1059,22 @@ const I18N_EN = {
   "Сделай 20 улучшений": "Make 20 upgrades",
   "Заработай 8000 монет в боях": "Earn 8000 coins in battles",
   "кристаллов": "crystals",
-  "🏖️ ИВЕНТ ДВИЖУХА": "🏖️ DVIZHUHA EVENT",
-  "СТОЛИЦА ЗА 3 ДНЯ": "CAPITAL IN 3 DAYS",
-  "Захвати базу врага (10000 HP) за 10 минут: спавни юнитов за монеты и качай их. Из базы лезут солдаты-скибидисты, по нашим летят шахеды.": "Capture the enemy base (10000 HP) within 10 minutes: spawn units for coins and upgrade them. Skibidi soldiers pour out of the base, and shaheds fly at your troops.",
-  "Награда: 🎖️ Военный Крейт": "Reward: 🎖️ Military Crate",
-  "▶ ШТУРМОВАТЬ": "▶ STORM",
-  "ДАЙТЕ ДЕНЕГ — ОБОРОНА": "GIMME MONEY — DEFENSE",
-  "Защити базу (1500 HP) 40 волн. Покупай свои шахеды (КД 40с, 300🪙), ставь ПВО (максимум 13)! На базу тоже летят шахеды.": "Defend your base (1500 HP) for 40 waves. Buy your own shaheds (40s cooldown, 300🪙) and build AA guns (max 13)! Shaheds also fly at your base.",
-  "Награда: 📦 Малобюджетный Крейт": "Reward: 📦 Low-Budget Crate",
-  "▶ ЗАЩИЩАТЬ": "▶ DEFEND",
-  "⚠ Вражеский шахед летит на базу!": "⚠ Enemy shahed incoming!",
+  "🚼 СПАСИ МЕЛЛСТРОЯ": "🚼 SAVE MELLSTROI",
   "Полоса %1": "Lane %1",
   "📢 ZOV Спикер": "📢 ZOV Speaker",
-  "Кричит «Россия, Путин, Победа!» — враги на его полосе замедляются на 15% на 3 сек. Атакует волной с уроном по площади (сплэш, радиус 60): попадание задевает и врагов рядом с целью. Аура: +15% урона всему отряду. Награда режима «СТОЛИЦА ЗА 3 ДНЯ».": "Shouts \"Rossiya, Putin, Pobeda!\" — enemies in his lane are slowed by 15% for 3s. Attacks with a wave dealing splash damage (radius 60): hits also strike enemies near the target. Aura: +15% damage to the whole squad. Reward of the \"CAPITOL IN 3 DAYS\" mode.",
+  "Кричит «Россия, Путин, Победа!» — враги на его полосе замедляются на 15% на 3 сек. Атакует волной с уроном по площади (сплэш, радиус 60): попадание задевает и врагов рядом с целью. Аура: +15% урона всему отряду. Выдаётся из 🏖️ Военного Крейта.": "Shouts \"Rossiya, Putin, Pobeda!\" — enemies in his lane are slowed by 15% for 3s. Attacks with a wave dealing splash damage (radius 60): hits also strike enemies near the target. Aura: +15% damage to the whole squad. Reward of the \"CAPITOL IN 3 DAYS\" mode.",
   "РОССИЯ, ПУТИН, ПОБЕДА!": "ROSSIYA, PUTIN, POBEDA!",
   "📢 ZOV-спикер кричит: Россия, Путин, Победа!": "📢 ZOV Speaker shouts: Rossiya, Putin, Pobeda!",
   "🎁 Ивент-крейты ×5 выданы": "Event crates ×5 granted",
   "🛠 Служебная панель": "🛠 Service panel",
   "🛠 СЛУЖЕБНАЯ ПАНЕЛЬ v2": "🛠 SERVICE PANEL v2",
   "Спавн на этой полосе": "Spawn in this lane",
-  "ПВО не сработало!": "AA failed to fire!",
   "Наша база пала!": "Our base has fallen!",
   "💀 НАША БАЗА ПАЛА!": "💀 OUR BASE HAS FALLEN!",
   "Вражеские солдаты наступают сильнее!": "Enemy soldiers are getting stronger!",
   "Юнитов в отряде нет": "No units in squad",
   "⚔ Выбери полосу атаки": "Attack lane selected",
-  "ШАХЕД готов через %1с": "SHAHED ready in %1s",
   "Не хватает 🪙 (нужно %1)": "Not enough 🪙 (need %1)",
-  "Максимум ПВО: %1": "Max AA guns: %1",
-  "🚀 ШАХЕД 300🪙": "🚀 SHAHED 300🪙",
-  "🛡 ПВО (0/13)": "🛡 AA (0/13)",
   "Лимит юнитов (%1)": "Unit limit (%1)",
   "⚔️ УРОН +15%": "⚔️ DMG +15%",
   "❤️ ХП +15%": "❤️ HP +15%",
@@ -1137,8 +1090,8 @@ const I18N_EN = {
   "💵 ДАЙ! — враги оглушены на 1.5 сек": "💵 GIVE! — enemies stunned for 1.5s",
   "Командует отрядом: призывает шахедов-камикадзе, вокруг него вращаются души. Бросает душу каждые 6 сек: РЕШИМОСТЬ — взрыв по площади и 5 сек лазеры из глаз; ТЕРПЕНИЕ — замедляет врагов на 40% на 3 сек; ХРАБРОСТЬ — поджигает врагов (урон 4 сек); ЦЕЛЬНОСТЬ — оглушает врагов на 1.5 сек; УПОРСТВО — враги получают +30% урона 5 сек; ДОБРОТА — летит к союзнику, лечит на 35% и снимает стан; СПРАВЕДЛИВОСТЬ — бьёт всех врагов в радиусе. Аура: +20% урона отряду. Цена в «Столице»: 1750🪙.": "Commands the squad: summons kamikaze shaheds and orbits souls. Throws a soul every 9s: DETERMINATION — area blast + 5s of eye lasers; PATIENCE — 40% slow for 3s; BRAVERY — burn (4s); INTEGRITY — 1.5s stun; PERSEVERANCE — enemies take +30% damage for 5s; KINDNESS — flies to an ally, heals them 35% and removes stun; JUSTICE — strikes all enemies in radius. Aura: +20% squad damage. Cost in CAPITOL mode: 1750🪙.",
   "Кидает американский бюджет — взрыв по площади (сплэш, радиус 70). Кричит «ДАЙ!» каждые 6.5 сек — оглушает врагов вокруг на 1.5 сек. Аура: +25% урона всему отряду. Цена в «Столице»: 1750🪙.": "Throws the American budget — splash explosion (radius 70). Shouts \"GIVE!\" every 6.5s — stuns enemies around for 1.5s. Aura: +25% damage to the whole squad. Cost in CAPITOL mode: 1750🪙.",
-  "Награда режима «СТОЛИЦА ЗА 3 ДНЯ». Мобилизованный 50%, ZOV-спикер 49%, 🃏 Пал Лаича 1%.": "Reward of the \"CAPITOL IN 3 DAYS\" mode. Mobilized 50%, ZOV Speaker 49%, 🃏 Pal Laicha 1%.",
-  "Награда режима «ДАЙТЕ ДЕНЕГ». Камера-Шахед 50%, Американская Ферма 49%, 💰 Зелень 1%.": "Reward of the \"GIVE ME MONEY\" mode. Camera-Shahed 50%, American Farm 49%, 💰 Zeleny 1%.",
+  "Мобилизованный 50%, ZOV-спикер 49%, 🃏 Пал Лаича 1%.": "Reward of the \"CAPITOL IN 3 DAYS\" mode. Mobilized 50%, ZOV Speaker 49%, 🃏 Pal Laicha 1%.",
+  "Камера-Шахед 50%, Американская Ферма 49%, 💰 Зелень 1%.": "Reward of the \"GIVE ME MONEY\" mode. Camera-Shahed 50%, American Farm 49%, 💰 Zeleny 1%.",
   "%1 шт": "%1 pcs",
   "🏆 БАЗА ВРАГА ПАЛА!": "🏆 ENEMY BASE HAS FALLEN!",
   "💀 ВРЕМЯ ВЫШЛО": "💀 TIME'S UP",
@@ -1146,30 +1099,29 @@ const I18N_EN = {
   "+10 минут эффекта: %1": "+10 min of effect: %1",
   "%1 куплен! Активируй в разделе «Вещи» 🎒": "%1 bought! Activate it in the «Items» tab 🎒",
   "▶ АКТИВИРОВАТЬ": "▶ ACTIVATE",
-  "▶ СПАСАТЬ": "▶ SAVE HER",
   "Волна": "Wave",
   "Волна": "Wave",
   "НОВАЯ БАЗА ИНТЕРПОЛА! Волна %1": "NEW INTERPOL BASE! Wave %1",
-  "МАМА ПТИЦА": "MOM BIRD",
+  "МЕЛЛСТРОЙ": "MELLSTROI",
   "БАЗА ИНТЕРПОЛА (фаза %1)": "INTERPOL BASE (phase %1)",
-  "🐦 МАМА ПТИЦА СПАСЕНА!": "🐦 MOM BIRD IS SAVED!",
+  "🎉 МЕЛЛСТРОЙ СПАСЁН!": "🎉 MELLSTROI IS SAVED!",
   "📦 Мелстрой Крейт получен!": "📦 Melstroi Crate received!",
-  "🐦 Скуф Мел Строя спасён!": "🐦 Skuf Mel Stroy rescued!",
+  "🐦 Скуф Меллстроя спасён!": "🐦 Skuf Melstroi rescued!",
   "🔒 Мелстрой Прайм скоро появится в Мелстрой Крейте!": "🔒 Melstroi Prime is coming to the Melstroi Crate next!",
   "🫃 ПУЗО-ДАВКА!": "🫃 BELLY SLAM!",
   "3/3 баз Интерпола": "3/3 INTERPOL bases",
-  "🐦 Птенец Мел Строя": "🐦 Mel Stroy Chick",
-  "🍕 Нарезчик Мел Строя": "🍕 Mel Stroy Slicer",
+  "🐦 Птенец Меллстроя": "🐦 Melstroi Chick",
+  "🍕 Нарезчик Меллстроя": "🍕 Melstroi Slicer",
   "🐣 Большой Птенец": "🐣 Big Chick",
-  "💸 Ярый Фанат Мел Строя": "💸 Mel Stroy Superfan",
-  "🪑 Скуф Мел Строя": "🪑 Skuf Mel Stroy",
+  "💸 Ярый Фанат Меллстроя": "💸 Melstroi Superfan",
+  "🪑 Скуф Меллстроя": "🪑 Skuf Melstroi",
   "📦 Мелстрой Крейт": "📦 Melstroi Crate",
-  "Птенец мел строя: кидается во врагов тик-токами про нарезки (модель, не текст). На максимальной прокачке: урон 200, КД 0.7 сек.": "Mel Stroy chick: throws mel-stroy tik-toks at enemies (a real model, not text). Max level: 200 damage, 0.7s cooldown.",
+  "Птенец Меллстроя: кидается во врагов тик-токами про нарезки (модель, не текст). На максимальной прокачке: урон 200, КД 0.7 сек.": "Melstroi chick: throws Melstroi tik-toks at enemies (a real model, not text). Max level: 200 damage, 0.7s cooldown.",
   "Кидается 2 видами нарезок (модели): замедляющая — сплэш и замедление врагов на 35%, поджигающая — поджог и +21% урона. На максимальной прокачке: 95 (замедляющая) / 115 (поджигающая) урона, КД 1 сек.": "Throws 2 kinds of slices (models): slowing one — splash and 35% slow; burning one — burn and +21% damage. Max level: 95 (slowing) / 115 (burning) damage, 1s cooldown.",
   "Прыгает на врагов и давит их — урон по площади (сплэш, радиус 70). На максимальной прокачке: урон 345, КД 0.7 сек.": "Jumps on enemies and crushes them — area damage (splash, radius 70). Max level: 345 damage, 0.7s cooldown.",
   "Кидается большими донатами (модели): 250К → 250 урона, 500К → 500, 1М → 1000, а 2М — сплэш и 1250 урона (это на максимальной прокачке). КД 1.2 сек.": "Throws big donations (models): 250K → 250 damage, 500K → 500, 1M → 1000, and 2M — splash for 1250 damage (at max level). 1.2s cooldown.",
-  "Награда за первую победу в «Спаси маму птицу». Огромный юнит 2×2 клетки давит врагов пузом — урон ×2.2 по площади + замедление 30% на 1.5 сек. На максимальной прокачке: урон 450, КД 0.4 сек.": "Reward for the first win in \"SAVE MOM BIRD\". A huge 2×2-cell unit crushes enemies with his belly — ×2.2 area damage + 30% slow for 1.5s. Max level: 450 damage, 0.4s cooldown.",
-  "Птенец Мел Строя 35%, Нарезчик Мел Строя 25%, Большой Птенец 25%, Ярый Фанат Мел Строя 14.9%. 🪑 Скуф Мел Строя — за первую победу в ивенте «Спаси маму птицу». Мелстрой Прайм — скоро.": "Mel Stroy Chick 35%, Mel Stroy Slicer 25%, Big Chick 25%, Mel Stroy Superfan 14.9%. 🪑 Skuf Mel Stroy — for the first win in the \"SAVE MOM BIRD\" event. Melstroi Prime — coming soon."
+  "Награда за первую победу в «Спаси Меллстроя». Огромный юнит 2×2 клетки давит врагов пузом — урон ×2.2 по площади + замедление 30% на 1.5 сек. На максимальной прокачке: урон 450, КД 0.4 сек.": "Reward for the first win in \"SAVE MOM BIRD\". A huge 2×2-cell unit crushes enemies with his belly — ×2.2 area damage + 30% slow for 1.5s. Max level: 450 damage, 0.4s cooldown.",
+  "Птенец Меллстроя 35%, Нарезчик Меллстроя 25%, Большой Птенец 25%, Ярый Фанат Меллстроя 14.9%. 🪑 Скуф Меллстроя — награда за победу в «Спаси Меллстроя». Мелстрой Прайм — скоро.": "Melstroi Chick 35%, Melstroi Slicer 25%, Big Chick 25%, Melstroi Superfan 14.9%. 🪑 Skuf Melstroi — for the first win in the \"SAVE MOM BIRD\" event. Melstroi Prime — coming soon."
 };
 function gameLang() {
   try { return (SaveManager.data && SaveManager.data.lang === 'en') ? 'en' : 'ru'; } catch (e) { return 'ru'; }
@@ -1489,11 +1441,11 @@ const UNITS = [
     stats: { dmg: 950, range: 300, fireRate: 0.8, hp: 1600 },
     passive: { dmgBonus: 0.25, moneyBonus: 0 }, ability: 'aoeBurst', aoeRadius: 120 },
   { id: 'mobilCam', name: '🎖️ Мобилизованный Камерамен', emoji: '🎖️', rarity: 'Special', dropChance: 0.5,
-    desc: 'Призван по мобилизации. Основа штурмового отряда. Награда режима «СТОЛИЦА ЗА 3 ДНЯ».',
+    desc: 'Призван по мобилизации. Основа штурмового отряда. Выдаётся из 🏖️ Военного Крейта.',
     stats: { dmg: 45, range: 155, fireRate: 0.8, hp: 340 },
     passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'none' },
   { id: 'zovSpeaker', name: '📢 ZOV Спикер', emoji: '📢', rarity: 'Special', dropChance: 0.3,
-    desc: 'Кричит «Россия, Путин, Победа!» — враги на его полосе замедляются на 15% на 3 сек. Атакует волной с уроном по площади (сплэш, радиус 60): попадание задевает и врагов рядом с целью. Аура: +15% урона всему отряду. Награда режима «СТОЛИЦА ЗА 3 ДНЯ».',
+    desc: 'Кричит «Россия, Путин, Победа!» — враги на его полосе замедляются на 15% на 3 сек. Атакует волной с уроном по площади (сплэш, радиус 60): попадание задевает и врагов рядом с целью. Аура: +15% урона всему отряду. Выдаётся из 🏖️ Военного Крейта.',
     stats: { dmg: 80, range: 185, fireRate: 0.75, hp: 480 },
     passive: { dmgBonus: 0.15, moneyBonus: 0 }, ability: 'zovShout', splashRadius: 60 },
   { id: 'putin', name: '🃏 Пал Лаича', emoji: '🎖️', rarity: 'Special', dropChance: 0.01, frontCost: 1750, rateFloor: 0.85, upCostMul: 1.6,
@@ -1501,11 +1453,11 @@ const UNITS = [
     stats: { dmg: 140, range: 230, fireRate: 0.85, hp: 1100 },
     passive: { dmgBonus: 0.2, moneyBonus: 0 }, ability: 'putinCommand', aoeRadius: 95, splashRadius: 80 },
   { id: 'camShahed', name: '🛩️ Камера-Шахед', emoji: '🛩️', rarity: 'Special', dropChance: 0.5, frontCost: 430,
-    desc: 'Спавнер: периодически выпускает шахедов-камикадзе на врагов. На 5-м уровне — самый крутой. Награда режима «ДАЙТЕ ДЕНЕГ».',
+    desc: 'Спавнер: периодически выпускает шахедов-камикадзе на врагов. На 5-м уровне — самый крутой. Выдаётся из 📦 Малобюджетного Крейта.',
     stats: { dmg: 100, range: 160, fireRate: 1.1, hp: 200 },
     passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'spawner' },
   { id: 'amerFarm', name: '🌽 Американская Ферма', emoji: '🌽', rarity: 'Special', dropChance: 0.3, frontCost: 650,
-    desc: 'Лучшая ферма в игре: приносит 250🪙 за волну, на максимальной прокачке — 1270🪙. Не стреляет. Награда режима «ДАЙТЕ ДЕНЕГ».',
+    desc: 'Лучшая ферма в игре: приносит 250🪙 за волну, на максимальной прокачке — 1270🪙. Не стреляет. Выдаётся из 📦 Малобюджетного Крейта.',
     stats: { dmg: 0, range: 130, fireRate: 0, hp: 350 },
     passive: { dmgBonus: 0, moneyBonus: 0.15 }, ability: 'cash', cashPerWave: 250, cashGrowth: 1.5014, pureFarm: true },
   { id: 'zelensky', name: '💰 Зелень', emoji: '💵', rarity: 'Special', dropChance: 0.01, frontCost: 1750, rateFloor: 0.75, upCostMul: 1.6,
@@ -1536,25 +1488,25 @@ const UNITS = [
     desc: 'Хозяин арены: раз в 9 сек даёт цирковой залп из пушки — конфетти-взрыв (урон ×2.2 по площади) и оглушение 0.8 сек, а во 2-м режиме ещё и отбрасывает врагов назад на 70. Цена в «Столице»: 2400🪙.',
     stats: { dmg: 130, range: 200, fireRate: 0.8, hp: 1500 },
     passive: { dmgBonus: 0.2, moneyBonus: 0 }, ability: 'cannonShot' },
-  { id: 'melChick', name: '🐦 Птенец Мел Строя', emoji: '🐦', rarity: 'Special', dropChance: 0.35, frontCost: 300, rateFloor: 0.7,
-    desc: 'Птенец мел строя: кидается во врагов тик-токами про нарезки (модель, не текст). На максимальной прокачке: урон 200, КД 0.7 сек.',
-    stats: { dmg: 82, range: 175, fireRate: 1.07, hp: 300 },
+  { id: 'melChick', name: '🐦 Птенец Меллстроя', emoji: '🐦', rarity: 'Special', dropChance: 0.35, frontCost: 300, rateFloor: 0.7,
+    desc: 'Птенец Меллстроя: кидается во врагов тик-токами про нарезки (модель, не текст). На максимальной прокачке: урон 200, КД 0.7 сек.',
+    stats: { dmg: 82, range: 175, fireRate: 1.07, hp: 750 },
     passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'tiktokThrow' },
-  { id: 'melSlicer', name: '🍕 Нарезчик Мел Строя', emoji: '🍕', rarity: 'Special', dropChance: 0.25, frontCost: 479, rateFloor: 1.0,
+  { id: 'melSlicer', name: '🍕 Нарезчик Меллстроя', emoji: '🍕', rarity: 'Special', dropChance: 0.25, frontCost: 479, rateFloor: 1.0,
     desc: 'Кидается 2 видами нарезок (модели): замедляющая — сплэш и замедление врагов на 35%, поджигающая — поджог и +21% урона. На максимальной прокачке: 95 (замедляющая) / 115 (поджигающая) урона, КД 1 сек.',
-    stats: { dmg: 39, range: 180, fireRate: 1.52, hp: 320 },
+    stats: { dmg: 39, range: 180, fireRate: 1.52, hp: 800 },
     passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'sliceThrow', splashRadius: 60 },
   { id: 'melBigChick', name: '🐣 Большой Птенец', emoji: '🐣', rarity: 'Special', dropChance: 0.25, frontCost: 550, rateFloor: 0.7,
     desc: 'Прыгает на врагов и давит их — урон по площади (сплэш, радиус 70). На максимальной прокачке: урон 345, КД 0.7 сек.',
-    stats: { dmg: 141, range: 150, fireRate: 1.07, hp: 700 },
+    stats: { dmg: 141, range: 150, fireRate: 1.07, hp: 1750 },
     passive: { dmgBonus: 0.15, moneyBonus: 0 }, ability: 'splash', splashRadius: 70 },
-  { id: 'melFan', name: '💸 Ярый Фанат Мел Строя', emoji: '💸', rarity: 'Special', dropChance: 0.149, frontCost: 800, rateFloor: 1.2,
+  { id: 'melFan', name: '💸 Ярый Фанат Меллстроя', emoji: '💸', rarity: 'Special', dropChance: 0.149, frontCost: 800, rateFloor: 1.2,
     desc: 'Кидается большими донатами (модели): 250К → 250 урона, 500К → 500, 1М → 1000, а 2М — сплэш и 1250 урона (это на максимальной прокачке). КД 1.2 сек.',
-    stats: { dmg: 102, range: 200, fireRate: 1.83, hp: 280 },
+    stats: { dmg: 102, range: 200, fireRate: 1.83, hp: 700 },
     passive: { dmgBonus: 0.1, moneyBonus: 0 }, ability: 'donatThrow' },
-  { id: 'melSkuf', name: '🪑 Скуф Мел Строя', emoji: '🪑', rarity: 'Special', dropChance: 0.001, frontCost: 3000, rateFloor: 0.4, upCostMul: 1.6,
-    desc: 'Награда за первую победу в «Спаси маму птицу». Огромный юнит 2×2 клетки давит врагов пузом — урон ×2.2 по площади + замедление 30% на 1.5 сек. На максимальной прокачке: урон 450, КД 0.4 сек.',
-    stats: { dmg: 184, range: 130, fireRate: 0.61, hp: 1600 },
+  { id: 'melSkuf', name: '🪑 Скуф Меллстроя', emoji: '🪑', rarity: 'Special', dropChance: 0.001, frontCost: 3000, rateFloor: 0.4, upCostMul: 1.6,
+    desc: 'Награда за первую победу в «Спаси Меллстроя». Огромный юнит 2×2 клетки давит врагов пузом — урон ×2.2 по площади + замедление 30% на 1.5 сек. На максимальной прокачке: урон 450, КД 0.4 сек.',
+    stats: { dmg: 184, range: 130, fireRate: 0.61, hp: 4000 },
     passive: { dmgBonus: 0.2, moneyBonus: 0 }, ability: 'bellySlam', splashRadius: 60 }
 ];
 
@@ -1630,7 +1582,6 @@ const DIFFICULTIES = [
   { id: 'endless', name: 'Бесконечный', waves: 999, startMoney: 300, enemyHpMul: 1.0, enemySpeedMul: 1.0, rewardMul: 1.0, coinMul: 1.0, winCoins: 400, endless: true }
 ];
 
-const EVENT_DIFF = { id: 'dvizhuha', name: 'ДВИЖУХА Оборона', waves: 40, startMoney: 500, enemyHpMul: 1.55, enemySpeedMul: 1.12, rewardMul: 1.1, coinMul: 1.2, winCoins: 700 };
 
 const MAPS = [
   { id: 'studio', name: 'Студия', theme: { bg: '#10131c', grid: '#1a2030' }, decor: ['🎬','🎥','🎤','💡','🎪'],
@@ -1864,10 +1815,10 @@ const SaveManager = {
 
 const SHOP_CRATES = [
   { id: 'militaryCrate', name: '🎖️ Военный Крейт', emoji: '🎖️', cost: 0, color: '#7fa65c', eventOnly: true,
-    desc: 'Награда режима «СТОЛИЦА ЗА 3 ДНЯ». Мобилизованный 50%, ZOV-спикер 49%, 🃏 Пал Лаича 1%.',
+    desc: 'Мобилизованный 50%, ZOV-спикер 49%, 🃏 Пал Лаича 1%.',
     units: ['mobilCam', 'zovSpeaker', 'putin'] },
   { id: 'budgetCrate', name: '📦 Малобюджетный Крейт', emoji: '📦', cost: 0, color: '#7ec8a0', eventOnly: true,
-    desc: 'Награда режима «ДАЙТЕ ДЕНЕГ». Камера-Шахед 50%, Американская Ферма 49%, 💰 Зелень 1%.',
+    desc: 'Камера-Шахед 50%, Американская Ферма 49%, 💰 Зелень 1%.',
     units: ['camShahed', 'amerFarm', 'zelensky'] },
   { id: 'jellyCrate', name: '🍮 Желейный Крейт', emoji: '🍮', cost: 1500, color: '#7dff9e',
     desc: 'Желейный ТВ Мен 69.9%, Желейный Камера Дрон 39.1%, Желе Титан ТВ Мен 0.1%. Из желейного мира.',
@@ -1875,8 +1826,8 @@ const SHOP_CRATES = [
   { id: 'circusCrate', name: '🎪 Цирк Ужасов', emoji: '🎪', cost: 1500, color: '#ff9ade',
     desc: 'Джокер Спикер Мен 69.9%, Фокусник Мираж Камера Мен 30%, Директор Цирка Спикер Мен Титан 0.1%. Из цирка ужасов.',
     units: ['clownJoker', 'mirageMagician', 'circusRingmaster'] },
-  { id: 'melCrate', name: '📦 Мелстрой Крейт', emoji: '📦', cost: 2000, color: '#ffd966',
-    desc: 'Птенец Мел Строя 35%, Нарезчик Мел Строя 25%, Большой Птенец 25%, Ярый Фанат Мел Строя 14.9%. 🪑 Скуф Мел Строя — за первую победу в ивенте «Спаси маму птицу». Мелстрой Прайм — скоро.',
+  { id: 'melCrate', name: '📦 Мелстрой Крейт', emoji: '📦', cost: 2000, color: '#ffd966', eventOnly: true,
+    desc: 'Птенец Меллстроя 35%, Нарезчик Меллстроя 25%, Большой Птенец 25%, Ярый Фанат Меллстроя 14.9%. 🪑 Скуф Меллстроя — награда за победу в «Спаси Меллстроя». Мелстрой Прайм — скоро.',
     units: ['melChick', 'melSlicer', 'melBigChick', 'melFan'] }
 ];
 
@@ -2680,14 +2631,25 @@ UF_TABLE.melFan = [["R",-17,22,12,26,5,"#1a2130"],["R",5,22,12,26,5,"#1a2130"],[
   ["R",-20,-52,40,10,4,"#7d5fd8"],["R",-24,-46,10,22,4,"#6a48c8"],["R",14,-46,10,22,4,"#6a48c8"],
   ["L",32,-20,50,-32,"#444d66",3],["R",42,-48,22,16,3,"#7dff9e"],["T",53,-40,8,"#1e5c30","$"],
   ["L",-32,-20,-48,-36,"#444d66",3],["R",-58,-52,22,16,2,"#ffd93e"],["T",-47,-44,7,"#e0483e","!"]];
-UF_TABLE.melSkuf = [["R",-20,26,14,26,5,"#2c3040"],["R",6,26,14,26,5,"#2c3040"],
-  ["R",-26,48,20,10,4,"#0e1219"],["R",6,48,20,10,4,"#0e1219"],
-  ["E",0,-24,40,38,"#3d4c6e"],["GE",0,2,30,22,"#56688f","#3d4c6e"],
-  ["R",-30,6,60,26,8,"#5a4632"],["R",-30,2,60,8,3,"#232b3d"],
-  ["C",0,-78,20,"#e8b88a"],["E",0,-92,18,11,"#e8b88a"],
-  ["E",0,-64,12,7,"#7a5c3e"],["E",0,-60,9,4,"#8a6a4a"],
-  ["C",-8,-80,2.5,"#0d1118"],["C",8,-80,2.5,"#0d1118"],["C",-7,-81,1,"#ffffff"],["C",9,-81,1,"#ffffff"],
-  ["R",-6,-30,14,18,3,"#232b3d"],["R",-4.5,-27,11,12,2,"#7ec8ff"]];
+UF_TABLE.melSkuf = [["R",-22,30,15,26,6,"#232b3d"],["R",7,30,15,26,6,"#232b3d"],
+  ["R",-30,54,24,12,5,"#0e1219"],["R",6,54,24,12,5,"#0e1219"],
+  ["E",-48,-16,11,24,"#232b3d"],["E",48,-16,11,24,"#232b3d"],
+  ["C",-48,10,8,"#e8b88a"],["C",48,10,8,"#e8b88a"],
+  ["E",0,-28,46,40,"#3d4c6e"],
+  ["GE",0,10,38,34,"#f2cfa5","#e8b88a"],
+  ["E",0,10,34,30,"#e8b88a"],
+  ["E",0,2,40,30,"#e8b88a"],
+  ["C",0,26,2.5,"#b5825a"],
+  ["R",-4,-48,8,16,3,"#e8b88a"],
+  ["E",0,-58,42,13,"#3d4c6e"],
+  ["R",-3,-58,6,18,2,"#ffcf3d"],
+  ["C",0,-92,24,"#e8b88a"],
+  ["E",-23,-92,4,7,"#e8b88a"],["E",23,-92,4,7,"#e8b88a"],
+  ["E",0,-76,16,10,"#8a6a4a"],
+  ["E",0,-72,9,5,"#b5825a"],
+  ["C",-9,-96,3,"#0d1118"],["C",9,-96,3,"#0d1118"],
+  ["C",-8,-97,1,"#ffffff"],["C",10,-97,1,"#ffffff"],
+  ["R",-24,-122,48,16,6,"#232b3d"],["R",-28,-109,56,7,3,"#232b3d"],["C",0,-113,4,"#ffcf3d"]];
 const UF_SCALE = {
   intern: 0.92, makeup: 0.95, scientist: 0.98, streamer: 1.0, speaker: 1.02,
   operator: 1.04, steadicam: 1.06, snipercam: 1.06, hacker: 1.06, dronepilot: 1.06,
@@ -3249,19 +3211,6 @@ function drawShahedModel(ctx, x, y, scale, ally) {
   ctx.beginPath(); ctx.moveTo(-8 + pp, -12.5); ctx.lineTo(8 - pp, -12.5); ctx.stroke();
   ctx.restore();
 }
-function drawPVOModel(ctx, x, y) {
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.fillStyle = '#2c3c30';
-  ctx.beginPath(); ctx.roundRect(-10, -2, 20, 13, 3); ctx.fill();
-  ctx.fillStyle = '#3c4e40';
-  ctx.beginPath(); ctx.roundRect(-13, -9, 26, 8, 3); ctx.fill();
-  ctx.strokeStyle = '#cfd8c0'; ctx.lineWidth = 2.4;
-  ctx.beginPath(); ctx.moveTo(5, -6); ctx.lineTo(17, -19); ctx.stroke();
-  ctx.fillStyle = '#ffcf3d';
-  ctx.beginPath(); ctx.arc(0, 3, 2, 0, Math.PI * 2); ctx.fill();
-  ctx.restore();
-}
 
 function drawEnemyFigure(ctx, e) {
   const s = e.size;
@@ -3269,11 +3218,6 @@ function drawEnemyFigure(ctx, e) {
   ctx.translate(e.x, e.y);
   ctx.scale(s, s);
   UF_RUN(ctx, { x: 0, y: 0 }, UF_TOILET[e.def.id] || UF_TOILET.skibidi);
-  if (e.game && e.game.eventDefense) {
-    ctx.fillStyle = 'rgba(96,110,66,0.85)';
-    ctx.beginPath(); ctx.ellipse(0, 0.34, 0.5, 0.2, 0, 0, Math.PI * 2); ctx.fill();
-    drawMilitaryHelmet(ctx);
-  }
   ctx.restore();
 }
 
@@ -3794,23 +3738,14 @@ class Game {
     document.getElementById('quitToLobbyBtn').addEventListener('click', () => { this.stop(); App.showLobby(); });
   }
   start() {
-    const evDef = !!this.pendingEventDefense;
-    const diff = evDef ? EVENT_DIFF : (DIFFICULTIES.find(d => d.id === SaveManager.selectedDifficulty) || DIFFICULTIES[1]);
-    const mapDef = evDef ? (MAPS.find(m => m.id === 'front') || MAPS[0]) : (MAPS.find(m => m.id === SaveManager.selectedMap) || MAPS[0]);
+    const diff = DIFFICULTIES.find(d => d.id === SaveManager.selectedDifficulty) || DIFFICULTIES[1];
+    const mapDef = MAPS.find(m => m.id === SaveManager.selectedMap) || MAPS[0];
     this.difficulty = diff;
-    this.eventDefense = evDef;
     this.map = new MapRenderer(mapDef);
     this.money = diff.startMoney;
-    this.baseHp = evDef ? 1500 : BASE_MAX_HP;
-    this.baseMaxHp = evDef ? 1500 : BASE_MAX_HP;
-    this.eventFlyers = [];
-    this.eventPvos = [];
-    this.eventShaheds = [];
+    this.baseHp = BASE_MAX_HP;
+    this.baseMaxHp = BASE_MAX_HP;
     this.airDrones = [];
-    this.eventFlyTimer = 25;
-    this.shahedCd = 0;
-    const eventControls = document.getElementById('eventControls');
-    if (eventControls) eventControls.style.display = evDef ? 'flex' : 'none';
     this.waveBanner = null;
     this._previewCache = null;
     this._previewFor = -1;
@@ -3862,9 +3797,6 @@ class Game {
     this.selectedHero = null;
     this.selectedBuild = null;
     this.waveBanner = null;
-    this.pendingEventDefense = false;
-    const ec = document.getElementById('eventControls');
-    if (ec) ec.style.display = 'none';
     if (this._raf) { cancelAnimationFrame(this._raf); this._raf = null; }
     UI.hideTooltip();
   }
@@ -4226,7 +4158,6 @@ class Game {
       }
     }
     this.waveManager.update(dt);
-    if (this.eventDefense) this.updateEventDefense(dt);
     for (let i = this.enemies.length - 1; i >= 0; i--) {
       const e = this.enemies[i];
       e.update(dt);
@@ -4376,129 +4307,12 @@ class Game {
     }
     Sound.waveClear();
   }
-  updateEventDefense(dt) {
-    this.shahedCd = Math.max(0, this.shahedCd - dt);
-    const sb = document.getElementById('btnShahed');
-    if (sb) sb.textContent = this.shahedCd > 0 ? '\ud83d\ude80 ' + Math.ceil(this.shahedCd) + '\u0441' : T('\ud83d\ude80 \u0428\u0410\u0425\u0415\u0414 300\ud83e\ude99');
-    this.eventFlyTimer -= dt;
-    if (this.eventFlyTimer <= 0) {
-      this.eventFlyTimer = 20 + Math.random() * 16;
-      const alive = this.heroes.filter(h => !h.heroDead);
-      const atBase = !alive.length || Math.random() < 0.35;
-      if (atBase) {
-        const bp = this.map.waypoints[this.map.waypoints.length - 1];
-        this.eventFlyers.push({ x: CANVAS_W + 30, y: 60 + Math.random() * 200, speed: 165, hp: 40, tx: bp.x, ty: bp.y - 20, atBase: true, jam: Math.random() < 0.25 });
-        this.toast(T('\u26a0 \u0412\u0440\u0430\u0436\u0435\u0441\u043a\u0438\u0439 \u0448\u0430\u0445\u0435\u0434 \u043b\u0435\u0442\u0438\u0442 \u043d\u0430 \u0431\u0430\u0437\u0443!'));
-      } else {
-        const target = alive[Math.floor(Math.random() * alive.length)];
-        this.eventFlyers.push({ x: CANVAS_W + 30, y: 60 + Math.random() * 200, speed: 165, hp: 40, tx: target.x, ty: target.y, atBase: false, jam: Math.random() < 0.25 });
-        this.toast(T('\u26a0\ufe0f \u0428\u0430\u0445\u0435\u0434 \u043b\u0435\u0442\u0438\u0442 \u043d\u0430 \u043d\u0430\u0448\u0438 \u0432\u043e\u0439\u0441\u043a\u0430!'));
-      }
-    }
-    for (let i = this.eventFlyers.length - 1; i >= 0; i--) {
-      const f = this.eventFlyers[i];
-      const d = dist(f.x, f.y, f.tx, f.ty) || 1;
-      const k = Math.min(1, (f.speed * dt) / d);
-      f.x += (f.tx - f.x) * k; f.y += (f.ty - f.y) * k;
-      let destroyed = false;
-      if (f.jam) {
-        if (!f.jamMsg) {
-          f.jamMsg = true;
-          if (this.eventPvos.length) this.toast(T('\u041f\u0412\u041e \u043d\u0435 \u0441\u0440\u0430\u0431\u043e\u0442\u0430\u043b\u043e!'));
-        }
-      } else {
-        for (const p of this.eventPvos) {
-          if (dist(f.x, f.y, p.x, p.y) <= p.range) { f.hp -= 130 * dt; if (f.hp <= 0) { destroyed = true; break; } }
-        }
-      }
-      if (!destroyed && d < 26) {
-        destroyed = true;
-        if (f.atBase) {
-          this.baseHp -= 60;
-          const bp = this.map.waypoints[this.map.waypoints.length - 1];
-          this.floaters.push({ x: bp.x, y: bp.y - 34, text: '-60 HP', life: 1.3, maxLife: 1.3, color: '#ff6666' });
-          if (this.baseHp <= 0) { this.baseHp = 0; this.gameOver = true; this.finish(false); return; }
-        } else {
-          for (const h of this.heroes) {
-            if (!h.heroDead && dist(h.x, h.y, f.x, f.y) <= 70) {
-              h.takeDamage(70);
-              h.stunTimer = Math.max(h.stunTimer || 0, 2.5);
-            }
-          }
-        }
-        this.shake = 0.5;
-        Sound.explosion();
-      }
-      if (destroyed) {
-        this.explosions.push({ x: f.x, y: f.y, r: 0, maxR: 50, life: 0.45, maxLife: 0.45, rgb: '255,140,70' });
-        this.eventFlyers.splice(i, 1);
-      }
-    }
-    for (let i = this.eventShaheds.length - 1; i >= 0; i--) {
-      const s = this.eventShaheds[i];
-      let target = null, best = Infinity;
-      for (const e of this.enemies) {
-        if (e.hp <= 0 || e.reachedEnd) continue;
-        const d = dist(e.x, e.y, s.x, s.y);
-        if (d < best) { best = d; target = e; }
-      }
-      if (target) {
-        const d = dist(s.x, s.y, target.x, target.y);
-        const k = Math.min(1, (280 * dt) / (d || 1));
-        s.x += (target.x - s.x) * k; s.y += (target.y - s.y) * k;
-        if (d < 24) {
-          for (const e of this.enemies) {
-            if (e.hp > 0 && !e.reachedEnd && dist(e.x, e.y, s.x, s.y) <= 90) e.hp -= 300;
-          }
-          this.explosions.push({ x: s.x, y: s.y, r: 0, maxR: 90, life: 0.5, maxLife: 0.5, rgb: '255,200,80' });
-          this.eventShaheds.splice(i, 1);
-          this.shake = 0.6; Sound.explosion();
-        }
-      } else { this.eventShaheds.splice(i, 1); }
-    }
-  }
-  launchShahed() {
-    if (!this.eventDefense || this.gameOver || this.victory) return;
-    if (this.shahedCd > 0) { this.toast(fill(T('ШАХЕД готов через %1с'), Math.ceil(this.shahedCd))); return; }
-    if (this.money < 300) { Sound.error(); this.toast(T('Не хватает денег')); return; }
-    this.money -= 300; this.shahedCd = 40;
-    const b = this.map.waypoints[this.map.waypoints.length - 1];
-    this.eventShaheds.push({ x: b.x, y: b.y });
-    Sound.upgrade();
-    this.updateUI();
-  }
-  buildPVO() {
-    if (!this.eventDefense || this.gameOver || this.victory) return;
-    const n = this.eventPvos.length;
-    if (n >= 13) { Sound.error(); this.toast(fill(T('Максимум ПВО: %1'), 13)); return; }
-    const cost = 200 + 60 * n;
-    if (this.money < cost) { Sound.error(); this.toast(fill(T('Не хватает 💰 (нужно %1)'), cost)); return; }
-    this.money -= cost;
-    const b = this.map.waypoints[this.map.waypoints.length - 1];
-    const ang = (n / 13) * Math.PI * 2;
-    this.eventPvos.push({ x: b.x + Math.cos(ang) * 60, y: b.y + Math.sin(ang) * 60, range: 210 });
-    Sound.upgrade();
-    const pvoBtn = document.getElementById('btnPVO');
-    if (pvoBtn) pvoBtn.textContent = T('🛡 ПВО (%1/13)').replace('%1', n + 1);
-    this.updateUI();
-  }
-  renderEventDefense(ctx) {
-    for (const p of this.eventPvos) {
-      ctx.save(); ctx.globalAlpha = 0.12;
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.range, 0, Math.PI * 2);
-      ctx.fillStyle = '#7ee7ff'; ctx.fill(); ctx.restore();
-      drawPVOModel(ctx, p.x, p.y);
-    }
-    for (const f of this.eventFlyers) drawShahedModel(ctx, f.x, f.y, 1.1, false);
-    for (const s of this.eventShaheds) drawShahedModel(ctx, s.x, s.y, 1.1, true);
-  }
   finish(win) {
     this.running = false;
     this.countdownActive = false;
     const completed = win ? this.maxWaves : Math.max(0, this.wave - 1);
     let coins = 0;
     if (win) coins = this.difficulty.winCoins || 350;
-    if (win && this.eventDefense) SaveManager.addItem('budgetCrate', 1);
     SaveManager.addCoins(coins);
     if (win) Sound.victory(); else Sound.defeat();
     if (win) { Quests.add('wins', 1); SaveManager.addCrystals(5); }
@@ -4533,7 +4347,6 @@ class Game {
     this.drawPaymentNotice(ctx);
     this.drawFarmChip(ctx);
     this.drawBase(ctx);
-    if (this.eventDefense) this.renderEventDefense(ctx);
     for (const dr of this.airDrones) drawShahedModel(ctx, dr.x, dr.y, 0.85, true);
     if (this.selectedBuild && this.mouse.onCanvas) this.drawPreview(ctx);
     for (const h of this.heroes) h.draw(ctx);
@@ -4729,67 +4542,6 @@ class Game {
     ctx.save(); ctx.translate(b.x, b.y);
     ctx.beginPath(); ctx.ellipse(0, 20, 32, 11, 0, 0, Math.PI * 2);
     ctx.fillStyle = '#00000060'; ctx.fill();
-    if (this.eventDefense) {
-      const cgp = ctx.createLinearGradient(0, -76, 0, 24);
-      cgp.addColorStop(0, '#eef2f8'); cgp.addColorStop(0.55, '#dde4f0'); cgp.addColorStop(1, '#a8b4ca');
-      ctx.beginPath(); ctx.roundRect(-54, -76, 108, 100, 7);
-      ctx.fillStyle = cgp; ctx.fill();
-      ctx.strokeStyle = p > 0.5 ? '#d9b64a' : (p > 0.25 ? '#b28a20' : '#8a4040');
-      ctx.lineWidth = 3; ctx.stroke();
-      for (const cx2 of [-40, -15, 15, 40]) {
-        ctx.beginPath(); ctx.roundRect(cx2 - 5, -68, 10, 78, 4);
-        ctx.fillStyle = '#f6f8fc'; ctx.fill();
-        ctx.strokeStyle = '#b9c4d6'; ctx.lineWidth = 1.4; ctx.stroke();
-      }
-      ctx.fillStyle = '#d9b64a';
-      ctx.fillRect(-54, -30, 108, 6);
-      const rgp = ctx.createLinearGradient(0, -106, 0, -64);
-      rgp.addColorStop(0, '#f2d472'); rgp.addColorStop(1, '#c49a34');
-      ctx.beginPath(); ctx.moveTo(-62, -66); ctx.lineTo(0, -106); ctx.lineTo(62, -66); ctx.closePath();
-      ctx.fillStyle = rgp; ctx.fill();
-      ctx.strokeStyle = '#8a6a1a'; ctx.lineWidth = 2; ctx.stroke();
-      ctx.strokeStyle = '#d9b64a'; ctx.lineWidth = 2.5;
-      ctx.beginPath(); ctx.moveTo(0, -106); ctx.lineTo(0, -122); ctx.stroke();
-      ctx.beginPath(); ctx.arc(0, -124, 3.5, 0, Math.PI * 2);
-      ctx.fillStyle = '#ff4d4d'; ctx.fill();
-      const wob = p > 0.25 ? 0.75 : 0.3;
-      ctx.fillStyle = 'rgba(126,231,255,' + wob + ')';
-      ctx.beginPath(); ctx.roundRect(-32, -20, 10, 12, 2); ctx.fill();
-      ctx.beginPath(); ctx.roundRect(22, -20, 10, 12, 2); ctx.fill();
-      ctx.fillStyle = '#1b2130';
-      ctx.beginPath(); ctx.roundRect(-8, -12, 16, 36, 3); ctx.fill();
-      ctx.fillStyle = '#ffcc6699';
-      ctx.beginPath(); ctx.roundRect(-6, -4, 12, 3.5, 1.5); ctx.fill();
-      if (p < 0.55) {
-        ctx.strokeStyle = '#151a26'; ctx.lineWidth = 1.6;
-        ctx.beginPath(); ctx.moveTo(-30, 0); ctx.lineTo(-20, 12); ctx.lineTo(-26, 20); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(30, -6); ctx.lineTo(22, 6); ctx.lineTo(28, 16); ctx.stroke();
-      }
-      if (p < 0.3) {
-        const sm2 = 0.5 + 0.5 * Math.sin(t * 3);
-        ctx.fillStyle = 'rgba(190,190,200,' + (0.25 + 0.2 * sm2).toFixed(2) + ')';
-        ctx.beginPath(); ctx.arc(-24, -80 - sm2 * 6, 5 + sm2 * 3, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(18, -88 - sm2 * 11, 4 + sm2 * 2.5, 0, Math.PI * 2); ctx.fill();
-      }
-      const pg = ctx.createRadialGradient(0, -150, 10, 0, -150, 84);
-      pg.addColorStop(0, 'rgba(255,224,102,0.4)'); pg.addColorStop(1, 'rgba(255,224,102,0)');
-      ctx.fillStyle = pg;
-      ctx.beginPath(); ctx.arc(0, -150, 84, 0, Math.PI * 2); ctx.fill();
-      ctx.save(); ctx.translate(0, -134); ctx.scale(0.62, 0.62);
-      UF_RUN(ctx, { x: 0, y: 0 }, UF_TABLE.putin);
-      ctx.restore();
-      ctx.strokeStyle = 'rgba(255,224,102,0.85)'; ctx.lineWidth = 2.5;
-      ctx.beginPath(); ctx.ellipse(0, -188, 18, 5.5, Math.sin(t * 1.5) * 0.25, 0, Math.PI * 2); ctx.stroke();
-      ctx.restore();
-      const w = 54, h = 6, bx2 = b.x - w / 2, by2 = b.y - 212;
-      ctx.fillStyle = '#2a1a1a';
-      ctx.beginPath(); ctx.roundRect(bx2, by2, w, h, 3); ctx.fill();
-      ctx.fillStyle = p > 0.5 ? '#4dff4d' : (p > 0.25 ? '#ffcc00' : '#ff4d4d');
-      ctx.beginPath(); ctx.roundRect(bx2, by2, w * p, h, 3); ctx.fill();
-      ctx.fillStyle = '#ffffffcc'; ctx.font = 'bold 10px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText(Math.max(0, Math.round(this.baseHp)) + ' HP', b.x, by2 - 8);
-      return;
-    }
     const wallG = ctx.createLinearGradient(0, -18, 0, 20);
     wallG.addColorStop(0, '#4a566f');
     wallG.addColorStop(0.6, '#333c52');
@@ -5041,6 +4793,7 @@ const App = {
   spinning: false,
   invFilter: 'all',
   invSearch: '',
+  shopTab: 'crates',
   _unitAvatarCache: {},
   unitAvatarHTML(unit, px, opts) {
     px = Math.round(px || 52);
@@ -5719,16 +5472,6 @@ const App = {
     this.lobby.stop();
     this.game.start();
   },
-  startEventDefense() {
-    this.lastRunMode = 'defense';
-    const g = this.game;
-    g.stop();
-    g.pendingEventDefense = true;
-    document.getElementById('resultsOverlay').classList.remove('visible');
-    UI.showScreen('gameScreen');
-    this.lobby.stop();
-    g.start();
-  },
   startEventCapital() {
     this.lastRunMode = 'capital';
     document.getElementById('resultsOverlay').classList.remove('visible');
@@ -5736,15 +5479,9 @@ const App = {
     this.lobby.stop();
     this.frontGame.start(true);
   },
-  showEventScreen() {
-    this.lobby.stop();
-    UI.showScreen('eventScreen');
-    this.refreshMeta();
-  },
   repeatRun() {
     document.getElementById('resultsOverlay').classList.remove('visible');
     if (this.lastRunMode === 'capital') { UI.showScreen('eventFrontScreen'); this.frontGame.start(true); return; }
-    if (this.lastRunMode === 'defense') { this.startEventDefense(); return; }
     this.startRun();
   },
   showSettings() {
@@ -5811,7 +5548,11 @@ const App = {
     const grid = document.getElementById('shopGrid');
     if (!grid) return;
     grid.innerHTML = '';
-    for (const pt of POTIONS) {
+    document.getElementById('shopTabCrates').className = 'btn small' + (this.shopTab === 'crates' ? ' accent' : '');
+    document.getElementById('shopTabPotions').className = 'btn small' + (this.shopTab === 'potions' ? ' accent' : '');
+    const showCrates = this.shopTab !== 'potions';
+    const showPotions = this.shopTab === 'potions';
+    if (showPotions) for (const pt of POTIONS) {
       const cCol = pt.id === 'luck' ? '#d9b0ff' : '#ffe08a';
       const card = document.createElement('div');
       card.className = 'unit-card';
@@ -5843,7 +5584,7 @@ const App = {
       card.querySelector('.u-actions').appendChild(buy);
       grid.appendChild(card);
     }
-    for (const c of SHOP_CRATES) {
+    if (showCrates) for (const c of SHOP_CRATES) {
       if (c.eventOnly) continue;
       const card = document.createElement('div');
       card.className = 'unit-card crate-card';
@@ -6059,12 +5800,9 @@ const App = {
     }, 1000);
     document.getElementById('btnShop').addEventListener('click', () => this.showShop());
     document.getElementById('btnQuests').addEventListener('click', () => this.showQuests());
-    document.getElementById('btnEvent').addEventListener('click', () => this.showEventScreen());
-    document.getElementById('eventBack').addEventListener('click', () => this.showLobby());
-    document.getElementById('btnModeCapital').addEventListener('click', () => this.startEventCapital());
-    document.getElementById('btnModeDefense').addEventListener('click', () => this.startEventDefense());
-    document.getElementById('btnShahed').addEventListener('click', () => this.game.launchShahed());
-    document.getElementById('btnPVO').addEventListener('click', () => this.game.buildPVO());
+    document.getElementById('btnEvent').addEventListener('click', () => this.startEventCapital());
+    document.getElementById('shopTabCrates').addEventListener('click', () => { this.shopTab = 'crates'; this.renderShop(); });
+    document.getElementById('shopTabPotions').addEventListener('click', () => { this.shopTab = 'potions'; this.renderShop(); });
     document.getElementById('frontQuitBtn').addEventListener('click', () => { this.frontGame.stop(); this.showLobby(); });
     document.getElementById('frontSpeedBtn').addEventListener('click', () => this.frontGame.toggleSpeed());
     document.getElementById('btnCollection').addEventListener('click', () => this.showInventory());
@@ -6195,7 +5933,7 @@ const App = {
    13) ЗАПУСК
    ============================================================ */
 /* ============================================================
-   12.5) ИВЕНТ «ДВИЖУХА» — режим «СТОЛИЦА ЗА 3 ДНЯ» (фронт)
+   12.5) ИВЕНТ — РЕЖИМ «СПАСИ МЕЛЛСТРОЯ» (фронт)
    ============================================================ */
 const FRONT_W = 1280, FRONT_H = 640, FRONT_MATCH_TIME = 600;
 const FRONT_LANES = [190, 320, 450];
@@ -6205,33 +5943,41 @@ const FRONT_OUR_X = 60, FRONT_BASE_X = 1200, FRONT_ENEMY_SPAWN_X = 1330, FRONT_R
 const MEL_WAVE_TIME = 8, MEL_TOTAL_WAVES = 70;
 const MEL_PHASES = [
   { waves: 15, baseHp: 1500, dmgPerWave: 100, hpMul: 1.0, spdMul: 1.0 },
-  { waves: 20, baseHp: 2000, dmgPerWave: 100, hpMul: 1.7, spdMul: 1.15 },
-  { waves: 35, baseHp: 3500, dmgPerWave: 100, hpMul: 2.8, spdMul: 1.35 }
+  { waves: 20, baseHp: 2000, dmgPerWave: 100, hpMul: 1.0, spdMul: 1.1, eHp: 150 },
+  { waves: 35, baseHp: 3500, dmgPerWave: 100, hpMul: 1.0, spdMul: 1.15, eHp: 210 }
 ];
 
 function drawFrontBirdBase(ctx) {
   ctx.save();
   ctx.translate(FRONT_OUR_X, 320);
-  ctx.fillStyle = '#6b5232';
-  ctx.beginPath(); ctx.ellipse(0, 26, 48, 20, 0, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = '#8a6c40';
-  ctx.beginPath(); ctx.ellipse(0, 20, 40, 15, 0, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = '#f5f0e6';
-  ctx.beginPath(); ctx.ellipse(0, -6, 34, 30, 0, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.arc(0, -34, 16, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = '#ff9f4d';
-  ctx.beginPath(); ctx.moveTo(14, -34); ctx.lineTo(30, -30); ctx.lineTo(14, -26); ctx.closePath(); ctx.fill();
-  ctx.fillStyle = '#1a1a1a';
-  ctx.beginPath(); ctx.arc(-6, -38, 3.2, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.arc(6, -38, 3.2, 0, Math.PI * 2); ctx.fill();
-  ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 1.6;
-  ctx.beginPath(); ctx.arc(0, -29, 5, Math.PI * 0.25, Math.PI * 0.75); ctx.stroke();
-  ctx.fillStyle = 'rgba(126,231,255,0.35)';
-  ctx.beginPath(); ctx.ellipse(-24, 2, 9, 14, 0.3, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(24, 2, 9, 14, -0.3, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = '#fdf6da';
-  ctx.beginPath(); ctx.ellipse(-22, 42, 7, 12, 0.4, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(22, 42, 7, 12, -0.4, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.beginPath(); ctx.ellipse(0, 44, 54, 14, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#232b3d';
+  ctx.beginPath(); ctx.roundRect(-24, -6, 18, 44, 6); ctx.fill();
+  ctx.beginPath(); ctx.roundRect(6, -6, 18, 44, 6); ctx.fill();
+  ctx.fillStyle = '#e8e8f0';
+  ctx.beginPath(); ctx.roundRect(-28, 30, 24, 12, 5); ctx.fill();
+  ctx.beginPath(); ctx.roundRect(4, 30, 24, 12, 5); ctx.fill();
+  ctx.fillStyle = '#3d4c6e';
+  ctx.beginPath(); ctx.ellipse(0, -34, 42, 34, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#e8b88a';
+  ctx.beginPath(); ctx.ellipse(0, -6, 48, 42, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#d9a86f';
+  ctx.beginPath(); ctx.ellipse(0, -2, 40, 34, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#232b3d';
+  ctx.beginPath(); ctx.roundRect(-42, -40, 84, 14, 6); ctx.fill();
+  ctx.fillStyle = '#ffcf3d';
+  ctx.beginPath(); ctx.arc(0, -33, 4, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#e8b88a';
+  ctx.beginPath(); ctx.arc(0, -92, 24, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#7a5c3e';
+  ctx.beginPath(); ctx.ellipse(0, -76, 16, 10, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#232b3d';
+  ctx.beginPath(); ctx.roundRect(-24, -122, 48, 16, 6); ctx.fill();
+  ctx.beginPath(); ctx.roundRect(-28, -108, 56, 7, 3); ctx.fill();
+  ctx.fillStyle = '#0d1118';
+  ctx.beginPath(); ctx.arc(-9, -96, 3, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(9, -96, 3, 0, Math.PI * 2); ctx.fill();
   ctx.restore();
 }
 function drawFrontInterpolBase(ctx, phase) {
@@ -6314,7 +6060,7 @@ class FrontGame {
     this.myHp = 10000; this.myMaxHp = 10000;
     this.mine = []; this.enemies = []; this.tracers = []; this.explosions = []; this.floaters = [];
     this.spawnCount = {}; this.upg = { dmg: 0, hp: 0, spd: 0 }; this.allyDrones = []; this.soulFlyers = []; this.soulBolts = [];
-    this.enemyTimer = 1.2; this.shahedTimer = 22; this.shahedWarn = null;
+    this.enemyTimer = 1.2;
     this.selectedLane = 0; this.unitIds = this.frontLoadout();
     this.kills = 0; this.gameOver = false; this.victory = false; this.baseRazed = false;
     this.speed = 1; this.strongMsgShown = false; this.zovMsgShown = false;
@@ -6322,9 +6068,9 @@ class FrontGame {
     this.melHpGrow = 1.0; this.melDmgGrow = 1.0;
     if (this.mel) {
       this.baseHp = MEL_PHASES[0].baseHp; this.baseMaxHp = MEL_PHASES[0].baseHp;
-      this.time = MEL_WAVE_TIME * MEL_TOTAL_WAVES;
-      this.myHp = 6000; this.myMaxHp = 6000;
-      this.toastMsg(fill(T('🐦 СПАСИ МАМУ ПТИЦУ! Волна 1 из ' + MEL_TOTAL_WAVES)));
+      this.time = MEL_WAVE_TIME * (MEL_TOTAL_WAVES + 1);
+      this.myHp = 10000; this.myMaxHp = 10000;
+      this.toastMsg(fill(T('🩼 СПАСИ МЕЛЛСТРОЯ! Волна 1 из ' + MEL_TOTAL_WAVES)));
     }
     document.getElementById('frontSpeedBtn').textContent = T('\u23e9 \u00d71');
     this.buildPanel(); this.updateUI();
@@ -6455,6 +6201,7 @@ class FrontGame {
     const dt = rawDt * this.speed;
     if (!this.gameOver && !this.victory) {
       this.update(dt);
+      if (this.mel) this.myHp = Math.min(this.myMaxHp, this.myHp + 10 * dt);
       this.uiT -= rawDt;
       if (this.uiT <= 0) { this.uiT = 0.5; this.refreshPanel(); this.updateUI(); }
     }
@@ -6462,11 +6209,11 @@ class FrontGame {
     this._raf = (t) => this.loop(t);
     requestAnimationFrame(this._raf);
   }
-  enemyCap() { return 24 + Math.floor(this.elapsed / 40) * 3; }
+  enemyCap() { return this.mel ? 20 + Math.floor(this.elapsed / 50) * 2 : 24 + Math.floor(this.elapsed / 40) * 3; }
   update(dt) {
     this.time -= dt;
     this.elapsed += dt;
-    this.money += 12 * dt * this.coinBoost();
+    this.money += (this.mel ? 22 : 12) * dt * this.coinBoost();
     if (this.time <= 0) { this.finish(false); return; }
     if (this.mel) {
       this.waveT -= dt;
@@ -6475,7 +6222,7 @@ class FrontGame {
         this.melWave++;
         const melPh = MEL_PHASES[this.melPhase];
         this.baseHp -= melPh.dmgPerWave;
-        this.melHpGrow += 0.03; this.melDmgGrow += 0.025;
+        this.melHpGrow += 0.02; this.melDmgGrow += 0.015;
         if (this.melPhase < MEL_PHASES.length - 1) {
           const wDone = MEL_PHASES.slice(0, this.melPhase + 1).reduce((s, p) => s + p.waves, 0);
           if (this.melWave >= wDone) {
@@ -6490,39 +6237,17 @@ class FrontGame {
         if (this.melPhase === MEL_PHASES.length - 1 && this.melWave >= MEL_TOTAL_WAVES) { this.baseHp = 0; this.finish(true); return; }
       }
     }
-    this.shahedTimer -= dt;
-    if (this.shahedTimer <= 0 && !this.shahedWarn) {
-      this.shahedTimer = 22 + Math.random() * 16;
-      const target = this.mine[Math.floor(Math.random() * this.mine.length)];
-      if (target) {
-        this.shahedWarn = { x: FRONT_W + 20, y: 70, tx: target.x, ty: target.y, t: 3 };
-        this.toastMsg(T('\u26a0\ufe0f \u0428\u0430\u0445\u0435\u0434 \u043b\u0435\u0442\u0438\u0442 \u043d\u0430 \u043d\u0430\u0448\u0438 \u0432\u043e\u0439\u0441\u043a\u0430!'));
-      }
-    }
-    if (this.shahedWarn) {
-      const w = this.shahedWarn;
-      w.t -= dt;
-      const d = dist(w.x, w.y, w.tx, w.ty) || 1;
-      const k = Math.min(1, (280 * dt) / d);
-      w.x += (w.tx - w.x) * k; w.y += (w.ty - w.y) * k;
-      if (w.t <= 0) {
-        for (const m of this.mine) if (dist(m.x, m.y, w.tx, w.ty) <= 80) m.hp -= 110;
-        this.explosions.push({ x: w.tx, y: w.ty, r: 0, maxR: 80, life: 0.5, maxLife: 0.5, rgb: '255,140,70' });
-        Sound.explosion();
-        this.shahedWarn = null;
-      }
-    }
     this.enemyTimer -= dt;
     if (this.enemyTimer <= 0 && this.enemies.length < this.enemyCap()) {
-      this.enemyTimer = Math.max(0.4, 1.4 - this.elapsed * 0.0028);
+      this.enemyTimer = Math.max(this.mel ? 0.9 : 0.4, (this.mel ? 1.7 : 1.4) - this.elapsed * 0.0028);
       const lane = Math.floor(Math.random() * FRONT_LANES.length);
       const kind = Math.floor(Math.random() * 3);
       const km = kind === 1 ? 1.6 : (kind === 2 ? 2.7 : 1);
       const kspd = kind === 2 ? 0.75 : 1;
       const melPhM = this.mel ? MEL_PHASES[this.melPhase] : null;
-      const hp = (50 + 2.2 * this.elapsed + 0.011 * this.elapsed * this.elapsed) * km * (melPhM ? melPhM.hpMul * this.melHpGrow : 1);
+      const hp = (melPhM ? (40 + 4 * this.melWave + (melPhM.eHp || 0)) * km : 1);
       this.enemies.push({ lane, kind, maxHp: hp, x: FRONT_ENEMY_SPAWN_X, y: FRONT_LANES[lane],
-        hp, baseSpeed: Math.min(125, 46 + this.elapsed * 0.45) * kspd * (melPhM ? melPhM.spdMul : 1), slowT: 0, cd: 0, dmgK: this.mel ? this.melDmgGrow : 1 });
+        hp, baseSpeed: Math.min(125, 46 + this.elapsed * 0.45) * kspd * (melPhM ? melPhM.spdMul : 1), slowT: 0, cd: 0, dmgK: this.mel ? this.melDmgGrow * 0.5 : 1 });
       if (!this.strongMsgShown && this.elapsed > 90) {
         this.strongMsgShown = true;
         this.toastMsg(T('\u0412\u0440\u0430\u0436\u0435\u0441\u043a\u0438\u0435 \u0441\u043e\u043b\u0434\u0430\u0442\u044b \u043d\u0430\u0441\u0442\u0443\u043f\u0430\u044e\u0442 \u0441\u0438\u043b\u044c\u043d\u0435\u0435!'));
@@ -6847,7 +6572,7 @@ class FrontGame {
       if (e.stunT > 0) { e.stunT -= dt; continue; }
       if (tgt) {
         e.cd = 0.9;
-        tgt.hp -= (12 + this.elapsed * 0.05) * (e.dmgK || 1) * (e.kind === 1 ? 1.4 : e.kind === 2 ? 1.9 : 1);
+        tgt.hp -= (12 + this.elapsed * 0.05) * (e.dmgK || 1) * (e.kind === 1 ? 1.4 : e.kind === 2 ? 1.9 : 1) * (this.mel ? 0.55 : 1);
         this.tracers.push({ x1: e.x - 8, y1: e.y - 8, x2: tgt.x, y2: tgt.y - 8, life: 0.07, color: '#ff8888' });
       } else {
         e.cd = 0;
@@ -6855,7 +6580,7 @@ class FrontGame {
         if (e.x < FRONT_OUR_X + 50) {
           e.x = FRONT_OUR_X + 50;
           e.cd = 0.9;
-          const dmg = (12 + this.elapsed * 0.06) * (e.dmgK || 1) * (e.kind === 1 ? 1.4 : e.kind === 2 ? 1.9 : 1);
+          const dmg = this.mel ? 7 * (e.kind === 2 ? 1.7 : 1) : (12 + this.elapsed * 0.06) * (e.dmgK || 1) * (e.kind === 1 ? 1.4 : e.kind === 2 ? 1.9 : 1);
           this.myHp -= dmg;
           this.floaters.push({ x: e.x, y: FRONT_LANES[0] - 40, text: '-' + Math.round(dmg), life: 0.9, maxLife: 0.9, color: '#ff8888' });
           this.tracers.push({ x1: e.x - 8, y1: e.y - 8, x2: FRONT_OUR_X + 40, y2: FRONT_LANES[1], life: 0.07, color: '#ff8888' });
@@ -6900,7 +6625,7 @@ class FrontGame {
         SaveManager.save();
         if (firstMel) {
           if (SaveManager.unlock('melSkuf')) SaveManager.data.melSkufUnlocked = true;
-          SaveManager.addItem('melCrate', 2);
+          SaveManager.addItem('melCrate', 3);
           SaveManager.save();
         }
         SaveManager.addCoins(500);
@@ -6910,7 +6635,7 @@ class FrontGame {
           UI.toast(T('🔒 Мелстрой Прайм скоро появится в Мелстрой Крейте!'));
         }
         Sound.victory();
-        UI.toast(T('📦 Мелстрой Крейт получен!') + (firstMel ? ' ' + T('🐦 Скуф Мел Строя спасён!') : ''));
+        UI.toast(T('📦 Мелстрой Крейт получен!') + (firstMel ? ' ' + T('🐦 Скуф Меллстроя спасён!') : ''));
       } else {
         SaveManager.addItem('militaryCrate', 1);
         SaveManager.addCoins(400);
@@ -6919,7 +6644,7 @@ class FrontGame {
       }
     } else { Sound.defeat(); }
     const t = document.getElementById('resultsTitle');
-    t.textContent = win ? (this.mel ? T('🐦 МАМА ПТИЦА СПАСЕНА!') : T('🏆 БАЗА ВРАГА ПАЛА!')) : (this.baseRazed ? T('💀 НАША БАЗА ПАЛА!') : T('💀 ВРЕМЯ ВЫШЛО'));
+    t.textContent = win ? (this.mel ? T('🎉 МЕЛЛСТРОЙ СПАСЁН!') : T('🏆 БАЗА ВРАГА ПАЛА!')) : (this.baseRazed ? T('💀 НАША БАЗА ПАЛА!') : T('💀 ВРЕМЯ ВЫШЛО'));
     t.className = 'title ' + (win ? 'win' : 'lose');
     document.getElementById('resWaves').textContent = this.mel ? (this.melWave + '/' + MEL_TOTAL_WAVES) : (this.kills || 0);
     document.getElementById('resKills').textContent = this.kills || 0;
@@ -6966,13 +6691,12 @@ class FrontGame {
     else drawFrontBases(ctx, this.baseHp, this.baseMaxHp, this.myHp, this.myMaxHp);
     ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
     if (this.mel) {
-      ctx.fillStyle = '#ffe0b0'; ctx.fillText(T('МАМА ПТИЦА'), FRONT_OUR_X, 176);
+      ctx.fillStyle = '#ffe0b0'; ctx.fillText(T('МЕЛЛСТРОЙ'), FRONT_OUR_X, 176);
       ctx.fillStyle = '#f2cab8'; ctx.fillText(fill(T('БАЗА ИНТЕРПОЛА (фаза %1)'), ['I', 'II', 'III'][this.melPhase]), FRONT_BASE_X, 176);
     } else {
       ctx.fillStyle = '#d8e4c0'; ctx.fillText(T('НАША БАЗА'), FRONT_OUR_X, 176);
       ctx.fillStyle = '#f2cab8'; ctx.fillText(T('СТОЛИЦА ВРАГА'), FRONT_BASE_X, 176);
     }
-    if (this.shahedWarn) drawShahedModel(ctx, this.shahedWarn.x, this.shahedWarn.y, 1.3, false);
     for (const m of this.mine) {
       const u = this.unitDef(m.id);
       const us = UF_SCALE[m.id] || 1;
