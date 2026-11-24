@@ -70,12 +70,14 @@
     <span class="res">🔬 Очки исследований: <b id="rRP">0</b></span>
     <span class="res">🪖 Дивизии: <b id="rDiv">0</b></span>
     <span class="res">🏳 Города под контролем: <b id="rCities">0</b></span>
+    <span class="res">🏛 <b id="rGov">—</b></span>
     <button id="btnPause" title="Пауза / продолжить">⏸</button><button id="btnSpeed" title="Скорость времени">1×</button>
   </div>
   <div id="main">
     <div id="leftcol">
       <button class="lbtn" id="btnNations" title="Нации и столицы">🏳</button>
       <button class="lbtn" id="btnTech" title="Исследования">🔬</button>
+      <button class="lbtn" id="btnGov" title="Правительство и фоксы">🏛</button>
       <button class="lbtn" id="btnHelp" title="Справка">❓</button>
     </div>
     <div id="mapwrap">
@@ -118,6 +120,9 @@
       <tr><td>Города</td><td>Каждый город — регион с гарнизоном и доходом. Кликните свой город: «Сформировать дивизию» или «Укрепить гарнизон». Гарнизон восстанавливается сам — время не останавливается.</td></tr>
       <tr><td>Экономика</td><td>Доход: деньги и живая сила от городов и территорий, плюс очки исследований — всё приходит само каждый игровой месяц (10 дней).</td></tr>
       <tr><td>Исследования</td><td>«Пехота» — атака, «Промышленность» — доход, «Танки» — ваши дивизии становятся танковыми моделями бронеатаки.</td></tr>
+      <tr><td>Типы дивизий</td><td>🎖 Пехота — универсал (15 💰). 💣 Противотанк — гроза танков, слабее в общем бою (20 💰). 🛡 Танк — мощный штурм, но уязвим для ПТ (30 💰, нужно исследование «Танки»). Пехота плохо пробивает танки — держите ПТ на пути вражеских танков.</td></tr>
+      <tr><td>Мораль ☠</td><td>При 20% прочности над дивизией загорается череп: её нельзя добить, она автоматически отходит в тыл и восстанавливает строй (до 50% прочности).</td></tr>
+      <tr><td>Правительство 🏛</td><td>Выберите строй: Демократия (+30% дохода), Коммунизм (+50% живой силы), Военная диктатура (+урон), Монархия (крепкие гарнизоны). Там же — национальные фокусы: занимают игровые дни и дают мощный разовый бонус.</td></tr>
       <tr><td>Рельеф</td><td>Горы дают +4 к обороне, леса +2. Учитывайте это при атаке.</td></tr>
       <tr><td>Победа</td><td>Контроль 65% всех городов Европы или взятие всех столиц великих держав. Поражение — потеря всех городов.</td></tr>
     </table>
@@ -171,7 +176,7 @@ function makeFlag(c,w){
 var MAJORS=['germany','ussr','uk','france','italy'];
 var NATIONS=[
  {id:'germany',n:'Германия',color:'#4d5a66',cities:[{id:'berlin',n:'Берлин',c:9,r:6},{id:'hamburg',n:'Гамбург',c:8,r:7}],flag:{t:'h3',c:['#000000','#DD0000','#FFCE00']}},
- {id:'ussr',n:'СССР',color:'#7a3b3b',cities:[{id:'moscow',n:'Москва',c:20,r:2,cap:1},{id:'kiev',n:'Киев',c:16,r:4},{id:'stalingrad',n:'Сталинград',c:23,r:3}],flag:{t:'ussr'}},
+ {id:'ussr',n:'СССР',color:'#7a3b3b',cities:[{id:'moscow',n:'Москва',c:20,r:2,cap:1},{id:'kiev',n:'Киев',c:16,r:4},{id:'stalingrad',n:'Сталинград',c:23,r:3},{id:'smolensk',n:'Смоленск',c:18,r:3},{id:'minsk',n:'Минск',c:14,r:4},{id:'leningrad',n:'Ленинград',c:15,r:2}],flag:{t:'ussr'}},
  {id:'uk',n:'Великобритания',color:'#3d5578',cities:[{id:'london',n:'Лондон',c:3,r:4}],flag:{t:'uk'}},
  {id:'france',n:'Франция',color:'#3f6b52',cities:[{id:'paris',n:'Париж',c:5,r:8,cap:1},{id:'lyon',n:'Лион',c:5,r:10}],flag:{t:'v',c:['#0055A4','#FFFFFF','#EF4135']}},
  {id:'italy',n:'Италия',color:'#6b5c42',cities:[{id:'rome',n:'Рим',c:9,r:11,cap:1},{id:'milan',n:'Милан',c:8,r:10}],flag:{t:'v',c:['#009246','#FFFFFF','#CE2B37']}},
@@ -288,29 +293,41 @@ function baseFill(h){
 }
 
 /* =============== РЕАЛЬНОЕ ВРЕМЯ =============== */
-var SIM_MS=300,MONTH_DAYS=10,MOVES_STEPS=3,GRACE=150,NS='http://www.w3.org/2000/svg';
+var SIM_MS=300,MONTH_DAYS=10,MOVES_STEPS=3,GRACE=300,NS='http://www.w3.org/2000/svg';
 var S=null,sel=null,uid=1,dirtyMap=false,dirtyCity=false,unitEls={};
 var MONTHS=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 
-function makeUnit(owner,h,mhp){
+var USTAT={
+  inf:{n:'Пехота',mhp:60,man:10,cost:15},
+  at:{n:'Противотанк',mhp:50,man:8,cost:20},
+  tank:{n:'Танк',mhp:75,man:10,cost:30}
+};
+function makeUnit(owner,h,mhp,type){
+  type=type||'inf';
   var p=hexXY(h.c,h.r);
-  return {id:uid++,owner:owner,c:h.c,r:h.r,hp:mhp,mhp:mhp,path:[],prog:0,px:p.x,py:p.y-4,tx:p.x,ty:p.y-4,fight:null};
+  return {id:uid++,owner:owner,type:type,c:h.c,r:h.r,hp:mhp,mhp:mhp,path:[],prog:0,px:p.x,py:p.y-4,tx:p.x,ty:p.y-4,fight:null,rout:false,flee:false,upg:0};
 }
 function newState(pid){
-  S={player:pid,day:0,money:30,man:40,rp:0,techs:{inf:0,ind:0,arm:0},units:[],over:false,paused:false,speed:1};
+  S={player:pid,day:0,money:30,man:40,rp:0,gov:null,focus:null,techs:{inf:0,ind:0,arm:0},units:[],over:false,paused:false,speed:1};
   sel=null;unitEls={};
   NATIONS.forEach(function(n){
     var isMaj=MAJORS.indexOf(n.id)>=0;
     n.bank=isMaj?50:20;
     n.cities.forEach(function(ct){ct.owner=n.id;ct.garrison=ct.gMax=ct.cap?40:(isMaj?30:20);});
-    var spawn=isMaj?4:2,mhp=isMaj?25:16;
-    n.cities.forEach(function(ct,i){ if(i<spawn){S.units.push(makeUnit(n.id,hexes[key(ct.c,ct.r)],mhp));}});
+    var total=isMaj?4:2,placed=isMaj?['inf','inf','at','tank']:['inf','inf'];
+    var cnt=0;
+    n.cities.slice(0,2).forEach(function(ct){
+      for(var j=0;j<2&&cnt<total;j++,cnt++){
+        var tp=placed[cnt];
+        S.units.push(makeUnit(n.id,hexes[key(ct.c,ct.r)],Math.round(USTAT[tp].mhp*(isMaj?1:0.65)),tp));
+      }
+    });
   });
   assignRegions();
   dirtyMap=true;dirtyCity=true;
 }
 
-function foesOn(u,h){return unitsOn(h).filter(function(o){return o!==u&&o.owner!==u.owner;});}
+function foesOn(u,h){return unitsOn(h).filter(function(o){return o!==u&&o.owner!==u.owner&&!o.rout;});}
 function enemyCityOn(u,h){return !!(h.city&&h.city.owner!==u.owner&&h.city.garrison>0);}
 
 function orderPath(u,target){
@@ -336,6 +353,7 @@ function orderPath(u,target){
   return null;
 }
 function issueOrder(u,target){
+  if(u.rout){if(u.owner===S.player)logMsg('Дивизия разбита: сначала отойдёт в тыл и восстановит силы.','info');return;}
   var path=orderPath(u,target);
   if(!path||u.fight){logMsg('Туда нет пути: мост через море не разрушен, но и не построен.','info');return;}
   u.path=path;u.prog=0;
@@ -352,42 +370,72 @@ function enterHex(u,h){
 function simUnits(){
   for(var i=S.units.length-1;i>=0;i--){
     var u=S.units[i];
+    if(u.rout){
+      u.hp=Math.min(u.mhp,u.hp+1.2);
+      if(u.hp>=u.mhp*0.5){u.rout=false;u.flee=false;u.path=[];if(u.owner===S.player)logMsg('Дивизия восстановила строй и снова готова к бою.','good');}
+      continue;
+    }
     if(u.fight){combatTick(u);continue;}
     if(!u.path.length)continue;
     var next=u.path[0];
-    if(foesOn(u,next).length||enemyCityOn(u,next)){u.fight={hex:next,foe:null,city:!!next.city};continue;}
-    u.prog++;
-    if(u.prog>=MOVES_STEPS){u.path.shift();enterHex(u,next);}
+    if(u.flee)u.prog++;
+    else if(foesOn(u,next).length||enemyCityOn(u,next)){u.fight={hex:next,foe:null,city:!!next.city};continue;}
+    else u.prog++;
+    if(u.prog>=MOVES_STEPS){u.path.shift();enterHex(u,next);if(!u.path.length)u.flee=false;}
   }
   S.units=S.units.filter(function(u){return u.hp>0;});
 }
+var DMG={inf:{inf:1.2,at:1.0,tank:0.6},at:{inf:0.9,at:1.0,tank:2.4},tank:{inf:2.2,at:1.6,tank:1.4}};
+var SIEGE={inf:1.4,at:1.0,tank:2.0};
+function retreatHex(u){
+  var best=null,bd=1e9,start=hexes[key(u.c,u.r)];
+  if(!start)return null;
+  Object.keys(hexes).forEach(function(k){
+    var h=hexes[k];
+    if(foesOn(u,h).length)return;
+    if(h.city&&h.city.owner!==u.owner&&h.city.garrison>0)return;
+    if(h.owner!==u.owner&&h.owner!=='none')return;
+    var d=hexDist(start,h);
+    if(d>0&&d<bd){bd=d;best=h;}
+  });
+  return best;
+}
+function breakUnit(u){
+  if(u.rout)return;
+  u.rout=true;u.fight=null;u.path=[];u.prog=0;u.flee=false;
+  var h=retreatHex(u);
+  if(h){var pth=orderPath(u,h);u.path=pth||[];u.flee=!!pth;}
+  if(u.owner===S.player)logMsg('☠ Дивизия потеряла 80% прочности и разбита: отходит в тыл и не может быть добита.','info');
+  else logMsg('Дивизия врага дрогнула и отступает!','war');
+  if(sel===u)showUnitPanel(u);
+}
 function combatTick(u){
   var F=u.fight,h=F.hex;
+  if(u.rout){u.fight=null;return;}
   F.foe=foesOn(u,h)[0]||null;
+  if(!F.foe&&!F.city){u.fight=null;return;}
   if(F.foe){
-    var atk=1.0+Math.random()*1.5;
-    if(u.owner===S.player)atk+=S.techs.inf*0.3+S.techs.arm*0.5;
+    var atk=DMG[u.type][F.foe.type]*(0.8+Math.random()*0.5);
+    if(u.owner===S.player){atk+=S.techs.inf*0.2+S.techs.arm*0.35;if(S.gov==='fas')atk+=0.6;}
+    else if(MAJORS.indexOf(u.owner)>=0)atk+=0.3;
     F.foe.hp-=atk;
-    u.hp-=0.5+Math.random()*0.8;
-    if(F.foe.hp<=0){
-      S.units=S.units.filter(function(o){return o!==F.foe;});
-      if(sel===F.foe)sel=null;
-      logMsg(u.owner===S.player?'Вражеская дивизия уничтожена в бою!':'Дивизия державы '+(nationById(u.owner)||{n:''}).n+' уничтожена!','war');
-    }
-    if(u.hp<=0){
-      S.units=S.units.filter(function(o){return o!==u;});
-      if(sel===u)sel=null;
-      logMsg(u.owner===S.player?'Наша дивизия пала в бою...':'Дивизия ПРОТИВНИКА разбита.','war');
-    }
+    var ctr=0.6+Math.random()*0.4;
+    if(u.type==='tank'&&F.foe.type==='at')ctr=1.8;
+    if(F.foe.owner===S.player){ctr-=S.techs.inf*0.1;if(S.gov==='mon')ctr-=0.1;}
+    u.hp-=ctr;
+    if(F.foe.hp<=0.2*F.foe.mhp&&!F.foe.rout)breakUnit(F.foe);
+    if(u.hp<=0.2*u.mhp&&!u.rout)breakUnit(u);
     return;
   }
   if(F.city){
     var ct=h.city;
     if(ct.owner===u.owner||ct.garrison<=0){u.fight=null;return;}
     var red=TERR_DEF[h.ter]*0.25;
-    ct.garrison-=Math.max(0.4,1.2+Math.random()*1.2-red-(u.owner===S.player?S.techs.arm*0.15:0));
-    u.hp-=Math.max(0.12,ct.garrison/40);
-    if(ct.garrison<=0){u.fight=null;u.path.shift();enterHex(u,h);}
+    var g=ct.garrison;
+    ct.garrison-=Math.max(0.4,SIEGE[u.type]*(0.8+Math.random()*0.5)-red-(u.owner===S.player?S.techs.arm*0.2:0));
+    u.hp-=Math.max(0.15,g/120);
+    if(u.hp<=0.2*u.mhp&&!u.rout)breakUnit(u);
+    if(ct.garrison<=0){u.fight=null;u.flee=false;u.path.shift();enterHex(u,h);}
   }
 }
 
@@ -397,6 +445,7 @@ function stepSim(){
     S.day++;
     simUnits();
     aiStep();
+    if(S.focus)focusTick();
     if(S.day%MONTH_DAYS===0)monthTick();
     if(S.over)break;
   }
@@ -407,7 +456,7 @@ function aiStep(){
   NATIONS.forEach(function(n){
     if(n.id===S.player||MAJORS.indexOf(n.id)<0)return;
     S.units.forEach(function(u){
-      if(u.owner!==n.id||u.fight||u.path.length)return;
+      if(u.owner!==n.id||u.fight||u.path.length||u.rout||u.flee)return;
       var goal=nearestEnemyCity(u,n.id,8);
       if(goal&&S.day<GRACE&&goal.city&&goal.city.owner===S.player)goal=null;
       if(goal){var path=orderPath(u,goal);if(path)u.path=path;}
@@ -418,23 +467,27 @@ function monthTick(){
   var inc=0,man=0;
   NATIONS.forEach(function(n){
     n.cities.forEach(function(ct){
-      ct.garrison=Math.min(ct.gMax,ct.garrison+2);
+      ct.garrison=Math.min(ct.gMax,ct.garrison+(ct.owner===S.player&&S.gov==='mon'?3:2));
       if(ct.owner===S.player){inc+=3;man+=2;}
     });
   });
   Object.keys(hexes).forEach(function(k){var h=hexes[k];if(h.owner===S.player&&!h.city)inc+=0.5;});
-  S.money+=inc*(1+S.techs.ind*0.25);S.man+=man;S.rp+=1;
+  S.money+=inc*(1+S.techs.ind*0.25)*(S.gov==='dem'?1.3:1);S.man+=man*(S.gov==='com'?1.5:1);S.rp+=1;
   S.units.forEach(function(u){u.hp=Math.min(u.mhp,u.hp+3);});
   NATIONS.forEach(function(n){
     if(n.id===S.player)return;
     var isMaj=MAJORS.indexOf(n.id)>=0;
     var owned=n.cities.filter(function(ct){return ct.owner===n.id;});
     n.bank+=owned.length*3;
-    if(owned.length&&n.bank>=15&&S.day%20===0){
-      var home=owned[rnd(owned.length)];
-      if(S.units.filter(function(u){return u.owner===n.id&&u.c===home.c&&u.r===home.r;}).length<3){
-        n.bank-=15;
-        S.units.push(makeUnit(n.id,hexes[key(home.c,home.r)],isMaj?25:16));
+    if(owned.length&&S.day%20===0){
+      var rtype=Math.random(),tp=isMaj&&rtype<0.2?'tank':(isMaj&&rtype<0.4?'at':'inf');
+      var cost=USTAT[tp].cost;
+      if(n.bank>=cost){
+        var home=owned[rnd(owned.length)];
+        if(S.units.filter(function(u){return u.owner===n.id&&u.c===home.c&&u.r===home.r;}).length<3){
+          n.bank-=cost;
+          S.units.push(makeUnit(n.id,hexes[key(home.c,home.r)],Math.round(USTAT[tp].mhp*(isMaj?1:0.65)),tp));
+        }
       }
     }
   });
@@ -467,6 +520,7 @@ function updateHUD(){
   $id('rRP').textContent=fmtR(S.rp);
   $id('rDiv').textContent=S.units.filter(function(u){return u.owner===S.player;}).length;
   $id('rCities').textContent=myCities()+'/'+totalCities();
+  $id('rGov').textContent=S.gov?({dem:'Демократия',com:'Коммунизм',fas:'Военная диктатура',mon:'Монархия'})[S.gov]:'—';
   var mi=Math.floor(S.day/MONTH_DAYS);
   $id('dateBox').textContent=MONTHS[mi%12]+' '+(1939+Math.floor(mi/12));
 }
@@ -551,52 +605,73 @@ function renderCities(){
     g.appendChild(grp);
   });});
 }
-function unitModel(u){
+function buildUnitEl(u){
   var col=(nationById(u.owner)||{color:'#667'}).color;
-  var tank=(u.owner===S.player)?(S.techs.arm>=1):(MAJORS.indexOf(u.owner)>=0);
+  var g=document.createElementNS(NS,'g');
+  g.setAttribute('class','unit');
   var s='<ellipse cx="0" cy="8.5" rx="8" ry="2.6" fill="rgba(0,0,0,.5)"/>';
-  if(tank){
-    s+='<rect x="-8" y="1" width="16" height="4.5" rx="1.5" fill="'+shade(col,0.5)+'"/>'+
-       '<rect x="-7" y="-2.5" width="14" height="4" rx="1.2" fill="'+col+'"/>'+
-       '<rect x="-3.5" y="-6" width="7" height="4" rx="1" fill="'+shade(col,1.15)+'"/>'+
-       '<line x1="0" y1="-4" x2="10.5" y2="-2.5" stroke="#2b2b2b" stroke-width="1.6"/>';
+  s+='<circle cx="0" cy="0" r="12" fill="transparent" pointer-events="all"/>';
+  if(u.type==='at'){
+    s+='<circle cx="-4.5" cy="6" r="2.2" fill="#2b2b2b"/>'+
+       '<circle cx="4.5" cy="6" r="2.2" fill="#2b2b2b"/>'+
+       '<rect x="-4" y="1.5" width="8" height="3" rx="0.8" fill="'+shade(col,0.55)+'"/>'+
+       '<path d="M-5,-1 L5,-1 L3.4,-5 L-3.4,-5 Z" fill="'+shade(col,0.85)+'" stroke="#1c1c1c" stroke-width="0.6"/>'+
+       '<line x1="0" y1="-3.4" x2="9.5" y2="-7" stroke="#1c1c1c" stroke-width="1.5"/>'+
+       '<rect x="-2" y="1.8" width="4" height="3.6" rx="1.2" fill="'+col+'"/>';
+  } else if(u.type==='tank'){
+    s+='<rect x="-8.5" y="2" width="17" height="4.5" rx="2" fill="#1c1c1c"/>'+
+       '<rect x="-7.5" y="2.6" width="15" height="3.2" rx="1.6" fill="#3a3a3a"/>'+
+       '<rect x="-7" y="-2.6" width="14" height="5" rx="1.4" fill="'+col+'"/>'+
+       '<rect x="-7" y="-2.6" width="14" height="1.6" fill="'+shade(col,1.3)+'"/>'+
+       '<rect x="-3.5" y="-7" width="8" height="4.5" rx="1.2" fill="'+shade(col,1.08)+'"/>'+
+       '<circle cx="1.5" cy="-4.8" r="1" fill="'+shade(col,0.6)+'"/>'+
+       '<line x1="3" y1="-5" x2="12" y2="-3.4" stroke="#242424" stroke-width="1.8"/>';
   } else {
     s+='<line x1="-2.5" y1="7" x2="-1" y2="1.5" stroke="#26303a" stroke-width="1.8"/>'+
        '<line x1="2.5" y1="7" x2="1" y2="1.5" stroke="#26303a" stroke-width="1.8"/>'+
        '<rect x="-3.2" y="-3.2" width="6.4" height="5.4" rx="1.8" fill="'+col+'"/>'+
-       '<line x1="3.2" y1="1.5" x2="7" y2="-2.2" stroke="#3a3a3a" stroke-width="1.3"/>'+
+       '<rect x="-4.8" y="-2.6" width="2.2" height="4" rx="1" fill="'+shade(col,0.7)+'"/>'+
+       '<line x1="3.2" y1="1.5" x2="7.4" y2="-2.4" stroke="#3a3a3a" stroke-width="1.3"/>'+
        '<circle cx="0" cy="-5.8" r="2.7" fill="#e6c29c"/>'+
        '<path d="M-3.1,-5.9 a3.3,2.3 0 0 1 6.2,0 z" fill="'+shade(col,0.75)+'"/>';
   }
-  s+='<rect x="-7" y="-12" width="14" height="2.4" rx="1" fill="rgba(0,0,0,.55)"/>'+
-     '<rect x="-6.6" y="-11.6" width="13.2" height="1.6" rx="0.8" fill="#7de07d"/>';
-  return s;
+  s+='<rect x="-7" y="-12" width="14" height="2.4" rx="1" fill="rgba(0,0,0,.55)"/>';
+  s+='<rect class="hp" x="-6.6" y="-11.6" width="13.2" height="1.6" rx="0.8" fill="#7de07d"/>';
+  s+='<text class="sk" x="7" y="-11" font-size="9" font-weight="bold" fill="#ff6655" opacity="0" style="font-size:9px">☠</text>';
+  g.innerHTML=s;
+  (function(gg,uu){gg.onclick=function(){clickHex(hexes[key(uu.c,uu.r)]);};})(g,u);
+  return g;
 }
 function renderUnitsPooled(){
   var g=$id('unitLayer');if(!g)return;
   var seen={};
   for(var i=0;i<S.units.length;i++){
     var u=S.units[i];seen[u.id]=1;
-    var el=unitEls[u.id];
-    if(!el){
-      el=document.createElementNS(NS,'g');
-      el.setAttribute('class','unit');
-      el.innerHTML=unitModel(u);
-      (function(elRef,uRef){elRef.onclick=function(){clickHex(hexes[key(uRef.c,uRef.r)]);};})(el,u);
+    var P=unitEls[u.id];
+    if(!P){
+      var el=buildUnitEl(u);
       g.appendChild(el);
-      unitEls[u.id]=el;
+      P={g:el,bar:null,sk:null};
+      var kids=el.childNodes||[];
+      for(var j=0;j<kids.length;j++){
+        var nd=kids[j];
+        if(!nd.getAttribute)continue;
+        if(nd.getAttribute('class')==='hp')P.bar=nd;
+        if(nd.getAttribute('class')==='sk')P.sk=nd;
+      }
+      unitEls[u.id]=P;
     }
-    el.setAttribute('transform','translate('+u.px.toFixed(1)+','+u.py.toFixed(1)+')');
-    var bar=el.lastChild;
-    if(bar&&bar.setAttribute){
-      var ratio=Math.max(0,u.hp/u.mhp);
-      bar.setAttribute('width',(13.2*ratio).toFixed(1));
-      bar.setAttribute('fill',ratio>0.55?'#7de07d':(ratio>0.25?'#e8c65a':'#e06a5a'));
+    P.g.setAttribute('transform','translate('+u.px.toFixed(1)+','+u.py.toFixed(1)+')');
+    if(P.bar){
+      var rt=Math.max(0,Math.min(1,u.hp/u.mhp));
+      P.bar.setAttribute('width',(13.2*rt).toFixed(1));
+      P.bar.setAttribute('fill',rt>0.55?'#7de07d':(rt>0.25?'#e8c65a':'#e06a5a'));
     }
+    if(P.sk)P.sk.setAttribute('opacity',(u.rout||u.hp<=0.2*u.mhp)?'1':'0');
   }
   Object.keys(unitEls).forEach(function(id){
     if(!seen[id]){
-      var e=unitEls[id];
+      var P=unitEls[id],e=P.g||P;
       if(e.onclick)e.onclick=null;
       if(e.parentNode&&e.parentNode.removeChild)e.parentNode.removeChild(e);
       delete unitEls[id];
@@ -641,42 +716,87 @@ function showUnitPanel(u){
   var n=nationById(u.owner);
   var h=hexes[key(u.c,u.r)];
   var ct=h&&h.city;
-  var st=u.fight?'Идёт бой!':(u.path.length?'Выступает: '+u.path.length+' рег.':'Держит позицию');
-  $id('side').innerHTML='<h3>⚔️ Дивизия</h3><div class="sub">'+(n?n.n:'')+(ct?' · '+ct.n:'')+'</div>'+
-    '<div class="stat"><span>Прочность</span><span>'+Math.max(0,Math.round(u.hp))+' / '+u.mhp+'</span></div>'+
+  var st=u.rout?'☠ Разбита: отходит в тыл и восстанавливается (враг не может добить)':(u.fight?'Идёт бой!':(u.path.length?'Выступает: '+u.path.length+' рег.':'Держит позицию'));
+  var tp=USTAT[u.type]?USTAT[u.type].n:'Пехота';
+  var dmgu=u.type==='tank'?'сильна против пехоты и ПТ, слаба против ПТ':(u.type==='at'?'гроза танков, слабее в общем бою':'универсал, плохо против танков');
+  var s='<h3>⚔️ '+tp+' · '+Math.max(0,Math.round(u.hp))+' / '+u.mhp+'</h3>'+
+    '<div class="sub">'+(n?n.n:'')+(ct?' · '+ct.n:'')+(u.upg?' · опыт ур.'+u.upg:'')+'</div>'+
     '<div class="stat"><span>Статус</span><span>'+st+'</span></div>'+
-    '<div class="sect"><p class="muted">Левый клик — выбрать дивизию, клик по гексу на карте — приказ выступить. Дорогу и бой она берёт сама.</p>'+
-    '<button class="pbtn" onclick="deselect()">✖ Снять выделение</button></div>';
+    '<div class="stat"><span>Роль</span><span class="muted">'+dmgu+'</span></div>';
+  if(!u.rout){
+    s+='<div class="sect"><p class="muted">Клик по гексу — приказ выступить. Прокачка:</p>'+
+      '<button class="pbtn" onclick="upgradeHP()">🏅 Опыт: +5 прочности (10 💰) — ур.'+u.upg+'/4</button>';
+    if(u.type==='inf')s+='<button class="pbtn" onclick="rearm(\'at\')">🔧 Перевооружить на противотанк (20 💰)</button>';
+    if(u.type!=='tank')s+='<button class="pbtn" onclick="rearm(\'tank\')">🔧 Перевооружить на танк (30 💰'+(S.techs.arm<1?', нужно исслед. «Танки»':'')+')</button>';
+    s+='<button class="pbtn" onclick="deselect()">✖ Снять выделение</button></div>';
+  } else {
+    s+='<div class="sect"><button class="pbtn" onclick="deselect()">✖ Снять выделение</button></div>';
+  }
+  $id('side').innerHTML=s;
 }
+function upgradeHP(){
+  if(!S||!sel||sel.owner!==S.player)return;
+  if(sel.rout){logMsg('Дивизия разбита и не может обучаться.','info');return;}
+  if(sel.upg>=4){logMsg('Максимальный уровень опыта дивизии.','info');return;}
+  if(S.money<10){logMsg('Нужно 10 💰.','info');return;}
+  S.money-=10;sel.upg++;sel.mhp+=5;sel.hp+=5;
+  logMsg('Дивизия набрала опыт: ур.'+sel.upg+' (прочность '+sel.mhp+').','good');
+  updateHUD();showUnitPanel(sel);
+}
+function rearm(tp){
+  if(!S||!sel||sel.owner!==S.player)return;
+  if(sel.rout){logMsg('Дивизия разбита: сначала восстановление.','info');return;}
+  var cost=tp==='tank'?30:20;
+  if(tp==='tank'&&S.techs.arm<1){logMsg('Танки требуют исследования «Танки» (I уровень).','info');return;}
+  if(S.money<cost){logMsg('Нужно '+cost+' 💰.','info');return;}
+  S.money-=cost;
+  var upg=sel.upg;
+  sel.type=tp;sel.mhp=USTAT[tp].mhp+5*upg;sel.hp=sel.mhp;
+  var P=unitEls[sel.id];
+  if(P&&P.g&&P.g.parentNode)P.g.parentNode.removeChild(P.g);
+  delete unitEls[sel.id];
+  logMsg('Дивизия перевооружена: '+USTAT[tp].n+'.','good');
+  updateHUD();showUnitPanel(sel);
+}
+window.upgradeHP=upgradeHP;
+window.rearm=rearm;
 window.deselect=function(){sel=null;dirtyMap=true;};
 function clickCity(ct){
   if(!S||S.over)return;
   var mine=ct.owner===S.player;
   var n=nationById(ct.owner);
+  var amt=S.gov==='mon'?6:4;
   $id('side').innerHTML='<h3>'+makeFlag(n,36)+' '+ct.n+'</h3><div class="sub">'+(n?n.n:'')+(ct.cap?' · столица':'')+'</div>'+
     '<div class="stat"><span>Хозяин</span><span>'+(mine?'вы':(n?n.n:'нет'))+'</span></div>'+
     '<div class="stat"><span>Гарнизон</span><span>'+Math.round(ct.garrison)+' / '+ct.gMax+'</span></div>'+
-    '<div class="stat"><span>Доход города</span><span>💰 3 · 👥 2 /мес</span></div>'+
-    (mine?('<div class="sect"><p class="muted">Управление городом:</p>'+
-      '<button class="pbtn" onclick="recruitAt(\''+ct.id+'\')">🎖 Сформировать дивизию — 15 💰, 10 👥</button>'+
-      '<button class="pbtn" onclick="fortifyAt(\''+ct.id+'\')">🛡 Укрепить гарнизон (+4) — 10 💰</button></div>'):'');
+    '<div class="stat"><span>Доход города</span><span>💰 3 · 👤 2 /мес</span></div>'+
+    (mine?('<div class="sect"><p class="muted">Формирование дивизий:</p>'+
+      '<button class="pbtn" onclick="recruitAt(\''+ct.id+'\',\'inf\')">🎖 Пехота — 15 💰, 10 👤</button>'+
+      '<button class="pbtn" onclick="recruitAt(\''+ct.id+'\',\'at\')">💣 Противотанк — 20 💰, 8 👤</button>'+
+      '<button class="pbtn" onclick="recruitAt(\''+ct.id+'\',\'tank\')">🛡 Танк — 30 💰, 10 👤'+(S.techs.arm<1?' (нужно исслед. «Танки»)':'')+'</button>'+
+      '<p class="muted">Управление городом:</p>'+
+      '<button class="pbtn" onclick="fortifyAt(\''+ct.id+'\')">🧱 Укрепить гарнизон (+'+amt+') — 10 💰</button></div>'):'');
 }
 window.clickCity=clickCity;
-function recruitAt(cityId){
+function recruitAt(cityId,type){
+  type=type||'inf';
   var ct=findCity(cityId);if(!ct||ct.owner!==S.player)return;
-  if(S.money<15||S.man<10){logMsg('Нужно 15 💰 и 10 👥.','info');return;}
+  var st=USTAT[type];
+  var needMan=st.man;if(S.gov==='com')needMan=Math.round(needMan*0.75);
+  if(type==='tank'&&S.techs.arm<1){logMsg('Танки требуют исследования «Танки» (I уровень).','info');return;}
+  if(S.money<st.cost||S.man<needMan){logMsg('Нужно '+st.cost+' 💰 и '+needMan+' 👤.','info');return;}
   if(unitsOn(hexes[key(ct.c,ct.r)]).length>=3){logMsg('В городе уже 3 дивизии.','info');return;}
-  S.money-=15;S.man-=10;
-  var mhp=MAJORS.indexOf(S.player)>=0?25:16;
-  S.units.push(makeUnit(S.player,hexes[key(ct.c,ct.r)],mhp));
-  logMsg('В '+ct.n+' сформирована дивизия.','good');
+  S.money-=st.cost;S.man-=needMan;
+  S.units.push(makeUnit(S.player,hexes[key(ct.c,ct.r)],st.mhp,type));
+  logMsg('В '+ct.n+' сформирована дивизия: '+st.n+'.','good');
   updateHUD();
 }
 window.recruitAt=recruitAt;
 function fortifyAt(cityId){
   var ct=findCity(cityId);if(!ct||ct.owner!==S.player)return;
   if(S.money<10){logMsg('Нужно 10 💰.','info');return;}
-  S.money-=10;ct.gMax+=4;ct.garrison+=4;
+  var amt=S.gov==='mon'?6:4;
+  S.money-=10;ct.gMax+=amt;ct.garrison+=amt;
   logMsg('Гарнизон '+ct.n+' усилен: '+Math.round(ct.garrison)+'/'+ct.gMax+'.','good');
   dirtyCity=true;
   clickCity(ct);
@@ -740,6 +860,7 @@ $id('helpClose').onclick=function(){$id('helpOv').style.display='none';};
 $id('btnHelp').onclick=function(){$id('helpOv').style.display='flex';};
 $id('btnNations').onclick=showNations;
 $id('btnTech').onclick=function(){if(S)showTech();};
+$id('btnGov').onclick=function(){if(S)showGov();};
 $id('btnPause').onclick=function(){
   if(!S)return;
   S.paused=!S.paused;
@@ -784,6 +905,73 @@ function research(id){
   showTech();
 }
 window.research=research;
+var GTYPE={dem:{n:'Демократия',d:'+30% дохода каждый месяц'},com:{n:'Коммунизм',d:'+50% прироста живой силы, набор дешевле'},fas:{n:'Военная диктатура',d:'+0.6 к урону всех дивизий'},mon:{n:'Монархия',d:'гарнизоны крепче: +3/мес восстановления, укрепление +6'}};
+var FOCUSES={
+  econ:{n:'Экономический рывок',days:40,fx:'+60 монет за завершение'},
+  mil:{n:'Военная программа',days:50,fx:'+25 живой силы и 2 пехотные дивизии'},
+  ide:{n:'Идеологическая пропаганда',days:35,fx:'+10 гарнизона и +5 к лимиту во всех городах'}
+};
+function showGov(){
+  var s='<h3>🏛 Правительство</h3><div class="sub">Строй страны даёт бонусы. Смена — 30 💰 (первый выбор бесплатен).</div>';
+  Object.keys(GTYPE).forEach(function(k){
+    s+='<div class="stat"><span>'+(S.gov===k?'✔ ':'')+GTYPE[k].n+'</span><span class="muted">'+GTYPE[k].d+'</span></div>';
+  });
+  s+='<div class="sect">';
+  Object.keys(GTYPE).forEach(function(k){
+    s+='<button class="pbtn" onclick="pickGov(\''+k+'\')">'+(S.gov===k?'Выбрано: ':'Перейти к ')+GTYPE[k].n+'</button>';
+  });
+  s+='</div>';
+  if(S.focus){
+    s+='<div class="sect"><p class="muted">Идёт фокус «'+FOCUSES[S.focus.id].n+'» — осталось '+Math.ceil(S.focus.left)+' дн.</p></div>';
+  } else {
+    s+='<p class="muted" style="margin-top:10px">Национальные фокусы (как в хойках): фокус ведёт страну несколько десятков дней, затем мощный разовый эффект:</p>';
+    Object.keys(FOCUSES).forEach(function(k){
+      s+='<button class="pbtn" onclick="pickFocus(\''+k+'\')">🎯 '+FOCUSES[k].n+' — '+FOCUSES[k].days+' дн.<br><span class="muted">'+FOCUSES[k].fx+'</span></button>';
+    });
+  }
+  $id('side').innerHTML=s;
+}
+window.showGov=showGov;
+function pickGov(g){
+  if(!S)return;
+  if(S.gov===g)return;
+  if(S.gov){ if(S.money<30){logMsg('Смена правительства стоит 30 💰.','info');return;} S.money-=30; }
+  S.gov=g;
+  logMsg('Правительство: '+GTYPE[g].n+'. '+GTYPE[g].d,'good');
+  updateHUD();showGov();
+}
+window.pickGov=pickGov;
+function pickFocus(k){
+  if(!S)return;
+  if(S.focus){logMsg('Фокус уже идёт: '+FOCUSES[S.focus.id].n+'.','info');return;}
+  S.focus={id:k,left:FOCUSES[k].days};
+  logMsg('Начат национальный фокус: '+FOCUSES[k].n+' ('+FOCUSES[k].days+' дн.).','info');
+  showGov();
+}
+window.pickFocus=pickFocus;
+function focusTick(){
+  if(!S||!S.focus)return;
+  S.focus.left--;
+  if(S.focus.left>0)return;
+  var fid=S.focus.id,f=FOCUSES[fid];
+  if(fid==='econ')S.money+=60;
+  if(fid==='mil'){
+    S.man+=25;
+    var cap=null;NATIONS.forEach(function(n){if(n.id===S.player)n.cities.forEach(function(ct){if(ct.cap)cap=ct;});});
+    var hh=cap?hexes[key(cap.c,cap.r)]:null;
+    for(var i=0;i<2;i++){
+      if(hh&&S.units.filter(function(u){return u.owner===S.player&&u.c===hh.c&&u.r===hh.r;}).length<3)
+        S.units.push(makeUnit(S.player,hh,USTAT.inf.mhp,'inf'));
+    }
+  }
+  if(fid==='ide'){
+    NATIONS.forEach(function(n){if(n.id===S.player)n.cities.forEach(function(ct){if(ct.owner===S.player){ct.gMax+=5;ct.garrison+=10;}});});
+    dirtyCity=true;
+  }
+  logMsg('Фокус «'+f.n+'» завершён! '+f.fx,'good');
+  S.focus=null;
+  updateHUD();
+}
 
 var pickNation=null;
 function buildPick(){
