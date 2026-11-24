@@ -3,515 +3,786 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Conquer Europe WW2: Procrastinate</title>
+<title>Conquer Europe WW2</title>
 <style>
-  :root{ --panel:#1b1e26; --panel2:#22262f; --gold:#d4a017; --txt:#cfd3da; --green:#5fae5f; --red:#c0504d; }
-  *{box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI',Arial,sans-serif;}
-  body{background:#12141a; color:var(--txt); overflow:hidden;}
-  #app{display:flex; height:100vh;}
-  #leftcol{width:64px; background:var(--panel); display:flex; flex-direction:column; align-items:center; padding-top:8px; gap:6px; border-right:1px solid #000;}
-  .lbtn{width:52px; height:44px; background:var(--panel2); border:1px solid #3a3f4b; border-radius:6px; font-size:22px; cursor:pointer; position:relative;}
+  :root{ --panel:#171a21; --panel2:#22262f; --gold:#e0b23c; --txt:#cfd3da; --line:#333947; }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;}
+  html,body{height:100%;}
+  body{background:#0e1016;color:var(--txt);overflow:hidden;}
+  #app{display:flex;flex-direction:column;height:100vh;}
+  #topbar{height:54px;background:var(--panel);border-bottom:1px solid #000;display:flex;align-items:center;gap:14px;padding:0 14px;font-size:13px;overflow-x:auto;flex-wrap:nowrap;}
+  #topbar .res{white-space:nowrap;} #topbar .res b{color:#fff;}
+  #dateBox{color:var(--gold);font-weight:bold;white-space:nowrap;}
+  #nextBtn{margin-left:auto;background:var(--gold);color:#111;border:none;padding:9px 22px;font-weight:bold;font-size:14px;border-radius:6px;cursor:pointer;white-space:nowrap;}
+  #nextBtn:hover{filter:brightness(1.12);}
+  #main{flex:1;display:flex;min-height:0;}
+  #leftcol{width:60px;background:var(--panel);display:flex;flex-direction:column;align-items:center;padding-top:10px;gap:8px;border-right:1px solid #000;}
+  .lbtn{width:46px;height:42px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;font-size:19px;cursor:pointer;color:var(--txt);}
   .lbtn:hover{border-color:var(--gold);}
-  .lbtn .lbl{position:absolute; bottom:-2px; right:1px; font-size:8px; color:#999;}
-  #mapwrap{flex:1; position:relative; background:#0d1b2a; overflow:hidden;}
-  svg{width:100%; height:100%;}
-  .country{stroke:#0d1b2a; stroke-width:1.5; cursor:pointer; transition:fill .3s;}
-  .country:hover{stroke:#fff;}
-  .country.player{stroke:#ffd700; stroke-width:2;}
-  .clang{font-size:9px; fill:#e8e8e8; pointer-events:none; text-shadow:0 0 3px #000;}
-  .cutmark{font-size:10px; fill:#556; font-style:italic;}
-  #dayhud{position:absolute; top:8px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,.6); padding:6px 14px; border-radius:6px; font-size:13px; border:1px solid #333;}
-  #resbar{position:absolute; top:8px; left:8px; background:rgba(0,0,0,.6); padding:6px 10px; border-radius:6px; font-size:12px; border:1px solid #333; line-height:1.7;}
-  #news{position:absolute; bottom:0; left:0; right:0; height:110px; background:rgba(10,12,18,.85); overflow-y:auto; font-size:12px; padding:6px 10px; border-top:1px solid #333;}
-  #news div{padding:1px 0;}
-  .lag .country{animation:jit .12s infinite;}
-  @keyframes jit{0%{transform:translate(0,0);}25%{transform:translate(1px,-1px);}50%{transform:translate(-1px,1px);}75%{transform:translate(1px,1px);}}
-  #camBtn{position:absolute; left:8px; top:90px; width:46px; height:46px; border-radius:50%; background:var(--panel2); border:1px solid #3a3f4b; font-size:18px; cursor:pointer;}
-  #side{width:300px; background:var(--panel); border-left:1px solid #000; padding:10px; overflow-y:auto; display:none;}
-  #side h3{color:var(--gold); margin-bottom:6px; font-size:15px;}
-  .pbtn{display:block; width:100%; margin:5px 0; padding:8px; background:var(--panel2); border:1px solid #3a3f4b; color:var(--txt); border-radius:5px; cursor:pointer; font-size:13px; text-align:left;}
-  .pbtn:hover{border-color:var(--gold);}
-  .check{font-size:12px; padding:2px 0;}
-  .ok{color:var(--green);} .bad{color:var(--red);}
-  .badge{font-size:12px; padding:3px 0;}
-  .badge.got{color:var(--gold);}
-  input[type=text]{width:100%; padding:7px; background:#0f1116; border:1px solid #3a3f4b; color:#fff; border-radius:5px;}
-  .overlay{position:fixed; inset:0; background:rgba(0,0,0,.8); display:flex; align-items:center; justify-content:center; z-index:50;}
-  .card{background:var(--panel); border:2px solid var(--gold); border-radius:10px; padding:24px; max-width:640px; width:92%; max-height:88vh; overflow-y:auto;}
-  .card h1{color:var(--gold); font-size:22px; margin-bottom:10px;}
-  .card h2{font-size:16px; color:#fff; margin:10px 0 4px;}
-  .card p, .card li{font-size:13px; line-height:1.55;}
-  .big{display:block; margin:16px auto 0; padding:10px 28px; background:var(--gold); color:#111; border:none; border-radius:6px; font-size:15px; font-weight:bold; cursor:pointer;}
-  #toasts{position:fixed; top:60px; right:12px; z-index:60; display:flex; flex-direction:column; gap:6px; align-items:flex-end;}
-  .toast{background:#000c; border:1px solid var(--gold); border-left:4px solid var(--gold); padding:8px 14px; border-radius:6px; font-size:13px; max-width:340px; animation:fade 4s forwards;}
-  @keyframes fade{0%{opacity:0}10%{opacity:1}80%{opacity:1}100%{opacity:0}}
-  #startCountries{display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin:10px 0;}
-  .sbtn{padding:7px 4px; background:var(--panel2); border:1px solid #3a3f4b; color:var(--txt); border-radius:5px; cursor:pointer; font-size:12px;}
-  .sbtn:hover{border-color:var(--gold);}
-  .sbtn.rec{border-color:var(--green);} .sbtn.warn{border-color:#a55;} .sbtn.sup{border-color:var(--gold);}
-  .muted{color:#889; font-size:11px;}
+  #mapwrap{flex:1;position:relative;background:#0c1622;overflow:hidden;}
+  svg{width:100%;height:100%;display:block;}
+  .hex{cursor:pointer;stroke:#0c1622;stroke-width:1;transition:fill .25s;}
+  .hex.move-ok{cursor:crosshair;}
+  .unit{cursor:pointer;}
+  #side{width:300px;background:var(--panel);border-left:1px solid #000;padding:12px;overflow-y:auto;}
+  #side h3{color:#fff;font-size:15px;margin-bottom:2px;display:flex;align-items:center;gap:8px;}
+  #side .sub{color:#889;font-size:12px;margin-bottom:8px;}
+  .pbtn{display:block;width:100%;margin:6px 0;padding:8px 10px;background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:5px;cursor:pointer;font-size:13px;text-align:left;}
+  .pbtn:hover:not(:disabled){border-color:var(--gold);}
+  .pbtn:disabled{opacity:.4;cursor:default;}
+  .stat{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;}
+  .stat span:last-child{color:#fff;}
+  .sect{border-top:1px solid var(--line);margin-top:10px;padding-top:8px;}
+  .muted{color:#889;font-size:12px;}
+  .techrow{font-size:13px;display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #262a33;}
+  .techrow button{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:4px;padding:3px 8px;cursor:pointer;font-size:12px;}
+  .techrow button:hover:not(:disabled){border-color:var(--gold);}
+  .techrow button:disabled{opacity:.4;cursor:default;}
+  #log{height:92px;background:#0b0d13;border-top:1px solid var(--line);overflow-y:auto;font-size:12px;padding:6px 12px;}
+  #log div{padding:1px 0;}
+  #log .war{color:#e0a0a0;} #log .good{color:#a6d0a6;} #log .info{color:#93a0b4;}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.84);display:flex;align-items:center;justify-content:center;z-index:50;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:24px;max-width:820px;width:94%;max-height:92vh;overflow-y:auto;}
+  .card h1{color:var(--gold);font-size:20px;margin-bottom:4px;}
+  .card h2{font-size:14px;color:#fff;margin:12px 0 6px;}
+  .muted{color:#889;font-size:12px;line-height:1.5;}
+  #pickGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:10px 0;}
+  .pick{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:8px;cursor:pointer;text-align:left;color:var(--txt);}
+  .pick:hover{border-color:var(--gold);}
+  .pick.selPick{border-color:var(--gold);background:#2a3040;}
+  .pick .pn{color:#fff;font-size:13px;margin-top:5px;}
+  .pick .pm{font-size:11px;color:#889;}
+  .flag{display:block;border:1px solid #000;border-radius:2px;}
+  .big{display:block;margin:14px auto 0;padding:10px 30px;background:var(--gold);color:#111;border:none;border-radius:6px;font-size:15px;font-weight:bold;cursor:pointer;}
+  .big:disabled{opacity:.4;cursor:default;}
+  table{border-collapse:collapse;width:100%;font-size:13px;}
+  td,th{padding:4px 8px;text-align:left;border-bottom:1px solid #262a33;vertical-align:top;}
+  th{color:#fff;}
 </style>
 </head>
 <body>
 <div id="app">
-  <div id="leftcol">
-    <button class="lbtn" id="btnShop" title="Shop / Skins">🛒<span class="lbl">shop</span></button>
-    <button class="lbtn" id="btnBuild" title="Заводы">🏭</button>
-    <button class="lbtn" id="btnTech" title="Research">🔬</button>
-    <button class="lbtn" id="btnBadges" title="Бейджи">🏆</button>
-    <button class="lbtn" id="btnNuke" title="Ядерное оружие (после 47 исследований) — потратит последнюю монету" disabled>☢️</button>
-    <button class="lbtn" id="btnHelp" title="Туториал (который можно было скипнуть)">❓</button>
+  <div id="topbar">
+    <span id="dateBox">Январь 1939</span>
+    <span class="res">💰 Финансы: <b id="rMoney">0</b></span>
+    <span class="res">👥 Живая сила: <b id="rMan">0</b></span>
+    <span class="res">🔬 Очки исследований: <b id="rRP">0</b></span>
+    <span class="res">🪖 Дивизии: <b id="rDiv">0</b></span>
+    <span class="res">🏳 Города под контролем: <b id="rCities">0</b></span>
+    <button id="nextBtn">Следующий месяц ▶</button>
   </div>
-  <div id="mapwrap">
-    <svg viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid meet">
-      <rect width="1000" height="640" fill="#0d1b2a"/>
-      <text class="cutmark" x="140" y="70">✂ Исландия (вырезана из бюджета)</text>
-      <text class="cutmark" x="770" y="120">✂ Мальта (тоже)</text>
-      <text class="cutmark" x="120" y="575">✂ Лихтенштейн, Андорра, Сан-Марино — плачут где-то за кадром</text>
-      <text class="cutmark" x="830" y="605" font-size="14" fill="#334">← Атлантида (DLC 2028)</text>
-      <g id="countries"></g>
-      <g id="labels"></g>
-    </svg>
-    <div id="resbar"></div>
-    <div id="dayhud">День 1 · Era: WW2</div>
-    <button id="camBtn" title="Камера: вернуться к третьему лицу">📷</button>
-    <div id="news"><b style="color:var(--gold)">📰 News:</b></div>
+  <div id="main">
+    <div id="leftcol">
+      <button class="lbtn" id="btnNations" title="Нации и столицы">🏳</button>
+      <button class="lbtn" id="btnTech" title="Исследования">🔬</button>
+      <button class="lbtn" id="btnHelp" title="Справка">❓</button>
+    </div>
+    <div id="mapwrap">
+      <svg id="mapSvg" viewBox="0 0 1060 600" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="seaGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#10263e"/><stop offset="1" stop-color="#0c1622"/>
+          </linearGradient>
+        </defs>
+        <rect width="1060" height="600" fill="url(#seaGrad)"/>
+        <g id="hexShadowLayer"></g>
+        <g id="hexLayer"></g>
+        <g id="cityLayer"></g>
+        <g id="unitLayer"></g>
+        <g id="uiLayer"></g>
+      </svg>
+    </div>
+    <div id="side"><h3>Стратегия</h3><p class="sub">Выберите дивизию или свой город на карте.</p></div>
   </div>
-  <div id="side"></div>
+  <div id="log"></div>
 </div>
-<div id="toasts"></div>
 
 <div class="overlay" id="startOv">
   <div class="card">
-    <h1>⚔️ Conquer Europe WW2: Procrastinate</h1>
-    <p class="muted">«Hearts of Iron 4, но быстрее и веселее» — быстрее, потому что сервер без тебя проголосует за WW3</p>
-    <h2>Выбери страну</h2>
-    <p class="muted" style="font-size:12px">Гайд советует НЕ играть за большие страны. Гайд вообще много чего советует.</p>
-    <div id="startCountries"></div>
-    <p class="muted">Или кликни страну на карте: зелёная = советует гайд, красная = гайд умоляет не надо, <b style="color:#d4a017">золотая точка в Италии = Ватикан-сверхдержава</b>.</p>
-    <p id="pickHint" style="margin-top:8px; color:#fff"></p>
-    <button class="big" id="startBtn" disabled>Начать партию →</button>
+    <h1>Conquer Europe WW2</h1>
+    <p class="muted">Стратегия в разрезе Европы 1939 года. Каждый город — отдельный регион с гарнизоном и экономикой. Дивизии перемещаются по регионам, берут города и удерживают фронты.</p>
+    <h2>Выберите нацию</h2>
+    <div id="pickGrid"></div>
+    <p id="pickHint" class="muted" style="margin-top:6px"></p>
+    <button class="big" id="startBtn" disabled>Начать кампанию</button>
   </div>
 </div>
 
-<div class="overlay" id="tutOv" style="display:none">
+<div class="overlay" id="helpOv" style="display:none">
   <div class="card">
-    <h1>📖 Туториал (можно скипнуть. ты скипнешь)</h1>
-    <ul style="padding-left:18px">
-      <li><b>Гражданские заводы раньше военных.</b> Это не совет, это закон.</li>
-      <li><b>Никогда не трать последнюю монету.</b> Она у тебя одна. Анимация её блеска отрисовывалась три недели.</li>
-      <li><b>Слоты исследова́ний не пустуют.</b> Пустой слот исследует сам себя. Не ту тему.</li>
-      <li>Война = Justification (пост в Discord, 24 лайка) + <b>5 проверок</b>. Провалил хоть одну — <i>отложи войну</i>.</li>
-      <li>Десант требует порты на обоих берегах. Иначе — пляж, фото, галерея плейса.</li>
-      <li>Самолёты бесполезны без планеров, базы, миссии и топлива. Поэтому ты без авиации. Все без авиации.</li>
-      <li>Микрогосударства вырезаны... кроме <b>Ватикана</b>. Ватикан — сверхдержава. Смирись.</li>
-      <li>Карта лагает. Кнопка 📷 на карте спасает. Иногда лагает даже она.</li>
-    </ul>
-    <button class="big" id="tutSkip">Скипнуть (ты всё равно скипнешь)</button>
-    <button class="big" id="tutRead" style="background:#333; color:#fff; margin-top:8px">Читать... ладно</button>
+    <h1>Справка</h1>
+    <table>
+      <tr><th>Управление</th><th>Как работает</th></tr>
+      <tr><td>Дивизии</td><td>Кликните свою дивизию — подсветятся соседи. Зелёные точки — переход в свободный или ваш регион. Красные — атака вражеского региона (гарнизон или дивизия противника). Одна дивизия — одно действие за месяц.</td></tr>
+      <tr><td>Города</td><td>Каждый город — регион с гарнизоном и доходом. Кликните свой город: «Сформировать дивизию» или «Укрепить гарнизон». Гарнизон восстанавливается каждый месяц.</td></tr>
+      <tr><td>Экономика</td><td>Доход: деньги и живая сила от городов и территорий. Очки исследований копятся каждый месяц.</td></tr>
+      <tr><td>Исследования</td><td>«Пехота» — атака, «Промышленность» — доход, «Танки» — атака и прочность дивизий.</td></tr>
+      <tr><td>Рельеф</td><td>Горы дают +4 к обороне, леса +2. Учитывайте это при атаке.</td></tr>
+      <tr><td>Победа</td><td>Контроль 65% всех городов Европы или взятие всех столиц великих держав. Поражение — потеря всех городов.</td></tr>
+    </table>
+    <button class="big" id="helpClose">Закрыть</button>
   </div>
 </div>
 
 <div class="overlay" id="endOv" style="display:none">
   <div class="card">
-    <h1 id="endTitle">🏆 Ты conquерил Europe</h1>
-    <p id="endText"></p>
-    <h2>Сервер голосует: какая эра следующая?</h2>
-    <div id="eraBtns" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px">
-      <button class="sbtn" data-era="WW1">WW1</button>
-      <button class="sbtn" data-era="WW2">WW2</button>
-      <button class="sbtn" data-era="WW3">WW3</button>
-      <button class="sbtn" data-era="All Neutral">All Neutral</button>
-    </div>
-    <p id="eraResult" style="margin-top:10px; color:#fff"></p>
+    <h1 id="endTitle"></h1>
+    <p id="endText" style="font-size:14px;line-height:1.6"></p>
+    <button class="big" id="againBtn">Новая кампания</button>
   </div>
 </div>
 
 <script>
 'use strict';
-var SKINS={'default':'#4a6fa5','LUXEMBOURG_NEUTRAL:|':'#8a8d93','VATICAN-MEGA:D':'#c9a227','SPAIN_GOOD':'#c8b46a'};
-var BADGES_DEF=[
- {id:'forgot',t:'🥇 Объявила войну и забыла зачем',how:'Объяви войну и подожди 15 дней без единого наступления'},
- {id:'beach',t:'🤦 Порт не на том берегу',how:'Провали морской десант'},
- {id:'coin',t:'🪙 Последняя монета потрачена (снова)',how:'Истрать монету (ядерка её обожает)'},
- {id:'style',t:'😎 Ворвался в Польшу, но не стильно',how:'Захвати страну без промокода на скин'},
- {id:'gen',t:'💰 Генерал просто стоит',how:'«Купи» генерала за Robux (0 инфляции, 0 смысла)'},
- {id:'neut',t:'🕊️ All Neutral',how:'Проживи 60 дней, никого не тронув'}
-];
-var AI_NAMES=['CK_Hans','xX_General_Xx','Marian_Dev','Zubr_Tsar','AnnexCool','NeutralNikita'];
-var C=[
- {id:'spain',n:'Spain',p:'78,414 202,398 232,442 200,502 92,486 68,452',cx:150,cy:448,port:1},
- {id:'portugal',n:'Portugal',p:'40,418 82,412 92,486 60,522 44,470',cx:64,cy:464,port:1,mtn:1},
- {id:'france',n:'France',p:'208,332 310,314 368,344 368,396 300,432 228,416 196,372',cx:282,cy:372,port:1},
- {id:'belgium',n:'Belgium',p:'339,286 376,282 379,308 345,311',cx:358,cy:296},
- {id:'netherlands',n:'Netherlands',p:'344,248 376,244 381,274 350,279',cx:362,cy:262,port:1},
- {id:'luxembourg',n:'Luxembourg',p:'352,266 367,264 369,279 354,281',cx:360,cy:272,mtn:1},
- {id:'germany',n:'Germany',p:'382,196 462,192 472,262 425,300 372,290',cx:415,cy:244,port:1},
- {id:'switzerland',n:'Switzerland',p:'376,300 424,294 428,326 382,332',cx:400,cy:312,mtn:1},
- {id:'italy',n:'Italy',p:'368,338 430,332 468,392 470,470 430,512 408,452 388,382',cx:426,cy:408,port:1},
- {id:'vatican',n:'Vatican',p:'436,412 448,410 450,421 438,423',cx:443,cy:442,sup:1},
- {id:'austria',n:'Austria',p:'424,296 492,290 500,322 434,326',cx:462,cy:308,mtn:1},
- {id:'czech',n:'Czechia',p:'470,256 548,250 558,284 476,292',cx:512,cy:270},
- {id:'poland',n:'Poland',p:'458,188 562,178 592,230 556,268 474,256',cx:516,cy:216},
- {id:'hungary',n:'Hungary',p:'500,296 562,288 576,322 508,326',cx:538,cy:308,mtn:1},
- {id:'yugo',n:'Yugoslavia',p:'476,332 560,326 572,380 520,422 480,392',cx:522,cy:372,mtn:1},
- {id:'bulgaria',n:'Bulgaria',p:'576,382 632,376 642,420 582,426',cx:606,cy:400,mtn:1},
- {id:'romania',n:'Romania',p:'556,300 642,290 656,344 582,354',cx:600,cy:320},
- {id:'albania',n:'Albania',p:'494,426 514,420 518,452 498,456',cx:505,cy:438,mtn:1},
- {id:'greece',n:'Greece',p:'518,440 570,430 590,490 540,512 514,482',cx:545,cy:470,port:1,mtn:1},
- {id:'baltics',n:'Baltics',p:'562,140 642,130 652,186 570,192',cx:605,cy:160},
- {id:'ussr',n:'USSR',p:'652,42 950,58 962,402 700,428 660,300 655,150',cx:800,cy:225,mtn:1},
- {id:'turkey',n:'Turkey',p:'662,440 806,428 822,500 692,514 662,482',cx:740,cy:470,mtn:1},
- {id:'denmark',n:'Denmark',p:'445,175 490,168 486,205 452,208',cx:468,cy:190},
- {id:'uk',n:'UK',p:'330,140 382,128 402,180 380,242 338,262 312,205',cx:356,cy:196,port:1},
- {id:'ireland',n:'Ireland',p:'268,180 316,174 322,218 286,242 256,215',cx:288,cy:206,port:1},
- {id:'sweden',n:'Sweden',p:'500,45 560,85 560,165 505,175 495,105',cx:528,cy:118,mtn:1},
- {id:'norway',n:'Norway',p:'460,30 540,25 530,110 480,150 430,95',cx:486,cy:76,mtn:1},
- {id:'finland',n:'Finland',p:'590,35 655,55 645,160 580,150',cx:615,cy:96,mtn:1}
-];
-var LAND=[['spain','portugal'],['spain','france'],['france','belgium'],['france','italy'],['france','switzerland'],['france','germany'],['france','luxembourg'],['belgium','netherlands'],['belgium','germany'],['belgium','luxembourg'],['netherlands','germany'],['germany','denmark'],['germany','poland'],['germany','czech'],['germany','austria'],['germany','switzerland'],['germany','luxembourg'],['switzerland','italy'],['switzerland','austria'],['italy','austria'],['italy','yugo'],['italy','vatican'],['austria','czech'],['austria','hungary'],['austria','yugo'],['czech','poland'],['poland','baltics'],['poland','ussr'],['baltics','ussr'],['romania','hungary'],['romania','ussr'],['romania','bulgaria'],['romania','yugo'],['bulgaria','yugo'],['bulgaria','greece'],['bulgaria','turkey'],['greece','yugo'],['greece','albania'],['albania','yugo'],['turkey','ussr'],['ussr','finland'],['finland','sweden'],['sweden','norway'],['norway','finland'],['hungary','yugo']];
-var SEA=[['uk','france'],['uk','belgium'],['uk','netherlands'],['uk','germany'],['uk','denmark'],['uk','norway'],['ireland','uk'],['sweden','denmark'],['italy','greece'],['italy','albania'],['italy','yugo'],['greece','turkey'],['spain','italy']];
-
-var S=null, sel=null, pick=null;
+/* =============== БАЗА =============== */
+var SQ3=Math.sqrt(3), HEX=21, COLS=26, ROWS=17;
 function $id(x){return document.getElementById(x);}
-function byId(id){for(var i=0;i<C.length;i++)if(C[i].id===id)return C[i];return null;}
-function ownedCount(){var n=0;C.forEach(function(c){if(c.owner==='player')n++;});return n;}
-function toast(t){var d=document.createElement('div');d.className='toast';d.textContent=t;$id('toasts').appendChild(d);setTimeout(function(){d.remove();},4200);}
-function news(m){var d=document.createElement('div');d.textContent='— '+m;$id('news').prepend(d);while($id('news').children.length>60)$id('news').lastChild.remove();}
-function landNb(id){var r=[];LAND.forEach(function(p){if(p[0]===id)r.push(p[1]);if(p[1]===id)r.push(p[0]);});return r;}
-function gainBadge(id){if(!S||S.badges[id])return;S.badges[id]=1;var b=null;BADGES_DEF.forEach(function(x){if(x.id===id)b=x;});if(b){toast('🏆 Бейдж: '+b.t);news('🏆 Бейдж получен: '+b.t);}}
+function key(c,r){return c+','+r;}
+function rnd(n){return Math.floor(Math.random()*n);}
+function fmtR(n){return Math.round(n);}
 
-function newState(pid){
-  S={player:pid,skin:'default',day:1,era:'WW2',coin:1,vibes:10,shells:3,steel:0,oil:0,alu:0,
-     civ:1,mil:0,infra:1,done:0,just:{},wars:[],nukes:0,stuckUntil:0,badges:{},owned:[pid],generals:0,forgot:0,aiTimer:0,
-     research:[{n:'Промышленность',p:0,t:10},{n:'Пехота',p:0,t:14},{n:'Танки',p:0,t:20},{n:'Ракеты (ядерка где-то там)',p:0,t:47}]};
-  C.forEach(function(c){c.owner=(c.id===pid)?'player':'ai';c.hp=c.sup?4000:(30+Math.floor(Math.random()*40));c.prog=0;c.civ=1;c.mil=1;});
-  C.forEach(function(c){if(c.owner==='player'){c.civ=1;c.mil=0;if(c.sup){c.civ=4;c.mil=8;}}});
-  if(pid==='luxembourg')news('🇱🇺 Ты за Люксембург. План А: горы и один сосед. План Б: предать план А. Древо фокусов длиннее, чем у СССР — каждый узел начинается со слов «а если предать».');
-  if(pid==='vatican')news('⛪ Ты за Ватикан. 400 танков скучают на аэродроме: планеры в производстве.');
-  if(pid==='germany'||pid==='ussr'||pid==='poland')news('⚠ Гайд умолял не выбирать большую страну. Гайд уже пишет пост.');
-}
-
-function renderMap(){
-  var g=$id('countries'),L=$id('labels');g.innerHTML='';L.innerHTML='';
-  C.forEach(function(c){
-    var el=document.createElementNS('http://www.w3.org/2000/svg','polygon');
-    el.setAttribute('points',c.p);
-    el.setAttribute('fill',c.owner==='player'?SKINS[S.skin]:(c.id==='vatican'?'#c9a227':'#4d525c'));
-    el.setAttribute('class','country'+(c.owner==='player'?' player':''));
-    el.onclick=function(){clickCountry(c.id);};
-    g.appendChild(el);
-    var t=document.createElementNS('http://www.w3.org/2000/svg','text');
-    t.setAttribute('x',c.cx-c.n.length*2.6);t.setAttribute('y',c.cy+3);t.setAttribute('class','clang');
-    t.textContent=(c.id==='vatican'?'★':c.n);
-    L.appendChild(t);
-  });
-}
-
-function hasOwnPort(){var r=false;S.owned.forEach(function(cid){if(byId(cid).port)r=true;});return r;}
-function hasLandPathTo(id){var r=false;S.owned.forEach(function(m){if(m!==id&&landNb(m).indexOf(id)>=0)r=true;});return r;}
-
-function clickCountry(id){
-  if(!S||S.preview){startPick(id);return;}
-  sel=id;
-  var c=byId(id),isMine=c.owner==='player',atWar=S.wars.indexOf(id)>=0,just=S.just[id]||0;
-  $id('side').style.display='block';
-  var h='<h3>'+c.n+(c.id==='vatican'?' ★ СВЕРХДЕРЖАВА':'')+'</h3>'+
-    '<p class="muted">'+(isMine?'твоя страна':(atWar?'война!':'нейтральная'))+' · HP: '+Math.max(0,Math.round(c.hp))+(c.mtn?' · горы 🏔':'')+(c.port?' · порт ⚓':'')+'</p>';
-  if(isMine){
-    h+='<p style="font-size:12px;margin:6px 0">Заводы здесь: 🏭civil '+(c.civ||0)+' / ⚙️military '+(c.mil||0)+'</p>'+
-       '<button class="pbtn" onclick="buildHere(\''+id+'\',\'civ\')">🏭 +Civil factory (золотое правило)</button>'+
-       '<button class="pbtn" onclick="buildHere(\''+id+'\',\'mil\')">⚙️ +Military factory (пока выпускает гордость)</button>';
-  } else if(atWar){
-    h+='<button class="pbtn" onclick="attack(\''+id+'\')">⚔️ Наступать (линия фронта: 1 снаряд/удар)</button>';
-    if(!hasLandPathTo(id))h+='<button class="pbtn" onclick="navy(\''+id+'\')">⚓ Морской десант (порты на обоих берегах!)</button>';
-  } else {
-    h+='<p style="font-size:12px;margin-top:6px">Justification (пост в Discord): '+(just<24?just+'/24 👍':'готово! ✅')+'</p>';
-    h+=(just<24)
-      ?'<button class="pbtn" onclick="justify(\''+id+'\')">📝 Оправдать войну (пост в #justifications)</button>'
-      :'<button class="pbtn" onclick="declareWar(\''+id+'\')">🏹 Declare War (5 проверок)</button>';
+/* =============== ФЛАГИ =============== */
+function starPts(cx,cy,R,r){var p=[];for(var i=0;i<10;i++){var a=-Math.PI/2+i*Math.PI/5,rad=(i%2===0)?R:r;p.push((cx+rad*Math.cos(a)).toFixed(1)+','+(cy+rad*Math.sin(a)).toFixed(1));}return p.join(' ');}
+function makeFlag(c,w){
+  var h=Math.round(w*2/3),f=c.flag,s='';
+  function rect(x,y,ww,hh,fill){return '<rect x="'+x+'" y="'+y+'" width="'+ww+'" height="'+hh+'" fill="'+fill+'"/>';}
+  if(f.t==='v'){var sw=w/3;for(var i=0;i<3;i++)s+=rect(i*sw,0,sw+0.5,h,f.c[i]);}
+  else if(f.t==='h3'){var sh=h/3;for(var i2=0;i2<3;i2++)s+=rect(0,i2*sh,w,sh+0.5,f.c[i2]);}
+  else if(f.t==='h2'){s+=rect(0,0,w,h/2+0.5,f.c[0])+rect(0,h/2,w,h/2,f.c[1]);}
+  else if(f.t==='h3w'){s+=rect(0,0,w,h/4,f.c[0])+rect(0,h/4,w,h/2,f.c[1])+rect(0,h*3/4,w,h/4,f.c[2]);}
+  else if(f.t==='cross'){s+=rect(0,0,w,h,'#DA291C')+rect(w*0.22,0,w*0.18,h,'#FFFFFF')+rect(0,h*0.39,w,h*0.22,'#FFFFFF');}
+  else if(f.t==='nordic'){
+    if(f.out)s+=rect(w*0.26,0,w*0.24,h,f.out)+rect(0,h*0.36,w,h*0.28,f.out);
+    s+=rect(0,0,w,h,f.bg)+rect(w*0.31,0,w*0.14,h,f.cr)+rect(0,h*0.42,w,h*0.16,f.cr);
   }
-  if(c.id==='vatican'&&!isMine)h+='<p class="muted" style="margin-top:6px">Гайд строго советует НЕ трогать Ватикан. У Ватикана альянс получше твоего.</p>';
-  $id('side').innerHTML=h;
+  else if(f.t==='uk'){s+=rect(0,0,w,h,'#012169');
+    s+='<line x1="0" y1="0" x2="'+w+'" y2="'+h+'" stroke="#FFFFFF" stroke-width="6"/><line x1="'+w+'" y1="0" x2="0" y2="'+h+'" stroke="#FFFFFF" stroke-width="6"/>';
+    s+='<line x1="'+w/2+'" y1="0" x2="'+w/2+'" y2="'+h+'" stroke="#FFFFFF" stroke-width="10"/><line x1="0" y1="'+h/2+'" x2="'+w+'" y2="'+h/2+'" stroke="#FFFFFF" stroke-width="10"/>';
+    s+='<line x1="'+w/2+'" y1="0" x2="'+w/2+'" y2="'+h+'" stroke="#C8102E" stroke-width="6"/><line x1="0" y1="'+h/2+'" x2="'+w+'" y2="'+h/2+'" stroke="#C8102E" stroke-width="6"/>';}
+  else if(f.t==='turkey'){s+=rect(0,0,w,h,'#E30A17')+'<circle cx="'+(w*0.38)+'" cy="'+h/2+'" r="'+h*0.22+'" fill="#fff"/><circle cx="'+(w*0.44)+'" cy="'+h/2+'" r="'+h*0.18+'" fill="#E30A17"/><polygon points="'+starPts(w*0.58,h/2,h*0.13,h*0.05)+'" fill="#fff"/>';}
+  else if(f.t==='ussr'){s+=rect(0,0,w,h,'#CC0000')+'<polygon points="'+starPts(w*0.17,h*0.3,h*0.2,h*0.08)+'" fill="#FFD700"/><path d="M'+(w*0.08)+','+(h*0.62)+' q'+(w*0.09)+','+(h*0.22)+' '+(w*0.2)+',0" stroke="#FFD700" stroke-width="2.4" fill="none"/>';}
+  else if(f.t==='greece'){var sh9=h/9;for(var g=0;g<9;g++)s+=rect(0,g*sh9,w,sh9+0.3,(g%2===0)?'#0D5EAF':'#FFFFFF');s+=rect(0,0,w*0.37,sh9*5,'#0D5EAF')+rect(w*0.14,0,w*0.09,sh9*5,'#fff')+rect(0,sh9*2,w*0.37,sh9,'#fff');}
+  else if(f.t==='czech'){s+=rect(0,0,w,h/2+0.5,'#FFFFFF')+rect(0,h/2,w,h/2,'#D7141A')+'<polygon points="0,0 '+w*0.46+','+h/2+' 0,'+h+'" fill="#11457E"/>';}
+  else if(f.t==='portugal'){s+=rect(0,0,w*0.4,h,'#046A38')+rect(w*0.4,0,w*0.6+0.5,h,'#DA291C')+'<circle cx="'+w*0.4+'" cy="'+h/2+'" r="'+h*0.19+'" fill="#FFE900"/><circle cx="'+w*0.4+'" cy="'+h/2+'" r="'+h*0.11+'" fill="#DA291C"/>';}
+  return '<svg class="flag" width="36" height="24" viewBox="0 0 '+w+' '+h+'">'+s+'</svg>';
 }
 
-function justify(id){
-  S.just[id]=0;
-  news('📝 '+AI_NAMES[Math.floor(Math.random()*AI_NAMES.length)]+': «опять кто-то оправдывает войну постом»');
-  toast('Пост опубликован в #justifications. Лайки капают в реальном времени. 24 — и фронт твой.');
-  clickCountry(id);
-}
-function declareWar(id){
-  var rnd=Math.random();
-  var checks=[
-    ['Снаряды (п.1 таблицы «почему я проигрываю»)',S.shells>=3],
-    ['Vibes / живая сила (п.2)',S.vibes>=5],
-    ['Один фронт (п.5)',S.wars.length<=1],
-    ['Столица прикрыта',rnd>0.25],
-    ['Чужие альянсы',rnd>0.4]
-  ];
-  var failed=0;checks.forEach(function(c){if(!c[1])failed++;});
-  var h='<h3>🪧 Five Checks против '+byId(id).n+'</h3>';
-  checks.forEach(function(c){h+='<div class="check '+(c[1]?'ok':'bad')+'">'+(c[1]?'✅':'❌')+' '+c[0]+'</div>';});
-  if(failed>0){
-    S.just[id]=24;
-    h+='<p class="muted" style="margin:8px 0">Провалил проверок: '+failed+'. Игра нежно советует:</p>'+
-       '<button class="pbtn" onclick="postpone(\''+id+'\')">🕐 Отложить войну (настоящий совет гайда)</button>';
-    $id('side').innerHTML=h;
-    news('🕐 Война с '+byId(id).n+' отложена. Лайки прекрасные, план нет.');
-    return;
-  }
-  startWar(id);
-}
-function postpone(id){toast('Война с '+byId(id).n+' отложена. День «Д» неизвестен. Как и план.');clickCountry(id);}
-function startWar(id){
-  S.wars.push(id);S.forgot=0;
-  toast('⚔️ Война с '+byId(id).n+' объявлена. Проверки пройдены (в этот раз).');
-  news('⚔️ Таблица «почему я проигрываю»: снаряды → vibes → исследования → местность и авиация → два фронта.');
-  clickCountry(id);
-}
-function attack(id){
-  var t=byId(id);
-  if(S.shells<=0){toast('💀 Стоп-приказ: нечем воевать. Снаряды кончились.');news('💀 Стоп-приказ. Приказ сам себя создал, п.1 таблицы кивает.');clickCountry(id);return;}
-  S.shells--;
-  var myPow=2+S.mil*0.3+Math.min(3,S.done*0.4)+(S.skin!=='default'?2:0);
-  t.prog+=myPow*(0.7+Math.random()*0.6)*(t.mtn?0.6:1)*(t.sup?0.05:1);
-  t.hp-=myPow*(0.6+Math.random()*0.8)*(t.sup?0.02:1);
-  if(t.prog>=60){capture(id);return;}
-  if(S.vibes>0&&Math.random()<0.3)S.vibes--;
-  if(t.sup&&Math.random()<0.3)news('⛪ Vatican: «мы заметили перемещение войск». 400 танков пока греются на солнце.');
-  clickCountry(id);
-}
-function navy(id){
-  var t=byId(id);
-  if(S.stuckUntil>S.day){toast('⛵ Армия переживает пляжный период. Прогресс заморожен, загорать не подозревали.');return;}
-  if(!hasOwnPort()){toast('⚓ У тебя нет портов. Десант невозможен. Только мечты о пляже.');return;}
-  if(Math.random()<0.5){
-    gainBadge('beach');S.stuckUntil=S.day+5;
-    news('📸 АРМИЯ НА ПЛЯЖЕ. TTL «Порт не на том берегу». Фотоотчёт сохранён в «Галерея плейса» — это самая популярная галерея.');
-    toast('🤦 Порт не на том берегу. Армия застряла и смотрит на море. Игроки фотографируют.');
-    return;
-  }
-  t.prog+=5;t.hp-=5;
-  toast('⚓ Десант высажен! Планеры в аренде, самолётов не было.');
-  news('⚓ Десант у '+t.n+'. Первый боец уже просит топливо для несуществующей авиации.');
-  clickCountry(id);
-}
-function capture(id){
-  var t=byId(id);
-  t.owner='player';t.hp=30;t.prog=0;
-  S.owned.push(id);S.wars=S.wars.filter(function(w){return w!==id;});
-  S.vibes+=3;
-  if(S.skin==='default'){gainBadge('style');news('🏴 '+t.n+' захвачена. Стиль: дефолтный. Бейдж «Ворвался в Польшу, но не стильно» уже летит.');}
-  else news('🏴 '+t.n+' захвачена — и стильно, скин '+S.skin+' в деле.');
-  if(ownedCount()>=C.length-2)victory();
-  else clickCountry(id);
-}
-function buildHere(id,kind){
-  var c=byId(id);
-  if(kind==='civ'){c.civ=(c.civ||0)+1;S.civ++;toast('🏭 '+c.n+': civil factory построена. Гражданские раньше военных — закон.');}
-  else{
-    if(S.civ<2){toast('Сначала гражданские. Серьёзно. Золотое правило. Мы будем напоминать.');return;}
-    c.mil=(c.mil||0)+1;S.mil++;toast('⚙️ '+c.n+': military factory построена. Пока выпускает гордость вместо снарядов.');
-  }
-  clickCountry(id);
-}
+/* =============== НАЦИИ И ГОРОДА =============== */
+var MAJORS=['germany','ussr','uk','france','italy'];
+var NATIONS=[
+ {id:'germany',n:'Германия',color:'#4d5a66',cities:[{id:'berlin',n:'Берлин',c:9,r:6},{id:'hamburg',n:'Гамбург',c:8,r:7}],flag:{t:'h3',c:['#000000','#DD0000','#FFCE00']}},
+ {id:'ussr',n:'СССР',color:'#7a3b3b',cities:[{id:'moscow',n:'Москва',c:20,r:2,cap:1},{id:'kiev',n:'Киев',c:16,r:4},{id:'stalingrad',n:'Сталинград',c:23,r:3}],flag:{t:'ussr'}},
+ {id:'uk',n:'Великобритания',color:'#3d5578',cities:[{id:'london',n:'Лондон',c:3,r:4}],flag:{t:'uk'}},
+ {id:'france',n:'Франция',color:'#3f6b52',cities:[{id:'paris',n:'Париж',c:5,r:8,cap:1},{id:'lyon',n:'Лион',c:5,r:10}],flag:{t:'v',c:['#0055A4','#FFFFFF','#EF4135']}},
+ {id:'italy',n:'Италия',color:'#6b5c42',cities:[{id:'rome',n:'Рим',c:9,r:11,cap:1},{id:'milan',n:'Милан',c:8,r:10}],flag:{t:'v',c:['#009246','#FFFFFF','#CE2B37']}},
+ {id:'poland',n:'Польша',color:'#6e5a5a',cities:[{id:'warsaw',n:'Варшава',c:12,r:6,cap:1},{id:'krakow',n:'Краков',c:13,r:7}],flag:{t:'h2',c:['#FFFFFF','#DC143C']}},
+ {id:'baltics',n:'Прибалтика',color:'#5d6350',cities:[{id:'riga',n:'Рига',c:13,r:5}],flag:{t:'h3',c:['#FDB913','#006A44','#C1272D']}},
+ {id:'finland',n:'Финляндия',color:'#4d5f6e',cities:[{id:'helsinki',n:'Хельсинки',c:11,r:2}],flag:{t:'nordic',bg:'#FFFFFF',cr:'#002F6C'}},
+ {id:'sweden',n:'Швеция',color:'#46608a',cities:[{id:'stockholm',n:'Стокгольм',c:10,r:3}],flag:{t:'nordic',bg:'#006AA7',cr:'#FECC02'}},
+ {id:'norway',n:'Норвегия',color:'#5a4a52',cities:[{id:'oslo',n:'Осло',c:7,r:2}],flag:{t:'nordic',bg:'#BA0C2F',cr:'#00205B',out:'#FFFFFF'}},
+ {id:'denmark',n:'Дания',color:'#6e4a4a',cities:[{id:'copenhagen',n:'Копенгаген',c:9,r:5}],flag:{t:'nordic',bg:'#C8102E',cr:'#FFFFFF'}},
+ {id:'netherlands',n:'Нидерланды',color:'#7a6248',cities:[{id:'amsterdam',n:'Амстердам',c:6,r:7}],flag:{t:'h3',c:['#AE1C28','#FFFFFF','#21468B']}},
+ {id:'belgium',n:'Бельгия',color:'#5c5c46',cities:[{id:'brussels',n:'Брюссель',c:6,r:8}],flag:{t:'v',c:['#000000','#FDDA24','#EF3340']}},
+ {id:'switzerland',n:'Швейцария',color:'#6e6e5a',cities:[{id:'bern',n:'Берн',c:8,r:9}],flag:{t:'cross'}},
+ {id:'czech',n:'Чехословакия',color:'#4d5560',cities:[{id:'prague',n:'Прага',c:10,r:8}],flag:{t:'czech'}},
+ {id:'austria',n:'Австрия',color:'#685860',cities:[{id:'vienna',n:'Вена',c:11,r:9}],flag:{t:'h3',c:['#ED2939','#FFFFFF','#ED2939']}},
+ {id:'hungary',n:'Венгрия',color:'#6e5f46',cities:[{id:'budapest',n:'Будапешт',c:12,r:9}],flag:{t:'h3',c:['#CE2939','#FFFFFF','#477050']}},
+ {id:'yugo',n:'Югославия',color:'#4a5a66',cities:[{id:'belgrade',n:'Белград',c:11,r:10}],flag:{t:'h3',c:['#0C4076','#FFFFFF','#C8102E']}},
+ {id:'romania',n:'Румыния',color:'#5d5546',cities:[{id:'bucharest',n:'Бухарест',c:14,r:10}],flag:{t:'v',c:['#002B7F','#FCD116','#CE1126']}},
+ {id:'bulgaria',n:'Болгария',color:'#4d5f5d',cities:[{id:'sofia',n:'София',c:13,r:11}],flag:{t:'h3',c:['#FFFFFF','#00966E','#D62612']}},
+ {id:'greece',n:'Греция',color:'#4d5c6e',cities:[{id:'athens',n:'Афины',c:12,r:12}],flag:{t:'greece'}},
+ {id:'turkey',n:'Турция',color:'#7a4a45',cities:[{id:'istanbul',n:'Стамбул',c:14,r:12},{id:'ankara',n:'Анкара',c:16,r:13}],flag:{t:'turkey'}},
+ {id:'spain',n:'Испания',color:'#6e5a42',cities:[{id:'madrid',n:'Мадрид',c:3,r:12,cap:1},{id:'barcelona',n:'Барселона',c:5,r:11}],flag:{t:'h3w',c:['#AA151B','#F1BF00','#AA151B']}},
+ {id:'portugal',n:'Португалия',color:'#4d5c4a',cities:[{id:'lisbon',n:'Лиссабон',c:1,r:12}],flag:{t:'portugal'}},
+ {id:'ireland',n:'Ирландия',color:'#4d664d',cities:[{id:'dublin',n:'Дублин',c:2,r:6}],flag:{t:'v',c:['#169B62','#FFFFFF','#FF883E']}}
+];
 
-function tickResearch(){
-  S.research.forEach(function(r,i){
-    if(r.p<r.t){
-      r.p+=0.5;
-      if(r.p>=r.t){
-        S.done++;
-        var buffs=['инфраструктура +1 (грунт стал дорогой)','алюминия +5 (сосед продал по акции)','vibes +3 (все зашли посмотреть на карту)','пехота: +1 атака и +1 головная боль','танки: планеры смущённо улыбаются'];
-        S.vibes+=3;S.steel+=5;S.oil+=5;S.alu+=5;
-        toast('🔬 Research завершён: '+r.n+'. Бафф: '+buffs[Math.min(S.done-1,buffs.length-1)]);
-        news('🔬 «'+r.n+'» завершено. До ядерки осталось: '+Math.max(0,47-S.done)+' исследований (каких — никто не помнит).');
-        if(S.done>=5)$id('btnNuke').disabled=false;
-        r.n='Слот '+(i+1)+': новая тема';r.p=0;r.t=Math.max(10,r.t+3);
+/* =============== КАРТА (hex-сетки; ~ — море) =============== */
+var MAP=[
+"~~~~~~~~~~~~~~~~~~~~~~~~~~",
+"~~~~~~ff~~ffpppppppppppppp",
+"~~~~~~~ff~ffpppppppppppppp",
+"~~~~~~ff~~ffpppppppppppppp",
+"~~~pp~~ff~~ffppppppppppppp",
+"~~~pp~~~ppp~~ppppppppppppp",
+"~~pp~~~~pppppppppppppppppp",
+"~~~~~~pppppppppppppppppppp",
+"~~~ppppppppppppppppppppppp",
+"~~~ppppppppppppppppppppppp",
+"~~~~~ppppppppppppppppppppp",
+"~ppppppppppppppppppppppppp",
+"~ppppp~~~ppp~pp~ppppp~~~~~",
+"~~pppp~~~pppp~ppppp~~~~~~~",
+"~~~~~pp~~~pppp~ppppp~~~~~~",
+"~~~~~~~~~~~~~~ppppp~~~~~~~",
+"~~~~~~~~~~~~~~~~~~~~~~~~~~"];
+var TERR_N={p:'равнина',f:'лес',m:'горы'};
+var TERR_DEF={p:0,f:2,m:4};
+var hexes={};
+(function(){
+  for(var r=0;r<ROWS;r++){
+    var row=MAP[r]; if(!row) continue;
+    for(var c=0;c<COLS;c++){
+      var ch=row[c]; if(!ch||ch==='~')continue;
+      hexes[key(c,r)]={c:c,r:r,ter:ch,owner:null,city:null};
+    }
+  }
+  /* города: если hex — море, ищем ближайший суш (по спирали) */
+  NATIONS.forEach(function(n){ n.cities.forEach(function(ct){
+    var h=hexes[key(ct.c,ct.r)];
+    if(!h){ 
+      outer: for(var rad=1;rad<=3;rad++){
+        for(var dc=-rad;dc<=rad;dc++)for(var dr=-rad;dr<=rad;dr++){
+          var hh=hexes[key(ct.c+dc,ct.r+dr)];
+          if(hh&&!hh.city){ct.c+=dc;ct.r+=dr;h=hh;break outer;}
+        }
       }
     }
-  });
+    if(h){var gb=ct.cap?40:(MAJORS.indexOf(n.id)>=0?30:20);h.city=ct;ct.hex=h;ct.owner=n.id;ct.garrison=gb;ct.gMax=gb;}
+  });});
+  assignRegions();
+})();
+function assignRegions(){
+  Object.keys(hexes).forEach(function(k){hexes[k].owner=null;});
+  var q=[];
+  NATIONS.forEach(function(n){n.cities.forEach(function(ct){var h=hexes[key(ct.c,ct.r)];if(h){h.owner=n.id;q.push(h);}});});
+  while(q.length){
+    var cur=q.shift();
+    neighbors(cur.c,cur.r).forEach(function(nb){
+      if(!nb.owner){nb.owner=cur.owner;q.push(nb);}
+    });
+  }
+  Object.keys(hexes).forEach(function(k){ if(!hexes[k].owner)hexes[k].owner='none'; });
 }
-function tick(){
-  S.day++;
-  if(Math.random()<0.02)news('📶 Карта лагает. Кнопка 📷 иногда лагает тоже. Лага кнопки — порой единственное движение в партии.');
-  S.vibes+=1+Math.floor(S.civ*0.3);
-  S.shells+=S.mil*2+(S.civ>=S.mil?1:0);
-  S.steel+=1+Math.floor(Math.random()*2);S.oil+=1+Math.floor(Math.random()*2);S.alu+=1+Math.floor(Math.random()*2);
-  Object.keys(S.just).forEach(function(id){
-    if(S.just[id]<24){
-      if(Math.random()<0.35)S.just[id]+=1+Math.floor(Math.random()*3);
-      if(S.just[id]>=24){toast('✅ Пост по '+byId(id).n+' собрал 24 лайка! Доступен Declare War.');if(sel===id)clickCountry(id);}
+function neighbors(c,r){
+  var set=(r%2)?[[1,0],[-1,0],[0,-1],[1,-1],[0,1],[1,1]]:[[1,0],[-1,0],[0,-1],[-1,-1],[0,1],[-1,1]];
+  var out=[];
+  set.forEach(function(d){var h=hexes[key(c+d[0],r+d[1])];if(h)out.push(h);});
+  return out;
+}
+function hexXY(c,r){
+  return {x:SQ3*HEX*(c+0.5*(r%2))+SQ3*HEX*0.6+8, y:1.5*HEX*r+HEX+14};
+}
+function hexCorners(c,r){
+  var p=hexXY(c,r),pts=[];
+  for(var i=0;i<6;i++){var a=Math.PI/180*(60*i-30);pts.push((p.x+HEX*0.94*Math.cos(a)).toFixed(1)+','+(p.y+HEX*0.94*Math.sin(a)).toFixed(1));}
+  return pts.join(' ');
+}
+function nationById(id){for(var i=0;i<NATIONS.length;i++)if(NATIONS[i].id===id)return NATIONS[i];return null;}
+function unitsOn(h){return S.units.filter(function(u){return u.c===h.c&&u.r===h.r;});}
+
+/* =============== СОСТОЯНИЕ =============== */
+var S=null,sel=null,view=null,uid=1;
+function newState(pid){
+  S={player:pid,turn:0,money:30,man:40,rp:0,
+     techs:{inf:0,ind:0,arm:0},units:[],over:false};
+  NATIONS.forEach(function(n){
+    n.bank=MAJORS.indexOf(n.id)>=0?50:20;
+    n.cities.forEach(function(ct){ct.garrison=ct.gMax=ct.cap?40:(MAJORS.indexOf(n.id)>=0?30:20);});
+    var spawn=MAJORS.indexOf(n.id)>=0?4:2;
+    n.cities.forEach(function(ct,i){ if(i<spawn){
+      S.units.push({id:uid++,owner:n.id,c:ct.c,r:ct.r,hp:10,mhp:(MAJORS.indexOf(n.id)>=0)?10:8,acted:false});
+    }});
+  });
+  assignRegions();
+}
+
+/* =============== ГЕОМЕТРИЯ/ОТРИСОВКА =============== */
+function shade(hex,f){
+  var n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255;
+  r=Math.min(255,Math.round(r*f));g=Math.min(255,Math.round(g*f));b=Math.min(255,Math.round(b*f));
+  return 'rgb('+r+','+g+','+b+')';
+}
+function logMsg(m,cls){var d=document.createElement('div');d.className=cls||'info';d.textContent=m;var L=$id('log');L.insertBefore(d,L.firstChild);}
+function baseFill(h){
+  if(h.owner==='none')return '#4a5560';
+  var n=nationById(h.owner);
+  var base=n?n.color:'#556';
+  var f=h.ter==='m'?0.82:(h.ter==='f'?0.9:1);
+  return shade(base,f);
+}
+function renderMap(){
+  function g(id){return $id(id);}
+  g('hexShadowLayer').innerHTML='';g('hexLayer').innerHTML='';g('cityLayer').innerHTML='';g('unitLayer').innerHTML='';g('uiLayer').innerHTML='';
+  var NS='http://www.w3.org/2000/svg';
+  var selKey=sel&&sel.hex?sel.hex.c+','+sel.hex.r:null;
+  var moveTargets=sel&&sel.unit?computeMoveTargets(sel.unit):null;
+  Object.keys(hexes).forEach(function(k){
+    var h=hexes[k],p=hexXY(h.c,h.r),pts=hexCorners(h.c,h.r);
+    var sh=document.createElementNS(NS,'polygon');
+    sh.setAttribute('points',pts);sh.setAttribute('transform','translate(2,'+(3.5+(h.city?4:0))+')');
+    sh.setAttribute('fill','rgba(0,0,0,0.35)');
+    g('hexShadowLayer').appendChild(sh);
+    var el=document.createElementNS(NS,'polygon');
+    el.setAttribute('points',pts);
+    el.setAttribute('fill',baseFill(h));
+    el.setAttribute('class','hex');
+    if(h.ter==='m'){el.setAttribute('fill',shade(baseFill(h),0.86));}
+    el.onclick=function(){clickHex(h);};
+    if(moveTargets){
+      var isMove=moveTargets.move.some(function(t){return t.c===h.c&&t.r===h.r;});
+      var isAtk=!isMove&&moveTargets.attack.some(function(t){return t.c===h.c&&t.r===h.r;});
+      if(isMove){el.setAttribute('fill',shade(baseFill(h),1.22));el.setAttribute('style','filter:drop-shadow(0 0 3px #6de06d)');}
+      else if(isAtk){el.setAttribute('fill','#9e4a44');el.setAttribute('style','filter:drop-shadow(0 0 4px #ff8c7a)');}
     }
+    if(selKey===k){el.setAttribute('stroke','#e0b23c');el.setAttribute('stroke-width','2.5');}
+    g('hexLayer').appendChild(el);
   });
-  tickResearch();
-  aiTurn();
-  if(S.wars.length===0&&Object.keys(S.just).length>0){S.forgot++;if(S.forgot===15)gainBadge('forgot');}
-  if(S.day>=60&&ownedCount()===1)gainBadge('neut');
-  updateHUD();
 }
+function renderCities(){
+  var NS='http://www.w3.org/2000/svg',g=$id('cityLayer');g.innerHTML='';
+  NATIONS.forEach(function(n){n.cities.forEach(function(ct){
+    var h=hexes[key(ct.c,ct.r)];if(!h)return;
+    var p=hexXY(h.c,h.r);
+    var isMine=ct.owner===S.player;
+    var col=(nationById(ct.owner)||{color:'#556'}).color;
+    var grp=document.createElementNS(NS,'g');
+    grp.setAttribute('transform','translate('+p.x.toFixed(1)+','+p.y.toFixed(1)+')');
+    /* 2.5D городок: тень + основание + крыша */
+    grp.innerHTML=
+      '<ellipse cx="0" cy="9" rx="11" ry="3.2" fill="rgba(0,0,0,.45)"/>'+
+      '<rect x="-7" y="-4" width="14" height="12" fill="'+shade(col,0.75)+'"/>'+
+      '<rect x="-7" y="-4" width="14" height="3" fill="'+shade(col,1.35)+'"/>'+
+      '<rect x="-4" y="-10" width="8" height="7" fill="'+shade(col,0.95)+'"/>'+
+      '<rect x="-4" y="-10" width="8" height="2" fill="'+shade(col,1.4)+'"/>'+
+      '<rect x="-2" y="-1" width="2.4" height="3" fill="rgba(255,240,180,.9)"/>'+
+      '<rect x="0.5" y="-1" width="2.4" height="3" fill="rgba(255,240,180,.9)"/>';
+    var t=document.createElementNS(NS,'text');
+    t.setAttribute('x',0);t.setAttribute('y',-14);t.setAttribute('text-anchor','middle');
+    t.setAttribute('style','font-size:8px;font-weight:bold;fill:#eef1f6;paint-order:stroke;stroke:#000;stroke-width:2px;');
+    t.textContent=ct.n;
+    grp.appendChild(t);
+    var tg=document.createElementNS(NS,'text');
+    tg.setAttribute('x',0);tg.setAttribute('y',12);tg.setAttribute('text-anchor','middle');
+    tg.setAttribute('style','font-size:8px;fill:#c8cdd6;paint-order:stroke;stroke:#000;stroke-width:2px;');
+    tg.textContent='🛡'+ct.garrison;
+    grp.appendChild(tg);
+    var hit=document.createElementNS(NS,'rect');
+    hit.setAttribute('x',-12);hit.setAttribute('y',-18);hit.setAttribute('width',24);hit.setAttribute('height',30);
+    hit.setAttribute('fill','transparent');hit.setAttribute('class','unit');
+    hit.onclick=function(ev){ev.stopPropagation();clickCity(ct);};
+    grp.appendChild(hit);
+    g.appendChild(grp);
+  });});
+}
+function renderUnits(){
+  var NS='http://www.w3.org/2000/svg',g=$id('unitLayer');g.innerHTML='';
+  S.units.forEach(function(u){
+    var h=hexes[key(u.c,u.r)];if(!h)return;
+    var p=hexXY(u.c,u.r);
+    var n=nationById(u.owner);
+    var col=n?n.color:'#556';
+    var selU=sel&&sel.unit===u;
+    var isMove=sel&&sel.unit&&computeMoveTargets(sel.unit).move.some(function(t){return t.c===h.c&&t.r===h.r&&unitsOn(t).length===0;});
+    var grp=document.createElementNS(NS,'g');
+    grp.setAttribute('class','unit');
+    grp.setAttribute('transform','translate('+p.x.toFixed(1)+','+(p.y-4).toFixed(1)+')');
+    grp.style.transition='transform .35s ease';
+    var inner=
+      '<ellipse cx="0" cy="8" rx="8" ry="2.6" fill="rgba(0,0,0,.5)"/>'+
+      '<rect x="-7" y="-1" width="14" height="9" rx="2" fill="'+shade(col,0.6)+'"/>'+
+      '<rect x="-7" y="-4" width="14" height="9" rx="2" fill="'+col+'" stroke="#0b0d12" stroke-width="1"/>'+
+      '<rect x="-7" y="-4" width="14" height="3" rx="1.4" fill="'+shade(col,1.35)+'"/>';
+    if(selU) inner+='<rect x="-9" y="-6" width="18" height="15" rx="3.5" fill="none" stroke="#e0b23c" stroke-width="2"/>';
+    else if(isMove) inner+='<rect x="-8" y="-5" width="16" height="13" rx="3" fill="none" stroke="#8fe08f" stroke-width="1.4" stroke-dasharray="3 2"/>';
+    inner+='<text x="0" y="3.6" text-anchor="middle" style="font-size:8.5px;font-weight:bold;fill:#fff;pointer-events:none">'+Math.max(1,Math.round(u.hp))+'</text>';
+    grp.innerHTML=inner;
+    grp.onclick=function(ev){ev.stopPropagation();clickUnit(u);};
+    g.appendChild(grp);
+  });
+}
+
+/* =============== ДЕЙСТВИЯ =============== */
+function computeMoveTargets(u){
+  var res={move:[],attack:[]};
+  if(!hexes[key(u.c,u.r)]||u.acted)return res;
+  neighbors(u.c,u.r).forEach(function(nb){
+    var enemyUnit=S.units.find(function(o){return o.c===nb.c&&o.r===nb.r&&o.owner!==u.owner;});
+    var isWin=nb.owner&&nb.owner!==u.owner&&nb.owner!=='none';
+    var enemyCity=nb.city&&nb.city.owner!==u.owner;
+    if(enemyUnit||enemyCity){ if(!(nb.city&&nb.city.owner===u.owner)&&!unitsOn(nb).some(function(o){return o.owner===u.owner;})) res.attack.push(nb); }
+    else if(!unitsOn(nb).length){ res.move.push(nb); }
+  });
+  return res;
+}
+function clickCity(ct){
+  if(!S||S.over)return;
+  var mine=ct.owner===S.player;
+  var n=nationById(ct.owner);
+  var h=hexes[key(ct.c,ct.r)];
+  $id('side').innerHTML='<h3>'+makeFlag(n,36)+' '+ct.n+'</h3><div class="sub">'+(n?n.n:'')+(ct.cap?' · столица':'')+'</div>'+
+    '<div class="stat"><span>Хозяин</span><span>'+(mine?'вы':(n?n.n:'нет'))+'</span></div>'+
+    '<div class="stat"><span>Гарнизон</span><span>'+ct.garrison+' / '+ct.gMax+'</span></div>'+
+    '<div class="stat"><span>Доход города</span><span>💰 3 · 👥 2 /мес</span></div>'+
+    (mine?('<div class="sect"><p class="muted">Управление городом:</p>'+
+      '<button class="pbtn" onclick="recruitAt(\''+ct.id+'\')">🪖 Сформировать дивизию — 15 💰, 10 👥</button>'+
+      '<button class="pbtn" onclick="fortifyAt(\''+ct.id+'\')">🛡 Укрепить гарнизон (+4) — 10 💰</button></div>'):'');
+}
+function clickUnit(u){
+  if(!S||S.over)return;
+  if(u.owner!==S.player){selectHex(hexes[key(u.c,u.r)]);return;}
+  if(sel&&sel.unit===u){sel=null;renderAll();return;}
+  sel={unit:u};renderAll();
+  clickCity(hexes[key(u.c,u.r)].city||{owner:u.owner,n:'Поле',c:u.c,r:u.r,cap:0,garrison:0,gMax:0,hex:hexes[key(u.c,u.r)],forSpecial:1,id:0});
+  var cur=hexes[key(u.c,u.r)];
+  var targets=computeMoveTargets(u);
+  var h='<div class="sect"><p class="muted">Дивизия · прочность '+Math.round(u.hp)+'/'+u.mhp+(u.acted?' · действовала в этом месяце':'')+'</p></div>';
+  $id('side').insertAdjacentHTML('beforeend',h);
+}
+function selectHex(h){sel={hex:h};renderAll();}
+function clickHex(h){
+  if(!S||S.over)return;
+  if(sel&&sel.unit&&!sel.unit.acted){
+    var u=sel.unit;
+    var isMove=computeMoveTargets(u).move.some(function(t){return t.c===h.c&&t.r===h.r;});
+    var isAtk=!isMove&&computeMoveTargets(u).attack.some(function(t){return t.c===h.c&&t.r===h.r;});
+    if(isMove){moveUnit(u,h);return;}
+    if(isAtk){attackHex(u,h);return;}
+  }
+  var us=unitsOn(h).filter(function(o){return o.owner===S.player;});
+  if(us.length){clickUnit(us[0]);return;}
+  if(h.city){clickCity(h.city);return;}
+  selectHex(h);
+  $id('side').innerHTML='<h3>'+TERR_N[h.ter]+'</h3><p class="muted">Регион без города. Оборонительный бонус рельефа: +'+TERR_DEF[h.ter]+'</p>';
+}
+window.clickHex=clickHex;
+function moveUnit(u,h){
+  u.c=h.c;u.r=h.r;u.acted=true;
+  var n=nationById(h.owner);
+  if(h.owner!==u.owner){ h.owner=u.owner; if(!h.city)logMsg((h.city?h.city.n:'Регион')+' занят.','good'); }
+  sel=null;renderAll();updateHUD();
+  if(h.city&&h.city.owner!==u.owner){ captureCity(h.city,u.owner); }
+}
+window.moveUnit=moveUnit;
+function attackHex(u,h){
+  var defUnits=unitsOn(h).filter(function(o){return o.owner!==u.owner;});
+  u.acted=true;
+  var atk=5+S.techs.inf*1.5+S.techs.arm*2+rnd(4);
+  /* бой с дивизией */
+  if(defUnits.length){
+    var d=defUnits[0];
+    var dmg=Math.max(1,atk-(TERR_DEF[h.ter]>>1));
+    d.hp-=dmg;
+    logMsg('Бой: ваша дивизия нанесла '+dmg+' урона ('+Math.max(0,Math.round(d.hp))+'/'+d.mhp+' HP осталось).','war');
+    if(d.hp<=0){
+      S.units=S.units.filter(function(o){return o!==d;});
+      logMsg('Дивизия противника уничтожена.','good');
+      if(h.city&&h.city.owner!==u.owner){
+        if(h.city.garrison<=0){captureCity(h.city,u.owner);u.c=h.c;u.r=h.r;}
+      } else {
+        if(!h.city){h.owner=u.owner;logMsg('Регион занят.','good');}
+        u.c=h.c;u.r=h.r;
+      }
+    } else {
+      u.hp-=2+rnd(3);
+      if(u.hp<=0){S.units=S.units.filter(function(o){return o!==u;});logMsg('Ваша дивизия разбита.','war');}
+    }
+    sel=null;renderAll();updateHUD();checkEnd();return;
+  }
+  /* штурм гарнизона города */
+  if(h.city&&h.city.owner!==u.owner){
+    var ct=h.city;
+    var dmgC=Math.max(1,atk-TERR_DEF[h.ter]);
+    ct.garrison-=dmgC;
+    logMsg('Штурм '+ct.n+': −'+dmgC+' гарнизону ('+Math.max(0,ct.garrison)+' осталось).','war');
+    if(ct.garrison<=0){captureCity(ct,u.owner);u.c=h.c;u.r=h.r;}
+    else{u.hp-=Math.max(1,Math.round(ct.garrison/8));if(u.hp<=0){S.units=S.units.filter(function(o){return o!==u;});logMsg('Ваша дивизия разбита при штурме.','war');}}
+    sel=null;renderAll();updateHUD();checkEnd();return;
+  }
+  /* захват пустого региона противника */
+  if(h.owner!==u.owner){h.owner=u.owner;u.c=h.c;u.r=h.r;logMsg('Регион занят без боя.','good');}
+  else {u.c=h.c;u.r=h.r;}
+  sel=null;renderAll();updateHUD();checkEnd();return;
+}
+window.attackHex=attackHex;
+function captureCity(ct,nid){
+  var old=ct.owner;
+  ct.owner=nid;
+  var hh=hexes[key(ct.c,ct.r)];
+  if(hh)hh.owner=nid;
+  ct.garrison=Math.max(6,Math.round(ct.gMax*0.3));
+  var n=nationById(nid);
+  if(nid===S.player){logMsg('⚡ Город '+ct.n+' взят под контроль!','good');}
+  else if(old===S.player){logMsg('Город '+ct.n+' потерян ('+(n?n.n:'')+').','war');}
+  else {logMsg((n?n.n:'')+' захватила '+ct.n+'.','info');}
+  var leftovers=S.units.filter(function(u){return u.owner===old&&u.c===hexes[key(ct.c,ct.r)].c&&u.r===hexes[key(ct.c,ct.r)].r;});
+  renderAll();updateHUD();
+}
+window.captureCity=captureCity;
+function recruitAt(cityId){
+  var ct=findCity(cityId);if(!ct||ct.owner!==S.player)return;
+  if(S.money<15||S.man<10){logMsg('Нужно 15 💰 и 10 👥.','info');return;}
+  if(unitsOn(hexes[key(ct.c,ct.r)]).length>=3){logMsg('В городе уже 3 дивизии.','info');return;}
+  S.money-=15;S.man-=10;
+  var mhpP=MAJORS.indexOf(S.player)>=0?20:14;
+  S.units.push({id:uid++,owner:S.player,c:ct.c,r:ct.r,hp:mhpP,mhp:mhpP,acted:true});
+  logMsg('В '+ct.n+' сформирована дивизия.','good');
+  renderAll();updateHUD();
+}
+window.recruitAt=recruitAt;
+function fortifyAt(cityId){
+  var ct=findCity(cityId);if(!ct||ct.owner!==S.player)return;
+  if(S.money<10){logMsg('Нужно 10 💰.','info');return;}
+  S.money-=10;ct.gMax+=4;ct.garrison+=4;
+  logMsg('Гарнизон '+ct.n+' усилен: '+ct.garrison+'/'+ct.gMax+'.','good');
+  clickCity(ct);
+}
+window.fortifyAt=fortifyAt;
+function findCity(id){var r=null;NATIONS.forEach(function(n){n.cities.forEach(function(ct){if(ct.id===id)r=ct;});});return r;}
+
+/* =============== ИИ =============== */
 function aiTurn(){
-  S.aiTimer++;
-  var flavors=[
-    '🌤 Мировой рынок гладко: торговля выгоднее войны (сообщение прочитано 0 раз)',
-    '🎭 Кнопка «Conquer The World» моргает. 200+ стран страшно даже разработчику',
-    '🎃 Halloween — New Effects: у танков тыквы. Collision нет, дух есть',
-    '🎄 Christmas-анонс: «танки в шапочках». Дата неизвестна. Шапочки есть. Анонс есть',
-    '🛒 Анонс магазина: «ГЕНЕРАЛЫ. Он просто стоит. Он всё видел.»',
-    '📱 Новый гайд NewGame.co.jp: «не играй за большую страну. Вообще не играй»',
-    '🌊 Анонс 18.09.2026: расширение мировой карты и новые идеологии. Одна — «взять страну с горами и одним соседом». Это идеология победителей',
-    '🕊 Сервер голосовал о следующей эре. Победил WW3. Люди стабильно тянутся к большему',
-    '📅 Возрастная метка Roblox: Maturity: Minimal. Мировая война: тоже где-то minimal'
-  ];
-  if(S.aiTimer%8===0)news(flavors[Math.floor(Math.random()*flavors.length)]);
-  if(S.aiTimer%14===5){
-    var majors=C.filter(function(c){return ['germany','ussr','vatican','uk'].indexOf(c.id)>=0&&c.owner==='ai';});
-    if(majors.length){
-      var m=majors[Math.floor(Math.random()*majors.length)];
-      var nb=landNb(m.id).filter(function(x){return byId(x).owner==='ai'&&x!==m.id;});
-      if(nb.length)news('🎲 '+m.n+' оправдала войну против '+byId(nb[Math.floor(Math.random()*nb.length)]).n+'. 24 лайка собраны молча.');
+  NATIONS.forEach(function(n){
+    if(n.id===S.player)return;
+    var isMajor=MAJORS.indexOf(n.id)>=0;
+    var myCs=n.cities.filter(function(ct){return ct.owner===n.id;});
+    n.cities.forEach(function(ct){ct.garrison=Math.min(ct.gMax,ct.garrison+2);});
+    /* доход ИИ */
+    var inc=0;
+    myCs.forEach(function(ct){inc+=3;});
+    Object.keys(hexes).forEach(function(k){ if(hexes[k].owner===n.id&&!hexes[k].city){inc+=0.5;} });
+    n.bank+=inc;
+    /* набор */
+    if(myCs.length&&S.turn%2===1){
+      var cost=15;
+      if(n.bank>=cost){
+        var ct=myCs[rnd(myCs.length)];
+        if(S.units.filter(function(u){return u.owner===n.id&&u.c===ct.c&&u.r===ct.r;}).length<3){
+          n.bank-=cost;
+          S.units.push({id:uid++,owner:n.id,c:ct.c,r:ct.r,hp:isMajor?20:14,mhp:isMajor?20:14,acted:true});
+        }
+      }
     }
-  }
-  if(S.aiTimer%40===20&&S.owned.length>2&&Math.random()<0.5){
-    var pool=S.owned.filter(function(x){return x!==S.player;});
-    var rebel=pool[Math.floor(Math.random()*pool.length)];
-    if(rebel){
-      S.owned=S.owned.filter(function(x){return x!==rebel;});
-      var r=byId(rebel);r.owner='ai';r.hp=40;r.prog=0;
-      S.wars.push(rebel);S.just[rebel]=24;
-      news('⚖️ CIVIL WAR: '+r.n+' раскололась. Повстанцы: «мы не сепаратисты, мы направление игровой мысли». Им достался твой скин армии — война за стиль стала кровавой.');
-      clickCountry(sel);
-    }
-  }
-}
-
-function showBadges(){
-  $id('side').style.display='block';
-  var h='<h3>🏆 Бейджи</h3>';
-  BADGES_DEF.forEach(function(b){h+='<div class="badge '+(S.badges[b.id]?'got':'')+'">'+(S.badges[b.id]?'✅':'⬜')+' '+b.t+'<br><span class="muted">'+b.how+'</span></div>';});
-  h+='<p class="muted" style="margin-top:8px">Обзоры прессы: «до августа 1945 успей поколение», «если здесь не хватает места для задуманных тобой войн — вот другой плейс побольше».</p>';
-  $id('side').innerHTML=h;
-}
-function showBuild(){
-  $id('side').style.display='block';
-  $id('side').innerHTML='<h3>🏭 Экономика</h3>'+
-    '<p class="muted">Золотое правило: гражданские раньше военных. Инфраструктура смотрит на тебя осуждающе и не платит налоги.</p>'+
-    '<p style="font-size:13px;margin:6px 0">Всего: Civil '+S.civ+' · Military '+S.mil+' · Infra '+S.infra+'</p>'+
-    '<p class="muted" style="margin-top:6px">Чтобы строить — кликни свою страну на карте. Правило про монету (она у тебя одна):</p>'+
-    '<p style="font-size:30px;text-align:center">🪙 <span style="font-size:11px;color:#889">(блеск отрисован 3 недели — не трать)</span></p>';
-}
-function showTech(){
-  $id('side').style.display='block';
-  var h='<h3>🔬 Research (слоты не пустуют)</h3>';
-  S.research.forEach(function(r,i){
-    h+='<p style="font-size:13px">'+(i+1)+'. '+r.n+' — '+Math.round(r.p)+'/'+r.t+'</p>'+
-       '<div style="background:#333;height:8px;border-radius:4px"><div style="background:#d4a017;width:'+Math.min(100,r.p/r.t*100)+'%;height:8px;border-radius:4px"></div></div>';
+    if(!isMajor)return;
+    /* движение и атаки */
+    S.units.filter(function(u){return u.owner===n.id;}).forEach(function(u){
+      if(u.acted)return;
+      var here=hexes[key(u.c,u.r)];
+      var targets=computeMoveTargetsFor(u,n.id);
+      if(targets.attack.length){
+        aiAttack(u,targets.attack[rnd(targets.attack.length)],n.id);
+        return;
+      }
+      if(targets.move.length){
+        var goal=nearestEnemyCity(u,n.id);
+        if(goal&&hexDist(u,goal)<=6){
+          var best=null,bestD=1e9;
+          targets.move.forEach(function(t){
+            var d=hexDist(t,goal);
+            if(d<bestD){bestD=d;best=t;}
+          });
+          if(best){u.c=best.c;u.r=best.r;u.acted=true;}
+        }
+      }
+    });
   });
-  h+='<p class="muted" style="margin-top:8px">Ускорение слотов продаётся за Robux. Но Донат не обязателен — мировое господство достижимо и так, при наличии 47 вечеров и телефона получше.</p>';
-  $id('side').innerHTML=h;
+  S.units.forEach(function(u){u.acted=false;u.hp=Math.min(u.mhp,u.hp+2);});
 }
-function showShop(){
-  $id('side').style.display='block';
-  $id('side').innerHTML='<h3>🛒 Магазин (корзина слева → Skins → Enter code)</h3>'+
-    '<p class="muted">Донат не обязателен для мирового господства — пишет само описание. Оно честное.</p>'+
-    '<input type="text" id="codeIn" placeholder="Enter code (Skins)"><br>'+
-    '<button class="pbtn" onclick="redeem()">Enter code</button>'+
-    '<button class="pbtn" onclick="buyGeneral()">💰 Генерал за Robux (он просто стоит)</button>'+
-    '<p class="muted">Промокоды дают только скины армии. Реклама кодов звучала буквально как «invade Poland in style».</p>'+
-    '<p class="muted">Подсказка: кодов два, оба в духе SPAIN_GOOD. Первый — про Люксембург и предательство. Второй — про сверхдержаву с двоеточием и смайлом от P.</p>';
+function computeMoveTargetsFor(u,nid){
+  var res={move:[],attack:[]};
+  neighbors(u.c,u.r).forEach(function(nb){
+    var foeU=unitsOn(nb).some(function(o){return o.owner!==nid&&HOSTILE(nid,o.owner);});
+    var foeCity=nb.city&&nb.city.owner!==nid&&HOSTILE(nid,nb.city.owner);
+    if(foeU||foeCity){res.attack.push(nb);}
+    else if(nb.owner!==nid&&!nb.city&&unitsOn(nb).length===0){res.move.push(nb);}
+  });
+  return res;
 }
-function redeem(){
-  var v=$id('codeIn').value.trim();
-  if(SKINS[v]){S.skin=v;toast('✅ Скин применён: '+v+'. Теперь ворвись в Польшу стильно.');renderMap();if(sel)clickCountry(sel);}
-  else toast('❌ Код не найден. Код-трекеры (Roblox Den, Destructoid) тоже не знают такого.');
+function HOSTILE(a,b){
+  if(a==='none'||b==='none')return false;
+  if(MAJORS.indexOf(a)>=0&&MAJORS.indexOf(b)>=0)return true;
+  return a!==b;
 }
-function buyGeneral(){
-  gainBadge('gen');S.generals++;
-  $id('side').innerHTML='<h3>💰 Генерал</h3>'+
-    '<pre style="font-size:12px;line-height:1.3;background:#000;padding:10px;border-radius:6px">   \\_/\n  (o o)  👴 Генерал\n /|⚔️  |\\\n  d| |b</pre>'+
-    '<p class="muted">Бонусов к атаке: 0. Он стоит у столицы. Он видел, как ты скипнул туториал. Он всё видел. Он просто есть.</p>'+
-    '<p class="muted">Настоящий флекс — не сколько у тебя генералов, а сколько генералов Standing, которых ты ни разу не поставил на фронт.</p>';
+function aiAttack(u,h,nid){
+  u.acted=true;
+  var defUnits=unitsOn(h).filter(function(o){return o.owner!==nid;});
+  var dmg=5+rnd(4)+Math.round(TERR_DEF[h.ter]/2);
+  if(defUnits.length){
+    var d=defUnits[0];
+    d.hp-=dmg;
+    if(d.hp<=0){
+      S.units=S.units.filter(function(o){return o!==d;});
+      logMsg(d.owner===S.player?'Ваша дивизия уничтожена в бою.':'Столкновение держав: дивизия уничтожена.','war');
+      if(h.city&&h.city.owner!==nid){
+        if(h.city.garrison<=0){captureCity(h.city,nid);u.c=h.c;u.r=h.r;}
+      } else {h.owner=nid;u.c=h.c;u.r=h.r;}
+    } else {
+      u.hp-=2+rnd(3);
+      if(u.hp<=0){S.units=S.units.filter(function(o){return o!==u;});logMsg('Дивизия '+(nid===S.player?'ваша':'противника')+' разбита.','war');}
+    }
+    return;
+  }
+  if(h.city&&h.city.owner!==nid){
+    var ct=h.city;
+    var dmgC=Math.max(1,dmg-TERR_DEF[h.ter]);
+    ct.garrison-=dmgC;
+    if(ct.owner===S.player)logMsg('Противник штурмует '+ct.n+': −'+dmgC+' гарнизону ('+Math.max(0,ct.garrison)+' осталось).','war');
+    if(ct.garrison<=0){u.c=h.c;u.r=h.r;captureCity(h.city,nid);}
+    else {u.hp-=Math.max(1,Math.round(ct.garrison/8));if(u.hp<=0){S.units=S.units.filter(function(o){return o!==u;});}}
+    return;
+  }
+  h.owner=nid;u.c=h.c;u.r=h.r;
 }
-function nuke(){
-  if(S.done<5){toast('☢️ Ядерное оружие за кучей исследований. Собрано: '+S.done+'/47 (каких — не уточнялось).');return;}
-  if(S.coin>0){S.coin=0;gainBadge('coin');}
-  S.nukes++;
-  news('☢️ ЯДЕРНОЕ ОРУЖИЕ ПРИМЕНЕНО. Главный результат — скриншот карты с эффектом. Урон приносит, но скриншот — вечный.');
-  toast('☢️💥 Скриншот сохранён в Галерею. FencePoster: урон небольшо́й, скриншот — навсегда.');
-  if(S.wars.length){var t=byId(S.wars[0]);t.hp-=8;t.prog+=6;}
-  updateHUD();if(sel)clickCountry(sel);
+function hexDist(a,b){
+  var ac=hexToCube(a),bc=hexToCube(b);
+  return Math.max(Math.abs(ac.x-bc.x),Math.abs(ac.y-bc.y),Math.abs(ac.z-bc.z));
+}
+function hexToCube(h){
+  var x=h.c-(h.r-(h.r&1))/2, z=h.r, y=-x-z;
+  return {x:x,y:y,z:z};
+}
+function nearestEnemyCity(u,nid){
+  var best=null,bd=1e9;
+  NATIONS.forEach(function(n){
+    n.cities.forEach(function(ct){
+      if(ct.owner===nid)return;
+      if(ct.owner===S.player||HOSTILE(nid,ct.owner)||ct.owner===S.player){
+        var d=hexDist(u,hexes[key(ct.c,ct.r)]);
+        if(d<bd){bd=d;best=hexes[key(ct.c,ct.r)];}
+      }
+    });
+  });
+  return best;
 }
 
-$id('camBtn').onclick=function(){
-  if(Math.random()<0.35){toast('📷 Кнопка лагает. Попробуй ещё (это фича, гайд так и обоснует).');return;}
-  document.body.classList.toggle('lag');
-  toast(document.body.classList.contains('lag')?'📷 Камера: вид от третьего лица. Лага меньше, смысл появился.':'📷 Камера: вид на карту.');
-};
-
+/* =============== ХОД =============== */
+var MONTHS=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+function myCities(){var r=0;NATIONS.forEach(function(n){if(n.id===S.player)n.cities.forEach(function(ct){if(ct.owner===S.player)r++;});});return r;}
+function totalCities(){return NATIONS.reduce(function(a,n){return a+n.cities.length;},0);}
 function updateHUD(){
-  $id('resbar').innerHTML='🪙 Монета: '+S.coin+' (она одна) · 😐 Vibes: '+S.vibes+' · 💣 Снаряды: '+S.shells+'<br>'+
-    '🪨 Сталь: '+S.steel+' · 🛢 Нефть: '+S.oil+' · 🛩 Алюминий: '+S.alu+' · 🏭 civ/mil: '+S.civ+'/'+S.mil+' · 🔬 '+S.done+'/47';
-  $id('dayhud').textContent='День '+S.day+' · Era: '+S.era+' · Стран: '+ownedCount()+'/'+C.length;
+  $id('rMoney').textContent=fmtR(S.money);
+  $id('rMan').textContent=fmtR(S.man);
+  $id('rRP').textContent=fmtR(S.rp);
+  $id('rDiv').textContent=S.units.filter(function(u){return u.owner===S.player;}).length;
+  $id('rCities').textContent=myCities()+'/'+totalCities();
+  var mo=MONTHS[S.turn%12], yr=1939+Math.floor(S.turn/12);
+  $id('dateBox').textContent=mo+' '+yr;
 }
-setInterval(function(){if(S&&!S.won)tick();},1000);
+function nextTurn(){
+  if(!S||S.over)return;
+  S.turn++;
+  var inc=0,man=0;
+  NATIONS.forEach(function(n){ if(n.id!==S.player)return;
+    n.cities.forEach(function(ct){ if(ct.owner===S.player){inc+=3;man+=2;ct.garrison=Math.min(ct.gMax,ct.garrison+2);} });
+  });
+  Object.keys(hexes).forEach(function(k){var h=hexes[k];if(h.owner===S.player&&!h.city)inc+=0.5;});
+  S.money+=inc;S.man+=man;S.rp+=1;
+  S.units.filter(function(u){return u.owner===S.player;}).forEach(function(u){u.acted=false;u.hp=Math.min(u.mhp,u.hp+2);});
+  aiTurn();
+  updateHUD();renderAll();
+  checkEnd();
+}
+window.nextTurn=nextTurn;
+function checkEnd(){
+  if(S.over)return;
+  var mineCities=myCities();
+  if(mineCities===0){defeat();return;}
+  var capsHeld=0,capsTotal=0;
+  MAJORS.forEach(function(mid){
+    var n=nationById(mid);
+    var capCity=n.cities.find(function(ct){return ct.cap;})||n.cities[0];
+    capsTotal++;
+    if(capCity&&capCity.owner===S.player)capsHeld++;
+  });
+  if(mineCities>=Math.ceil(totalCities()*0.65)){
+    victory();
+    return;
+  }
+  if(capsHeld===capsTotal){victory();return;}
+}
+function victory(){
+  S.over=true;
+  $id('endOv').style.display='flex';
+  $id('endTitle').textContent='Победа';
+  $id('endText').innerHTML='Вы контролируете '+myCities()+' из '+totalCities()+' городов Европы через '+S.turn+' мес. Конфликт под контролем.';
+}
+function defeat(){
+  S.over=true;
+  $id('endOv').style.display='flex';
+  $id('endTitle').textContent='Поражение';
+  $id('endText').innerHTML='Все города потеряны к '+MONTHS[S.turn%12]+' '+(1939+Math.floor(S.turn/12))+' года. Уцелевшие дивизии разбиты.';
+}
 
-function buildStartList(){
-  var wrap=$id('startCountries');
-  C.filter(function(x){return ['luxembourg','switzerland','germany','ussr','france','spain','poland','italy','vatican','uk','sweden','greece'].indexOf(x.id)>=0;}).forEach(function(x){
-    var cls=x.id==='vatican'?'sup':((x.id==='luxembourg'||x.id==='switzerland')?'rec':((x.id==='germany'||x.id==='ussr'||x.id==='poland')?'warn':''));
+/* =============== ПАНЕЛИ =============== */
+function showNations(){
+  var h='<h3>Нации и столицы</h3><div class="sub">Великие державы: Германия, СССР, Великобритания, Франция, Италия.</div>';
+  NATIONS.forEach(function(n){
+    var cOwned=n.cities.filter(function(ct){return ct.owner===n.id;}).length;
+    var divN=S.units.filter(function(u){return u.owner===n.id;}).length;
+    h+='<div class="stat">'+makeFlag(n,30)+'<span>'+n.n+'</span><span>'+cOwned+' 🏙 · '+divN+' 🪖</span></div>';
+  });
+  $id('side').innerHTML=h;view='nations';
+}
+window.showNations=showNations;
+function showTech(){
+  var h='<h3>Исследования</h3><div class="sub">Очки исследований: '+fmtR(S.rp)+'</div>';
+  var defs=[{id:'inf',n:'Пехота',d:'+1.5 атаки за уровень'},{id:'ind',n:'Промышленность',d:'+1 💰 за город за уровень'},{id:'arm',n:'Танки',d:'+2 атаки за уровень'}];
+  defs.forEach(function(t){
+    var lvl=S.techs[t.id],cost=12+lvl*8;
+    h+='<div class="techrow"><span style="flex:1">'+t.n+' ур.'+lvl+' <span class="muted">'+t.d+'</span></span>';
+    h+='<button onclick="research(\''+t.id+'\')" '+(S.rp<cost?'disabled':'')+'>Ур.'+(lvl+1)+' · '+cost+' 🔬</button></div>';
+  });
+  h+='<p class="muted" style="margin-top:6px">Каждый месяц: +1 🔬 базово.</p>';
+  $id('side').innerHTML=h;view='tech';
+}
+window.showTech=showTech;
+function research(id){
+  var cost=12+S.techs[id]*8;
+  if(S.rp<cost){logMsg('Недостаточно очков исследований.','info');return;}
+  S.rp-=cost;S.techs[id]++;
+  logMsg('Исследование завершено: '+id.toUpperCase()+' ур.'+S.techs[id]+'.','good');
+  showTech();
+}
+window.research=research;
+
+/* =============== ОТРИСОВКА-ОБЩЕЕ =============== */
+function renderAll(){renderMap();renderCities();renderUnits();updateHUD();}
+
+/* =============== СТАРТ =============== */
+var pickNation=null;
+function buildPick(){
+  var g=$id('pickGrid');g.innerHTML='';
+  NATIONS.forEach(function(n){
+    var isMajor=MAJORS.indexOf(n.id)>=0;
     var b=document.createElement('button');
-    b.className='sbtn '+cls;
-    b.textContent=x.n+(x.id==='vatican'?' ★':'');
-    b.onclick=function(){startPick(x.id);};
-    wrap.appendChild(b);
+    b.className='pick';
+    b.dataset.nid=n.id;
+    b.innerHTML=makeFlag(n,54)+'<div class="pn">'+n.n+(isMajor?' ★':'')+'</div><div class="pm">городов: '+n.cities.length+' · дивизий: '+(isMajor?4:2)+' · '+(isMajor?'великая держава':'регион')+'</div>';
+    b.onclick=function(){startPick(n.id);};
+    g.appendChild(b);
   });
 }
 function startPick(id){
-  pick=id;
-  var c=byId(id),note='Стандартный старт. У тебя одна монета.';
-  if(id==='luxembourg')note='✔ Рекомендовано гайдом: маленькая, горы, один сосед (которого предадим).';
-  if(id==='switzerland')note='✔ Рекомендовано гайдом: маленькая, горы, все соседи далеко.';
-  if(id==='germany'||id==='ussr'||id==='poland')note='⚠ Гайд умоляет НЕ играть за это. Ну ладно.';
-  if(id==='vatican')note='★ Микрогосударство-сверхдержава. 400 танков. Вырезан? Нет — повышен.';
-  $id('pickHint').textContent=c.n+': '+note;
+  var btns=document.querySelectorAll('.pick');
+  for(var i=0;i<btns.length;i++)btns[i].classList.toggle('selPick',btns[i].dataset.nid===id);
+  pickNation=id;
+  var n=nationById(id),isMajor=MAJORS.indexOf(id)>=0;
+  $id('pickHint').textContent=n.n+': '+(isMajor?'сильная экономика и армия, но все великие державы против вас':'сложный старт — используйте горы и леса в обороне')+(id==='luxembourg'?'':'');
   $id('startBtn').disabled=false;
 }
 function beginGame(){
-  newState(pick);
+  newState(pickNation);
   $id('startOv').style.display='none';
-  $id('tutOv').style.display='flex';
-  renderMap();updateHUD();
-  news('🎮 Партия началась. Напоминаем: в карте нет Исландии, Мальты, Лихтенштейна, Андорры, Сан-Марино. Ватикан есть. Это не баг — это баланс.');
+  renderAll();
+  logMsg('Кампания началась: '+nationById(pickNation).n+'. Январь 1939.','info');
+  logMsg('Все великие державы объявили вам войну. Европа знает, что будет дальше.','war');
 }
-buildStartList();
-
+function resetGame(){
+  if(S){NATIONS.forEach(function(n){n.cities.forEach(function(ct){ct.garrison=ct.gMax;});});}
+  S=null;sel=null;
+  $id('endOv').style.display='none';
+  $id('startOv').style.display='flex';
+  $id('log').innerHTML='';
+  buildPick();
+}
+buildPick();
 $id('startBtn').onclick=beginGame;
-$id('tutSkip').onclick=function(){
-  $id('tutOv').style.display='none';
-  toast('Туториал скипнут. Через 4 минуты ты напишешь в чат: «а где мои заводы, где слоты». Ответ из Discord: «роад-мап».');
-  news('⏭ Туториал скипнут. Скипается в 94% случаев (по данным фанатской вики на Fandom).');
-};
-$id('tutRead').onclick=function(){$id('tutOv').style.display='none';toast('Туториал прочитан. Через 4 минуты понимаешь, что зря.');};
-$id('btnShop').onclick=showShop;
-$id('btnBuild').onclick=showBuild;
-$id('btnTech').onclick=showTech;
-$id('btnBadges').onclick=showBadges;
-$id('btnNuke').onclick=nuke;
-$id('btnHelp').onclick=function(){$id('tutOv').style.display='flex';};
-
-function victory(){
-  S.won=true;
-  $id('endOv').style.display='flex';
-  $id('endTitle').textContent='🏆 Ты conquерил Europe'+(S.skin!=='default'?' (стильно)':'');
-  $id('endText').innerHTML='Партия длилась '+S.day+' дней. Бейджей: '+Object.keys(S.badges).length+'/'+BADGES_DEF.length+
-    '. Генералов «просто стоит»: '+S.generals+'. Метка «Maturity: Minimal» вынесена отдельным спасибо.'+
-    '<br>Микрогосударства остались без ответа, но Ватикан ими доволен.';
-}
-$id('eraBtns').onclick=function(e){
-  if(!e.target.dataset.era)return;
-  $id('eraResult').innerHTML='Сервер проголосовал: <b>WW3</b> (как всегда). Кнопка «'+e.target.dataset.era+'» получила 1 голос — твой. Люди стабильно тянутся к большему.';
-};
+$id('againBtn').onclick=resetGame;
+$id('helpClose').onclick=function(){$id('helpOv').style.display='none';};
+$id('btnHelp').onclick=function(){$id('helpOv').style.display='flex';};
+$id('btnNations').onclick=showNations;
+$id('btnTech').onclick=function(){if(S)showTech();};
+$id('nextBtn').onclick=nextTurn;
 </script>
 </body>
 </html>
