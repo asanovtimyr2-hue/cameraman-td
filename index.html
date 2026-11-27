@@ -585,12 +585,15 @@
     <button class="btn small back-btn" id="topBack">← ЛОББИ</button>
     <h2 class="panel-title">🏆 ТОПЫ</h2>
     <div id="topAccount"></div>
-    <div style="display:flex;gap:8px;justify-content:center;margin:10px 0 2px">
-      <button class="btn small accent" id="topTabGlobal">🌍 ОБЩИЙ</button>
+    <div style="display:flex;gap:8px;justify-content:center;margin:10px 0 2px;flex-wrap:wrap">
+      <button class="btn small accent" id="topTabCoins">💰 МОНЕТЫ</button>
+      <button class="btn small" id="topTabGems">💎 ГЕМЫ</button>
+      <button class="btn small" id="topTabWins">🏆 ПОБЕДЫ</button>
+      <button class="btn small" id="topTabLosses">💀 ПОРАЖЕНИЯ</button>
       <button class="btn small" id="topTabEndless">♾ БЕСКОНЕЧНЫЙ</button>
     </div>
     <div id="topContent" style="margin-top:10px"></div>
-    <div class="hint">Общий топ: монеты, гемы, победы и поражения. Бесконечный: кто больше волн за 3 часа. Приз сезона чередуется: Пал Лаич → Зелень → Пал Лаич…</div>
+    <div class="hint">Каждый топ отдельно: монеты, гемы, победы, поражения. Бесконечный: кто больше волн за 3 часа. Приз сезона чередуется: Пал Лаич → Зелень → Пал Лаич…</div>
   </div>
 </div>
 
@@ -4839,8 +4842,9 @@ const OnlineBackend = {
   },
   async api(path, opts) {
     const o = Object.assign({}, opts || {});
+    const noSession = !!o.noSession; delete o.noSession;
     o.headers = Object.assign(
-      this.headers(this.user && this.user.token ? { 'X-Parse-Session-Token': this.user.token } : null),
+      this.headers(!noSession && this.user && this.user.token ? { 'X-Parse-Session-Token': this.user.token } : null),
       (opts && opts.headers) || {});
     const res = await fetch(BACKEND.url + path, o);
     let body = null;
@@ -4848,6 +4852,7 @@ const OnlineBackend = {
     if (!res.ok) {
       const err = new Error((body && body.error) ? body.error : ('HTTP ' + res.status));
       err.parseCode = body && body.code;
+      if (body && (body.code === 209 || body.code === 206)) { this.logout(); }
       throw err;
     }
     return body;
@@ -4885,9 +4890,19 @@ const OnlineBackend = {
   async pushProfile() {
     if (!this.ready || !this.user) return;
     const d = SaveManager.data;
+    const data = { ownerId: this.user.id, nick: this.user.nick, coins: d.coins || 0, gems: d.crystals || 0, wins: d.totalWins || 0, losses: d.totalLosses || 0 };
     try {
-      await this.api('/classes/PlayerProfile', { method: 'POST', headers: this.headers({ 'X-Parse-Session-Token': this.user.token }),
-        body: JSON.stringify({ ownerId: this.user.id, nick: this.user.nick, coins: d.coins || 0, gems: d.crystals || 0, wins: d.totalWins || 0, losses: d.totalLosses || 0 }) });
+      const where = encodeURIComponent(JSON.stringify({ ownerId: this.user.id }));
+      const q = await this.api('/classes/PlayerProfile?where=' + where, { noSession: true });
+      const rows = q.results || [];
+      if (rows.length) {
+        await this.api('/classes/PlayerProfile/' + rows[0].objectId, { method: 'PUT', headers: this.headers({ 'X-Parse-Session-Token': this.user.token }), body: JSON.stringify(data) });
+        for (let i = 1; i < rows.length; i++) {
+          try { await this.api('/classes/PlayerProfile/' + rows[i].objectId, { method: 'DELETE', noSession: true }); } catch (e2) {}
+        }
+      } else {
+        await this.api('/classes/PlayerProfile', { method: 'POST', headers: this.headers({ 'X-Parse-Session-Token': this.user.token }), body: JSON.stringify(data) });
+      }
     } catch (e) {}
   },
   async submitEndless(waves) {
@@ -4902,11 +4917,12 @@ const OnlineBackend = {
     try {
       if (kind === 'endless') {
         const where = encodeURIComponent(JSON.stringify({ season: SaveManager.seasonSlot() }));
-        const r = await this.api('/classes/EndlessScore?where=' + where + '&order=-waves&limit=20', {});
+        const r = await this.api('/classes/EndlessScore?where=' + where + '&order=-waves&limit=20', { noSession: true });
         return (r.results || []).map(x => ({ nick: x.nick, v: x.waves }));
       }
-      const r = await this.api('/classes/PlayerProfile?order=-coins&limit=20', {});
-      return (r.results || []).map(x => ({ nick: x.nick, v: x.coins, gems: x.gems, wins: x.wins, losses: x.losses }));
+      const field = kind === 'gems' ? 'gems' : kind === 'wins' ? 'wins' : kind === 'losses' ? 'losses' : 'coins';
+      const r = await this.api('/classes/PlayerProfile?order=-' + field + '&limit=20', { noSession: true });
+      return (r.results || []).map(x => ({ nick: x.nick, v: x[field] || 0 }));
     } catch (e) { this.lastError = e.message || String(e); return null; }
   },
   topHtml() {
@@ -4920,9 +4936,7 @@ const OnlineBackend = {
     if (!el.isConnected) return;
     if (!rows) { el.textContent = T('Топ временно недоступен') + (this.lastError ? (': ' + this.lastError) : ''); return; }
     el.innerHTML = rows.length ? rows.map((r, i) => '<div class="stock-cell"><b>' + (i + 1) + '.</b> 👤 ' + String(r.nick || '?').replace(/[<>&]/g, '')
-      + (kind === 'global'
-        ? ' — ¢' + r.v + ' · 💎' + (r.gems || 0) + ' · 🏆' + (r.wins || 0) + ' · 💀' + (r.losses || 0)
-        : ' — ⚡' + r.v + ' ' + T('волн'))
+      + ' — ' + ({ coins: '¢', gems: '💎', wins: '🏆', losses: '💀', endless: '⚡' }[kind] || '¢') + r.v + (kind === 'endless' ? ' ' + T('волн') : '')
       + '</div>').join('') : T('Пока пусто — стань первым!');
   },
   async createRoom() {
@@ -6134,6 +6148,7 @@ const App = {
   },
   showTop() {
     this.lobby.stop();
+    this.topTab = this.topTab || 'coins';
     this.renderTop();
     UI.showScreen('topScreen');
   },
@@ -6141,21 +6156,24 @@ const App = {
     const acc = document.getElementById('topAccount');
     if (acc) acc.innerHTML = this.accountHtml();
     this.bindAccount();
-    document.getElementById('topTabGlobal').classList.toggle('accent', this.topTab === 'global');
-    document.getElementById('topTabEndless').classList.toggle('accent', this.topTab === 'endless');
+    const tabs = { Coins: 'coins', Gems: 'gems', Wins: 'wins', Losses: 'losses', Endless: 'endless' };
+    for (const t in tabs) {
+      const btn = document.getElementById('topTab' + t);
+      if (btn) btn.classList.toggle('accent', this.topTab === tabs[t]);
+    }
     const box = document.getElementById('topContent');
     const d = SaveManager.data;
-    if (this.topTab === 'global') {
-      box.innerHTML = '<div class="stock-cell" style="justify-content:center">¢ ' + (d.coins || 0) + ' · 💎 ' + (d.crystals || 0)
-        + ' · 🏆 ' + (d.totalWins || 0) + ' · 💀 ' + (d.totalLosses || 0) + '</div>' + OnlineBackend.topHtml();
-      OnlineBackend.renderRemote('global');
-    } else {
+    if (this.topTab === 'endless') {
       const prize = UNITS.find(u => u.id === SaveManager.seasonPrizeId(d.endlessSeasonNum || 1));
       box.innerHTML = '<div class="stock-cell" style="justify-content:center">⚡ ' + T('Рекорд') + ': ' + (d.endlessRecord || 0)
         + ' · ' + T('Сезон') + ' #' + (d.endlessSeasonNum || 1) + ': ' + (d.endlessSeasonBest || 0) + ' ' + T('волн') + '</div>'
         + '<div class="hint" id="topSeasonHint">🎁 ' + fill(T('Приз сезона: %1 · сброс через %2'), prize ? prize.name : '—', this.seasonCountdown()) + '</div>'
         + OnlineBackend.topHtml();
       OnlineBackend.renderRemote('endless');
+    } else {
+      const cfg = { coins: ['¢', d.coins || 0], gems: ['💎', d.crystals || 0], wins: ['🏆', d.totalWins || 0], losses: ['💀', d.totalLosses || 0] }[this.topTab] || ['¢', d.coins || 0];
+      box.innerHTML = '<div class="stock-cell" style="justify-content:center">' + cfg[0] + ' ' + cfg[1] + '</div>' + OnlineBackend.topHtml();
+      OnlineBackend.renderRemote(this.topTab);
     }
   },
   seasonCountdown() {
@@ -6229,7 +6247,10 @@ const App = {
     document.getElementById('coopLeave').addEventListener('click', () => { OnlineBackend.leaveRoom(); this.coopRoom = null; this.renderCoop(); });
     document.getElementById('coopCodeInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') this.coopJoin(); });
     document.getElementById('topBack').addEventListener('click', () => this.showLobby());
-    document.getElementById('topTabGlobal').addEventListener('click', () => { this.topTab = 'global'; this.renderTop(); });
+    document.getElementById('topTabCoins').addEventListener('click', () => { this.topTab = 'coins'; this.renderTop(); });
+    document.getElementById('topTabGems').addEventListener('click', () => { this.topTab = 'gems'; this.renderTop(); });
+    document.getElementById('topTabWins').addEventListener('click', () => { this.topTab = 'wins'; this.renderTop(); });
+    document.getElementById('topTabLosses').addEventListener('click', () => { this.topTab = 'losses'; this.renderTop(); });
     document.getElementById('topTabEndless').addEventListener('click', () => { this.topTab = 'endless'; this.renderTop(); });
     document.getElementById('gateLogin').addEventListener('click', () => this.authGateSubmit('login'));
     document.getElementById('gateSignup').addEventListener('click', () => this.authGateSubmit('reg'));
