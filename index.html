@@ -63,6 +63,9 @@
   .unit-card.rar-Mythic:hover{border-color:#ff4040;box-shadow:0 0 0 1px #ff4040aa inset,0 6px 0 #0a0e14,0 0 22px #ff404077}
   .loadout-slot.rar-Special{border-color:#ff7ad9;box-shadow:0 0 14px #ff7ad966}
   .loadout-slot.rar-Mythic{border-color:#ff4040;box-shadow:0 0 14px #ff404066}
+  @keyframes rainbowHue{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
+  .rar-Ultimate{animation:rainbowHue 2.8s linear infinite}
+  [style*="100%,60%)"],[style*="100%, 60%)"]{animation:rainbowHue 2.8s linear infinite}
   .unit-card .u-emoji{font-size:2.2rem;line-height:1;display:flex;align-items:center;justify-content:center;min-height:52px}
   .unit-card .u-name{font-weight:800;font-size:1.05rem;color:#cfe0ff}
   .unit-card .u-desc{font-size:.78rem;opacity:.65;min-height:32px}
@@ -1256,6 +1259,7 @@ const RARITY_COLOR = {
   'Epic': '#b06bff', 'Legendary': '#ffd966', 'Mythic': '#ff4040', 'Godly': '#ffcf3d',
   'Ultimate': '#ff4d5e', 'Special': '#ff7ad9'
 };
+Object.defineProperty(RARITY_COLOR, 'Ultimate', { get() { return 'hsl(' + Math.floor((Date.now() / 11) % 360) + ',100%,60%)'; } });
 const HERO_UPGRADE_COST = [0, 150, 360, 720, 1300];
 const RARITY_UPGRADE_MULT = {
   'Common': 1.0, 'Uncommon': 1.3, 'Rare': 1.6,
@@ -1297,6 +1301,7 @@ const UNIT_CELLS = { titanCam: [2, 1], titanTV: [2, 1], titanSpeaker: [2, 1], pu
 function unitCells(id) { return UNIT_CELLS[id] || [1, 1]; }
 function rarityGlowClass(u) {
   if (!u) return '';
+  if (u.rarity === 'Ultimate') return ' rar-Ultimate';
   if (u.rarity === 'Special') return ' rar-Special';
   if (u.rarity === 'Mythic') return ' rar-Mythic';
   return '';
@@ -3894,6 +3899,7 @@ class Game {
     this.waveBanner = null;
     if (this._raf) { cancelAnimationFrame(this._raf); this._raf = null; }
     UI.hideTooltip();
+    try { const _r = (typeof App !== 'undefined') && App.coopRoom; if (_r && _r.id && _r.started) { App._coopLaunched = false; OnlineBackend.setRoomState(_r.id, 'lobby'); } } catch (e) {}
   }
   heroesOfUnit(id) {
     return this.heroes.filter(h => h.unit.id === id).length;
@@ -4991,22 +4997,26 @@ const OnlineBackend = {
       const players = (room.players || []).slice();
       if (!players.includes(nick) && players.length < 4) players.push(nick);
       await this.api('/classes/TDRoom/' + room.objectId, { method: 'PUT', body: JSON.stringify({ players }) });
-      return { id: room.objectId, code: room.code, host: room.host, players, state: room.state, started: room.state === 'playing' };
+      return { id: room.objectId, code: room.code, host: room.host, players, state: room.state, map: room.map || null, started: room.state === 'playing' };
     } catch (e) { this.lastError = e.message || String(e); return null; }
   },
   async refreshRoom(room) {
     if (!this.ready || !room || !room.id) return room;
     try {
       const r = await this.api('/classes/TDRoom/' + room.id, {});
-      return { id: r.objectId, code: r.code, host: r.host, players: r.players || [], state: r.state || 'lobby', wave: r.wave || 0, started: (r.state === 'playing') };
+      return { id: r.objectId, code: r.code, host: r.host, players: r.players || [], state: r.state || 'lobby', wave: r.wave || 0, map: r.map || null, started: (r.state === 'playing') };
     } catch (e) { return room; }
   },
   async startRoom(room) {
     if (!this.ready || !room || !room.id) return false;
-    const nick = (this.user && this.user.nick) || 'host';
-    if (room.host !== nick) return false;
-    try { await this.api('/classes/TDRoom/' + room.id, { method: 'PUT', body: JSON.stringify({ state: 'playing' }) }); return true; }
+    const nick = (this.user && this.user.nick) || 'guest';
+    if (!(room.players || []).includes(nick)) return false;
+    try { await this.api('/classes/TDRoom/' + room.id, { method: 'PUT', body: JSON.stringify({ state: 'playing', map: SaveManager.selectedMap || 'studio' }) }); return true; }
     catch (e) { this.lastError = e.message || String(e); return false; }
+  },
+  async setRoomState(id, state) {
+    if (!this.ready || !id) return;
+    try { await this.api('/classes/TDRoom/' + id, { method: 'PUT', body: JSON.stringify({ state, wave: 0 }) }); } catch (e) {}
   },
   async leaveRoom() {
     const room = (typeof App !== 'undefined') && App.coopRoom;
@@ -6141,7 +6151,7 @@ const App = {
   coopCreate() {
     if (!OnlineBackend.ready) { UI.toast(T('Онлайн недоступен: впиши App ID и REST key (Back4app) в начало скрипта')); return; }
     OnlineBackend.createRoom().then(r => {
-      if (r) { this.coopRoom = r; this.renderCoop(); this.coopPoll(); }
+      if (r) { this._coopLaunched = false; this.coopRoom = r; this.renderCoop(); this.coopPoll(); }
       else UI.toast(T('Не удалось создать комнату') + (OnlineBackend.lastError ? (': ' + OnlineBackend.lastError) : ''));
     });
   },
@@ -6150,7 +6160,7 @@ const App = {
     const code = (document.getElementById('coopCodeInput').value || '').trim().toUpperCase();
     if (!code) { UI.toast(T('Введи код комнаты')); return; }
     OnlineBackend.joinRoom(code).then(r => {
-      if (r) { this.coopRoom = r; this.renderCoop(); this.coopPoll(); }
+      if (r) { this._coopLaunched = false; this.coopRoom = r; this.renderCoop(); this.coopPoll(); }
       else UI.toast(T('Комната не найдена') + (OnlineBackend.lastError ? (': ' + OnlineBackend.lastError) : ''));
     });
   },
@@ -6163,6 +6173,12 @@ const App = {
           this.coopRoom = room;
           const cs = document.getElementById('coopScreen');
           if (cs && cs.classList.contains('active')) this.renderCoop();
+          if (room.started && !this._coopLaunched) {
+            this._coopLaunched = true;
+            if (room.map) { try { SaveManager.selectedMap = room.map; } catch (e) {} }
+            UI.toast(fill(T('👥 Кооп: игроков %1 — HP врагов ×%2'), (room.players || []).length, Math.max(1, Math.min(4, (room.players || []).length))));
+            this.showUnitSelect();
+          }
         }
       });
     }, 2500);
@@ -6172,7 +6188,8 @@ const App = {
     if (!room || !(room.players || []).length || room.players.length < 2) { UI.toast(T('Нужно минимум 2 игрока в комнате')); return; }
     if (!OnlineBackend.ready) { UI.toast(T('Онлайн недоступен: впиши App ID и REST key (Back4app) в начало скрипта')); return; }
     OnlineBackend.startRoom(room).then(ok => {
-      if (!ok) { UI.toast(T('Только создатель комнаты может стартовать')); return; }
+      if (!ok) { UI.toast(T('Не получилось стартовать — перезайди в комнату')); return; }
+      this._coopLaunched = true;
       room.started = true;
       UI.toast(fill(T('👥 Кооп: игроков %1 — HP врагов ×%2'), room.players.length, room.players.length));
       this.showUnitSelect();
@@ -6280,7 +6297,7 @@ const App = {
     document.getElementById('coopCreate').addEventListener('click', () => this.coopCreate());
     document.getElementById('coopJoin').addEventListener('click', () => this.coopJoin());
     document.getElementById('coopStart').addEventListener('click', () => this.coopStart());
-    document.getElementById('coopLeave').addEventListener('click', () => { OnlineBackend.leaveRoom(); this.coopRoom = null; this.renderCoop(); });
+    document.getElementById('coopLeave').addEventListener('click', () => { OnlineBackend.leaveRoom(); this.coopRoom = null; this._coopLaunched = false; this.renderCoop(); });
     document.getElementById('coopCodeInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') this.coopJoin(); });
     document.getElementById('topBack').addEventListener('click', () => this.showLobby());
     document.getElementById('topTabCoins').addEventListener('click', () => { this.topTab = 'coins'; this.renderTop(); });
