@@ -3985,6 +3985,31 @@ class Game {
       }
     } catch (e) {}
   }
+  coopPushFlags() {
+    try {
+      const room = (typeof App !== 'undefined') && App.coopRoom;
+      if (!room || !room.id || !room.started) return;
+      OnlineBackend.setRoomFields(room.id, { autoSkip: !!this.autoSkip, speed: this.speedMultiplier });
+    } catch (e) {}
+  }
+  coopApplyFlags(aSkip, spd) {
+    try {
+      const room = (typeof App !== 'undefined') && App.coopRoom;
+      if (!room || !room.started) return;
+      let changed = false;
+      if (typeof aSkip === 'boolean' && aSkip !== this.autoSkip) { this.autoSkip = aSkip; changed = true; }
+      if (typeof spd === 'number' && spd > 0 && spd !== this.speedMultiplier) {
+        if (spd !== 2.5 || (SaveManager.data.totalWins || 0) >= 45) { this.speedMultiplier = spd; changed = true; }
+      }
+      if (changed) {
+        const askBtn = document.getElementById('autoSkipBtn');
+        if (askBtn) { askBtn.textContent = this.autoSkip ? T('������ АВТО-СКИП: ВКЛ') : T('������ АВТО-СКИП: ВЫКЛ'); askBtn.className = 'btn small' + (this.autoSkip ? ' accent' : ''); }
+        const spdBtn = document.getElementById('speedBtn');
+        if (spdBtn) spdBtn.textContent = this.speedMultiplier === 1 ? T('⏩ ×1') : T('⏩ ×%1').replace('%1', this.speedMultiplier);
+        this.toast(T('������ Союзник изменил настройки — синхронизировано'));
+      }
+    } catch (e) {}
+  }
   moneyBonusSum() {
     let sum = 0;
     for (const h of this.heroes) {
@@ -4268,8 +4293,13 @@ class Game {
   }
   toggleSpeed() {
     if (this.gameOver || this.victory) return;
-    this.speedMultiplier = this.speedMultiplier === 1 ? 2 : 1;
+    if (this.speedMultiplier === 1) this.speedMultiplier = 2;
+    else if (this.speedMultiplier === 2) {
+      if ((SaveManager.data.totalWins || 0) >= 45) this.speedMultiplier = 2.5;
+      else { this.speedMultiplier = 1; this.toast(fill(T('⚡ Скорость ×2.5 откроется за 45 побед (у тебя %1)'), SaveManager.data.totalWins || 0)); }
+    } else this.speedMultiplier = 1;
     document.getElementById('speedBtn').textContent = this.speedMultiplier === 1 ? T('⏩ ×1') : T('⏩ ×%1').replace('%1', this.speedMultiplier);
+    this.coopPushFlags();
   }
   toggleAutoSkip() {
     if (this.gameOver || this.victory) return;
@@ -4281,6 +4311,7 @@ class Game {
     askBtn.className = 'btn small' + (this.autoSkip ? ' accent' : '');
     this.toast('Авто-скип: ' + (this.autoSkip ? 'включен — волны начинаются сами, скип нажимается автоматом' : 'выключен'));
     Sound.gachaClick();
+    this.coopPushFlags();
   }
   handleKey(e) {
     if (!this.running || this.gameOver || this.victory) return;
@@ -5111,7 +5142,7 @@ const OnlineBackend = {
     if (!this.ready || !room || !room.id) return room;
     try {
       const r = await this.api('/classes/TDRoom/' + room.id, {});
-      return { id: r.objectId, code: r.code, host: r.host, players: r.players || [], state: r.state || 'lobby', wave: r.wave || 0, map: r.map || null, diff: r.diff || 'normal', placements: r.placements || [], left: r.left || [], started: (r.state === 'playing') };
+      return { id: r.objectId, code: r.code, host: r.host, players: r.players || [], state: r.state || 'lobby', wave: r.wave || 0, map: r.map || null, diff: r.diff || 'normal', placements: r.placements || [], left: r.left || [], autoSkip: r.autoSkip, speed: r.speed, started: (r.state === 'playing') };
     } catch (e) { return room; }
   },
   async startRoom(room) {
@@ -6316,7 +6347,7 @@ const App = {
             UI.toast(fill(T('👥 Кооп: игроков %1 — HP врагов ×%2'), (room.players || []).length, Math.max(1, Math.min(4, (room.players || []).length))));
             this.showUnitSelect();
           }
-          try { if (room.started && this.game && this.game.running) { this.game.coopApplyPlacements(room.placements || []); this.game.coopSyncWave(room.wave || 0); } } catch (e) {}
+          try { if (room.started && this.game && this.game.running) { this.game.coopApplyPlacements(room.placements || []); this.game.coopSyncWave(room.wave || 0); this.game.coopApplyFlags(room.autoSkip, room.speed); } } catch (e) {}
         }
       });
     }, 2500);
