@@ -369,6 +369,7 @@
   <div class="lobby-content">
     <h1 class="game-title">КАМЕРАМЕН TD</h1>
     <div class="game-subtitle">ОБОРОНА СТУДИИ</div>
+    <div id="verBadge" style="font-size:11px;opacity:.45;margin-top:4px;user-select:none">v2.30-COOP-SYNC</div>
     <div class="coin-badge"><span class="coin-ico">¢</span> <span id="metaCoinsLobby">0</span> монет</div>
     <div class="coin-badge"><span>💎</span> <span id="metaCrystalsLobby">0</span> кристаллов</div>
     <div class="coin-badge" id="potionBadgeLobby" style="display:none;color:#d9b0ff;box-shadow:0 0 0 1px #6a4fa0 inset"></div>
@@ -750,7 +751,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
 const LOADOUT_SIZE = 5;
-const GAME_VERSION = 'v2.22-DVIZHUHA-FRONT';
+const GAME_VERSION = 'v2.30-COOP-SYNC';
 
 const DCOL = { easy: '#4dff4d', normal: '#4fc3ff', hard: '#ffb347', insane: '#ff5555', endless: '#c86bff' };
 const I18N_EN = {
@@ -4003,10 +4004,10 @@ class Game {
       }
       if (changed) {
         const askBtn = document.getElementById('autoSkipBtn');
-        if (askBtn) { askBtn.textContent = this.autoSkip ? T('������ АВТО-СКИП: ВКЛ') : T('������ АВТО-СКИП: ВЫКЛ'); askBtn.className = 'btn small' + (this.autoSkip ? ' accent' : ''); }
+        if (askBtn) { askBtn.textContent = this.autoSkip ? T('🤖 АВТО-СКИП: ВКЛ') : T('🤖 АВТО-СКИП: ВЫКЛ'); askBtn.className = 'btn small' + (this.autoSkip ? ' accent' : ''); }
         const spdBtn = document.getElementById('speedBtn');
         if (spdBtn) spdBtn.textContent = this.speedMultiplier === 1 ? T('⏩ ×1') : T('⏩ ×%1').replace('%1', this.speedMultiplier);
-        this.toast(T('������ Союзник изменил настройки — синхронизировано'));
+        this.toast(T('👥 Союзник изменил настройки — синхронизировано'));
       }
     } catch (e) {}
   }
@@ -6333,7 +6334,7 @@ const App = {
   },
   coopPoll() {
     if (this.coopTimer) clearInterval(this.coopTimer);
-    this.coopTimer = setInterval(() => {
+    const tick = () => {
       if (!this.coopRoom) { clearInterval(this.coopTimer); this.coopTimer = null; return; }
       OnlineBackend.refreshRoom(this.coopRoom).then(room => {
         if (room && this.coopRoom) {
@@ -6350,7 +6351,9 @@ const App = {
           try { if (room.started && this.game && this.game.running) { this.game.coopApplyPlacements(room.placements || []); this.game.coopSyncWave(room.wave || 0); this.game.coopApplyFlags(room.autoSkip, room.speed); } } catch (e) {}
         }
       });
-    }, 2500);
+    };
+    tick();
+    this.coopTimer = setInterval(tick, 2500);
   },
   coopStart() {
     const room = this.coopRoom;
