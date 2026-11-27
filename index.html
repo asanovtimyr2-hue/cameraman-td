@@ -545,6 +545,18 @@
 </div>
 
 <!-- НАСТРОЙКИ -->
+<div class="screen" id="authGateScreen">
+  <div class="subpanel" style="max-width:460px">
+    <h2 class="panel-title">👤 АККАУНТ</h2>
+    <div class="hint" style="margin-bottom:8px">Чтобы играть, создай аккаунт: ник и пароль. Он же нужен для топов и игры вместе с друзьями.</div>
+    <div class="settings-row"><span>Ник</span><input type="text" class="search-input" id="gateNick" style="min-width:150px;padding:8px 12px" placeholder="Ник"></div>
+    <div class="settings-row"><span>Пароль</span><input type="password" class="search-input" id="gatePass" style="min-width:150px;padding:8px 12px" placeholder="Пароль"></div>
+    <button class="btn accent" id="gateGo" style="width:100%">🚀 ВОЙТИ / СОЗДАТЬ АККАУНТ</button>
+    <div class="hint" id="gateErr" style="color:#ff8888;margin-top:8px"></div>
+    <div class="hint">Пароль хранится на игровом сервере. Забыл пароль — сделай новый ник.</div>
+  </div>
+</div>
+
 <div class="screen" id="coopScreen">
   <div class="subpanel" style="max-width:560px">
     <button class="btn small back-btn" id="coopBack">← ЛОББИ</button>
@@ -4818,15 +4830,26 @@ class Lobby {
 const OnlineBackend = {
   get ready() { return !!(BACKEND.url && BACKEND.appId && BACKEND.restKey); },
   user: null,
+  lastError: null,
   headers(extra) {
     const h = { 'X-Parse-Application-Id': BACKEND.appId, 'X-Parse-REST-API-Key': BACKEND.restKey, 'Content-Type': 'application/json' };
     if (extra) Object.assign(h, extra);
     return h;
   },
   async api(path, opts) {
-    const res = await fetch(BACKEND.url + path, Object.assign({ headers: this.headers() }, opts || {}));
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    return res.json();
+    const o = Object.assign({}, opts || {});
+    o.headers = Object.assign(
+      this.headers(this.user && this.user.token ? { 'X-Parse-Session-Token': this.user.token } : null),
+      (opts && opts.headers) || {});
+    const res = await fetch(BACKEND.url + path, o);
+    let body = null;
+    try { body = await res.json(); } catch (e) {}
+    if (!res.ok) {
+      const err = new Error((body && body.error) ? body.error : ('HTTP ' + res.status));
+      err.parseCode = body && body.code;
+      throw err;
+    }
+    return body;
   },
   saveSession() { try { localStorage.setItem('ctd_session', JSON.stringify(this.user)); } catch (e) {} },
   restoreSession() {
@@ -4843,10 +4866,11 @@ const OnlineBackend = {
         u = await this.api('/users', { method: 'POST', headers: this.headers({ 'X-Parse-Revocable-Session': '1' }), body: JSON.stringify({ username: nick, password: pass, nick }) });
       }
       this.user = { id: u.objectId, nick: u.nick || nick, token: u.sessionToken };
+      this.lastError = null;
       this.saveSession();
       this.pushProfile();
       return true;
-    } catch (e) { return false; }
+    } catch (e) { this.lastError = e.message || String(e); return false; }
   },
   async pushProfile() {
     if (!this.ready || !this.user) return;
@@ -4873,7 +4897,7 @@ const OnlineBackend = {
       }
       const r = await this.api('/classes/PlayerProfile?order=-coins&limit=20', {});
       return (r.results || []).map(x => ({ nick: x.nick, v: x.coins, gems: x.gems, wins: x.wins, losses: x.losses }));
-    } catch (e) { return null; }
+    } catch (e) { this.lastError = e.message || String(e); return null; }
   },
   topHtml() {
     return '<div id="topRemote" style="margin-top:8px;color:#9fb4d8;font-size:.8rem">' + (this.ready ? T('Загрузка топа…') : T('🌐 Топы оживут после подключения бэкенда')) + '</div>';
@@ -4884,7 +4908,7 @@ const OnlineBackend = {
     let rows = null;
     try { rows = await this.fetchTop(kind); } catch (e) {}
     if (!el.isConnected) return;
-    if (!rows) { el.textContent = T('Топ временно недоступен'); return; }
+    if (!rows) { el.textContent = T('Топ временно недоступен') + (this.lastError ? (': ' + this.lastError) : ''); return; }
     el.innerHTML = rows.length ? rows.map((r, i) => '<div class="stock-cell"><b>' + (i + 1) + '.</b> 👤 ' + String(r.nick || '?').replace(/[<>&]/g, '')
       + (kind === 'global'
         ? ' — ¢' + r.v + ' · 💎' + (r.gems || 0) + ' · 🏆' + (r.wins || 0) + ' · 💀' + (r.losses || 0)
@@ -4898,7 +4922,7 @@ const OnlineBackend = {
     try {
       const obj = await this.api('/classes/TDRoom', { method: 'POST', body: JSON.stringify({ code, host: nick, players: [nick], state: 'lobby', wave: 0 }) });
       return { id: obj.objectId, code, host: nick, players: [nick], state: 'lobby', started: false };
-    } catch (e) { return null; }
+    } catch (e) { this.lastError = e.message || String(e); return null; }
   },
   async joinRoom(code) {
     if (!this.ready || !code) return null;
@@ -4912,7 +4936,7 @@ const OnlineBackend = {
       if (!players.includes(nick) && players.length < 4) players.push(nick);
       await this.api('/classes/TDRoom/' + room.objectId, { method: 'PUT', body: JSON.stringify({ players }) });
       return { id: room.objectId, code: room.code, host: room.host, players, state: room.state, started: room.state === 'playing' };
-    } catch (e) { return null; }
+    } catch (e) { this.lastError = e.message || String(e); return null; }
   },
   async refreshRoom(room) {
     if (!this.ready || !room || !room.id) return room;
@@ -4926,7 +4950,7 @@ const OnlineBackend = {
     const nick = (this.user && this.user.nick) || 'host';
     if (room.host !== nick) return false;
     try { await this.api('/classes/TDRoom/' + room.id, { method: 'PUT', body: JSON.stringify({ state: 'playing' }) }); return true; }
-    catch (e) { return false; }
+    catch (e) { this.lastError = e.message || String(e); return false; }
   },
   async leaveRoom() {
     const room = (typeof App !== 'undefined') && App.coopRoom;
@@ -5061,7 +5085,25 @@ const App = {
     this.renderAutoSellPanel();
     this.updateRates();
     this.refreshMeta();
-    this.showLobby();
+    if (OnlineBackend.ready && !OnlineBackend.user) this.showAuthGate(); else this.showLobby();
+  },
+  showAuthGate() {
+    UI.showScreen('authGateScreen');
+  },
+  authGateSubmit() {
+    const nick = (document.getElementById('gateNick').value || '').trim();
+    const pass = document.getElementById('gatePass').value || '';
+    const errEl = document.getElementById('gateErr');
+    if (!nick || !pass) { if (errEl) errEl.textContent = T('Введи ник и пароль'); return; }
+    if (errEl) errEl.textContent = '⏳ …';
+    OnlineBackend.login(nick, pass).then(ok => {
+      if (ok) {
+        UI.toast(fill(T('👤 Вошёл как %1'), nick));
+        this.showLobby();
+      } else if (errEl) {
+        errEl.textContent = T('Ошибка') + ': ' + (OnlineBackend.lastError || T('Не удалось войти (проверь бэкенд)'));
+      }
+    });
   },
   showLobby() {
     if (this.game) this.game.stop();
@@ -6042,7 +6084,7 @@ const App = {
     if (!OnlineBackend.ready) { UI.toast(T('Онлайн недоступен: впиши App ID и REST key (Back4app) в начало скрипта')); return; }
     OnlineBackend.createRoom().then(r => {
       if (r) { this.coopRoom = r; this.renderCoop(); this.coopPoll(); }
-      else UI.toast(T('Не удалось создать комнату'));
+      else UI.toast(T('Не удалось создать комнату') + (OnlineBackend.lastError ? (': ' + OnlineBackend.lastError) : ''));
     });
   },
   coopJoin() {
@@ -6051,7 +6093,7 @@ const App = {
     if (!code) { UI.toast(T('Введи код комнаты')); return; }
     OnlineBackend.joinRoom(code).then(r => {
       if (r) { this.coopRoom = r; this.renderCoop(); this.coopPoll(); }
-      else UI.toast(T('Комната не найдена'));
+      else UI.toast(T('Комната не найдена') + (OnlineBackend.lastError ? (': ' + OnlineBackend.lastError) : ''));
     });
   },
   coopPoll() {
@@ -6141,7 +6183,10 @@ const App = {
     const out = document.getElementById('accLogout');
     if (out && !out.dataset.bound) {
       out.dataset.bound = '1';
-      out.addEventListener('click', () => { OnlineBackend.logout(); this.renderTop(); this.renderCoop(); });
+      out.addEventListener('click', () => {
+        OnlineBackend.logout();
+        if (OnlineBackend.ready) { this.showAuthGate(); } else { this.renderTop(); this.renderCoop(); }
+      });
     }
   },
   bindMenu() {
@@ -6174,6 +6219,9 @@ const App = {
     document.getElementById('topBack').addEventListener('click', () => this.showLobby());
     document.getElementById('topTabGlobal').addEventListener('click', () => { this.topTab = 'global'; this.renderTop(); });
     document.getElementById('topTabEndless').addEventListener('click', () => { this.topTab = 'endless'; this.renderTop(); });
+    document.getElementById('gateGo').addEventListener('click', () => this.authGateSubmit());
+    document.getElementById('gateNick').addEventListener('keydown', (e) => { if (e.key === 'Enter') this.authGateSubmit(); });
+    document.getElementById('gatePass').addEventListener('keydown', (e) => { if (e.key === 'Enter') this.authGateSubmit(); });
     document.getElementById('btnEvent').addEventListener('click', () => this.startEventCapital());
     document.getElementById('shopTabCrates').addEventListener('click', () => { this.shopTab = 'crates'; this.renderShop(); });
     document.getElementById('shopTabPotions').addEventListener('click', () => { this.shopTab = 'potions'; this.renderShop(); });
