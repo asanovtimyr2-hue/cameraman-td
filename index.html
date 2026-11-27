@@ -4966,8 +4966,9 @@ const OnlineBackend = {
     try { UI.toast('⚠ ' + T('Не сохранилось на сервере') + ': ' + err); } catch (e) {}
   },
   emptyWarnHtml(kind) {
+    if (!this.user) return '<div class="hint">🔒 ' + T('Войди в аккаунт — в топ попадают только вошедшие игроки') + '</div>';
     const err = kind === 'endless' ? this.endlessError : this.profileError;
-    if (!this.user || !err) return '';
+    if (!err) return '';
     return '<div class="hint">⚠ ' + T('Не сохранилось на сервере') + ': ' + String(err).replace(/[<>&]/g, '') + '</div>';
   },
   async createRoom() {
