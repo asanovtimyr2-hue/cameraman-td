@@ -375,6 +375,8 @@
       <button class="btn gold" id="btnGacha">🎰 ПРИЗЫВ (ГАЧА)</button>
       <button class="btn" id="btnShop">🛒 МАГАЗИН</button>
       <button class="btn" id="btnQuests">📜 КВЕСТЫ</button>
+      <button class="btn" id="btnCoop">👥 ВМЕСТЕ</button>
+      <button class="btn" id="btnTop">🏆 ТОПЫ</button>
       <button class="btn" id="btnEvent">🚼 СПАСИ МЕЛЛСТРОЯ</button>
       <button class="btn" id="btnCollection">🎒 ИНВЕНТАРЬ</button>
       <button class="btn" id="btnSettings">⚙ НАСТРОЙКИ</button>
@@ -543,6 +545,42 @@
 </div>
 
 <!-- НАСТРОЙКИ -->
+<div class="screen" id="coopScreen">
+  <div class="subpanel" style="max-width:560px">
+    <button class="btn small back-btn" id="coopBack">← ЛОББИ</button>
+    <h2 class="panel-title">👥 ИГРА ВМЕСТЕ</h2>
+    <div id="coopAccount"></div>
+    <div class="settings-row"><span>🔗 Код комнаты</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input type="text" class="search-input" id="coopCodeInput" style="min-width:120px;padding:8px 12px" placeholder="КОД">
+        <button class="btn small accent" id="coopJoin">ВОЙТИ</button>
+      </div>
+    </div>
+    <div class="settings-row"><span>➕ Своя комната</span><button class="btn small accent" id="coopCreate">СОЗДАТЬ</button></div>
+    <div id="coopRoomBox" style="display:none">
+      <div class="hint" id="coopRoomInfo"></div>
+      <div id="coopPlayers" style="margin:8px 0;display:flex;flex-wrap:wrap;gap:6px"></div>
+      <button class="btn accent" id="coopStart">▶ СТАРТ (2–4 игрока)</button>
+      <button class="btn small danger" id="coopLeave">ВЫЙТИ ИЗ КОМНАТЫ</button>
+    </div>
+    <div class="hint">Онлайн-комнаты заработают после подключения бэкенда (Back4app: App ID + REST key в начале скрипта). HP врагов: 2 игрока ×2, 3 ×3, 4 ×4.</div>
+  </div>
+</div>
+
+<div class="screen" id="topScreen">
+  <div class="subpanel" style="max-width:560px">
+    <button class="btn small back-btn" id="topBack">← ЛОББИ</button>
+    <h2 class="panel-title">🏆 ТОПЫ</h2>
+    <div id="topAccount"></div>
+    <div style="display:flex;gap:8px;justify-content:center;margin:10px 0 2px">
+      <button class="btn small accent" id="topTabGlobal">🌍 ОБЩИЙ</button>
+      <button class="btn small" id="topTabEndless">♾ БЕСКОНЕЧНЫЙ</button>
+    </div>
+    <div id="topContent" style="margin-top:10px"></div>
+    <div class="hint">Общий топ: монеты, гемы, победы и поражения. Бесконечный: кто больше волн за 3 часа. Приз сезона чередуется: Пал Лаич → Зелень → Пал Лаич…</div>
+  </div>
+</div>
+
 <div class="screen" id="settingsScreen">
   <div class="subpanel" style="max-width:560px">
     <button class="btn small back-btn" id="settingsBack">← ЛОББИ</button>
@@ -1080,7 +1118,7 @@ const I18N_EN = {
   "❤️ ХП +15%": "❤️ HP +15%",
   "👟 СКОРОСТЬ +10%": "👟 SPEED +10%",
   "МАКС": "MAX",
-  "🃏 Пал Лаича": "🃏 Pal Laicha",
+  "🃏 Пал Лаич": "🃏 Pal Laich",
     "💰 Зелень": "💰 Zeleny",
   "💥 ВЗРЫВ!": "💥 BOOM!",
   "🛩️ ШАХЕД ВЫЛЕТЕЛ!": "🛩️ SHAHED LAUNCHED!",
@@ -1090,7 +1128,7 @@ const I18N_EN = {
   "💵 ДАЙ! — враги оглушены на 1.5 сек": "💵 GIVE! — enemies stunned for 1.5s",
   "Командует отрядом: призывает шахедов-камикадзе, вокруг него вращаются души. Бросает душу каждые 6 сек: РЕШИМОСТЬ — взрыв по площади и 5 сек лазеры из глаз; ТЕРПЕНИЕ — замедляет врагов на 40% на 3 сек; ХРАБРОСТЬ — поджигает врагов (урон 4 сек); ЦЕЛЬНОСТЬ — оглушает врагов на 1.5 сек; УПОРСТВО — враги получают +30% урона 5 сек; ДОБРОТА — летит к союзнику, лечит на 35% и снимает стан; СПРАВЕДЛИВОСТЬ — бьёт всех врагов в радиусе. Аура: +20% урона отряду. Цена в «Столице»: 1750🪙.": "Commands the squad: summons kamikaze shaheds and orbits souls. Throws a soul every 9s: DETERMINATION — area blast + 5s of eye lasers; PATIENCE — 40% slow for 3s; BRAVERY — burn (4s); INTEGRITY — 1.5s stun; PERSEVERANCE — enemies take +30% damage for 5s; KINDNESS — flies to an ally, heals them 35% and removes stun; JUSTICE — strikes all enemies in radius. Aura: +20% squad damage. Cost in CAPITOL mode: 1750🪙.",
   "Кидает американский бюджет — взрыв по площади (сплэш, радиус 70). Кричит «ДАЙ!» каждые 6.5 сек — оглушает врагов вокруг на 1.5 сек. Аура: +25% урона всему отряду. Цена в «Столице»: 1750🪙.": "Throws the American budget — splash explosion (radius 70). Shouts \"GIVE!\" every 6.5s — stuns enemies around for 1.5s. Aura: +25% damage to the whole squad. Cost in CAPITOL mode: 1750🪙.",
-  "Мобилизованный 50%, ZOV-спикер 49%, 🃏 Пал Лаича 1%.": "Reward of the \"CAPITOL IN 3 DAYS\" mode. Mobilized 50%, ZOV Speaker 49%, 🃏 Pal Laicha 1%.",
+  "Мобилизованный 50%, ZOV-спикер 49%, 🃏 Пал Лаич 1%.": "Reward of the \"CAPITOL IN 3 DAYS\" mode. Mobilized 50%, ZOV Speaker 49%, 🃏 Pal Laich 1%.",
   "Камера-Шахед 50%, Американская Ферма 49%, 💰 Зелень 1%.": "Reward of the \"GIVE ME MONEY\" mode. Camera-Shahed 50%, American Farm 49%, 💰 Zeleny 1%.",
   "%1 шт": "%1 pcs",
   "🏆 БАЗА ВРАГА ПАЛА!": "🏆 ENEMY BASE HAS FALLEN!",
@@ -1448,7 +1486,7 @@ const UNITS = [
     desc: 'Кричит «Россия, Путин, Победа!» — враги на его полосе замедляются на 15% на 3 сек. Атакует волной с уроном по площади (сплэш, радиус 60): попадание задевает и врагов рядом с целью. Аура: +15% урона всему отряду. Выдаётся из 🏖️ Военного Крейта.',
     stats: { dmg: 80, range: 185, fireRate: 0.75, hp: 480 },
     passive: { dmgBonus: 0.15, moneyBonus: 0 }, ability: 'zovShout', splashRadius: 60 },
-  { id: 'putin', name: '🃏 Пал Лаича', emoji: '🎖️', rarity: 'Special', dropChance: 0.01, frontCost: 1750, rateFloor: 0.85, upCostMul: 1.6,
+  { id: 'putin', name: '🃏 Пал Лаич', emoji: '🎖️', rarity: 'Special', dropChance: 0.01, frontCost: 1750, rateFloor: 0.85, upCostMul: 1.6,
     desc: 'Командует отрядом: призывает шахедов-камикадзе, вокруг него вращаются души. Бросает душу каждые 6 сек: РЕШИМОСТЬ — взрыв по площади и 5 сек лазеры из глаз; ТЕРПЕНИЕ — замедляет врагов на 40% на 3 сек; ХРАБРОСТЬ — поджигает врагов (урон 4 сек); ЦЕЛЬНОСТЬ — оглушает врагов на 1.5 сек; УПОРСТВО — враги получают +30% урона 5 сек; ДОБРОТА — летит к союзнику, лечит на 35% и снимает стан; СПРАВЕДЛИВОСТЬ — бьёт всех врагов в радиусе. Аура: +20% урона отряду. Цена в «Столице»: 1750🪙.',
     stats: { dmg: 140, range: 230, fireRate: 0.85, hp: 1100 },
     passive: { dmgBonus: 0.2, moneyBonus: 0 }, ability: 'putinCommand', aoeRadius: 95, splashRadius: 80 },
@@ -1641,6 +1679,11 @@ function fmt(n) { return Math.max(0, Math.floor(n)); }
 /* ============================================================
    2) СОХРАНЕНИЯ
    ============================================================ */
+/* === СЕЗОНЫ БЕСКОНЕЧНОГО РЕЖИМА (сброс каждые 3 часа) === */
+const SEASON_MS = 3 * 60 * 60 * 1000;
+/* === ОНЛАЙН-БЭКЕНД (Back4app, Parse REST). Впиши три значения — и оживут аккаунты, топы и кооп-комнаты === */
+const BACKEND = { url: '', appId: '', restKey: '' };
+
 const SaveManager = {
   KEY: 'cmtd_save_v7',
   data: null,
@@ -1656,6 +1699,11 @@ const SaveManager = {
       soundOn: true,
       musicOn: true,
       endlessRecord: 0,
+      totalWins: 0,
+      totalLosses: 0,
+      endlessSeasonNum: 1,
+      endlessSeasonBest: 0,
+      endlessSeasonSlot: 0,
       codes: [],
       autoSkip: false,
       gachaBox: 'common',
@@ -1700,10 +1748,36 @@ const SaveManager = {
       if (typeof this.data.melWins !== 'number') this.data.melWins = 0;
       if (typeof this.data.melSkufUnlocked !== 'boolean') this.data.melSkufUnlocked = false;
       if (typeof this.data.melPrimeReady !== 'boolean') this.data.melPrimeReady = false;
+      if (typeof this.data.totalWins !== 'number') this.data.totalWins = 0;
+      if (typeof this.data.totalLosses !== 'number') this.data.totalLosses = 0;
+      if (typeof this.data.endlessSeasonNum !== 'number') this.data.endlessSeasonNum = 1;
+      if (typeof this.data.endlessSeasonBest !== 'number') this.data.endlessSeasonBest = 0;
+      if (typeof this.data.endlessSeasonSlot !== 'number') this.data.endlessSeasonSlot = 0;
+      this.checkSeason();
     } catch (e) { this.data = this.defaults(); }
     this.soundOn = !!this.data.soundOn;
     this.musicOn = this.data.musicOn !== false;
     return this.data;
+  },
+  seasonSlot() { return Math.floor(Date.now() / SEASON_MS); },
+  seasonPrizeId(num) { return (num % 2 === 1) ? 'putin' : 'zelensky'; },
+  checkSeason() {
+    const slot = this.seasonSlot();
+    if (!this.data.endlessSeasonSlot) { this.data.endlessSeasonSlot = slot; return; }
+    if (this.data.endlessSeasonSlot === slot) return;
+    const endedNum = this.data.endlessSeasonNum || 1;
+    const best = this.data.endlessSeasonBest || 0;
+    if (best > 0) {
+      const prizeId = this.seasonPrizeId(endedNum);
+      const unit = UNITS.find(u => u.id === prizeId);
+      if (unit && !this.data.unlockedUnits.includes(prizeId)) this.data.unlockedUnits.push(prizeId);
+      this.data.endlessLastWaves = best;
+      try { UI.toast(fill(T('🏆 Награда сезона: %1 волн — %2!'), best, unit ? unit.name : prizeId)); } catch (e) {}
+    }
+    this.data.endlessSeasonNum = endedNum + 1;
+    this.data.endlessSeasonBest = 0;
+    this.data.endlessSeasonSlot = slot;
+    this.save();
   },
   save() {
     this.data.soundOn = this.soundOn;
@@ -1815,7 +1889,7 @@ const SaveManager = {
 
 const SHOP_CRATES = [
   { id: 'militaryCrate', name: '🎖️ Военный Крейт', emoji: '🎖️', cost: 0, color: '#7fa65c', eventOnly: true,
-    desc: 'Мобилизованный 50%, ZOV-спикер 49%, 🃏 Пал Лаича 1%.',
+    desc: 'Мобилизованный 50%, ZOV-спикер 49%, 🃏 Пал Лаич 1%.',
     units: ['mobilCam', 'zovSpeaker', 'putin'] },
   { id: 'budgetCrate', name: '📦 Малобюджетный Крейт', emoji: '📦', cost: 0, color: '#7ec8a0', eventOnly: true,
     desc: 'Камера-Шахед 50%, Американская Ферма 49%, 💰 Зелень 1%.',
@@ -3626,7 +3700,7 @@ class WaveManager {
   constructor(game) { this.game = game; this.spawnQueue = []; this.spawnTimer = 0; this.waveActive = false; }
   buildQueue(waveNum) {
     const diff = this.game.difficulty;
-    const baseHp = (20 + waveNum * 13 + Math.pow(Math.max(0, waveNum - 10), 1.9) * 2.4) * diff.enemyHpMul;
+    const baseHp = (20 + waveNum * 13 + Math.pow(Math.max(0, waveNum - 10), 1.9) * 2.4) * diff.enemyHpMul * (this.game.coopHpMul || 1);
     const baseSpd = (1.05 + Math.min(waveNum * 0.03, 0.7)) * diff.enemySpeedMul;
     const baseRew = 9 + waveNum * 2;
     const byId = id => ENEMIES.find(e => e.id === id);
@@ -3710,6 +3784,8 @@ class Game {
     this.selectedHero = null;
     this.speedMultiplier = 1;
     this.autoSkip = false;
+    this.coopPlayers = 1;
+    this.coopHpMul = 1;
     this.waveKills = 0;
     this.mouse = { x: -1, y: -1, col: -1, row: -1, onCanvas: false };
     this.hoveredHero = null;
@@ -3777,6 +3853,9 @@ class Game {
     document.getElementById('speedBtn').textContent = T('⏩ ×1');
     document.getElementById('waveTimer').style.display = 'none';
     document.getElementById('resultsOverlay').classList.remove('visible');
+    this.coopPlayers = 1; this.coopHpMul = 1;
+    try { const _room = (typeof App !== 'undefined') && App.coopRoom; if (_room && _room.started && Array.isArray(_room.players)) { this.coopPlayers = Math.max(1, Math.min(4, _room.players.length)); this.coopHpMul = this.coopPlayers; } } catch (e) {}
+    if (this.coopPlayers > 1) this.toast(fill(T('👥 Кооп: игроков %1 — HP врагов ×%2'), this.coopPlayers, this.coopHpMul));
     this.autoSkip = !!SaveManager.data.autoSkip;
     const askBtn = document.getElementById('autoSkipBtn');
     askBtn.textContent = this.autoSkip ? T('🤖 АВТО-СКИП: ВКЛ') : T('🤖 АВТО-СКИП: ВЫКЛ');
@@ -4019,6 +4098,11 @@ class Game {
     if (this.waveTime >= 20) return true;
     return this.waveManager.waveTotal > 0 && this.waveKills >= this.waveManager.waveTotal * 0.75;
   }
+  autoSkipReady() {
+    if (this.waveTime < 20) return false;
+    if (this.waveManager.waveTotal > 0 && this.waveKills >= this.waveManager.waveTotal * 0.75) return false;
+    return true;
+  }
   waveButtonAction() {
     if (this.gameOver || this.victory) return;
     if (this.waveManager.waveActive) {
@@ -4131,6 +4215,7 @@ class Game {
     const dt = rawDt * this.speedMultiplier;
     if (!this.paused && !this.gameOver && !this.victory) {
       this.update(dt);
+      try { if (this.coopPlayers > 1) OnlineBackend.coopTick(this); } catch (e) {}
       this._uiThrottle -= rawDt;
       if (this._uiThrottle <= 0) { this._uiThrottle = 0.4; this.updateUI(); }
     }
@@ -4141,7 +4226,7 @@ class Game {
   update(dt) {
     if (this.autoSkip && !this.paused && !this.gameOver && !this.victory) {
       if (this.waveManager.waveActive) {
-        if (this.waveManager.finishedSpawning && this.skipAvailable()) this.waveButtonAction();
+        if (this.waveManager.finishedSpawning && this.autoSkipReady()) this.waveButtonAction();
       } else if (this.countdownActive) {
         this.skipCountdown();
       }
@@ -4316,6 +4401,10 @@ class Game {
     SaveManager.addCoins(coins);
     if (win) Sound.victory(); else Sound.defeat();
     if (win) { Quests.add('wins', 1); SaveManager.addCrystals(5); }
+    if (win) SaveManager.data.totalWins = (SaveManager.data.totalWins || 0) + 1;
+    else SaveManager.data.totalLosses = (SaveManager.data.totalLosses || 0) + 1;
+    SaveManager.save();
+    try { OnlineBackend.pushProfile(); } catch (e) {}
     if (this.difficulty.endless) {
       const survived = Math.max(0, this.wave - 1);
       if (survived > (SaveManager.data.endlessRecord || 0)) {
@@ -4323,6 +4412,10 @@ class Game {
         SaveManager.addCrystals(Math.max(1, Math.floor(survived / 10)));
         SaveManager.save();
       }
+      SaveManager.data.endlessSeasonBest = Math.max(SaveManager.data.endlessSeasonBest || 0, survived);
+      SaveManager.checkSeason();
+      try { OnlineBackend.submitEndless(survived); } catch (e) {}
+      SaveManager.save();
     }
     setTimeout(() => {
       document.getElementById('resultsTitle').textContent = win ? T('🏆 ПОБЕДА!') : T('💀 ПОРАЖЕНИЕ');
@@ -4720,6 +4813,140 @@ class Lobby {
 /* ============================================================
    11) UI
    ============================================================ */
+/* === ОНЛАЙН-МОДУЛЬ: аккаунты, топы, кооп-комнаты (Back4app = Parse REST) ===
+   Работает только после заполнения BACKEND выше; без него всё оффлайн. */
+const OnlineBackend = {
+  get ready() { return !!(BACKEND.url && BACKEND.appId && BACKEND.restKey); },
+  user: null,
+  headers(extra) {
+    const h = { 'X-Parse-Application-Id': BACKEND.appId, 'X-Parse-REST-API-Key': BACKEND.restKey, 'Content-Type': 'application/json' };
+    if (extra) Object.assign(h, extra);
+    return h;
+  },
+  async api(path, opts) {
+    const res = await fetch(BACKEND.url + path, Object.assign({ headers: this.headers() }, opts || {}));
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  },
+  saveSession() { try { localStorage.setItem('ctd_session', JSON.stringify(this.user)); } catch (e) {} },
+  restoreSession() {
+    try { const s = JSON.parse(localStorage.getItem('ctd_session') || 'null'); if (s && s.token) this.user = s; } catch (e) {}
+  },
+  logout() { this.user = null; try { localStorage.removeItem('ctd_session'); } catch (e) {} },
+  async login(nick, pass) {
+    if (!this.ready || !nick || !pass) return false;
+    try {
+      let u = null;
+      try {
+        u = await this.api('/login', { method: 'POST', body: JSON.stringify({ username: nick, password: pass }) });
+      } catch (e) {
+        u = await this.api('/users', { method: 'POST', headers: this.headers({ 'X-Parse-Revocable-Session': '1' }), body: JSON.stringify({ username: nick, password: pass, nick }) });
+      }
+      this.user = { id: u.objectId, nick: u.nick || nick, token: u.sessionToken };
+      this.saveSession();
+      this.pushProfile();
+      return true;
+    } catch (e) { return false; }
+  },
+  async pushProfile() {
+    if (!this.ready || !this.user) return;
+    const d = SaveManager.data;
+    try {
+      await this.api('/classes/PlayerProfile', { method: 'POST', headers: this.headers({ 'X-Parse-Session-Token': this.user.token }),
+        body: JSON.stringify({ ownerId: this.user.id, nick: this.user.nick, coins: d.coins || 0, gems: d.crystals || 0, wins: d.totalWins || 0, losses: d.totalLosses || 0 }) });
+    } catch (e) {}
+  },
+  async submitEndless(waves) {
+    if (!this.ready || !this.user || !waves) return;
+    try {
+      await this.api('/classes/EndlessScore', { method: 'POST', headers: this.headers({ 'X-Parse-Session-Token': this.user.token }),
+        body: JSON.stringify({ ownerId: this.user.id, nick: this.user.nick, season: SaveManager.seasonSlot(), waves }) });
+    } catch (e) {}
+  },
+  async fetchTop(kind) {
+    if (!this.ready) return null;
+    try {
+      if (kind === 'endless') {
+        const where = encodeURIComponent(JSON.stringify({ season: SaveManager.seasonSlot() }));
+        const r = await this.api('/classes/EndlessScore?where=' + where + '&order=-waves&limit=20', {});
+        return (r.results || []).map(x => ({ nick: x.nick, v: x.waves }));
+      }
+      const r = await this.api('/classes/PlayerProfile?order=-coins&limit=20', {});
+      return (r.results || []).map(x => ({ nick: x.nick, v: x.coins, gems: x.gems, wins: x.wins, losses: x.losses }));
+    } catch (e) { return null; }
+  },
+  topHtml() {
+    return '<div id="topRemote" style="margin-top:8px;color:#9fb4d8;font-size:.8rem">' + (this.ready ? T('Загрузка топа…') : T('🌐 Топы оживут после подключения бэкенда')) + '</div>';
+  },
+  async renderRemote(kind) {
+    const el = document.getElementById('topRemote');
+    if (!el || !this.ready) return;
+    let rows = null;
+    try { rows = await this.fetchTop(kind); } catch (e) {}
+    if (!el.isConnected) return;
+    if (!rows) { el.textContent = T('Топ временно недоступен'); return; }
+    el.innerHTML = rows.length ? rows.map((r, i) => '<div class="stock-cell"><b>' + (i + 1) + '.</b> 👤 ' + String(r.nick || '?').replace(/[<>&]/g, '')
+      + (kind === 'global'
+        ? ' — ¢' + r.v + ' · 💎' + (r.gems || 0) + ' · 🏆' + (r.wins || 0) + ' · 💀' + (r.losses || 0)
+        : ' — ⚡' + r.v + ' ' + T('волн'))
+      + '</div>').join('') : T('Пока пусто — стань первым!');
+  },
+  async createRoom() {
+    if (!this.ready) return null;
+    const code = Math.random().toString(36).slice(2, 6).toUpperCase();
+    const nick = (this.user && this.user.nick) || 'host';
+    try {
+      const obj = await this.api('/classes/TDRoom', { method: 'POST', body: JSON.stringify({ code, host: nick, players: [nick], state: 'lobby', wave: 0 }) });
+      return { id: obj.objectId, code, host: nick, players: [nick], state: 'lobby', started: false };
+    } catch (e) { return null; }
+  },
+  async joinRoom(code) {
+    if (!this.ready || !code) return null;
+    try {
+      const where = encodeURIComponent(JSON.stringify({ code }));
+      const r = await this.api('/classes/TDRoom?where=' + where, {});
+      const room = (r.results || [])[0];
+      if (!room) return null;
+      const nick = (this.user && this.user.nick) || ('guest' + Math.floor(Math.random() * 90 + 10));
+      const players = (room.players || []).slice();
+      if (!players.includes(nick) && players.length < 4) players.push(nick);
+      await this.api('/classes/TDRoom/' + room.objectId, { method: 'PUT', body: JSON.stringify({ players }) });
+      return { id: room.objectId, code: room.code, host: room.host, players, state: room.state, started: room.state === 'playing' };
+    } catch (e) { return null; }
+  },
+  async refreshRoom(room) {
+    if (!this.ready || !room || !room.id) return room;
+    try {
+      const r = await this.api('/classes/TDRoom/' + room.id, {});
+      return { id: r.objectId, code: r.code, host: r.host, players: r.players || [], state: r.state || 'lobby', wave: r.wave || 0, started: (r.state === 'playing') };
+    } catch (e) { return room; }
+  },
+  async startRoom(room) {
+    if (!this.ready || !room || !room.id) return false;
+    const nick = (this.user && this.user.nick) || 'host';
+    if (room.host !== nick) return false;
+    try { await this.api('/classes/TDRoom/' + room.id, { method: 'PUT', body: JSON.stringify({ state: 'playing' }) }); return true; }
+    catch (e) { return false; }
+  },
+  async leaveRoom() {
+    const room = (typeof App !== 'undefined') && App.coopRoom;
+    if (!this.ready || !room || !room.id) return;
+    const nick = (this.user && this.user.nick) || 'guest';
+    try {
+      const players = (room.players || []).filter(p => p !== nick);
+      await this.api('/classes/TDRoom/' + room.id, { method: 'PUT', body: JSON.stringify({ players }) });
+    } catch (e) {}
+  },
+  async coopTick(game) {
+    const room = (typeof App !== 'undefined') && App.coopRoom;
+    if (!this.ready || !room || !room.id) return;
+    const now = Date.now();
+    if (this._lastTick && now - this._lastTick < 3000) return;
+    this._lastTick = now;
+    try { await this.api('/classes/TDRoom/' + room.id, { method: 'PUT', body: JSON.stringify({ wave: game.wave || 0 }) }); } catch (e) {}
+  }
+};
+
 const UI = {
   spinning: false,
   toastTimer: null,
@@ -4825,6 +5052,7 @@ const App = {
     installLangObserver();
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => applyStaticLang());
     else applyStaticLang();
+    OnlineBackend.restoreSession();
     this.lobby = new Lobby();
     this.game = new Game();
     this.frontGame = new FrontGame();
@@ -5790,6 +6018,132 @@ const App = {
     if (newCount > 0 || results.some(u => this.highRarity(u))) { this.confetti(); }
     this.refreshMeta();
   },
+  showCoop() {
+    this.lobby.stop();
+    this.renderCoop();
+    UI.showScreen('coopScreen');
+  },
+  renderCoop() {
+    const acc = document.getElementById('coopAccount');
+    if (acc) acc.innerHTML = this.accountHtml();
+    this.bindAccount();
+    const box = document.getElementById('coopRoomBox');
+    if (!box) return;
+    const room = this.coopRoom;
+    box.style.display = room ? 'block' : 'none';
+    if (room) {
+      const info = document.getElementById('coopRoomInfo');
+      if (info) info.textContent = fill(T('Комната: %1 · игроков: %2/4'), room.code, (room.players || []).length);
+      const pl = document.getElementById('coopPlayers');
+      if (pl) pl.innerHTML = (room.players || []).map(n => '<div class="stock-cell">👤 ' + String(n).replace(/[<>&]/g, '') + '</div>').join('');
+    }
+  },
+  coopCreate() {
+    if (!OnlineBackend.ready) { UI.toast(T('Онлайн недоступен: впиши App ID и REST key (Back4app) в начало скрипта')); return; }
+    OnlineBackend.createRoom().then(r => {
+      if (r) { this.coopRoom = r; this.renderCoop(); this.coopPoll(); }
+      else UI.toast(T('Не удалось создать комнату'));
+    });
+  },
+  coopJoin() {
+    if (!OnlineBackend.ready) { UI.toast(T('Онлайн недоступен: впиши App ID и REST key (Back4app) в начало скрипта')); return; }
+    const code = (document.getElementById('coopCodeInput').value || '').trim().toUpperCase();
+    if (!code) { UI.toast(T('Введи код комнаты')); return; }
+    OnlineBackend.joinRoom(code).then(r => {
+      if (r) { this.coopRoom = r; this.renderCoop(); this.coopPoll(); }
+      else UI.toast(T('Комната не найдена'));
+    });
+  },
+  coopPoll() {
+    if (this.coopTimer) clearInterval(this.coopTimer);
+    this.coopTimer = setInterval(() => {
+      if (!this.coopRoom) { clearInterval(this.coopTimer); this.coopTimer = null; return; }
+      OnlineBackend.refreshRoom(this.coopRoom).then(room => {
+        if (room && this.coopRoom) {
+          this.coopRoom = room;
+          const cs = document.getElementById('coopScreen');
+          if (cs && cs.classList.contains('active')) this.renderCoop();
+        }
+      });
+    }, 2500);
+  },
+  coopStart() {
+    const room = this.coopRoom;
+    if (!room || !(room.players || []).length || room.players.length < 2) { UI.toast(T('Нужно минимум 2 игрока в комнате')); return; }
+    if (!OnlineBackend.ready) { UI.toast(T('Онлайн недоступен: впиши App ID и REST key (Back4app) в начало скрипта')); return; }
+    OnlineBackend.startRoom(room).then(ok => {
+      if (!ok) { UI.toast(T('Только создатель комнаты может стартовать')); return; }
+      room.started = true;
+      UI.toast(fill(T('👥 Кооп: игроков %1 — HP врагов ×%2'), room.players.length, room.players.length));
+      this.showUnitSelect();
+    });
+  },
+  showTop() {
+    this.lobby.stop();
+    this.renderTop();
+    UI.showScreen('topScreen');
+  },
+  renderTop() {
+    const acc = document.getElementById('topAccount');
+    if (acc) acc.innerHTML = this.accountHtml();
+    this.bindAccount();
+    document.getElementById('topTabGlobal').classList.toggle('accent', this.topTab === 'global');
+    document.getElementById('topTabEndless').classList.toggle('accent', this.topTab === 'endless');
+    const box = document.getElementById('topContent');
+    const d = SaveManager.data;
+    if (this.topTab === 'global') {
+      box.innerHTML = '<div class="stock-cell" style="justify-content:center">¢ ' + (d.coins || 0) + ' · 💎 ' + (d.crystals || 0)
+        + ' · 🏆 ' + (d.totalWins || 0) + ' · 💀 ' + (d.totalLosses || 0) + '</div>' + OnlineBackend.topHtml();
+      OnlineBackend.renderRemote('global');
+    } else {
+      const prize = UNITS.find(u => u.id === SaveManager.seasonPrizeId(d.endlessSeasonNum || 1));
+      box.innerHTML = '<div class="stock-cell" style="justify-content:center">⚡ ' + T('Рекорд') + ': ' + (d.endlessRecord || 0)
+        + ' · ' + T('Сезон') + ' #' + (d.endlessSeasonNum || 1) + ': ' + (d.endlessSeasonBest || 0) + ' ' + T('волн') + '</div>'
+        + '<div class="hint" id="topSeasonHint">🎁 ' + fill(T('Приз сезона: %1 · сброс через %2'), prize ? prize.name : '—', this.seasonCountdown()) + '</div>'
+        + OnlineBackend.topHtml();
+      OnlineBackend.renderRemote('endless');
+    }
+  },
+  seasonCountdown() {
+    const left = Math.max(0, SEASON_MS - (Date.now() % SEASON_MS));
+    const h = Math.floor(left / 3600000), m = Math.floor((left % 3600000) / 60000), s = Math.floor((left % 60000) / 1000);
+    return (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  },
+  accountHtml() {
+    if (!OnlineBackend.ready) {
+      return '<div class="hint">🔌 ' + T('Бэкенд не подключён: впиши App ID и REST key (Back4app) в начало скрипта — и аккаунты с топами оживут') + '</div>';
+    }
+    const u = OnlineBackend.user;
+    if (!u) {
+      return '<div class="settings-row"><span>👤 ' + T('Аккаунт') + '</span><div style="display:flex;gap:6px;flex-wrap:wrap">'
+        + '<input type="text" class="search-input" id="accNick" style="min-width:100px;padding:6px 10px" placeholder="' + T('Ник') + '">'
+        + '<input type="password" class="search-input" id="accPass" style="min-width:100px;padding:6px 10px" placeholder="' + T('Пароль') + '">'
+        + '<button class="btn small accent" id="accLogin">' + T('ВОЙТИ/РЕГ') + '</button></div></div>';
+    }
+    return '<div class="stock-cell" style="justify-content:center">👤 ' + (u.nick || 'player') + ' · ' + T('в сети')
+      + ' <button class="btn small" id="accLogout" style="margin-left:8px">' + T('ВЫЙТИ') + '</button></div>';
+  },
+  bindAccount() {
+    const btn = document.getElementById('accLogin');
+    if (btn && !btn.dataset.bound) {
+      btn.dataset.bound = '1';
+      btn.addEventListener('click', () => {
+        const nick = (document.getElementById('accNick').value || '').trim();
+        const pass = document.getElementById('accPass').value || '';
+        if (!nick || !pass) { UI.toast(T('Введи ник и пароль')); return; }
+        OnlineBackend.login(nick, pass).then(ok => {
+          UI.toast(ok ? fill(T('👤 Вошёл как %1'), nick) : T('Не удалось войти (проверь бэкенд)'));
+          this.renderTop();
+          this.renderCoop();
+        });
+      });
+    }
+    const out = document.getElementById('accLogout');
+    if (out && !out.dataset.bound) {
+      out.dataset.bound = '1';
+      out.addEventListener('click', () => { OnlineBackend.logout(); this.renderTop(); this.renderCoop(); });
+    }
+  },
   bindMenu() {
     document.getElementById('btnPlay').addEventListener('click', () => this.showUnitSelect());
     document.getElementById('btnGacha').addEventListener('click', () => this.showGacha());
@@ -5797,9 +6151,29 @@ const App = {
       const g = document.getElementById('gachaScreen');
       if (g && g.classList.contains('active')) this.renderGachaStock();
       this.refreshPotionTimers();
+      try { SaveManager.checkSeason(); } catch (e) {}
+      const ts = document.getElementById('topScreen');
+      if (ts && ts.classList.contains('active') && this.topTab === 'endless') {
+        const el = document.getElementById('topSeasonHint');
+        if (el) {
+          const prize = UNITS.find(u => u.id === SaveManager.seasonPrizeId(SaveManager.data.endlessSeasonNum || 1));
+          el.textContent = '🎁 ' + fill(T('Приз сезона: %1 · сброс через %2'), prize ? prize.name : '—', this.seasonCountdown());
+        }
+      }
     }, 1000);
     document.getElementById('btnShop').addEventListener('click', () => this.showShop());
     document.getElementById('btnQuests').addEventListener('click', () => this.showQuests());
+    document.getElementById('btnCoop').addEventListener('click', () => this.showCoop());
+    document.getElementById('btnTop').addEventListener('click', () => this.showTop());
+    document.getElementById('coopBack').addEventListener('click', () => this.showLobby());
+    document.getElementById('coopCreate').addEventListener('click', () => this.coopCreate());
+    document.getElementById('coopJoin').addEventListener('click', () => this.coopJoin());
+    document.getElementById('coopStart').addEventListener('click', () => this.coopStart());
+    document.getElementById('coopLeave').addEventListener('click', () => { OnlineBackend.leaveRoom(); this.coopRoom = null; this.renderCoop(); });
+    document.getElementById('coopCodeInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') this.coopJoin(); });
+    document.getElementById('topBack').addEventListener('click', () => this.showLobby());
+    document.getElementById('topTabGlobal').addEventListener('click', () => { this.topTab = 'global'; this.renderTop(); });
+    document.getElementById('topTabEndless').addEventListener('click', () => { this.topTab = 'endless'; this.renderTop(); });
     document.getElementById('btnEvent').addEventListener('click', () => this.startEventCapital());
     document.getElementById('shopTabCrates').addEventListener('click', () => { this.shopTab = 'crates'; this.renderShop(); });
     document.getElementById('shopTabPotions').addEventListener('click', () => { this.shopTab = 'potions'; this.renderShop(); });
