@@ -4861,7 +4861,7 @@ const OnlineBackend = {
     if (!this.ready || !nick || !pass) { this.lastError = T('Введи ник и пароль'); return false; }
     try {
       const u = await this.api('/login', { method: 'POST', body: JSON.stringify({ username: nick, password: pass }) });
-      this.user = { id: u.objectId, nick: u.nick || nick, token: u.sessionToken };
+      this.user = { id: u.objectId, nick: u.username || u.nick || nick, token: u.sessionToken };
       this.lastError = null;
       this.saveSession();
       this.pushProfile();
@@ -4871,8 +4871,8 @@ const OnlineBackend = {
   async signUp(nick, pass) {
     if (!this.ready || !nick || !pass) { this.lastError = T('Введи ник и пароль'); return false; }
     try {
-      const u = await this.api('/users', { method: 'POST', headers: this.headers({ 'X-Parse-Revocable-Session': '1' }), body: JSON.stringify({ username: nick, password: pass, nick }) });
-      this.user = { id: u.objectId, nick: u.nick || nick, token: u.sessionToken };
+      const u = await this.api('/users', { method: 'POST', headers: this.headers({ 'X-Parse-Revocable-Session': '1' }), body: JSON.stringify({ username: nick, password: pass }) });
+      this.user = { id: u.objectId, nick: u.username || u.nick || nick, token: u.sessionToken };
       this.lastError = null;
       this.saveSession();
       this.pushProfile();
