@@ -3902,7 +3902,7 @@ class Game {
     this.waveBanner = null;
     if (this._raf) { cancelAnimationFrame(this._raf); this._raf = null; }
     UI.hideTooltip();
-    try { const _r = (typeof App !== 'undefined') && App.coopRoom; if (_r && _r.id && _r.started) { App._coopLaunched = false; OnlineBackend.setRoomState(_r.id, 'lobby'); } } catch (e) {}
+    try { const _r = (typeof App !== 'undefined') && App.coopRoom; if (_r && _r.id && _r.started) { App._coopLaunched = false; OnlineBackend.quitRoom(_r); } } catch (e) {}
   }
   heroesOfUnit(id) {
     return this.heroes.filter(h => h.unit.id === id && !h.coopOwner).length;
@@ -3947,6 +3947,26 @@ class Game {
         added++;
       }
       if (added) { this.toast(T('👥 Союзник выставил юнитов: +' + added)); this.updateUI(); this.render(); }
+    } catch (e) {}
+  }
+  coopIsHost() {
+    try { const r = (typeof App !== 'undefined') && App.coopRoom; return !!(r && r.host === this.coopMyNick()); } catch (e) { return false; }
+  }
+  coopReportWave(n) {
+    try {
+      const room = (typeof App !== 'undefined') && App.coopRoom;
+      if (!room || !room.id || !room.started || !this.coopIsHost()) return;
+      OnlineBackend.setRoomFields(room.id, { wave: n });
+    } catch (e) {}
+  }
+  coopSyncWave(n) {
+    try {
+      const room = (typeof App !== 'undefined') && App.coopRoom;
+      if (!room || !room.started || this.coopIsHost()) return;
+      if (n > this.wave && !this.waveManager.waveActive && !this.countdownActive && !this.gameOver && !this.victory) {
+        this._coopWaveWait = false;
+        this.startWave(true);
+      }
     } catch (e) {}
   }
   moneyBonusSum() {
@@ -4203,8 +4223,18 @@ class Game {
     if (!this.running || this.gameOver || this.victory) return;
     if (!force && this.countdownActive) return;
     if (!this.difficulty.endless && this.wave >= this.maxWaves) return;
+    try {
+      const _room = (typeof App !== 'undefined') && App.coopRoom;
+      if (_room && _room.started && !this.coopIsHost() && (this.wave + 1) > (_room.wave || 0)) {
+        this.countdownActive = false; this.nextWaveTimer = 0;
+        if (!this._coopWaveWait) { this._coopWaveWait = true; this.toast(T('👥 Волны синхронные — следующую запускает создатель комнаты, немного подожди')); }
+        return;
+      }
+    } catch (e) {}
     Sound.init();
+    this._coopWaveWait = false;
     this.wave++;
+    this.coopReportWave(this.wave);
     this.waveTime = 0;
     this.waveKills = 0;
     this.waveManager.startWave(this.wave);
@@ -5053,6 +5083,8 @@ const OnlineBackend = {
       const room = (r.results || [])[0];
       if (!room) return null;
       const nick = (this.user && this.user.nick) || ('guest' + Math.floor(Math.random() * 90 + 10));
+      if ((room.left || []).includes(nick)) { this.lastError = T('Ты уже вышел из этой катки — зайти назад нельзя'); return null; }
+      if (room.state === 'playing') { this.lastError = T('Катка уже началась — попроси создать новую комнату'); return null; }
       const players = (room.players || []).slice();
       if (!players.includes(nick) && players.length < 4) players.push(nick);
       await this.api('/classes/TDRoom/' + room.objectId, { method: 'PUT', body: JSON.stringify({ players }) });
@@ -5063,7 +5095,7 @@ const OnlineBackend = {
     if (!this.ready || !room || !room.id) return room;
     try {
       const r = await this.api('/classes/TDRoom/' + room.id, {});
-      return { id: r.objectId, code: r.code, host: r.host, players: r.players || [], state: r.state || 'lobby', wave: r.wave || 0, map: r.map || null, diff: r.diff || 'normal', placements: r.placements || [], started: (r.state === 'playing') };
+      return { id: r.objectId, code: r.code, host: r.host, players: r.players || [], state: r.state || 'lobby', wave: r.wave || 0, map: r.map || null, diff: r.diff || 'normal', placements: r.placements || [], left: r.left || [], started: (r.state === 'playing') };
     } catch (e) { return room; }
   },
   async startRoom(room) {
@@ -5094,13 +5126,21 @@ const OnlineBackend = {
       await this.api('/classes/TDRoom/' + room.id, { method: 'PUT', body: JSON.stringify({ players }) });
     } catch (e) {}
   },
+  async quitRoom(room) {
+    if (!this.ready || !room || !room.id) return;
+    const nick = (this.user && this.user.nick) || 'guest';
+    const players = (room.players || []).filter(p => p !== nick);
+    const left = (room.left || []).slice();
+    if (!left.includes(nick)) left.push(nick);
+    try { await this.api('/classes/TDRoom/' + room.id, { method: 'PUT', body: JSON.stringify({ players, left, state: 'lobby', placements: [] }) }); } catch (e) {}
+  },
   async coopTick(game) {
     const room = (typeof App !== 'undefined') && App.coopRoom;
     if (!this.ready || !room || !room.id) return;
     const now = Date.now();
     if (this._lastTick && now - this._lastTick < 3000) return;
     this._lastTick = now;
-    try { await this.api('/classes/TDRoom/' + room.id, { method: 'PUT', body: JSON.stringify({ wave: game.wave || 0 }) }); } catch (e) {}
+    try { if (game.coopIsHost()) await this.api('/classes/TDRoom/' + room.id, { method: 'PUT', body: JSON.stringify({ wave: game.wave || 0 }) }); } catch (e) {}
   }
 };
 
@@ -6260,7 +6300,7 @@ const App = {
             UI.toast(fill(T('👥 Кооп: игроков %1 — HP врагов ×%2'), (room.players || []).length, Math.max(1, Math.min(4, (room.players || []).length))));
             this.showUnitSelect();
           }
-          try { if (room.started && this.game && this.game.running) this.game.coopApplyPlacements(room.placements || []); } catch (e) {}
+          try { if (room.started && this.game && this.game.running) { this.game.coopApplyPlacements(room.placements || []); this.game.coopSyncWave(room.wave || 0); } } catch (e) {}
         }
       });
     }, 2500);
