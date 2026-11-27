@@ -551,7 +551,8 @@
     <div class="hint" style="margin-bottom:8px">Чтобы играть, создай аккаунт: ник и пароль. Он же нужен для топов и игры вместе с друзьями.</div>
     <div class="settings-row"><span>Ник</span><input type="text" class="search-input" id="gateNick" style="min-width:150px;padding:8px 12px" placeholder="Ник"></div>
     <div class="settings-row"><span>Пароль</span><input type="password" class="search-input" id="gatePass" style="min-width:150px;padding:8px 12px" placeholder="Пароль"></div>
-    <button class="btn accent" id="gateGo" style="width:100%">🚀 ВОЙТИ / СОЗДАТЬ АККАУНТ</button>
+    <button class="btn accent" id="gateLogin" style="width:100%">🔑 ВОЙТИ</button>
+    <button class="btn" id="gateSignup" style="width:100%;margin-top:8px">📝 РЕГИСТРАЦИЯ</button>
     <div class="hint" id="gateErr" style="color:#ff8888;margin-top:8px"></div>
     <div class="hint">Пароль хранится на игровом сервере. Забыл пароль — сделай новый ник.</div>
   </div>
@@ -4856,21 +4857,30 @@ const OnlineBackend = {
     try { const s = JSON.parse(localStorage.getItem('ctd_session') || 'null'); if (s && s.token) this.user = s; } catch (e) {}
   },
   logout() { this.user = null; try { localStorage.removeItem('ctd_session'); } catch (e) {} },
-  async login(nick, pass) {
-    if (!this.ready || !nick || !pass) return false;
+  async signIn(nick, pass) {
+    if (!this.ready || !nick || !pass) { this.lastError = T('Введи ник и пароль'); return false; }
     try {
-      let u = null;
-      try {
-        u = await this.api('/login', { method: 'POST', body: JSON.stringify({ username: nick, password: pass }) });
-      } catch (e) {
-        u = await this.api('/users', { method: 'POST', headers: this.headers({ 'X-Parse-Revocable-Session': '1' }), body: JSON.stringify({ username: nick, password: pass, nick }) });
-      }
+      const u = await this.api('/login', { method: 'POST', body: JSON.stringify({ username: nick, password: pass }) });
       this.user = { id: u.objectId, nick: u.nick || nick, token: u.sessionToken };
       this.lastError = null;
       this.saveSession();
       this.pushProfile();
       return true;
     } catch (e) { this.lastError = e.message || String(e); return false; }
+  },
+  async signUp(nick, pass) {
+    if (!this.ready || !nick || !pass) { this.lastError = T('Введи ник и пароль'); return false; }
+    try {
+      const u = await this.api('/users', { method: 'POST', headers: this.headers({ 'X-Parse-Revocable-Session': '1' }), body: JSON.stringify({ username: nick, password: pass, nick }) });
+      this.user = { id: u.objectId, nick: u.nick || nick, token: u.sessionToken };
+      this.lastError = null;
+      this.saveSession();
+      this.pushProfile();
+      return true;
+    } catch (e) { this.lastError = e.message || String(e); return false; }
+  },
+  async login(nick, pass) {
+    return (await this.signIn(nick, pass)) || (await this.signUp(nick, pass));
   },
   async pushProfile() {
     if (!this.ready || !this.user) return;
@@ -5090,18 +5100,20 @@ const App = {
   showAuthGate() {
     UI.showScreen('authGateScreen');
   },
-  authGateSubmit() {
+  authGateSubmit(mode) {
     const nick = (document.getElementById('gateNick').value || '').trim();
     const pass = document.getElementById('gatePass').value || '';
     const errEl = document.getElementById('gateErr');
     if (!nick || !pass) { if (errEl) errEl.textContent = T('Введи ник и пароль'); return; }
     if (errEl) errEl.textContent = '⏳ …';
-    OnlineBackend.login(nick, pass).then(ok => {
+    const p = (mode === 'reg') ? OnlineBackend.signUp(nick, pass) : OnlineBackend.signIn(nick, pass);
+    p.then(ok => {
       if (ok) {
         UI.toast(fill(T('👤 Вошёл как %1'), nick));
         this.showLobby();
       } else if (errEl) {
-        errEl.textContent = T('Ошибка') + ': ' + (OnlineBackend.lastError || T('Не удалось войти (проверь бэкенд)'));
+        const err = OnlineBackend.lastError || T('Не удалось войти (проверь бэкенд)');
+        errEl.textContent = T('Ошибка') + ': ' + err + (/unauthorized/i.test(err) ? (' — ' + T('похоже, неверные ключи бэкенда (App ID / REST key)')) : '');
       }
     });
   },
@@ -6219,7 +6231,8 @@ const App = {
     document.getElementById('topBack').addEventListener('click', () => this.showLobby());
     document.getElementById('topTabGlobal').addEventListener('click', () => { this.topTab = 'global'; this.renderTop(); });
     document.getElementById('topTabEndless').addEventListener('click', () => { this.topTab = 'endless'; this.renderTop(); });
-    document.getElementById('gateGo').addEventListener('click', () => this.authGateSubmit());
+    document.getElementById('gateLogin').addEventListener('click', () => this.authGateSubmit('login'));
+    document.getElementById('gateSignup').addEventListener('click', () => this.authGateSubmit('reg'));
     document.getElementById('gateNick').addEventListener('keydown', (e) => { if (e.key === 'Enter') this.authGateSubmit(); });
     document.getElementById('gatePass').addEventListener('keydown', (e) => { if (e.key === 'Enter') this.authGateSubmit(); });
     document.getElementById('btnEvent').addEventListener('click', () => this.startEventCapital());
