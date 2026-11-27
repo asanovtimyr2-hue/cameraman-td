@@ -4891,26 +4891,47 @@ const OnlineBackend = {
     if (!this.ready || !this.user) return;
     const d = SaveManager.data;
     const data = { ownerId: this.user.id, nick: this.user.nick, coins: d.coins || 0, gems: d.crystals || 0, wins: d.totalWins || 0, losses: d.totalLosses || 0 };
+    const send = async (method, path, noSession) => {
+      const opts = { method, body: JSON.stringify(data) };
+      if (!noSession) opts.headers = this.headers({ 'X-Parse-Session-Token': this.user.token });
+      return await this.api(path, opts);
+    };
     try {
       const where = encodeURIComponent(JSON.stringify({ ownerId: this.user.id }));
-      const q = await this.api('/classes/PlayerProfile?where=' + where, { noSession: true });
-      const rows = q.results || [];
+      let rows = [];
+      try { const q = await this.api('/classes/PlayerProfile?where=' + where, { noSession: true }); rows = q.results || []; } catch (e0) {}
       if (rows.length) {
-        await this.api('/classes/PlayerProfile/' + rows[0].objectId, { method: 'PUT', headers: this.headers({ 'X-Parse-Session-Token': this.user.token }), body: JSON.stringify(data) });
+        try { await send('PUT', '/classes/PlayerProfile/' + rows[0].objectId); this.profileError = null; }
+        catch (e1) {
+          try { await send('PUT', '/classes/PlayerProfile/' + rows[0].objectId, true); this.profileError = null; }
+          catch (e2) { this.reportSave('profile', e2.message || String(e2)); }
+        }
         for (let i = 1; i < rows.length; i++) {
-          try { await this.api('/classes/PlayerProfile/' + rows[i].objectId, { method: 'DELETE', noSession: true }); } catch (e2) {}
+          try { await this.api('/classes/PlayerProfile/' + rows[i].objectId, { method: 'DELETE', noSession: true }); } catch (e3) {}
         }
       } else {
-        await this.api('/classes/PlayerProfile', { method: 'POST', headers: this.headers({ 'X-Parse-Session-Token': this.user.token }), body: JSON.stringify(data) });
+        try { await send('POST', '/classes/PlayerProfile'); this.profileError = null; }
+        catch (e1) {
+          try { await send('POST', '/classes/PlayerProfile', true); this.profileError = null; }
+          catch (e2) { this.reportSave('profile', e2.message || String(e2)); }
+        }
       }
-    } catch (e) {}
+    } catch (e) { this.reportSave('profile', e.message || String(e)); }
   },
   async submitEndless(waves) {
     if (!this.ready || !this.user || !waves) return;
+    const data = { ownerId: this.user.id, nick: this.user.nick, season: SaveManager.seasonSlot(), waves };
+    const send = async (noSession) => {
+      const opts = { method: 'POST', body: JSON.stringify(data) };
+      if (!noSession) opts.headers = this.headers({ 'X-Parse-Session-Token': this.user.token });
+      return await this.api('/classes/EndlessScore', opts);
+    };
     try {
-      await this.api('/classes/EndlessScore', { method: 'POST', headers: this.headers({ 'X-Parse-Session-Token': this.user.token }),
-        body: JSON.stringify({ ownerId: this.user.id, nick: this.user.nick, season: SaveManager.seasonSlot(), waves }) });
-    } catch (e) {}
+      await send(false); this.endlessError = null;
+    } catch (e1) {
+      try { await send(true); this.endlessError = null; }
+      catch (e2) { this.reportSave('endless', e2.message || String(e2)); }
+    }
   },
   async fetchTop(kind) {
     if (!this.ready) return null;
@@ -4937,7 +4958,17 @@ const OnlineBackend = {
     if (!rows) { el.textContent = T('Топ временно недоступен') + (this.lastError ? (': ' + this.lastError) : ''); return; }
     el.innerHTML = rows.length ? rows.map((r, i) => '<div class="stock-cell"><b>' + (i + 1) + '.</b> 👤 ' + String(r.nick || '?').replace(/[<>&]/g, '')
       + ' — ' + ({ coins: '¢', gems: '💎', wins: '🏆', losses: '💀', endless: '⚡' }[kind] || '¢') + r.v + (kind === 'endless' ? ' ' + T('волн') : '')
-      + '</div>').join('') : T('Пока пусто — стань первым!');
+      + '</div>').join('') : T('Пока пусто — стань первым!') + this.emptyWarnHtml(kind);
+  },
+  reportSave(kind, err) {
+    if (kind === 'endless') { if (err === this.endlessError) return; this.endlessError = err; }
+    else { if (err === this.profileError) return; this.profileError = err; }
+    try { UI.toast('⚠ ' + T('Не сохранилось на сервере') + ': ' + err); } catch (e) {}
+  },
+  emptyWarnHtml(kind) {
+    const err = kind === 'endless' ? this.endlessError : this.profileError;
+    if (!this.user || !err) return '';
+    return '<div class="hint">⚠ ' + T('Не сохранилось на сервере') + ': ' + String(err).replace(/[<>&]/g, '') + '</div>';
   },
   async createRoom() {
     if (!this.ready) return null;
@@ -6173,6 +6204,7 @@ const App = {
     } else {
       const cfg = { coins: ['¢', d.coins || 0], gems: ['💎', d.crystals || 0], wins: ['🏆', d.totalWins || 0], losses: ['💀', d.totalLosses || 0] }[this.topTab] || ['¢', d.coins || 0];
       box.innerHTML = '<div class="stock-cell" style="justify-content:center">' + cfg[0] + ' ' + cfg[1] + '</div>' + OnlineBackend.topHtml();
+      if (OnlineBackend.user && OnlineBackend.profileError) OnlineBackend.pushProfile();
       OnlineBackend.renderRemote(this.topTab);
     }
   },
@@ -6193,7 +6225,10 @@ const App = {
         + '<button class="btn small accent" id="accLogin">' + T('ВОЙТИ/РЕГ') + '</button></div></div>';
     }
     return '<div class="stock-cell" style="justify-content:center">👤 ' + (u.nick || 'player') + ' · ' + T('в сети')
-      + ' <button class="btn small" id="accLogout" style="margin-left:8px">' + T('ВЫЙТИ') + '</button></div>';
+      + ' <button class="btn small" id="accLogout" style="margin-left:8px">' + T('ВЫЙТИ') + '</button></div>'
+      + (OnlineBackend.profileError || OnlineBackend.endlessError
+        ? '<div class="hint">⚠ ' + T('Не сохранилось на сервере') + ': ' + String(OnlineBackend.profileError || OnlineBackend.endlessError).replace(/[<>&]/g, '') + '</div>'
+        : '');
   },
   bindAccount() {
     const btn = document.getElementById('accLogin');
