@@ -3894,6 +3894,19 @@ class Game {
       this._raf = (t) => this.gameLoop(t);
       requestAnimationFrame(this._raf);
     }
+    if (!this._bgTimer) {
+      this._bgTimer = setInterval(() => {
+        try {
+          if (!this.running || !document.hidden || this.paused || this.gameOver || this.victory) return;
+          const now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+          if (!this.lastTime) this.lastTime = now;
+          const rawDt = Math.min((now - this.lastTime) / 1000, 0.05);
+          this.lastTime = now;
+          this.update(rawDt * this.speedMultiplier);
+          if (this.coopPlayers > 1) OnlineBackend.coopTick(this);
+        } catch (e) {}
+      }, 50);
+    }
   }
   stop() {
     this.running = false;
@@ -3901,6 +3914,7 @@ class Game {
     this.selectedBuild = null;
     this.waveBanner = null;
     if (this._raf) { cancelAnimationFrame(this._raf); this._raf = null; }
+    if (this._bgTimer) { clearInterval(this._bgTimer); this._bgTimer = null; }
     UI.hideTooltip();
     try { const _r = (typeof App !== 'undefined') && App.coopRoom; if (_r && _r.id && _r.started) { App._coopLaunched = false; OnlineBackend.quitRoom(_r); } } catch (e) {}
   }
@@ -3963,9 +3977,11 @@ class Game {
     try {
       const room = (typeof App !== 'undefined') && App.coopRoom;
       if (!room || !room.started || this.coopIsHost()) return;
-      if (n > this.wave && !this.waveManager.waveActive && !this.countdownActive && !this.gameOver && !this.victory) {
+      if (n > this.wave && !this.waveManager.waveActive && !this.gameOver && !this.victory) {
+        this.countdownActive = false; this.nextWaveTimer = 0;
         this._coopWaveWait = false;
-        this.startWave(true);
+        this._coopForceSync = true;
+        try { this.startWave(true); } finally { this._coopForceSync = false; }
       }
     } catch (e) {}
   }
@@ -4225,7 +4241,7 @@ class Game {
     if (!this.difficulty.endless && this.wave >= this.maxWaves) return;
     try {
       const _room = (typeof App !== 'undefined') && App.coopRoom;
-      if (_room && _room.started && !this.coopIsHost() && (this.wave + 1) > (_room.wave || 0)) {
+      if (_room && _room.started && !this.coopIsHost() && !this._coopForceSync) {
         this.countdownActive = false; this.nextWaveTimer = 0;
         if (!this._coopWaveWait) { this._coopWaveWait = true; this.toast(T('👥 Волны синхронные — следующую запускает создатель комнаты, немного подожди')); }
         return;
