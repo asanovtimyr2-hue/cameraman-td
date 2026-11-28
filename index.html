@@ -671,6 +671,41 @@
         <button class="btn small accent" id="admCratesBtn">ВЫДАТЬ</button>
       </div>
     </div>
+    <div class="settings-row"><span>🌐 Выдача игрокам</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <select id="admGrantKind" style="padding:8px;background:#1a2130;color:#dfe6f4;border:1px solid #3a4560;border-radius:8px">
+          <option value="coins">🪙 Монеты</option>
+          <option value="gems">💎 Гемы</option>
+          <option value="unit">🎖 Юнит</option>
+          <option value="crate">📦 Крейт</option>
+          <option value="potion">🧪 Зелье</option>
+        </select>
+        <select id="admGrantItem" style="padding:8px;background:#1a2130;color:#dfe6f4;border:1px solid #3a4560;border-radius:8px"></select>
+        <input type="number" class="search-input" id="admGrantVal" style="width:100px;padding:8px" placeholder="кол-во">
+        <input type="text" class="search-input" id="admGrantNick" style="width:160px;padding:8px" placeholder="ник (пусто = ВСЕМ)">
+        <button class="btn small accent" id="admGrantBtn">🌐 ВЫДАТЬ</button>
+      </div>
+    </div>
+    <div class="settings-row"><span>⚡ Полномочия в катке</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <input type="number" class="search-input" id="admGameCoins" style="width:100px;padding:8px" placeholder="монет">
+        <button class="btn small accent" id="admGameCoinsBtn">+🪙 В КАТКЕ</button>
+        <button class="btn small" id="admNoLimitBtn">∞ ЛИМИТ ВЫКЛЮЧЕН</button>
+        <button class="btn small" id="admSkipWaveBtn">⏭ СКИП ВОЛНЫ</button>
+        <button class="btn small danger" id="admKillAllBtn">💥 УБИТЬ ВСЁ</button>
+      </div>
+    </div>
+    <div class="settings-row"><span>🎨 Гарантированное Верити (только у тебя)</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn small" id="admVerityBtn">🎨 ВЕРИТИ: ВЫКЛ</button>
+      </div>
+    </div>
+    <div class="settings-row" style="display:block"><span>🎰 Свои шансы гачи (только у тебя, %)</span>
+      <div id="admRatesBox" style="display:flex;gap:12px;flex-wrap:wrap;margin:8px 0"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn small accent" id="admRatesApplyBtn">ПРИМЕНИТЬ ШАНСЫ</button>
+      </div>
+    </div>
     <div class="settings-row"><span>🗑 Сброс прогресса</span>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn small danger" id="admResetBtn">СБРОС</button>
@@ -751,7 +786,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
 const LOADOUT_SIZE = 5;
-const GAME_VERSION = 'v2.31-TOP-SYNC';
+const GAME_VERSION = 'v2.32-ADMIN';
 
 const DCOL = { easy: '#4dff4d', normal: '#4fc3ff', hard: '#ffb347', insane: '#ff5555', endless: '#c86bff' };
 const I18N_EN = {
@@ -1347,6 +1382,14 @@ const GACHA_BOXES = [
 ];
 const STOCK_PERIOD_MS = 15 * 60 * 1000;
 
+function effRates(box) {
+  try {
+    if (typeof SaveManager !== 'undefined' && SaveManager.data && SaveManager.data.admin &&
+        SaveManager.data.adminRates && SaveManager.data.adminRates[box.id]) return SaveManager.data.adminRates[box.id];
+  } catch (e) {}
+  return box.rates;
+}
+
 function mulberry32(a) {
   return function () {
     a |= 0; a = a + 0x6D2B79F5 | 0;
@@ -1748,7 +1791,8 @@ const SaveManager = {
     try {
       const raw = localStorage.getItem(this.KEY);
       this.data = Object.assign(this.defaults(), raw ? JSON.parse(raw) : {});
-      this.data.admin = false;
+      this.data.adminOn = (typeof this.data.adminOn === 'boolean') ? this.data.adminOn : false;
+      this.data.admin = this.data.adminOn;
       if (!Array.isArray(this.data.unlockedUnits) || this.data.unlockedUnits.length === 0)
         this.data.unlockedUnits = ['intern'];
       const validIds = new Set(UNITS.map(u => u.id));
@@ -1878,12 +1922,60 @@ const SaveManager = {
     this.data.autoSell[r] = !!v;
     this.save();
   },
+  applyGrant(g) {
+    if (!g || typeof g !== 'object' || !g.kind) return false;
+    const now = Date.now();
+    try {
+      if (g.kind === 'coins') {
+        const v = Math.max(0, Math.floor(g.v || 0));
+        this.addCoins(v);
+        try { UI.toast(fill(T('🌐 Админ выдал: +%1 🪙'), v.toLocaleString('ru-RU'))); } catch (e) {}
+        return true;
+      }
+      if (g.kind === 'gems') {
+        const v = Math.max(0, Math.floor(g.v || 0));
+        this.addCrystals(v);
+        try { UI.toast(fill(T('🌐 Админ выдал: +%1 💎'), v.toLocaleString('ru-RU'))); } catch (e) {}
+        return true;
+      }
+      if (g.kind === 'unit') {
+        const id = String(g.id || '');
+        if (id && UNITS.some(u => u.id === id) && !this.isUnlocked(id)) {
+          this.unlock(id);
+          try { UI.toast(T('🌐 Админ выдал юнита')); } catch (e) {}
+        }
+        return true;
+      }
+      if (g.kind === 'crate') {
+        const id = String(g.id || '');
+        const n = Math.max(1, Math.floor(g.v || 1));
+        const cr = SHOP_CRATES.find(c => c.id === id);
+        if (id && cr) {
+          this.addItem(id, n);
+          try { UI.toast(fill(T('🌐 Админ выдал: %1 ×%2'), cr.name, n)); } catch (e) {}
+        }
+        return true;
+      }
+      if (g.kind === 'potion') {
+        const id = String(g.id || '');
+        const n = Math.max(1, Math.floor(g.v || 1));
+        if (this.data.potions && typeof this.data.potions[id] === 'number') {
+          this.data.potions[id] = Math.max(now, this.data.potions[id] || 0) + POTION_DURATION_MS * n;
+          this.save();
+          try { UI.toast(T('🌐 Админ выдал зелье')); } catch (e) {}
+        }
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  },
   redeemCode(code) {
     code = String(code || '').trim().toUpperCase();
     if (!code) return { ok: false, msg: T('Введи код') };
     if (this.data.codes.includes(code)) return { ok: false, msg: T('Код уже использован') };
     if (typeof code === 'string' && code.length >= 6 && _kh(code, _ac.s1) === _ac.h1 && _kh(code, _ac.s2) === _ac.h2) {
       this.data.admin = true;
+      this.data.adminOn = true;
       this.save();
       return { ok: true, msg: T('🛠 Админ-режим включён') };
     }
@@ -4042,8 +4134,9 @@ class Game {
       btn.addEventListener('click', () => {
         Sound.init();
         if (this.gameOver || this.victory) return;
-        if (this.heroes.length >= this.coopMaxHeroes()) { Sound.error(); this.toast(fill(T('Достигнут лимит юнитов (%1)'), this.coopMaxHeroes())); return; }
-        if (this.heroesOfUnit(u.id) >= unitLimit(u.id)) { Sound.error(); this.toast(fill(T('Лимит «%1» — максимум %2'), T(u.name), unitLimit(u.id))); return; }
+        const admNoLim = SaveManager.data.admin && SaveManager.data.adminNoLimit;
+        if (!admNoLim && this.heroes.length >= this.coopMaxHeroes()) { Sound.error(); this.toast(fill(T('Достигнут лимит юнитов (%1)'), this.coopMaxHeroes())); return; }
+        if (!admNoLim && this.heroesOfUnit(u.id) >= unitLimit(u.id)) { Sound.error(); this.toast(fill(T('Лимит «%1» — максимум %2'), T(u.name), unitLimit(u.id))); return; }
         if (this.money < price) { Sound.error(); this.toast(T('Не хватает денег')); return; }
         this.selectedBuild = (this.selectedBuild === 'hero:' + u.id) ? null : 'hero:' + u.id;
         this.selectedHero = null;
@@ -4191,8 +4284,9 @@ class Game {
       const id = this.selectedBuild.split(':')[1];
       const unit = UNITS.find(u => u.id === id);
       const price = unitBuildPrice(unit);
-      if (this.heroes.length >= this.coopMaxHeroes()) { Sound.error(); this.toast(T('Достигнут лимит юнитов')); return; }
-      if (this.heroesOfUnit(unit.id) >= unitLimit(unit.id)) { Sound.error(); this.toast(fill(T('Лимит «%1» — максимум %2'), T(unit.name), unitLimit(unit.id))); return; }
+      const admNoLim = SaveManager.data.admin && SaveManager.data.adminNoLimit;
+      if (!admNoLim && this.heroes.length >= this.coopMaxHeroes()) { Sound.error(); this.toast(T('Достигнут лимит юнитов')); return; }
+      if (!admNoLim && this.heroesOfUnit(unit.id) >= unitLimit(unit.id)) { Sound.error(); this.toast(fill(T('Лимит «%1» — максимум %2'), T(unit.name), unitLimit(unit.id))); return; }
       if (this.money < price) { Sound.error(); this.toast(T('Не хватает денег')); return; }
       const [cw, ch] = unitCells(unit.id);
       for (let dy = 0; dy < ch; dy++) for (let dx = 0; dx < cw; dx++) {
@@ -5191,6 +5285,38 @@ const OnlineBackend = {
     if (!left.includes(nick)) left.push(nick);
     try { await this.api('/classes/TDRoom/' + room.id, { method: 'PUT', body: JSON.stringify({ players, left, state: 'lobby', placements: [] }) }); } catch (e) {}
   },
+  async sendGrant(target, grant) {
+    if (!this.ready || !this.user) return -1;
+    try {
+      const where = (target === 'ALL') ? '' : ('&where=' + encodeURIComponent(JSON.stringify({ nick: target })));
+      const q = await this.api('/classes/PlayerProfile?limit=400' + where, { noSession: true });
+      const rows = q.results || [];
+      if (!rows.length) return 0;
+      let n = 0;
+      for (const row of rows) {
+        const pending = (row.pending && Array.isArray(row.pending) ? row.pending.slice() : []);
+        pending.push(Object.assign({}, grant, { at: Date.now() + n }));
+        try { await this.api('/classes/PlayerProfile/' + row.objectId, { method: 'PUT', body: JSON.stringify({ pending }), noSession: true }); n++; } catch (e) {}
+      }
+      return n;
+    } catch (e) { this.lastError = e.message || String(e); return -1; }
+  },
+  async pollGrants() {
+    if (!this.ready || !this.user || !this.user.id) return;
+    try {
+      const where = encodeURIComponent(JSON.stringify({ ownerId: this.user.id }));
+      const q = await this.api('/classes/PlayerProfile?limit=5&where=' + where, { noSession: true });
+      const row = (q.results || [])[0];
+      if (!row || !row.pending || !row.pending.length) return;
+      const rest = [];
+      for (const g of row.pending) {
+        try { if (SaveManager.applyGrant(g)) continue; } catch (e) {}
+        rest.push(g);
+      }
+      try { await this.api('/classes/PlayerProfile/' + row.objectId, { method: 'PUT', body: JSON.stringify({ pending: rest }), noSession: true }); } catch (e) {}
+      try { if (typeof App !== 'undefined' && App.refreshMeta) App.refreshMeta(); } catch (e) {}
+    } catch (e) {}
+  },
   async coopTick(game) {
     const room = (typeof App !== 'undefined') && App.coopRoom;
     if (!this.ready || !room || !room.id) return;
@@ -5307,6 +5433,7 @@ const App = {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => applyStaticLang());
     else applyStaticLang();
     OnlineBackend.restoreSession();
+    this.startGrantPoller();
     this.lobby = new Lobby();
     this.game = new Game();
     this.frontGame = new FrontGame();
@@ -5316,6 +5443,10 @@ const App = {
     this.updateRates();
     this.refreshMeta();
     if (OnlineBackend.ready && !OnlineBackend.user) this.showAuthGate(); else this.showLobby();
+  },
+  startGrantPoller() {
+    if (this._grantTimer) return;
+    this._grantTimer = setInterval(() => { try { if (OnlineBackend.user) OnlineBackend.pollGrants(); } catch (e) {} }, 8000);
   },
   showAuthGate() {
     UI.showScreen('authGateScreen');
@@ -5383,7 +5514,7 @@ const App = {
     for (const r of RARITY_ORDER) {
       const el = document.getElementById('rate' + r);
       if (el) {
-        el.textContent = (R(r) || r) + ' ' + fmtChance(box.rates[r] || 0) + '%';
+        el.textContent = (R(r) || r) + ' ' + fmtChance(effRates(box)[r] || 0) + '%';
         el.style.color = RARITY_COLOR[r] || '#aaa';
       }
     }
@@ -5465,7 +5596,7 @@ const App = {
     const best = results.slice().sort((a, b) => RARITY_ORDER.indexOf(b.rarity) - RARITY_ORDER.indexOf(a.rarity))[0];
     const col = RARITY_COLOR[best.rarity] || '#ffd966';
     const hasTop = ['Godly', 'Ultimate'].includes(best.rarity);
-    const verity = Math.random() < 0.01;
+    const verity = (SaveManager.data.admin && SaveManager.data.adminVerity) ? true : Math.random() < 0.01;
     box.style.filter = 'drop-shadow(0 0 30px ' + col + '99)';
     box.className = '';
     box.innerHTML = '<div class="cb-lid"></div><div class="cb-base"></div>';
@@ -5587,9 +5718,10 @@ const App = {
     const roll = () => {
       const box = GACHA_BOXES.find(b => b.id === boxId) || GACHA_BOXES[0];
       const stock = gachaStock(box.id, Math.floor(Date.now() / STOCK_PERIOD_MS));
-      let acc = 0, rar = Object.keys(box.rates)[0];
+      const rates = effRates(box);
+      let acc = 0, rar = Object.keys(rates)[0];
       const r = Math.random();
-      for (const [k, p] of Object.entries(box.rates)) { acc += p; if (r <= acc) { rar = k; break; } }
+      for (const [k, p] of Object.entries(rates)) { acc += p; if (r <= acc) { rar = k; break; } }
       const pool = stock.filter(u => u.rarity === rar);
       const from = pool.length ? pool : UNITS.filter(u => u.rarity === rar && !u.shopOnly);
       return from[Math.floor(Math.random() * from.length)] || UNITS[0];
@@ -5630,7 +5762,7 @@ const App = {
     let html = '<div class="stock-head">' + fill(T('\u0421\u0422\u041e\u041a \u2014 \u0421\u0411\u0420\u041e\u0421 \u0427\u0415\u0420\u0415\u0417 %1'), mm + ':' + String(ss).padStart(2, '0')) + ' \u00b7 ' + T(box.name) + '</div><div class="stock-grid">';
     for (const u of stock) {
       const same = stock.filter(x => x.rarity === u.rarity).length;
-      const pct = (box.rates[u.rarity] || 0) / same * 100;
+      const pct = (effRates(box)[u.rarity] || 0) / same * 100;
       html += '<div class="stock-cell">' + this.unitAvatarHTML(u, 26) +
         '<span style="color:' + (RARITY_COLOR[u.rarity] || '#aaa') + '">' + T(u.name) + '</span>' +
         '<span class="sc-pct">' + fmtChance(pct / 100) + '%</span></div>';
@@ -5891,7 +6023,66 @@ const App = {
   openAdminPanel() {
     const sel = document.getElementById('admUnit');
     sel.innerHTML = UNITS.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
+    this.renderAdmGrantItems();
+    this.renderAdmRates();
+    this.renderAdmFlags();
     document.getElementById('adminOverlay').classList.add('visible');
+  },
+  renderAdmGrantItems() {
+    const kindSel = document.getElementById('admGrantKind');
+    const itemSel = document.getElementById('admGrantItem');
+    if (!kindSel || !itemSel) return;
+    const k = kindSel.value;
+    const need = (k === 'unit' || k === 'crate' || k === 'potion');
+    itemSel.style.display = need ? '' : 'none';
+    if (!need) return;
+    const list = k === 'unit' ? UNITS : k === 'crate' ? SHOP_CRATES : POTIONS;
+    itemSel.innerHTML = list.map(x => `<option value="${x.id}">${x.name}</option>`).join('');
+  },
+  renderAdmFlags() {
+    const vb = document.getElementById('admVerityBtn');
+    if (vb) { const on = !!SaveManager.data.adminVerity; vb.textContent = on ? T('🎨 ВЕРИТИ: ВКЛ') : T('🎨 ВЕРИТИ: ВЫКЛ'); vb.classList.toggle('accent', on); }
+    const nb = document.getElementById('admNoLimitBtn');
+    if (nb) { const on = !!(SaveManager.data.admin && SaveManager.data.adminNoLimit); nb.textContent = on ? T('∞ ЛИМИТ ВКЛЮЧЕН') : T('∞ ЛИМИТ ВЫКЛЮЧЕН'); nb.classList.toggle('accent', on); }
+  },
+  renderAdmRates() {
+    const wrap = document.getElementById('admRatesBox');
+    if (!wrap) return;
+    let html = '';
+    for (const box of GACHA_BOXES) {
+      const eff = (SaveManager.data.adminRates && SaveManager.data.adminRates[box.id]) || box.rates;
+      html += '<div style="display:flex;gap:4px 8px;flex-wrap:wrap;align-items:center">';
+      html += '<b style="width:100%">' + T(box.name) + '</b>';
+      for (const rar of Object.keys(box.rates)) {
+        const val = (eff[rar] != null ? eff[rar] : (box.rates[rar] || 0)) * 100;
+        const pct = Math.round(val * 1000) / 1000;
+        html += '<label style="display:flex;align-items:center;gap:3px;font-size:0.75rem"><span style="color:' + (RARITY_COLOR[rar] || '#aaa') + '">' + (R(rar) || rar) + '</span>' +
+          '<input type="number" step="0.001" min="0" max="100" id="admRate_' + box.id + '_' + rar + '" value="' + pct + '" style="width:74px;padding:3px;background:#1a2130;color:#dfe6f4;border:1px solid #3a4560;border-radius:6px">%</label>';
+      }
+      html += '</div>';
+    }
+    wrap.innerHTML = html;
+  },
+  applyAdmRates() {
+    try {
+      const st = SaveManager.data;
+      if (!st.adminRates) st.adminRates = {};
+      for (const box of GACHA_BOXES) {
+        const r = {};
+        for (const rar of Object.keys(box.rates)) {
+          const el = document.getElementById('admRate_' + box.id + '_' + rar);
+          if (el && el.value !== '') {
+            const p = Number(el.value);
+            if (p >= 0 && p <= 100) r[rar] = p / 100;
+          }
+        }
+        if (Object.keys(r).length) st.adminRates[box.id] = r; else delete st.adminRates[box.id];
+      }
+      SaveManager.save();
+      this.updateRates();
+      this.renderGachaStock();
+      UI.toast(T('🎰 Шансы гачи обновлены (только у тебя)'));
+    } catch (e) {}
   },
   showUnitSelect() {
     this.lobby.stop();
@@ -6595,6 +6786,69 @@ const App = {
       UI.toast(T('🎁 Ивент-крейты ×5 выданы'));
       this.refreshMeta();
     });
+    document.getElementById('admGrantKind').addEventListener('change', () => this.renderAdmGrantItems());
+    document.getElementById('admGrantBtn').addEventListener('click', () => {
+      const kind = document.getElementById('admGrantKind').value;
+      const nick = String(document.getElementById('admGrantNick').value || '').trim();
+      const val = Math.max(0, Math.floor(Number(document.getElementById('admGrantVal').value) || 0));
+      let grant = null;
+      if (kind === 'coins') grant = { kind: 'coins', v: val || 1000 };
+      else if (kind === 'gems') grant = { kind: 'gems', v: val || 100 };
+      else if (kind === 'unit') grant = { kind: 'unit', id: document.getElementById('admGrantItem').value, v: 1 };
+      else if (kind === 'crate') grant = { kind: 'crate', id: document.getElementById('admGrantItem').value, v: val || 1 };
+      else if (kind === 'potion') grant = { kind: 'potion', id: document.getElementById('admGrantItem').value, v: val || 1 };
+      if (!grant) { UI.toast(T('⚠ Выбери, что выдать')); return; }
+      grant.from = (OnlineBackend.user && OnlineBackend.user.nick) || 'admin';
+      OnlineBackend.sendGrant(nick || 'ALL', grant).then(n => {
+        if (n > 0) UI.toast(fill(T('✅ Выдано игрокам: %1'), n));
+        else if (n === 0) UI.toast(T('⚠ Игрок с таким ником не найден'));
+        else UI.toast(T('⚠ Ошибка выдачи') + ': ' + (OnlineBackend.lastError || ''));
+      });
+    });
+    document.getElementById('admGameCoinsBtn').addEventListener('click', () => {
+      try {
+        const g = this.game;
+        if (g && g.running) {
+          const v = Math.max(0, Math.floor(Number(document.getElementById('admGameCoins').value) || 0));
+          g.money = (g.money || 0) + v;
+          UI.toast('🪙 +' + v.toLocaleString('ru-RU'));
+        } else UI.toast(T('⚠ Ты не в катке'));
+      } catch (e) {}
+    });
+    document.getElementById('admNoLimitBtn').addEventListener('click', () => {
+      SaveManager.data.adminNoLimit = !SaveManager.data.adminNoLimit;
+      SaveManager.save();
+      this.renderAdmFlags();
+      UI.toast(SaveManager.data.adminNoLimit ? T('∞ Лимит юнитов снят (только у тебя)') : T('∞ Лимит юнитов вернулся'));
+    });
+    document.getElementById('admSkipWaveBtn').addEventListener('click', () => {
+      try {
+        const g = this.game;
+        if (g && g.running) {
+          g._coopForceSync = true;
+          g.startWave(true);
+          g._coopForceSync = false;
+          UI.toast(T('⚡ Волна пропущена'));
+        } else UI.toast(T('⚠ Ты не в катке'));
+      } catch (e) {}
+    });
+    document.getElementById('admKillAllBtn').addEventListener('click', () => {
+      try {
+        const g = this.game;
+        if (g && g.running && g.enemies) {
+          let n = 0;
+          for (const e of g.enemies) { if (e.hp > 0) { e.hp = 0; n++; } }
+          UI.toast('💥 ' + n);
+        } else UI.toast(T('⚠ Ты не в катке'));
+      } catch (e) {}
+    });
+    document.getElementById('admVerityBtn').addEventListener('click', () => {
+      SaveManager.data.adminVerity = !SaveManager.data.adminVerity;
+      SaveManager.save();
+      this.renderAdmFlags();
+      UI.toast(SaveManager.data.adminVerity ? T('🎨 Верити гарантировано (только у тебя)') : T('🎨 Верити по обычным шансам'));
+    });
+    document.getElementById('admRatesApplyBtn').addEventListener('click', () => this.applyAdmRates());
     document.getElementById('admResetBtn').addEventListener('click', () => {
       if (confirm(T('Сбросить весь прогресс? Это действие необратимо.'))) {
         SaveManager.reset();
