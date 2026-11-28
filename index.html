@@ -643,6 +643,7 @@
     <button id="pauseBtn" class="btn small">⏸ ПАУЗА</button>
     <button id="speedBtn" class="btn small">⏩ ×1</button>
     <button id="autoSkipBtn" class="btn small">🤖 АВТО-СКИП: ВЫКЛ</button>
+    <button id="admHudBtn" class="btn small accent" style="display:none">🛠 АДМИНКА</button>
     <button id="quitToLobbyBtn" class="btn small danger">🏠 ЛОББИ</button>
   </div>
   <div class="game-canvas-wrap"><canvas id="gameCanvas" width="960" height="640"></canvas></div>
@@ -795,7 +796,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
 const LOADOUT_SIZE = 5;
-const GAME_VERSION = 'v2.35-CRATE-GLOW';
+const GAME_VERSION = 'v2.36-ADMIN-HUD';
 
 const DCOL = { easy: '#4dff4d', normal: '#4fc3ff', hard: '#ffb347', insane: '#ff5555', endless: '#c86bff' };
 const I18N_EN = {
@@ -5344,6 +5345,8 @@ const UI = {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const el = document.getElementById(id);
     if (el) el.classList.add('active');
+    const ahb = document.getElementById('admHudBtn');
+    if (ahb) ahb.style.display = (id === 'gameScreen' && SaveManager.data.admin) ? '' : 'none';
   },
   toast(msg) {
     const el = document.getElementById('toast');
@@ -6034,6 +6037,7 @@ const App = {
     overlay.classList.add('visible');
   },
   openAdminPanel() {
+    try { if (UI.current === 'gameScreen' && App.game && !App.game.paused && !App.game.gameOver && !App.game.victory) App.game.togglePause(); } catch (e) {}
     const sel = document.getElementById('admUnit');
     sel.innerHTML = UNITS.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
     this.renderAdmGrantItems();
@@ -6789,6 +6793,7 @@ const App = {
     });
     document.getElementById('btnRedeemCode').addEventListener('click', () => this.redeemCode());
     document.getElementById('btnAdmin').addEventListener('click', () => this.openAdminPanel());
+    document.getElementById('admHudBtn').addEventListener('click', () => this.openAdminPanel());
     document.getElementById('admClose').addEventListener('click', () => {
       document.getElementById('adminOverlay').classList.remove('visible');
     });
