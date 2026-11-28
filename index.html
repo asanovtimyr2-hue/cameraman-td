@@ -65,6 +65,15 @@
   .loadout-slot.rar-Mythic{border-color:#ff4040;box-shadow:0 0 14px #ff404066}
   @keyframes rainbowHue{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
   .rar-Ultimate{animation:rainbowHue 2.8s linear infinite}
+  #crateBox.rainbow-glow{animation:crateRainbow 2.8s linear infinite}
+  @keyframes crateRainbow{
+    0%{filter:drop-shadow(0 0 30px #ff3355cc)}
+    17%{filter:drop-shadow(0 0 30px #ffe14dcc)}
+    33%{filter:drop-shadow(0 0 30px #4dff6acc)}
+    50%{filter:drop-shadow(0 0 30px #4de1ffcc)}
+    67%{filter:drop-shadow(0 0 30px #8a5bffcc)}
+    83%{filter:drop-shadow(0 0 30px #ff4dd2cc)}
+    100%{filter:drop-shadow(0 0 30px #ff3355cc)}}
   [style*="100%,60%)"],[style*="100%, 60%)"]{animation:rainbowHue 2.8s linear infinite}
   .unit-card .u-emoji{font-size:2.2rem;line-height:1;display:flex;align-items:center;justify-content:center;min-height:52px}
   .unit-card .u-name{font-weight:800;font-size:1.05rem;color:#cfe0ff}
@@ -634,6 +643,7 @@
     <button id="pauseBtn" class="btn small">⏸ ПАУЗА</button>
     <button id="speedBtn" class="btn small">⏩ ×1</button>
     <button id="autoSkipBtn" class="btn small">🤖 АВТО-СКИП: ВЫКЛ</button>
+    <button id="admHudBtn" class="btn small accent" style="display:none">🛠 АДМИНКА</button>
     <button id="quitToLobbyBtn" class="btn small danger">🏠 ЛОББИ</button>
   </div>
   <div class="game-canvas-wrap"><canvas id="gameCanvas" width="960" height="640"></canvas></div>
@@ -786,7 +796,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
 const LOADOUT_SIZE = 5;
-const GAME_VERSION = 'v2.34-GACHA-ODDS';
+const GAME_VERSION = 'v2.36-ADMIN-HUD';
 
 const DCOL = { easy: '#4dff4d', normal: '#4fc3ff', hard: '#ffb347', insane: '#ff5555', endless: '#c86bff' };
 const I18N_EN = {
@@ -5335,6 +5345,8 @@ const UI = {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const el = document.getElementById(id);
     if (el) el.classList.add('active');
+    const ahb = document.getElementById('admHudBtn');
+    if (ahb) ahb.style.display = (id === 'gameScreen' && SaveManager.data.admin) ? '' : 'none';
   },
   toast(msg) {
     const el = document.getElementById('toast');
@@ -5597,8 +5609,8 @@ const App = {
     const col = RARITY_COLOR[best.rarity] || '#ffd966';
     const hasTop = ['Godly', 'Ultimate'].includes(best.rarity);
     const verity = (SaveManager.data.admin && SaveManager.data.adminVerity) ? true : Math.random() < 0.01;
-    box.style.filter = 'drop-shadow(0 0 30px ' + col + '99)';
-    box.className = '';
+    if (best.rarity === 'Ultimate') { box.style.filter = ''; box.className = 'rainbow-glow'; }
+    else { box.style.filter = 'drop-shadow(0 0 30px ' + col + '99)'; box.className = ''; }
     box.innerHTML = '<div class="cb-lid"></div><div class="cb-base"></div>';
     if (verity) {
       box.innerHTML += '<div class="verity-tag">' + T('VERITY!') + '</div>' +
@@ -6025,6 +6037,7 @@ const App = {
     overlay.classList.add('visible');
   },
   openAdminPanel() {
+    try { if (UI.current === 'gameScreen' && App.game && !App.game.paused && !App.game.gameOver && !App.game.victory) App.game.togglePause(); } catch (e) {}
     const sel = document.getElementById('admUnit');
     sel.innerHTML = UNITS.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
     this.renderAdmGrantItems();
@@ -6780,6 +6793,7 @@ const App = {
     });
     document.getElementById('btnRedeemCode').addEventListener('click', () => this.redeemCode());
     document.getElementById('btnAdmin').addEventListener('click', () => this.openAdminPanel());
+    document.getElementById('admHudBtn').addEventListener('click', () => this.openAdminPanel());
     document.getElementById('admClose').addEventListener('click', () => {
       document.getElementById('adminOverlay').classList.remove('visible');
     });
