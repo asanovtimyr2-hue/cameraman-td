@@ -786,7 +786,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
 const LOADOUT_SIZE = 5;
-const GAME_VERSION = 'v2.33-ADMIN-FIX';
+const GAME_VERSION = 'v2.34-GACHA-ODDS';
 
 const DCOL = { easy: '#4dff4d', normal: '#4fc3ff', hard: '#ffb347', insane: '#ff5555', endless: '#c86bff' };
 const I18N_EN = {
@@ -5723,7 +5723,11 @@ const App = {
       const r = Math.random();
       for (const [k, p] of Object.entries(rates)) { acc += p; if (r <= acc) { rar = k; break; } }
       const pool = stock.filter(u => u.rarity === rar);
-      const from = pool.length ? pool : UNITS.filter(u => u.rarity === rar && !u.shopOnly);
+      let from = pool.length ? pool : UNITS.filter(u => u.rarity === rar && !u.shopOnly);
+      if (!from.length) {
+        const order = RARITY_ORDER.slice(0, RARITY_ORDER.indexOf(rar) + 1).reverse();
+        for (const rr of order) { const p2 = stock.filter(u => u.rarity === rr); if (p2.length) { from = p2; break; } }
+      }
       return from[Math.floor(Math.random() * from.length)] || UNITS[0];
     };
     const one = roll();
@@ -6062,19 +6066,38 @@ const App = {
       html += '</div>';
     }
     wrap.innerHTML = html;
+    wrap.querySelectorAll('input').forEach(el => el.addEventListener('change', () => this.applyAdmRates()));
   },
   applyAdmRates() {
     try {
       const st = SaveManager.data;
       if (!st.adminRates) st.adminRates = {};
       for (const box of GACHA_BOXES) {
-        const r = {};
+        const cur = (st.adminRates && st.adminRates[box.id]) || box.rates;
+        const vals = {}, changed = [];
+        let total = 0;
         for (const rar of Object.keys(box.rates)) {
           const el = document.getElementById('admRate_' + box.id + '_' + rar);
-          if (el && el.value !== '') {
-            const p = Number(el.value);
-            if (p >= 0 && p <= 100) r[rar] = p / 100;
-          }
+          if (!el || el.value === '') continue;
+          const p = Number(el.value);
+          if (!(p >= 0 && p <= 100)) continue;
+          vals[rar] = p / 100;
+          total += vals[rar];
+          if (Math.abs(vals[rar] - (cur[rar] || 0)) > 1e-9) changed.push(rar);
+        }
+        const keys = Object.keys(vals);
+        if (!keys.length) { delete st.adminRates[box.id]; continue; }
+        const r = {};
+        const changedKeys = keys.filter(k => changed.includes(k));
+        const restKeys = keys.filter(k => !changed.includes(k));
+        const cSum = changedKeys.reduce((s, k) => s + vals[k], 0);
+        if (!restKeys.length || cSum > 1 + 1e-9) {
+          if (total > 0) for (const k of keys) r[k] = vals[k] / total;
+        } else {
+          for (const k of changedKeys) r[k] = vals[k];
+          const restPrev = restKeys.reduce((s, k) => s + (cur[k] || 0), 0);
+          if (restPrev > 0) { const sc = (1 - cSum) / restPrev; for (const k of restKeys) r[k] = (cur[k] || 0) * sc; }
+          else { const eq = (1 - cSum) / restKeys.length; for (const k of restKeys) r[k] = eq; }
         }
         if (Object.keys(r).length) st.adminRates[box.id] = r; else delete st.adminRates[box.id];
       }
