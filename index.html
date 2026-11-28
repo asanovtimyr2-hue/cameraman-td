@@ -369,7 +369,7 @@
   <div class="lobby-content">
     <h1 class="game-title">КАМЕРАМЕН TD</h1>
     <div class="game-subtitle">ОБОРОНА СТУДИИ</div>
-    <div id="verBadge" style="font-size:11px;opacity:.45;margin-top:4px;user-select:none">v2.30-COOP-SYNC</div>
+    <div id="verBadge" style="font-size:11px;opacity:.45;margin-top:4px;user-select:none">v2.31-TOP-SYNC</div>
     <div class="coin-badge"><span class="coin-ico">¢</span> <span id="metaCoinsLobby">0</span> монет</div>
     <div class="coin-badge"><span>💎</span> <span id="metaCrystalsLobby">0</span> кристаллов</div>
     <div class="coin-badge" id="potionBadgeLobby" style="display:none;color:#d9b0ff;box-shadow:0 0 0 1px #6a4fa0 inset"></div>
@@ -751,7 +751,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
 const LOADOUT_SIZE = 5;
-const GAME_VERSION = 'v2.30-COOP-SYNC';
+const GAME_VERSION = 'v2.31-TOP-SYNC';
 
 const DCOL = { easy: '#4dff4d', normal: '#4fc3ff', hard: '#ffb347', insane: '#ff5555', endless: '#c86bff' };
 const I18N_EN = {
@@ -1815,7 +1815,7 @@ const SaveManager = {
     this.save();
   },
   get coins() { return this.data.coins; },
-  set coins(v) { this.data.coins = Math.max(0, Math.floor(v)); this.save(); },
+  set coins(v) { this.data.coins = Math.max(0, Math.floor(v)); this.save(); try { if (typeof OnlineBackend !== 'undefined') OnlineBackend.queueProfileSync(); } catch (e) {} },
   addCoins(v) {
     v = Math.max(0, Math.floor(v));
     if (this.potionActive('coins')) v *= 2;
@@ -1824,7 +1824,7 @@ const SaveManager = {
   potionActive(key) { const pp = this.data.potions || {}; return (pp[key] || 0) > Date.now(); },
   potionLeftMs(key) { const pp = this.data.potions || {}; const left = (pp[key] || 0) - Date.now(); return left > 0 ? left : 0; },
   get crystals() { return (typeof this.data.crystals === 'number') ? this.data.crystals : 60; },
-  set crystals(v) { this.data.crystals = Math.max(0, Math.floor(v)); this.save(); },
+  set crystals(v) { this.data.crystals = Math.max(0, Math.floor(v)); this.save(); try { if (typeof OnlineBackend !== 'undefined') OnlineBackend.queueProfileSync(); } catch (e) {} },
   addCrystals(v) { this.crystals = this.crystals + Math.max(0, Math.floor(v)); },
   addItem(crateId, n) {
     if (!this.data.items || typeof this.data.items !== 'object') this.data.items = {};
@@ -5059,6 +5059,15 @@ const OnlineBackend = {
       }
     } catch (e) { this.reportSave('profile', e.message || String(e)); }
   },
+  queueProfileSync() {
+    if (!this.ready || !this.user) return;
+    this._profDirty = true;
+    if (this._profTimer) return;
+    this._profTimer = setTimeout(() => {
+      this._profTimer = null;
+      if (this._profDirty) { this._profDirty = false; try { this.pushProfile(); } catch (e) {} }
+    }, 20000);
+  },
   async submitEndless(waves) {
     if (!this.ready || !this.user || !waves) return;
     const data = { ownerId: this.user.id, nick: this.user.nick, season: SaveManager.seasonSlot(), waves };
@@ -6381,6 +6390,12 @@ const App = {
     this.lobby.stop();
     this.topTab = this.topTab || 'coins';
     this.renderTop();
+    try {
+      if (OnlineBackend.user) OnlineBackend.pushProfile().then(() => {
+        const ts = document.getElementById('topScreen');
+        if (ts && ts.classList.contains('active')) this.renderTop();
+      }).catch(() => {});
+    } catch (e) {}
     UI.showScreen('topScreen');
   },
   renderTop() {
