@@ -644,8 +644,8 @@
 
 <!-- АДМИН -->
 <div class="unit-detail-overlay" id="adminOverlay">
-  <div class="subpanel" style="max-width:560px">
-    <button class="btn small back-btn" id="admClose">← ЗАКРЫТЬ</button>
+  <div class="subpanel" style="max-width:560px;max-height:88vh;overflow-y:auto">
+    <button class="btn small back-btn" id="admClose" style="position:sticky;top:-14px;z-index:5;align-self:flex-start">← ЗАКРЫТЬ</button>
     <h2 class="panel-title">🛠 СЛУЖЕБНАЯ ПАНЕЛЬ v2</h2>
     <div class="settings-row"><span>🪙 Монеты</span>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -786,7 +786,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const CANVAS_W = 960, CANVAS_H = 640, CELL = 32, COLS = 30, ROWS = 20;
 const PATH_WIDTH = CELL * 0.8;
 const LOADOUT_SIZE = 5;
-const GAME_VERSION = 'v2.32-ADMIN';
+const GAME_VERSION = 'v2.33-ADMIN-FIX';
 
 const DCOL = { easy: '#4dff4d', normal: '#4fc3ff', hard: '#ffb347', insane: '#ff5555', endless: '#c86bff' };
 const I18N_EN = {
@@ -6759,6 +6759,9 @@ const App = {
     document.getElementById('btnAdmin').addEventListener('click', () => this.openAdminPanel());
     document.getElementById('admClose').addEventListener('click', () => {
       document.getElementById('adminOverlay').classList.remove('visible');
+    });
+    document.getElementById('adminOverlay').addEventListener('click', (e) => {
+      if (e.target && e.target.id === 'adminOverlay') document.getElementById('adminOverlay').classList.remove('visible');
     });
     document.getElementById('admCoinsBtn').addEventListener('click', () => {
       const v = Math.max(0, Math.floor(Number(document.getElementById('admCoins').value) || 0));
